@@ -1,0 +1,3 @@
+# Requirements for vsm.controller package
+
+-r requirements-common.txt

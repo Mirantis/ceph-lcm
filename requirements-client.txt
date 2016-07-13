@@ -1,0 +1,3 @@
+# Requirements for vsm.client package
+
+-r requirements-common.txt
