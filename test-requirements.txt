@@ -1,2 +1,14 @@
 # Requirements to test VSM
 
+flake8
+flake8-coding
+flake8-debugger
+hacking
+mock
+pep8
+pep8-naming
+pytest
+pytest-cov
+pytest-flask
+radon
+xenon

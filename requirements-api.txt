@@ -1,3 +1,8 @@
 # Requirements for vsm.api package
 
 -r requirements-common.txt
+
+Flask
+Flask-PyMongo
+flask-inputs
+jsonschema
