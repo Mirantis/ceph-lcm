@@ -21,7 +21,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.cache.enable :apt_lists
     config.cache.enable :bower
     config.cache.enable :npm
-    config.cache.enable :generic, { "pip" => { :cache_dir => "/home/vagrant/.pip/cache" } }
+    config.cache.enable :generic, {
+      "pip" => { :cache_dir => "cache/.pip" },
+      "ccache" => { :cache_dir => ".ccache"  }
+    }
 
     config.cache.synced_folder_opts = {
       type:          :nfs,
