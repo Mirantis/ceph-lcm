@@ -16,5 +16,4 @@
 - include: apt.yaml
 - include: htop.yaml
 - include: ssh.yaml
-- include: python.yaml
 - include: neovim.yaml

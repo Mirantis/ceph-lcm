@@ -1,0 +1,30 @@
+---
+# Install pyenv
+
+
+- name: Install packages, required to build Pythons
+  become: true
+  apt: name="{{ item }}" state=latest
+  with_items: "{{ build_requirements }}"
+
+- name: Clone PyEnv repository
+  git: repo=https://github.com/yyuu/pyenv.git
+       dest="{{ pyenv_root }}"
+       depth=1
+       clone=yes
+
+- name: Ensure PYENV_ROOT is correct
+  lineinfile: dest=.bashrc
+              line="export PYENV_ROOT=$HOME/{{ pyenv_root }}"
+              state=present
+
+- name: Ensure PATH is correct
+  lineinfile: dest=.bashrc
+              insertafter="^export PYENV_ROOT"
+              line='export PATH="$PYENV_ROOT/bin:$PATH"'
+              state=present
+
+- name: Ensure that PyEnv is initialized
+  lineinfile: dest=.bashrc
+              line='eval "$(pyenv init -)"'
+              state=present

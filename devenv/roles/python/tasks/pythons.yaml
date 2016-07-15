@@ -1,0 +1,24 @@
+---
+# Install Pythons in Pyenv and create VSM virtualenv
+
+
+- name: Install Pythons
+  command: bash -ic "pyenv install -s {{ item }}"
+  with_items: "{{ pyenv_pythons }}"
+
+- name: Check if VSM virtualenv exists
+  stat: path="{{ pyenv_root }}/versions/vsm"
+  register: vsm_virtualenv
+
+- name: Create VSM virtualenv
+  command: bash -ic "pyenv virtualenv {{ vsm_python }} vsm"
+  when: not vsm_virtualenv.stat.exists
+
+- name: Activate VSM environment on logging in
+  lineinfile: dest=.bashrc
+              line='pyenv activate vsm'
+              state=present
+
+- name: Install VSM requirements
+  command: bash -ic "pip install -r /vagrant/requirements.txt"
+

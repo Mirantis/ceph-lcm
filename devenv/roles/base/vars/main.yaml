@@ -12,6 +12,10 @@ apt_packages:
   - htop
   - iftop
   - iotop
+  - ipython
+  - ipython3
+  - python3-ipdb
+  - python-ipdb
   - language-pack-ru
   - pkg-config
   - python3-flake8
@@ -19,6 +23,7 @@ apt_packages:
   - python3-pep8
   - python3-pep8-naming
   - python3-pip
+  - python3-virtualenv
   - python-autopep8
   - python-dev
   - python-flake8
@@ -26,6 +31,7 @@ apt_packages:
   - python-pep8
   - python-pep8-naming
   - python-pip
+  - python-virtualenv
   - ruby
   - tig
   - tmux

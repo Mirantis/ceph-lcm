@@ -1,0 +1,22 @@
+---
+# Install PyEnv plugins
+
+- name: Install PyEnv plugins
+  git: repo="{{ item.repo }}"
+       dest="{{ pyenv_root }}/plugins/{{ item.name }}"
+       depth=1
+       clone=yes
+  with_items: "{{ pyenv_plugins }}"
+
+- name: Ensure that PyEnv Virtualenv is initialized
+  lineinfile: dest=.bashrc
+              line='eval "$(pyenv virtualenv-init -)"'
+              state=present
+
+- name: Ensure that PyEnv Virtualenv warning is off
+  lineinfile: dest=.bashrc
+              line='export PYENV_VIRTUALENV_DISABLE_PROMPT=1'
+              state=present
+
+- name: Install pyenv default packages
+  copy: src=default-packages dest="{{ pyenv_root }}/default-packages"

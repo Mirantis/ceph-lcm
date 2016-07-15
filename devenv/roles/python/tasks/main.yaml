@@ -1,0 +1,8 @@
+---
+# Install Python dependencies
+
+
+- include: base.yaml
+- include: pyenv.yaml
+- include: pyenv_plugins.yaml
+- include: pythons.yaml

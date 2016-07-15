@@ -1,0 +1,45 @@
+---
+# Python variables
+
+
+build_requirements:
+  - build-essential
+  - curl
+  - git
+  - libbz2-dev
+  - libncurses5-dev
+  - libncursesw5-dev
+  - libreadline-dev
+  - libsqlite3-dev
+  - libssl-dev
+  - llvm
+  - wget
+  - xz-utils
+  - zlib1g-dev
+  - ccache
+
+pyenv_root: .pyenv
+
+pyenv_pythons:
+  - "2.7.12"
+  - "2.6.9"
+  - "3.3.6"
+  - "3.4.5"
+  - "3.5.2"
+  - "pypy-5.3.1"
+
+vsm_python: "2.7.12"
+
+pyenv_plugins:
+  - name: pyenv-virtualenv
+    repo: https://github.com/yyuu/pyenv-virtualenv.git
+  - name: pyenv-update
+    repo: https://github.com/yyuu/pyenv-update.git
+  - name: pyenv-doctor
+    repo: https://github.com/yyuu/pyenv-doctor.git
+  - name: pyenv-ccache
+    repo: https://github.com/yyuu/pyenv-ccache.git
+  - name: pyenv-which-ext
+    repo: https://github.com/yyuu/pyenv-which-ext.git
+  - name: pyenv-default-packages
+    repo: https://github.com/jawshooah/pyenv-default-packages.git

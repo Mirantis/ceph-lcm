@@ -5,6 +5,7 @@
   hosts: all
   roles:
     - base
+    - python
 
 - name: Install MongoDB
   hosts: all
