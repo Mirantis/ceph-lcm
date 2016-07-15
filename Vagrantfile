@@ -22,7 +22,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.cache.enable :bower
     config.cache.enable :npm
     config.cache.enable :generic, {
-      "pip" => { :cache_dir => "cache/.pip" },
+      "pip" => { :cache_dir => ".cache/pip" },
       "ccache" => { :cache_dir => ".ccache"  }
     }
 
