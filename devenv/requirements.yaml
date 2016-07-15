@@ -1,0 +1,5 @@
+---
+# A list of ansible-galaxy roles to install
+
+
+- src: greendayonfire.mongodb

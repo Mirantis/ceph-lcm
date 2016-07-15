@@ -3,7 +3,6 @@
 
 
 VAGRANTFILE_API_VERSION = "2"
-CWD = File.dirname(__FILE__)
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -37,6 +36,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     vb.gui    = false
     vb.memory = 3092
     vb.cpus   = 2
+  end
+
+  if Vagrant.has_plugin?("vagrant-host-shell")
+    config.vm.provision :host_shell do |host_shell|
+      host_shell.inline = "ansible-galaxy install -r devenv/requirements.yaml -p devenv/galaxy"
+    end
+  else
+    abort "You have to install vagrant-host-shell plugin to continue"
   end
 
   config.vm.provision "ansible" do |ansible|

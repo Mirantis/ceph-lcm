@@ -5,4 +5,22 @@
   hosts: all
   roles:
     - base
-    # - mongodb
+
+- name: Install MongoDB
+  hosts: all
+  vars:
+    mongodb_daemon_name: mongodb
+    mongodb_net_bindip: 127.0.0.1
+    mongodb_net_port: 27017
+    mongodb_pymongo_from_pip: false
+    mongodb_root_admin_name: vsm
+    mongodb_root_admin_password: vsm
+    mongodb_security_authorization: enabled
+    mongodb_storage_journal_enabled: false
+    mongodb_storage_smallfiles: true
+    mongodb_user_admin_name: vsm
+    mongodb_user_admin_password: vsm
+    mongodb_version: "3.2.8"
+  become: true
+  roles:
+    - role: greendayonfire.mongodb
