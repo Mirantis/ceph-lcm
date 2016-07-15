@@ -1,0 +1,9 @@
+---
+# Tasks for HTOP
+
+
+- name: Ensure HTOP has config directory
+  file: path=/home/{{ ansible_ssh_user }}/.config/htop state=directory
+
+- name: Ensure HTOP has its RC
+  copy: src=htoprc dest=.config/htop/htoprc

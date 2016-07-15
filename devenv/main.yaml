@@ -1,0 +1,8 @@
+---
+# Provision for VSM project development environment
+
+- name: Setup development environment
+  hosts: all
+  roles:
+    - base
+    # - mongodb

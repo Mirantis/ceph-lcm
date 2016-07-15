@@ -1,0 +1,20 @@
+---
+# Verify that all ssh-related things are happened
+
+
+- name: Ensure we have clean known_hosts
+  file: path=.ssh/known_hosts state=absent
+
+- name: Add known hosts
+  shell: ssh-keyscan -T 10 -H {{ item }} >> .ssh/known_hosts
+  with_items: "{{ ssh_known_hosts }}"
+
+- name: Copy local keypair to Vagrant box
+  copy: src=~/.ssh/{{ item }}
+        dest=.ssh/{{ item }}
+        owner={{ ansible_ssh_user }}
+        group={{ ansible_ssh_user }}
+        mode=0400
+  with_items:
+    - id_rsa
+    - id_rsa.pub

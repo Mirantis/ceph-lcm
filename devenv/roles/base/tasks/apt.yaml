@@ -1,0 +1,29 @@
+---
+# APT tasks for crocbilling development environment.
+
+
+- name: Ensure sources.list is correct
+  become: true
+  copy: src=apt.sources.list dest=/etc/apt/sources.list
+
+- name: Install aptitude
+  become: true
+  command: apt-get install -yqq aptitude warn=no
+
+- name: Update host packages to the latest versions
+  become: true
+  apt: update_cache=yes upgrade=safe
+
+- name: Ensure mandatory APT packages are installed
+  become: true
+  apt: name="{{ item }}" state=latest
+  with_items: "{{ apt_packages }}"
+
+- name: Remove unwanted provisioners
+  become: true
+  apt: name="{{ item }}" state=absent purge=yes
+  with_items: "{{ unwanted_apt_packages }}"
+
+- name: Remove crap
+  become: true
+  command: apt-get autoremove -y

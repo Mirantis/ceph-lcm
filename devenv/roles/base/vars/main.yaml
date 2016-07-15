@@ -1,0 +1,43 @@
+---
+# Base variables
+
+
+apt_packages:
+  - build-essential
+  - curl
+  - emacs24-nox
+  - g++
+  - gcc
+  - git
+  - htop
+  - iftop
+  - iotop
+  - language-pack-ru
+  - pkg-config
+  - python3-flake8
+  - python3-hacking
+  - python3-pep8
+  - python3-pep8-naming
+  - python3-pip
+  - python-autopep8
+  - python-dev
+  - python-flake8
+  - python-hacking
+  - python-pep8
+  - python-pep8-naming
+  - python-pip
+  - ruby
+  - tig
+  - tmux
+  - vim
+  - wget
+  - zsh
+
+unwanted_apt_packages:
+  - puppet
+  - puppet-common
+  - chef
+  - chef-zero
+
+ssh_known_hosts:
+  - github.com

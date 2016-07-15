@@ -1,0 +1,26 @@
+---
+# Install Python dependencies
+
+
+- name: Ensure PIP config directory is created
+  become: true
+  file: path=.config/pip state=directory owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }}
+
+- name: Ensure pip.conf is up to date
+  copy: src=pip.conf dest=.config/pip/pip.conf
+
+- name: Ensure PIP2 is up to date
+  command: pip2 install --user -U pip
+
+- name: Ensure setuptools for Python 2 is up to date
+  command: pip2 install --user -U setuptools
+
+- name: Ensure PIP3 is up to date
+  command: pip3 install --user -U pip
+
+- name: Ensure setuptools for Python 3 is up to date
+  command: pip3 install --user -U setuptools
+
+- name: Install tox
+  become: true
+  command: pip3 install -U tox

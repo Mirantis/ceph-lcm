@@ -1,0 +1,20 @@
+---
+# Base tasks for VSM development provision
+
+- name: Ensure PATH is correct
+  lineinfile: dest=.bashrc
+              regexp="^export PATH"
+              line="export PATH=$HOME/.local/bin:$PATH"
+              state=present
+
+- name: Ensure EDITOR is set
+  lineinfile: dest=.bashrc
+              regexp="^export EDITOR"
+              line="export EDITOR=vim"
+              state=present
+
+- include: apt.yaml
+- include: htop.yaml
+- include: ssh.yaml
+- include: python.yaml
+- include: neovim.yaml
