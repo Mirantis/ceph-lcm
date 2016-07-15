@@ -14,12 +14,13 @@ apt_packages:
   - iotop
   - ipython
   - ipython3
-  - python3-ipdb
-  - python-ipdb
   - language-pack-ru
+  - libxml2-dev
+  - libxslt-dev
   - pkg-config
   - python3-flake8
   - python3-hacking
+  - python3-ipdb
   - python3-pep8
   - python3-pep8-naming
   - python3-pip
@@ -28,6 +29,7 @@ apt_packages:
   - python-dev
   - python-flake8
   - python-hacking
+  - python-ipdb
   - python-pep8
   - python-pep8-naming
   - python-pip
@@ -35,6 +37,7 @@ apt_packages:
   - ruby
   - tig
   - tmux
+  - tmuxinator
   - vim
   - wget
   - zsh
