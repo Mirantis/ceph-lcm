@@ -13,6 +13,25 @@
               line="export EDITOR=vim"
               state=present
 
+- name: Ensure proper prompt is set
+  blockinfile:
+    dest: .bashrc
+    block: |
+      RED="\[\033[0;31m\]"
+      YELLOW="\[\033[0;33m\]"
+      GREEN="\[\033[0;32m\]"
+      BLUE="\[\033[1;34m\]"
+      NO_COLOUR="\[\033[0m\]"
+      CYAN="\[\033[0;36m\]"
+      PURPLE="\[\033[0;35m\]"
+
+      prompt_cmd () {
+          PS1="$YELLOW\w$NO_COLOUR (git:$BLUE$(git branch 2>/dev/null | grep '^*' | colrm 1 2)$NO_COLOUR) (venv:$GREEN$(pyenv version-name)$NO_COLOUR): "
+      }
+
+      PROMPT_COMMAND=prompt_cmd
+
+
 - include: apt.yaml
 - include: htop.yaml
 - include: ssh.yaml
