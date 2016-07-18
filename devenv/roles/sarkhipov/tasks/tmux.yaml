@@ -1,0 +1,15 @@
+---
+# tmux related stuff
+
+
+- name: Add tmux plugin manager
+  git: repo=https://github.com/tmux-plugins/tpm
+       dest=.tmux/plugins/tpm
+       clone=yes
+       depth=1
+
+- name: Ensure tmuxinator has config directory
+  file: path=/home/{{ ansible_ssh_user }}/.tmuxinator state=directory
+
+- name: Add tmuxinator config
+  copy: src=tmuxinator.vsm.yaml dest=.tmuxinator/vsm.yml

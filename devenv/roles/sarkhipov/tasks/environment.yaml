@@ -1,0 +1,18 @@
+---
+# Different settings for environment
+
+
+- name: Setup aliases
+  lineinfile: dest=.bashrc
+              line="alias {{ item.name }}='{{ item.value }}'"
+              state=present
+  with_items: "{{ aliases }}"
+
+- name: Set local timezone
+  become: true
+  command: timedatectl set-timezone Europe/Moscow
+
+- name: Activate tmux with tmuxinator by default
+  lineinfile: dest=.bashrc
+              line="tmux a || mux start vsm"
+              state=present

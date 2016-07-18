@@ -1,0 +1,33 @@
+---
+# Vars for sarkhipov's setup
+
+stow_dotfiles:
+  - ag
+  - aria2
+  - ctags
+  - git
+  - nodejs
+  - python
+  - scripts
+  - tmux
+  - vim
+
+aliases:
+  - name: g
+    value: git
+  - name: v
+    value: nvim
+  - name: vim
+    value: nvim
+  - name: mkdir
+    value: mkdir -pv
+  - name: gst
+    value: g s
+  - name: gdf
+    value: g df
+  - name: t
+    value: tig
+  - name: ta
+    value: tig --all
+  - name: ag
+    value: ag --color -fS

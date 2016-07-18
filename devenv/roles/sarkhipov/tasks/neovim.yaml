@@ -1,0 +1,47 @@
+---
+# Neovim related tasks
+
+- name: Add Neovim repository
+  become: true
+  apt_repository: repo="ppa:neovim-ppa/unstable"
+
+- name: Install Neovim
+  become: true
+  apt: name=neovim state=latest update_cache=true
+
+- name: Install Python client for Neovim
+  become: true
+  command: "{{ item }} install -U neovim"
+  with_items:
+    - pip2
+    - pip3
+
+- name: Ensure .vim directory is created
+  file: path={{ item }}
+        state=directory
+        owner={{ ansible_ssh_user }}
+        group={{ ansible_ssh_user }}
+  with_items:
+    - .vim
+    - .vim/autoload
+
+- name: Ensure Neovim directory is symlinked
+  file: src={{ ansible_env.HOME }}/.vim
+        dest=.config/nvim
+        owner={{ ansible_ssh_user }}
+        group={{ ansible_ssh_user }}
+        state=link
+
+- name: Ensure vimrc is symlinked
+  file: src={{ ansible_env.HOME }}/.vimrc
+        dest=.config/nvim/init.vim
+        owner={{ ansible_ssh_user }}
+        group={{ ansible_ssh_user }}
+        state=link
+
+- name: Download vim-plug
+  get_url: url=https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+           dest=.vim/autoload/plug.vim
+
+- name: Install vim plugins
+  shell: "nvim --headless -c 'PlugUpdate | qall!'"

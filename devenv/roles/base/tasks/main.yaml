@@ -16,6 +16,7 @@
 - name: Ensure proper prompt is set
   blockinfile:
     dest: .bashrc
+    marker: "# {mark} ANSIBLE MANAGED PROMPT BLOCK"
     block: |
       RED="\[\033[0;31m\]"
       YELLOW="\[\033[0;33m\]"
@@ -35,4 +36,3 @@
 - include: apt.yaml
 - include: htop.yaml
 - include: ssh.yaml
-- include: neovim.yaml

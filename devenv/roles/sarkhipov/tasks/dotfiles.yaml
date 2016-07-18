@@ -1,0 +1,17 @@
+---
+# Dotfiles setup for Sergey Arkhipov
+
+
+- name: Install GNU Stow
+  become: true
+  apt: name=stow state=latest
+
+- name: Download dotfiles
+  git: repo=https://github.com/9seconds/dotfiles.git
+       dest=.dotfiles
+       clone=yes
+       depth=1
+
+- name: Stow dotfiles
+  command: bash -ic "stow -t ~ -R {{ item }}" chdir=.dotfiles
+  with_items: "{{ stow_dotfiles }}"

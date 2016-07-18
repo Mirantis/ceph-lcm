@@ -1,0 +1,8 @@
+name: vsm
+root: /vagrant
+pre_window: pyenv activate vsm
+
+windows:
+  - htop: htop
+  - vim: nvim
+  - shell: clear

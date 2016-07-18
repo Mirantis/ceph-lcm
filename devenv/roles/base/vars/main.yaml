@@ -3,6 +3,8 @@
 
 
 apt_packages:
+  - ack-grep
+  - aria2
   - build-essential
   - curl
   - emacs24-nox
@@ -10,6 +12,7 @@ apt_packages:
   - gcc
   - git
   - htop
+  - httpie
   - iftop
   - iotop
   - ipython
@@ -17,6 +20,9 @@ apt_packages:
   - language-pack-ru
   - libxml2-dev
   - libxslt-dev
+  - nodejs
+  - nodejs-legacy
+  - npm
   - pkg-config
   - python3-flake8
   - python3-hacking
@@ -35,6 +41,7 @@ apt_packages:
   - python-pip
   - python-virtualenv
   - ruby
+  - silversearcher-ag
   - tig
   - tmux
   - tmuxinator

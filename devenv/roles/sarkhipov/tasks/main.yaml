@@ -1,0 +1,8 @@
+---
+# Specific development environment for Sergey Arkhipov
+# sarkhipov@mirantis.com
+
+- include: dotfiles.yaml
+- include: neovim.yaml
+- include: tmux.yaml
+- include: environment.yaml
