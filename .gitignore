@@ -64,3 +64,4 @@ target/
 tags
 .vagrant
 devenv/galaxy
+devenv/main.retry

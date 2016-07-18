@@ -14,5 +14,5 @@
 
 - name: Activate tmux with tmuxinator by default
   lineinfile: dest=.bashrc
-              line="tmux a || mux start vsm"
+              line='if [ -z "$TMUX" ]; then tmux a || mux start vsm; fi'
               state=present

@@ -1,0 +1,10 @@
+---
+# Vars for mongodb
+
+
+mongodb_components:
+  - mongodb-org
+  - mongodb-org-server
+  - mongodb-org-tools
+  - mongodb-org-shell
+  - mongodb-org-mongos

@@ -6,9 +6,10 @@ VAGRANTFILE_API_VERSION = "2"
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box            = "ubuntu/xenial64"
-  config.vm.hostname       = "vsm"
-  config.ssh.forward_agent = true
+  config.vm.box              = "ubuntu/xenial64"
+  config.vm.hostname         = "vsm"
+  config.vm.box_check_update = false
+  config.ssh.forward_agent   = true
 
   config.vm.network "private_network", ip: "10.0.0.200"
 

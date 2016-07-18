@@ -1,0 +1,40 @@
+---
+# Playbook for mongodb installation
+
+
+- name: Add APT key
+  become: true
+  apt_key: keyserver=keyserver.ubuntu.com id="{{ repo_key }}"
+
+- name: Add repository
+  become: true
+  apt_repository: repo="deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse"
+                  state=present
+
+- name: Install mongodb
+  become: true
+  apt: name="{{ item }}={{ mongodb_version }}" update_cache=yes
+  with_items: "{{ mongodb_components }}"
+
+- name: Pin mongodb versions
+  become: true
+  command: apt-mark hold "{{ item }}"
+  with_items: "{{ mongodb_components }}"
+
+- name: Install SystemD script
+  become: true
+  copy: src=mongodb.service dest=/etc/systemd/system/mongodb.service
+  register: script_result
+
+- name: Install mongodb config
+  become: true
+  copy: src=mongod.conf dest=/etc/mongod.conf
+
+- name: Enable mongodb service
+  become: true
+  command: systemctl enable mongodb.service
+  when: script_result.changed
+
+- name: Restart mongodb service
+  become: true
+  command: systemctl restart mongodb.service
