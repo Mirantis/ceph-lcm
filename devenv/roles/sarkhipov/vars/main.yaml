@@ -31,3 +31,11 @@ aliases:
     value: tig --all
   - name: ag
     value: ag --color -fS
+
+env_vars:
+  - name: NVIM_TUI_ENABLE_TRUE_COLOR
+    value: 1
+  - name: NVIM_TUI_ENABLE_CURSOR_SHAPE
+    value: 1
+  - name: EDITOR
+    value: nvim

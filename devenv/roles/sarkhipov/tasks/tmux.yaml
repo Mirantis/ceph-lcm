@@ -2,6 +2,14 @@
 # tmux related stuff
 
 
+- name: Download tmux with truecolor support
+  get_url: url=http://ftp.ru.debian.org/debian/pool/main/t/tmux/tmux_2.2-3_amd64.deb
+           dest=/tmp/tmux.deb
+
+- name: Install tmux with truecolor support
+  become: true
+  apt: deb=/tmp/tmux.deb
+
 - name: Add tmux plugin manager
   git: repo=https://github.com/tmux-plugins/tpm
        dest=.tmux/plugins/tpm

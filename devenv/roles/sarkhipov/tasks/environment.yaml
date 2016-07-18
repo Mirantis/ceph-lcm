@@ -2,6 +2,11 @@
 # Different settings for environment
 
 
+- name: Set environment variables
+  lineinfile: dest=.bashrc
+              line="export {{ item.name }}={{ item.value }}"
+  with_items: "{{ env_vars }}"
+
 - name: Setup aliases
   lineinfile: dest=.bashrc
               line="alias {{ item.name }}='{{ item.value }}'"
@@ -11,6 +16,17 @@
 - name: Set local timezone
   become: true
   command: timedatectl set-timezone Europe/Moscow
+
+- name: Clone gruvbox repository
+  git: repo=https://github.com/morhetz/gruvbox.git
+       dest=.gruvbox
+       clone=yes
+       depth=1
+
+- name: Source gruvbox colors
+  lineinfile: dest=.bashrc
+              line='source "$HOME/.gruvbox/gruvbox_256palette.sh"'
+              state=present
 
 - name: Activate tmux with tmuxinator by default
   lineinfile: dest=.bashrc
