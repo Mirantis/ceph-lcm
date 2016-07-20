@@ -4,8 +4,6 @@
 
 import uuid
 
-import pytest
-
 from cephlcm.common.models import token
 
 
