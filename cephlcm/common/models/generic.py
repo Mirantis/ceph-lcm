@@ -70,6 +70,12 @@ class CachedProperty(object):
     """Model descriptor for properties which should be lazy calculated."""
 
     SENTINEL = object()
+    # The result stored in cached property might be any type
+    # and it is not possible to make any suggestions on that.
+    # It might be None, even Elipsis.
+    #
+    # But it is always possible to check identity of arbitrary
+    # object, preliminary created.
 
     def __init__(self, function):
         self.cached = self.SENTINEL
