@@ -1,6 +1,11 @@
 ---
 # Neovim related tasks
 
+
+- name: Install par for Neovim
+  become: true
+  apt: name=par state=latest
+
 - name: Add Neovim repository
   become: true
   apt_repository: repo="ppa:neovim-ppa/unstable"
