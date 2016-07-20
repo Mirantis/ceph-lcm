@@ -57,10 +57,7 @@ class UserModel(generic.Model):
         Returns latest version, not deleted.
         """
 
-        query = {"login": login}
-        query = cls.query_latest(query)
-        query = cls.query_not_deleted(query)
-
+        query = {"login": login, "is_latest": True, "time_deleted": {"$ne": 0}}
         document = cls.collection().find_one(query)
         if not document:
             return None

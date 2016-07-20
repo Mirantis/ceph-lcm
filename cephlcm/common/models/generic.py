@@ -126,44 +126,13 @@ class Model(object):
         return cls.database()[cls.COLLECTION_NAME]
 
     @classmethod
-    def query_latest(cls, query):
-        """This method updates query to fetch only latest version of model."""
-
-        # TODO(Sergey Arkhipov): It looks like I need to create a Query class
-
-        query["is_latest"] = True
-        return query
-
-    @classmethod
-    def query_deleted(cls, query):
-        """This method updates query to fetch only deleted models."""
-
-        query["time_deleted"] = {"$ne": 0}
-        return query
-
-    @classmethod
-    def query_not_deleted(cls, query):
-        """This method updates query to fetch only not deleted models."""
-
-        query["time_deleted"] = 0
-        return query
-
-    @classmethod
-    def query_with_version(cls, query, version):
-        """This method updates query to fetch specific version of document."""
-
-        query["version"] = version
-        return query
-
-    @classmethod
     def find_by_model_id(cls, item_id):
         """Returns a latest not deleted model version for the model."""
 
         if not item_id:
             return None
 
-        query = {"model_id": item_id}
-        query = cls.query_latest(query)
+        query = {"model_id": item_id, "is_latest": True}
         document = cls.collection().find_one(query)
         if not document:
             return None
