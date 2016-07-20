@@ -10,10 +10,10 @@ import six
 
 from werkzeug import exceptions
 
-from cephlcm.common import exceptions as common_exceptions
+from cephlcm.common import exceptions as app_exceptions
 
 
-class CephLCMJSONMixin(common_exceptions.CephLCMError):
+class CephLCMJSONMixin(app_exceptions.CephLCMError, exceptions.HTTPException):
     """Basic JSON mixin for the werkzeug exceptions.
 
     Basic werkzeug exceptions return an HTML. This mixin

@@ -25,7 +25,7 @@ app = application  # required to run with flask run ...
 
 config.configure(application)
 handlers.register_handlers(application)
-views.register_endpoints(application)
+views.register_api(application)
 generic_model.configure_models(
     flask_pymongo.PyMongo(application),
     application.config

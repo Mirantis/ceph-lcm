@@ -12,14 +12,10 @@ require to have view as plugins.
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from cephlcm.api.views import generic
-from cephlcm.api.views import token  # NOQA
+from cephlcm.api.views import v1
 
 
-def register_endpoints(application):
-    """This function register Flask View endpoints to the Flask application."""
+def register_api(application):
+    """Register API endpoints to the application."""
 
-    for view in generic.View.endpoint_views():
-        application.logger.debug("Register view %s", view.NAME)
-        application.add_url_rule(
-            view.ENDPOINT, view_func=view.as_view(view.NAME.encode("utf-8")))
+    application.register_blueprint(v1.BLUEPRINT, url_prefix="/v1")

@@ -36,7 +36,7 @@ def error_to_json(error):
         return error.get_response()
 
     if isinstance(error, werkzeug.exceptions.HTTPException):
-        json_error = exceptions.CephLCMJSONMixin
+        json_error = exceptions.CephLCMJSONMixin()
 
         json_error.code = error.code
         json_error.description = error.description
