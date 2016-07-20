@@ -11,10 +11,10 @@ import bcrypt
 def hash_password(password):
     """This function creates secure password hash from the given password."""
 
-    return bcrypt.hashpw(password, bcrypt.gensalt())
+    return bcrypt.hashpw(bytes(password), bcrypt.gensalt())
 
 
 def compare_passwords(password, suspected_hash):
     """This function checks if password matches known hash."""
 
-    return bcrypt.checkpw(password, suspected_hash)
+    return bcrypt.checkpw(bytes(password), bytes(suspected_hash))
