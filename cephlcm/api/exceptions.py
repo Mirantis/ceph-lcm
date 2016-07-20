@@ -26,13 +26,18 @@ class CephLCMJSONMixin(common_exceptions.CephLCMError):
         }
     """
 
+    error_name = None
+
     def get_description(self, environ=None):
         return self.description
 
     def get_body(self, environ=None):
+        error = self.error_name or self.__class__.__name__
+        error = six.text_type(error)
+
         error_message = {
             "code": self.code,
-            "error": six.text_type(self.__class__.__name__),
+            "error": error,
             "message": self.get_description(environ)
         }
         json_error = flask.json.dumps(error_message)

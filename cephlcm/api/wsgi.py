@@ -15,6 +15,7 @@ import flask
 import flask_pymongo
 
 from cephlcm.api import config
+from cephlcm.api import handlers
 from cephlcm.api import views
 from cephlcm.common.models import generic as generic_model
 
@@ -23,6 +24,7 @@ application = flask.Flask(__name__)
 app = application  # required to run with flask run ...
 
 config.configure(application)
+handlers.register_handlers(application)
 views.register_endpoints(application)
 generic_model.configure_models(
     flask_pymongo.PyMongo(application),
