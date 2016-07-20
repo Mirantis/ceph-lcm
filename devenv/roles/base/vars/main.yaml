@@ -8,6 +8,7 @@ apt_packages:
   - build-essential
   - curl
   - emacs24-nox
+  - exuberant-ctags
   - flake8
   - g++
   - gcc
