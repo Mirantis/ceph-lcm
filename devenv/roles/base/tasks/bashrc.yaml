@@ -26,13 +26,19 @@
 
       PROMPT_COMMAND=prompt_cmd
 
+- name: Copy terminfo for tmux to support italic
+  copy: src=tmux-256color-italic dest=/tmp/tmux-italic
+
+- name: Add italic terminfo for tmux
+  shell: tic /tmp/tmux-italic
+
 - name: Ensure proper tmux term is set
   blockinfile:
     dest: .bashrc
     marker: "# {mark} ANSIBLE MANAGED TMUX BLOCK"
     block: |
       if [ -n "$TMUX" ]; then
-          export TERM=screen-256color
+          export TERM=tmux-256color-italic
       else
           export TERM=xterm-256color
       fi
