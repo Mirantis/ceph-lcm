@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+"""This module contains a view for /auth API."""
 
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import flask
 
@@ -18,37 +22,31 @@ POST_SCHEMA = {
     "additionalProperties": False,
     "required": ["username", "password"]
 }
+"""JSON schema of the POST request to /auth."""
 
 
-class TokenView(generic.ModelView):
+class AuthView(generic.ModelView):
+    """Implementation of view for /auth."""
 
-    NAME = "token"
+    NAME = "auth"
+    MODEL_NAME = "token"
     ENDPOINT = "/auth/"
-
-    def make_token_data(self, token_model):
-        return {
-            "id": str(token_model._id),
-            "user": token_model.user_id,
-            "expires_at": token_model.expires_at,
-            "time_updated": token_model.time_created,
-            "version": token_model.version
-        }
 
     @validators.require_schema(POST_SCHEMA)
     def post(self):
-        name = self.request_json["username"]
+        username = self.request_json["username"]
         password = self.request_json["password"]
 
-        self.log("info", "Attempt to login user %s", name)
+        self.log("info", "Attempt to login user %s", username)
 
-        token_model = auth.authenticate(name, password)
+        token_model = auth.authenticate(username, password)
         if not token_model:
             raise exceptions.Unauthorized
 
         self.log("info", "User %s (id:%s) has logged in",
-                 name, token_model.user_id)
+                 username, token_model.user_id)
 
-        return token_model.make_api_structure()
+        return token_model
 
     @auth.require_authentication
     def delete(self):
