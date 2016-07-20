@@ -1,3 +1,4 @@
 # Requirements for vsm.common package
 
 PyMongo
+six
