@@ -72,6 +72,7 @@ class TokenModel(generic.Model):
 
         model = cls()
         model.user_id = user_id
+        model.initiator_id = user_id
         model.save()
 
         return model
@@ -94,6 +95,7 @@ class TokenModel(generic.Model):
         structure = self.make_db_document_structure()
         structure["model_id"] = structure["_id"]
         structure["user_id"] = self.user_id
+        structure["initiator_id"] = self.initiator_id
         structure["expires_at"] = expires_at
 
         return super(TokenModel, self).save(structure)
