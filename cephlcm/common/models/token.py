@@ -86,19 +86,7 @@ class TokenModel(generic.Model):
     def get_user(self):
         """Returns a user model for the token."""
 
-        return user.UserModel.find_by_id(self.user_id)
-
-    user = generic.CachedProperty(get_user)
-
-    def save(self):
-        expires_at = timeutils.current_unix_timestamp() + self.default_ttl
-        structure = self.make_db_document_structure()
-        structure["model_id"] = structure["_id"]
-        structure["user_id"] = self.user_id
-        structure["initiator_id"] = self.initiator_id
-        structure["expires_at"] = expires_at
-
-        return super(TokenModel, self).save(structure)
+        return user.UserModel.find_by_model_id(self.user_id)
 
     def update_from_db_document(self, structure):
         super(TokenModel, self).update_from_db_document(structure)
@@ -107,13 +95,19 @@ class TokenModel(generic.Model):
         self.expires_at = structure["expires_at"]
 
     def make_db_document_specific_fields(self):
+        expires_at = self.expires_at
+        if not expires_at:
+            expires_at = timeutils.current_unix_timestamp() + self.default_ttl
+
         return {
-            "user_id": None,
-            "expires_at": 0
+            "user_id": self.user_id,
+            "expires_at": expires_at,
+            "model_id": self.user_id,
+            "initiator_id": self.initiator_id
         }
 
     def make_api_specific_fields(self):
-        user_model = user.UserModel.find_by_model_id(self.user_id)
+        user_model = self.get_user()
         if user_model:
             user_model = user_model.make_api_structure()
 

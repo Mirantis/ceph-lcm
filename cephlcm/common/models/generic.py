@@ -160,6 +160,7 @@ class Model(object):
 
     def __init__(self):
         self.initiator_id = None
+        self.model_id = None
         self.time_created = 0
         self.time_deleted = 0
         self.version = 0
@@ -176,15 +177,7 @@ class Model(object):
         # required, then remove it.
         from cephlcm.common.models import user
 
-        return user.UserModel.find_by_id(self.initiator_id)
-
-    def get_model_id(self):
-        """This method returns a model ID. Uses UUID4."""
-
-        return str(uuid.uuid4())
-
-    initiator = CachedProperty(get_initiator)
-    model_id = CachedProperty(get_model_id)
+        return user.UserModel.find_by_model_id(self.initiator_id)
 
     def save(self, structure=None):
         """This method dumps model data to the database.
@@ -197,12 +190,16 @@ class Model(object):
         why we do not have `update` method here.
         """
 
+        if self.time_deleted:
+            # TODO(Sergey Arkhipov): Place proper exception here
+            raise Exception
+
         if not structure:
             structure = self.make_db_document_structure()
 
         structure["version"] = self.version + 1
         if structure["model_id"] is None:
-            structure["model_id"] = self.model_id
+            structure["model_id"] = self.model_id or str(uuid.uuid4())
         structure["is_latest"] = True
         structure["time_created"] = timeutils.current_unix_timestamp()
 
@@ -216,6 +213,16 @@ class Model(object):
             },
             {"$set": {"is_latest": False}}
         )
+
+        return result
+
+    def delete(self):
+        """This method marks model as deleted."""
+
+        structure = self.make_db_document_structure()
+        structure["time_deleted"] = timeutils.current_unix_timestamp()
+
+        result = self.save(structure)
 
         return result
 

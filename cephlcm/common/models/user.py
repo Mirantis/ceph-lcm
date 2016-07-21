@@ -36,7 +36,8 @@ class UserModel(generic.Model):
         return []
 
     @classmethod
-    def make_user(cls, login, password, email, full_name, role_ids):
+    def make_user(cls, login, password, email, full_name, role_ids,
+                  initiator_id=None):
         """Creates new user model, storing it into database."""
 
         model = cls()
@@ -46,6 +47,7 @@ class UserModel(generic.Model):
         model.email = email
         model.full_name = full_name
         model.role_ids = role_ids
+        model.initiator_id = initiator_id
         model.save()
 
         return model
@@ -57,7 +59,7 @@ class UserModel(generic.Model):
         Returns latest version, not deleted.
         """
 
-        query = {"login": login, "is_latest": True, "time_deleted": {"$ne": 0}}
+        query = {"login": login, "is_latest": True, "time_deleted": 0}
         document = cls.collection().find_one(query)
         if not document:
             return None
@@ -67,19 +69,10 @@ class UserModel(generic.Model):
 
         return model
 
-    def save(self):
-        structure = self.make_db_document_structure()
-        structure["login"] = self.login
-        structure["password_hash"] = self.password_hash
-        structure["email"] = self.email
-        structure["full_name"] = self.full_name
-        structure["role_ids"] = self.role_ids
-
-        return super(UserModel, self).save(structure)
-
     def update_from_db_document(self, structure):
         super(UserModel, self).update_from_db_document(structure)
 
+        self.initiator_id = structure["initiator_id"]
         self.login = structure["login"]
         self.password_hash = structure["password_hash"]
         self.email = structure["email"]
@@ -88,11 +81,12 @@ class UserModel(generic.Model):
 
     def make_db_document_specific_fields(self):
         return {
-            "login": "",
-            "full_name": "",
-            "password_hash": "",
-            "email": "",
-            "role_ids": []
+            "login": self.login,
+            "full_name": self.full_name,
+            "password_hash": self.password_hash,
+            "email": self.email,
+            "initiator_id": self.initiator_id,
+            "role_ids": self.role_ids
         }
 
     def make_api_specific_fields(self):
