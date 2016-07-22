@@ -1,0 +1,15 @@
+---
+# Base playbook to deploy jenkins host
+
+
+- name: Install Jenkins
+  hosts: cephlcm-ci
+  become: true
+  roles:
+    - role: geerlingguy.jenkins
+
+- name: Install base CI
+  hosts: cephlcm-ci
+  roles:
+    - ci
+    - mongodb
