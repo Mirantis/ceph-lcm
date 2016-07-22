@@ -1,2 +1,4 @@
 ---
 # A list of ansible-galaxy roles to install
+
+- src: geerlingguy.jenkins

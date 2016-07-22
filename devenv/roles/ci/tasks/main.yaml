@@ -1,0 +1,26 @@
+---
+# Base setup for CI
+
+
+- name: Install aptitude for Ansible
+  become: true
+  command: apt-get install -y aptitude
+
+- name: Ensure host OS is up to date
+  become: true
+  apt: update_cache=yes upgrade=safe
+
+- name: Ensure required packages are installed
+  become: true
+  apt: name={{ item }} state=latest
+  with_items: "{{ apt_packages }}"
+
+- name: Ensure that users have SSH keys
+  become: true
+  user: name={{ item }}
+        generate_ssh_key=yes
+        ssh_key_bits=4096
+        ssh_key_file=.ssh/id_rsa
+  with_items:
+    - jenkins
+    - "{{ ansible_user }}"
