@@ -130,6 +130,13 @@ def revoke_tokens(*tokens):
     )
 
 
+def revoke_for_user(user_id):
+    """This function revokes all user's tokens."""
+
+    collection = TokenModel.collection()
+    collection.delete_many({"user_id": user_id})
+
+
 def clean_expired():
     """This function swipe out expired tokens from DB."""
 

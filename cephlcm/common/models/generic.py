@@ -37,6 +37,7 @@ import uuid
 import bson.objectid
 import six
 
+from cephlcm.common import exceptions
 from cephlcm.common import timeutils
 
 
@@ -191,8 +192,7 @@ class Model(object):
         """
 
         if self.time_deleted:
-            # TODO(Sergey Arkhipov): Place proper exception here
-            raise Exception
+            raise exceptions.CannotUpdateDeletedModel()
 
         if not structure:
             structure = self.make_db_document_structure()

@@ -6,6 +6,7 @@ import uuid
 
 import pytest
 
+from cephlcm.common import exceptions
 from cephlcm.common.models import user
 from cephlcm.common import passwords
 
@@ -112,8 +113,7 @@ def test_version_progression(configure_model, freeze_time):
     assert new_user.model_id == model_id
 
     new_user.time_deleted = 100
-    # TODO(Sergey Arkhipov): Put proper exception here
-    with pytest.raises(Exception):
+    with pytest.raises(exceptions.CannotUpdateDeletedModel):
         new_user.save()
     new_user.time_deleted = 0
 

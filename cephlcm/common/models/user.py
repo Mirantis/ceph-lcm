@@ -69,6 +69,13 @@ class UserModel(generic.Model):
 
         return model
 
+    def delete(self):
+        super(UserModel, self).delete()
+
+        from cephlcm.common.models import token
+
+        token.revoke_for_user(self.model_id)
+
     def update_from_db_document(self, structure):
         super(UserModel, self).update_from_db_document(structure)
 
