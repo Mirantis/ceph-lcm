@@ -7,6 +7,7 @@ import uuid
 import pytest
 
 from cephlcm.common import exceptions
+from cephlcm.common.models import token
 from cephlcm.common.models import user
 from cephlcm.common import passwords
 
@@ -187,3 +188,19 @@ def test_check_initiator_set(configure_model):
 
     derivative_user = user.UserModel.find_by_login(derivative_user.login)
     assert derivative_user.get_initiator()._id == initial_user._id
+
+
+def test_all_tokens_for_deleted_user_are_revoked(
+        configure_model, pymongo_connection):
+    new_user = make_user()
+
+    for _ in range(5):
+        token.TokenModel.create(new_user.model_id)
+
+    tokens = pymongo_connection.db.token.find({"user_id": new_user.model_id})
+    assert tokens.count() == 5
+
+    new_user.delete()
+
+    tokens = pymongo_connection.db.token.find({"user_id": new_user.model_id})
+    assert not tokens.count()
