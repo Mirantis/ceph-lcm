@@ -9,11 +9,25 @@ try:
 except ImportError:
     import mock
 
+import flask.json
+import flask.testing
 import pymongo
 import pytest
 
+from cephlcm import api
 from cephlcm.api import config
 from cephlcm.common.models import generic
+
+
+class JsonApiClient(flask.testing.FlaskClient):
+
+    def open(self, *args, **kwargs):
+        data = kwargs.get("data")
+        if data is not None and not kwargs.get("content_type"):
+            kwargs["data"] = flask.json.dumps(data)
+            kwargs["content_type"] = "application/json"
+
+        return super(JsonApiClient, self).open(*args, **kwargs)
 
 
 def have_mocked(request, *mock_args, **mock_kwargs):
@@ -82,3 +96,12 @@ def configure_model(mongo_db_name, pymongo_connection):
 
     generic.Model.CONNECTION = None
     generic.Model.CONNECTION = None
+
+
+@pytest.fixture
+def app(configure_model):
+    application = api.create_application()
+    application.testing = True
+    application.test_client_class = JsonApiClient
+
+    return application
