@@ -8,6 +8,8 @@ apt_packages:
   - build-essential
   - curl
   - emacs24-nox
+  - exuberant-ctags
+  - flake8
   - g++
   - gcc
   - git
@@ -27,6 +29,7 @@ apt_packages:
   - python3-flake8
   - python3-hacking
   - python3-ipdb
+  - python3-jedi
   - python3-pep8
   - python3-pep8-naming
   - python3-pip
@@ -36,6 +39,7 @@ apt_packages:
   - python-flake8
   - python-hacking
   - python-ipdb
+  - python-jedi
   - python-pep8
   - python-pep8-naming
   - python-pip

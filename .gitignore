@@ -62,6 +62,6 @@ target/
 .ipynb_checkpoints
 
 tags
+
 .vagrant
-devenv/galaxy
 devenv/main.retry

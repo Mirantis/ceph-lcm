@@ -23,6 +23,20 @@
        clone=yes
        depth=1
 
+- name: Clone fzf repository
+  git: repo=https://github.com/junegunn/fzf.git
+       dest=.fzf
+       clone=yes
+       depth=1
+
+- name: Add fzf settings file
+  copy: src=fzf.bash dest=.fzf.bash
+
+- name: Source fzf settings
+  lineinfile: dest=.bashrc
+              line="[ -f ~/.fzf.bash ] && source ~/.fzf.bash"
+              state=present
+
 - name: Source gruvbox colors
   lineinfile: dest=.bashrc
               line='source "$HOME/.gruvbox/gruvbox_256palette.sh"'

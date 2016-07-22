@@ -4,5 +4,5 @@
 
 Flask
 Flask-PyMongo
-flask-inputs
 jsonschema
+bcrypt
