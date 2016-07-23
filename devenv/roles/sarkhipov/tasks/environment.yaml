@@ -29,13 +29,8 @@
        clone=yes
        depth=1
 
-- name: Add fzf settings file
-  copy: src=fzf.bash dest={{ ansible_env.HOME }}/.fzf.bash
-
-- name: Source fzf settings
-  lineinfile: dest=.bashrc
-              line="[ -f ~/.fzf.bash ] && source ~/.fzf.bash"
-              state=present
+- name: Install fzf
+  command: bash -ic "{{ ansible_env.HOME }}/.fzf/install --all --64"
 
 - name: Source gruvbox colors
   lineinfile: dest=.bashrc
