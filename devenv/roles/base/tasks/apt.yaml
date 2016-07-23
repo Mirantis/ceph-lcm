@@ -6,6 +6,10 @@
   become: true
   copy: src=apt.sources.list dest=/etc/apt/sources.list
 
+- name: Update packagaes
+  become: true
+  command: apt-get -yqq update warn=no
+
 - name: Install aptitude
   become: true
   command: apt-get install -yqq aptitude warn=no

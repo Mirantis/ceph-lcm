@@ -1,0 +1,11 @@
+---
+# Locale related tasks
+
+
+- name: Ensure default locale is set
+  become: true
+  locale_gen: name={{ default_locale }} state=present
+
+- name: Set default locale
+  become: true
+  template: src=locale.j2 dest=/etc/default/locale

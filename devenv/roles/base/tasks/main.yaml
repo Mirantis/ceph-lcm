@@ -3,6 +3,7 @@
 
 
 - include: apt.yaml
+- include: locale.yaml
 - include: htop.yaml
 - include: ssh.yaml
 - include: bashrc.yaml

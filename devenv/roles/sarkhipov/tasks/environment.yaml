@@ -30,7 +30,7 @@
        depth=1
 
 - name: Add fzf settings file
-  copy: src=fzf.bash dest=.fzf.bash
+  copy: src=fzf.bash dest={{ ansible_env.HOME }}/.fzf.bash
 
 - name: Source fzf settings
   lineinfile: dest=.bashrc

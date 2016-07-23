@@ -4,6 +4,12 @@
 
 - name: Setup development environment
   hosts: all
+  environment:
+    LANG: C
+    LC_ALL: C
+    LC_MESSAGES: C
+    LC_CTYPE: C
+    TMUX: 1
   roles:
     - base
     - python

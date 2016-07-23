@@ -1,0 +1,5 @@
+---
+# Default vars for base role
+
+
+default_locale: en_US.UTF-8
