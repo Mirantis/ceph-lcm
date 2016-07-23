@@ -54,7 +54,7 @@ def freeze_time(request):
     return have_mocked(request, "time.time", return_value=100.5)
 
 
-@pytest.yield_fixture(scope="session")
+@pytest.yield_fixture(scope="module")
 def mongo_db_name():
     """This fixture creates a separate MongoDB database."""
 
@@ -74,7 +74,7 @@ def mongo_db_name():
     config.DefaultConfig.MONGO_DBNAME = old_name
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def pymongo_connection(mongo_db_name):
     client = pymongo.MongoClient(
         host=config.DefaultConfig.MONGO_HOST,
@@ -86,7 +86,7 @@ def pymongo_connection(mongo_db_name):
     return connection
 
 
-@pytest.yield_fixture(scope="session")
+@pytest.yield_fixture(scope="module")
 def configure_model(mongo_db_name, pymongo_connection):
     """This fixture append fake config to the Model."""
 
@@ -98,10 +98,11 @@ def configure_model(mongo_db_name, pymongo_connection):
     generic.Model.CONNECTION = None
 
 
-@pytest.fixture
+@pytest.yield_fixture
 def app(configure_model):
     application = api.create_application()
     application.testing = True
     application.test_client_class = JsonApiClient
 
-    return application
+    with application.app_context():
+        yield application
