@@ -159,6 +159,21 @@ class Model(object):
 
         return model
 
+    @classmethod
+    def find_version(cls, model_id, version):
+        """Returns a specific version of model."""
+
+        query = {"model_id": model_id, "version": version}
+        document = cls.collection().find_one(query)
+
+        if not document:
+            return None
+
+        model = cls()
+        model.update_from_db_document(document)
+
+        return model
+
     def __init__(self):
         self.initiator_id = None
         self.model_id = None

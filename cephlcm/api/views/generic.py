@@ -64,6 +64,14 @@ class View(flask.views.MethodView):
             self.log("error", "Cannot process user request: %s", exc)
             raise exceptions.NotAcceptable
 
+    @classmethod
+    def register_to(cls, application):
+        """Registers view to the application."""
+
+        application.add_url_rule(
+            cls.ENDPOINT, view_func=cls.as_view(cls.NAME.encode("utf-8"))
+        )
+
     def log(self, level, message, *args, **kwargs):
         """This methods prepend each log record with request id."""
 
