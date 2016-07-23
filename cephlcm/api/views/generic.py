@@ -5,6 +5,8 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import posixpath
+
 import flask.json
 import flask.views
 import six
@@ -154,3 +156,122 @@ class ModelView(View):
         }
 
         return response
+
+
+class CRUDView(ModelView):
+    """CRUDView is the most basic and classical REST view.
+
+    It presents URL structure like:
+        GET    /users/
+        GET    /users/3/
+        POST   /users/
+        PUT    /users/3
+        DELETE /users/3
+
+    Also, it gives 2 methods for GET requests: get_all(self) (to get
+    a list of items) and get_item(self, item_id) (to get a single item).
+    """
+
+    PARAMETER_TYPE = "int"
+    """The type of parameter to use."""
+
+    @classmethod
+    def register_to(cls, application):
+        view_func = cls.as_view(cls.NAME.encode("utf-8"))
+        main_endpoint = cls.ENDPOINT
+        item_endpoint = posixpath.join(
+            main_endpoint, "<{0}:item_id>".format(cls.PARAMETER_TYPE)
+        )
+
+        application.add_url_rule(
+            main_endpoint,
+            view_func=view_func, defaults={"item_id": None}, methods=["GET"]
+        )
+        application.add_url_rule(
+            main_endpoint,
+            view_func=view_func, methods=["POST"]
+        )
+        application.add_url_rule(
+            item_endpoint,
+            view_func=view_func, methods=["GET", "POST", "DELETE"]
+        )
+
+    def get(self, item_id):
+        """Just a shorthand to manage both GET variants."""
+
+        if item_id is None:
+            return self.get_all()
+
+        return self.get_item(item_id)
+
+
+class VersionedCRUDView(CRUDView):
+    """Versioned variant of the CRUDView.
+
+    It presents URL structure like:
+        GET    /users/
+        GET    /users/3/
+        GET    /users/3/version/
+        GET    /users/3/version/3/
+        POST   /users/
+        PUT    /users/3
+        DELETE /users/3
+
+    So it allows you to define versioned variants of the models.
+
+    Additional convenience methods are:
+        - get_versions(item_id)
+        - get_version(item_id, version)
+    """
+
+    VERSION_TYPE = "int"
+    """Type of version. I doubt that one ever modifies that."""
+
+    ABSENT_ITEM = object()
+    """Just a marker of absent element. Set if None is not enough."""
+
+    @classmethod
+    def register_to(cls, application):
+        view_func = cls.as_view(cls.NAME.encode("utf-8"))
+        main_endpoint = cls.ENDPOINT
+        item_endpoint = posixpath.join(
+            main_endpoint, "<{0}:item_id>".format(cls.PARAMETER_TYPE)
+        )
+        version_endpoint = posixpath.join(
+            item_endpoint, "<{0}:version>".format(cls.VERSION_TYPE)
+        )
+        default_get = {"item_id": None, "version": cls.ABSENT_ITEM}
+        default_versions = {"version": None}
+
+        application.add_url_rule(
+            main_endpoint,
+            view_func=view_func, defaults=default_get, methods=["GET"]
+        )
+        application.add_url_rule(
+            version_endpoint,
+            view_func=view_func, defaults=default_versions, methods=["GET"]
+        )
+        application.add_url_rule(
+            version_endpoint,
+            view_func=view_func, methods=["GET"]
+        )
+        application.add_url_rule(
+            main_endpoint,
+            view_func=view_func, methods=["POST"]
+        )
+        application.add_url_rule(
+            item_endpoint,
+            view_func=view_func, methods=["GET", "POST", "DELETE"]
+        )
+
+    def get(self, item_id, version):
+        if item_id is None:
+            return self.get_all()
+
+        if version is self.ABSENT_ITEM:
+            return self.get_item(item_id)
+
+        if version is None:
+            return self.get_versions(item_id)
+
+        return self.get_version(item_id, version)
