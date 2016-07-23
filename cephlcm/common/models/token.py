@@ -48,9 +48,8 @@ class TokenModel(generic.Model):
         Returns None if nothing is found.
         """
 
-        token_id = bson.objectid.ObjectId(token_id)
         query = {
-            "_id": token_id,
+            "model_id": token_id,
             "expires_at": {"$gte": timeutils.current_unix_timestamp()}
         }
 
@@ -102,7 +101,7 @@ class TokenModel(generic.Model):
         return {
             "user_id": self.user_id,
             "expires_at": expires_at,
-            "model_id": self.user_id,
+            "model_id": self.model_id,
             "initiator_id": self.initiator_id
         }
 

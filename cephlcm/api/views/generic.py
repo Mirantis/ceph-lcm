@@ -126,6 +126,8 @@ class ModelView(View):
             return self.prepare_pagination_response(response)
         elif isinstance(response, dict):
             return self.prepare_dict_response(response)
+        elif response is None:
+            return {}
 
         return response
 

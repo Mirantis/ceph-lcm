@@ -21,13 +21,49 @@ from cephlcm.common.models import generic
 
 class JsonApiClient(flask.testing.FlaskClient):
 
+    AUTH_URL = None
+    LOGIN = None
+    PASSWORD = None
+
+    def __init__(self, *args, **kwargs):
+        super(JsonApiClient, self).__init__(*args, **kwargs)
+        self.auth_token = None
+
+    def login(self, login=None, password=None):
+        login = login or self.LOGIN
+        password = password or self.PASSWORD
+        response = self.post(
+            self.AUTH_URL, data={"username": login, "password": password})
+
+        if 200 <= response.status_code < 299:
+            self.auth_token = response.json["id"]
+
+        return response
+
+    def logout(self, login=None, password=None):
+        response = self.delete(self.AUTH_URL)
+
+        if 200 <= response.status_code < 299:
+            self.auth_token = None
+
+        return response
+
     def open(self, *args, **kwargs):
         data = kwargs.get("data")
         if data is not None and not kwargs.get("content_type"):
             kwargs["data"] = flask.json.dumps(data)
             kwargs["content_type"] = "application/json"
 
+        if self.auth_token:
+            self.install_token(kwargs)
+
         return super(JsonApiClient, self).open(*args, **kwargs)
+
+    def install_token(self, kwargs):
+        headers = dict(kwargs.pop("headers", []))
+        headers["Authorization"] = self.auth_token
+
+        kwargs["headers"] = sorted(headers.items())
 
 
 def have_mocked(request, *mock_args, **mock_kwargs):
@@ -106,3 +142,10 @@ def app(configure_model):
 
     with application.app_context():
         yield application
+
+
+@pytest.fixture
+def client_v1(client):
+    client.AUTH_URL = "/v1/auth/"
+
+    return client
