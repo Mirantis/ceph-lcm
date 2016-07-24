@@ -35,10 +35,12 @@ import copy
 import uuid
 
 import bson.objectid
+import pymongo
 import six
 
 from cephlcm.common import exceptions
 from cephlcm.common import timeutils
+from cephlcm.common import wrappers
 
 
 MODEL_DB_STRUCTURE = {
@@ -65,6 +67,9 @@ MODEL_API_STRUCTURE = {
 
 Basically, it is JSON boilerplate.
 """
+
+SORT_ASC = pymongo.ASCENDING
+SORT_DESC = pymongo.DESCENDING
 
 
 class CachedProperty(object):
@@ -158,6 +163,41 @@ class Model(object):
         model.update_from_db_document(document)
 
         return model
+
+    @classmethod
+    def list_raw(cls, query, filter_fields=None, sort_by=None):
+        assert query
+
+        cursor = cls.collection().find(query, filter_fields)
+        if sort_by is not None:
+            cursor = cursor.sort(sort_by)
+
+        return cursor
+
+    @classmethod
+    def list_paginated(cls, query, pagination,
+                       filter_fields=None, sort_by=None):
+        cursor = cls.list_raw(query, filter_fields, sort_by)
+        total = cursor.count()
+
+        page_items_before = pagination["per_page"] * (pagination["page"] - 1)
+        if page_items_before:
+            cursor = cursor.skip(page_items_before)
+        cursor = cursor.limit(pagination["per_page"])
+
+        paginated_result = wrappers.PaginationResult(
+            cls, cursor, pagination, total
+        )
+
+        return paginated_result
+
+    @classmethod
+    def list_versions(cls, item_id, pagination):
+        query = {"model_id": item_id}
+        sort_by = [("version", SORT_DESC)]
+        result = cls.list_paginated(query, pagination, sort_by=sort_by)
+
+        return result
 
     @classmethod
     def find_version(cls, model_id, version):
