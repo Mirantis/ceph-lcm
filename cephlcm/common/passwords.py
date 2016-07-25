@@ -31,11 +31,15 @@ def compare_passwords(password, suspected_hash):
 
 
 def generate_password(length=DEFAULT_PASSWORD_LENGTH):
+    """Generates secure password of given length."""
+
     return "".join(
         random_password_character() for _ in six.moves.range(length))
 
 
 def random_password_character():
+    """Generates random character for the password."""
+
     randomness = os.urandom(1)
     charpos = ord(randomness) % len(PASSWORD_LETTERS)
 

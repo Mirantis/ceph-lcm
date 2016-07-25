@@ -23,6 +23,8 @@ class PaginationResult(object):
             yield model
 
     def make_api_structure(self):
+        """Makes API structure, converatable to JSON."""
+
         return {
             "items": [item.make_api_structure() for item in self],
             "page": self.pagination["page"],

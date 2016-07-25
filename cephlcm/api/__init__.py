@@ -15,6 +15,8 @@ from cephlcm.common.models import generic as generic_model
 
 
 def create_application():
+    """Creates and configures WSGI application."""
+
     application = flask.Flask(__name__)
 
     config.configure(application)

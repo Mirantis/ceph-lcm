@@ -52,6 +52,11 @@ JSONSCHEMA_DEFINITIONS = {
         )
     }
 }
+"""Some common type definitions for JSON Schema
+
+Mostly because {"type": "string"} is not good enough
+and {"format": "email"} deeply broken by design.
+"""
 
 
 def require_schema(schema):
@@ -78,6 +83,17 @@ def require_schema(schema):
 
 
 def with_model(model_class):
+    """Decorates method and injects model, responsible for parameter.
+
+    It is just a shortcut for
+
+        mdl = model_class.find_by_model_id(item_id)
+        if not mdl:
+            raise exceptions.NotFound
+
+    So it adds new parameter, 'item' which contains suggested instance.
+    """
+
     find = model_class.find_by_model_id
 
     def outer_decorator(func):
@@ -98,6 +114,13 @@ def with_model(model_class):
 
 
 def no_updates_on_default_fields(func):
+    """Checks that system managed fields are not updated by user.
+
+    Basically, user should not modify fields outside "data" so
+    if he does that, it means his client is broken or he is doing
+    something suspicious.
+    """
+
     @six.wraps(func)
     def decorator(self, **kwargs):
         item = kwargs["item"]
@@ -106,6 +129,7 @@ def no_updates_on_default_fields(func):
             item.time_created != self.request_json["time_updated"],
             item.time_deleted != self.request_json["time_deleted"],
             item.model_id != self.request_json["id"],
+            item.version != self.request_json["version"],
             item.initiator_id != self.request_json["initiator_id"]
         )
         if any(changed):
@@ -117,6 +141,11 @@ def no_updates_on_default_fields(func):
 
 
 def create_model_schema(model_name, data_schema):
+    """Creates JSON schema to verify Model from API.
+
+    Takes 2 parameters: model name and JSON Schema of the data field.
+    """
+
     return {
         "type": "object",
         "properties": {
@@ -148,6 +177,30 @@ def create_model_schema(model_name, data_schema):
 
 
 def create_data_schema(properties, mandatory=False):
+    """Converts simple schema to schema for the data field.
+
+    It basically just converts this:
+
+        {
+            "field": {"type": "string"},
+            "another": {"type": "null"}
+        }
+
+    to that:
+
+        {
+            "type": "object",
+            "properties": {
+                "field": {"type": "string"},
+                "another": {"type": "null"}
+            },
+            "definitions": {...}
+        }
+
+    If mandatory field is set, then "additionalProperties"
+    would be added.
+    """
+
     schema = {
         "type": "object",
         "properties": properties,

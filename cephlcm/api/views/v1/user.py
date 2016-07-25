@@ -51,6 +51,8 @@ class UserView(generic.VersionedCRUDView):
 
     @property
     def initiator_id(self):
+        """Returns ID of request initiator."""
+
         token = getattr(flask.g, "token", None)
         user_id = getattr(token, "user_id", None)
 
@@ -119,6 +121,8 @@ class UserView(generic.VersionedCRUDView):
 
 
 def make_password_message(model, password):
+    """Creates email message for password."""
+
     return NEW_PASSWORD_MESSAGE.format(
         name=model.full_name,
         password=password
@@ -126,6 +130,8 @@ def make_password_message(model, password):
 
 
 def notify_about_new_password(model, password):
+    """Sends email to user with his new password."""
+
     message = make_password_message(model, password)
     emailutils.send(
         to=[model.email],

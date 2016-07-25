@@ -50,6 +50,8 @@ class View(flask.views.MethodView):
 
     @property
     def request_query(self):
+        """Returns a dictionary with URL Query parameters."""
+
         return flask.request.args
 
     @classmethod
@@ -155,6 +157,8 @@ class CRUDView(ModelView):
 
     @property
     def pagination(self):
+        """Returns settings for current pagination."""
+
         items_per_page = convert_dict_or(
             self.request_query, "per_page", int,
             self.PAGINATION_ITEMS_PER_PAGE
@@ -284,6 +288,8 @@ def make_endpoint(*endpoint):
 
 
 def convert_dict_or(obj, name, converter, default=None):
+    """Just a shorthand to return default on getting smthng from dictionary."""
+
     try:
         return converter(obj[name])
     except Exception:
