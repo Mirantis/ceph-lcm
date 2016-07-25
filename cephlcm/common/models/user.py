@@ -107,6 +107,26 @@ class UserModel(generic.Model):
 
         return cursor
 
+    @classmethod
+    def ensure_index(cls):
+        super(UserModel, cls).ensure_index()
+
+        collection = cls.collection()
+        collection.create_index(
+            [
+                ("login", generic.SORT_ASC)
+            ],
+            unique=True,
+            name="index_unique_login"
+        )
+        collection.create_index(
+            [
+                ("email", generic.SORT_ASC)
+            ],
+            unique=True,
+            name="index_unique_email"
+        )
+
     def delete(self):
         super(UserModel, self).delete()
 

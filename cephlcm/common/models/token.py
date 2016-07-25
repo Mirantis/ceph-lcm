@@ -76,6 +76,18 @@ class TokenModel(generic.Model):
 
         return model
 
+    @classmethod
+    def ensure_index(cls):
+        collection = cls.collection()
+
+        collection.create_index(
+            [
+                ("model_id", generic.SORT_ASC)
+            ],
+            unique=True,
+            name="index_unique_token_id"
+        )
+
     @property
     def default_ttl(self):
         """Returns a TTL for the token. It always returns seconds, integer."""

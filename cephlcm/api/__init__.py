@@ -25,4 +25,7 @@ def create_application():
         application.config
     )
 
+    with application.app_context():
+        generic_model.ensure_indexes()
+
     return application

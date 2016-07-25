@@ -339,6 +339,26 @@ class Model(object):
 
         raise NotImplementedError
 
+    @classmethod
+    def ensure_index(cls):
+        collection = cls.collection()
+
+        collection.create_index(
+            [
+                ("is_latest", pymongo.DESCENDING)
+            ],
+            name="index_latest",
+            partialFilterExpression={"is_latest": True}
+        )
+        collection.create_index(
+            [
+                ("model_id", pymongo.ASCENDING),
+                ("version", pymongo.ASCENDING)
+            ],
+            name="index_unique_version",
+            unique=True
+        )
+
 
 def configure_models(connection, config):
     """This configures models to use database.
@@ -349,3 +369,8 @@ def configure_models(connection, config):
 
     Model.CONNECTION = connection
     Model.CONFIG = config
+
+
+def ensure_indexes():
+    for mdl in Model.__subclasses__():
+        mdl.ensure_index()
