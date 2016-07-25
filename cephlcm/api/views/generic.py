@@ -291,6 +291,11 @@ def convert_dict_or(obj, name, converter, default=None):
     """Just a shorthand to return default on getting smthng from dictionary."""
 
     try:
-        return converter(obj[name])
+        result = converter(obj[name])
     except Exception:
         return default
+
+    if result <= 0:
+        return default
+
+    return result

@@ -351,3 +351,39 @@ def test_2users_update_delete_previous_data(field, email, client_v1,
 
     assert response.status_code == 200
     assert response.json["data"][field] == request1[field]
+
+
+@pytest.mark.parametrize("query, items, per_page, page", (
+    ("", 10, 25, 1),
+    ("?page=1", 10, 25, 1),
+    ("?page=2", 0, 25, 2),
+    ("?per_page=5", 5, 5, 1),
+    ("?per_page=5&page=2", 5, 5, 2),
+    ("?per_page=5&page=3", 0, 5, 3),
+    ("?per_page=5&page=-1", 5, 5, 1),
+    ("?per_page=5&page=x", 5, 5, 1),
+    ("?per_page=-5&page=x", 10, 25, 1),
+    ("?per_page=-5&page=1", 10, 25, 1),
+    ("?per_page=0&page=1", 10, 25, 1),
+    ("?per_page=1&page=0", 1, 1, 1)
+))
+def test_get_pagination_page(query, items, per_page, page, email,
+                             pymongo_connection, client_v1, freeze_time):
+    pymongo_connection.db.user.remove({})
+
+    for _ in range(10):
+        request = {
+            "login": str(uuid.uuid4()),
+            "email": "{0}@example.com".format(uuid.uuid4()),
+            "role_ids": [],
+            "full_name": str(uuid.uuid4())
+        }
+        client_v1.post("/v1/user/", data=request)
+
+    response = client_v1.get("/v1/user/{0}".format(query))
+
+    assert response.status_code == 200
+    assert len(response.json["items"]) == items
+    assert response.json["total"] == 10
+    assert response.json["per_page"] == per_page
+    assert response.json["page"] == page
