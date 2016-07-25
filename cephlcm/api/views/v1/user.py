@@ -12,7 +12,9 @@ import six
 from cephlcm.api import exceptions
 from cephlcm.api import validators
 from cephlcm.api.views import generic
+from cephlcm.common import emailutils
 from cephlcm.common.models import user
+from cephlcm.common import passwords
 
 
 DATA_SCHEMA = {
@@ -28,6 +30,12 @@ MODEL_SCHEMA = validators.create_model_schema("user", DATA_SCHEMA)
 
 POST_SCHEMA = validators.create_data_schema(DATA_SCHEMA, True)
 """Schema for the new model request."""
+
+NEW_PASSWORD_MESSAGE = """\
+Hi, {name}.
+
+Your password for CephLCM is {password!r}.
+""".strip()
 
 
 class UserView(generic.VersionedCRUDView):
@@ -78,14 +86,32 @@ class UserView(generic.VersionedCRUDView):
 
     @validators.require_schema(POST_SCHEMA)
     def post(self):
+        new_password = passwords.generate_password()
         user_model = user.UserModel.make_user(
             self.request_json["login"],
-            # TODO(Sergey Arkhipov): Password!
-            "PASSWORD",
+            new_password,
             self.request_json["email"],
             self.request_json["full_name"],
             self.request_json["role_ids"],
             initiator_id=self.initiator_id
         )
 
+        notify_about_new_password(user_model, new_password)
+
         return user_model
+
+
+def make_password_message(model, password):
+    return NEW_PASSWORD_MESSAGE.format(
+        name=model.full_name,
+        password=password
+    )
+
+
+def notify_about_new_password(model, password):
+    message = make_password_message(model, password)
+    emailutils.send(
+        to=[model.email],
+        subject="New password for CephLCM",
+        text_body=message
+    )
