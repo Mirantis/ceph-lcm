@@ -9,10 +9,11 @@ import flask
 import six
 
 # from cephlcm.api import auth
-from cephlcm.api import exceptions
+from cephlcm.api import exceptions as http_exceptions
 from cephlcm.api import validators
 from cephlcm.api.views import generic
 from cephlcm.common import emailutils
+from cephlcm.common import exceptions as base_exceptions
 from cephlcm.common.models import user
 from cephlcm.common import passwords
 
@@ -69,36 +70,52 @@ class UserView(generic.VersionedCRUDView):
         model = user.UserModel.find_version(str(item_id), int(version))
 
         if not model:
-            raise exceptions.NotFound
+            raise http_exceptions.NotFound
 
         return model
 
     @validators.with_model(user.UserModel)
     @validators.require_schema(MODEL_SCHEMA)
+    @validators.no_updates_on_default_fields
     def put(self, item_id, item):
         for key, value in six.iteritems(self.request_json["data"]):
             setattr(item, key, value)
         item.initiator_id = self.initiator_id
 
-        item.save()
+        try:
+            item.save()
+        except base_exceptions.CannotUpdateDeletedModel:
+            raise http_exceptions.CannotUpdateDeletedModel()
 
         return item
 
     @validators.require_schema(POST_SCHEMA)
     def post(self):
         new_password = passwords.generate_password()
-        user_model = user.UserModel.make_user(
-            self.request_json["login"],
-            new_password,
-            self.request_json["email"],
-            self.request_json["full_name"],
-            self.request_json["role_ids"],
-            initiator_id=self.initiator_id
-        )
+        try:
+            user_model = user.UserModel.make_user(
+                self.request_json["login"],
+                new_password,
+                self.request_json["email"],
+                self.request_json["full_name"],
+                self.request_json["role_ids"],
+                initiator_id=self.initiator_id
+            )
+        except base_exceptions.UniqueConstraintViolationError:
+            raise http_exceptions.ImpossibleToCreateSuchModel()
 
         notify_about_new_password(user_model, new_password)
 
         return user_model
+
+    @validators.with_model(user.UserModel)
+    def delete(self, item_id, item):
+        try:
+            item.delete()
+        except base_exceptions.CannotUpdateDeletedModel:
+            raise http_exceptions.CannotUpdateDeletedModel()
+
+        return item
 
 
 def make_password_message(model, password):

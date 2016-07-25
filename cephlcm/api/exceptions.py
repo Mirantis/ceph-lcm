@@ -93,3 +93,20 @@ class InvalidJSONError(BadRequest):
 
     def __init__(self, errors):
         super(BadRequest, self).__init__("\n".join(errors))
+
+
+class ImpossibleToCreateSuchModel(BadRequest):
+
+    description = (
+        "It is impossible to create such model because it violates "
+        "data model contracts."
+    )
+
+
+class CannotUpdateManagedFieldsError(BadRequest):
+
+    description = "It is forbidden to update automanaged fields."
+
+
+class CannotUpdateDeletedModel(BadRequest):
+    """Exception which is raised if you are trying to update deleted model."""

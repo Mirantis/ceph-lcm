@@ -246,8 +246,7 @@ class Model(object):
         why we do not have `update` method here.
         """
 
-        if self.time_deleted:
-            raise exceptions.CannotUpdateDeletedModel()
+        self.check_constraints()
 
         if not structure:
             structure = self.make_db_document_structure()
@@ -338,6 +337,10 @@ class Model(object):
         """This builds a set of fields, specific for API response."""
 
         raise NotImplementedError
+
+    def check_constraints(self):
+        if self.time_deleted:
+            raise exceptions.CannotUpdateDeletedModel()
 
     @classmethod
     def ensure_index(cls):

@@ -2,6 +2,9 @@
 """Common pytest fixtures for all tests."""
 
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import uuid
 
 try:
@@ -149,3 +152,24 @@ def client_v1(client):
     client.AUTH_URL = "/v1/auth/"
 
     return client
+
+
+@pytest.fixture
+def smtp(request, monkeypatch):
+    sendmail_mock = mock.MagicMock()
+    client = have_mocked(request, "cephlcm.common.emailutils.make_client")
+    client.return_value = sendmail_mock
+
+    return sendmail_mock
+
+
+@pytest.fixture
+def email(smtp, monkeypatch):
+    monkeypatch.setattr(
+        "cephlcm.common.emailutils.make_message",
+        lambda from_, to, cc, subject, text_body, html_body: (
+            to, cc, text_body
+        )
+    )
+
+    return smtp

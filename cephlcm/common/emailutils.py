@@ -18,14 +18,14 @@ def send(to, subject, text_body, html_body=None, cc=None, bcc=None,
     message = make_message(from_, to, cc, subject, text_body, html_body)
     client = make_client(host, port, login, password)
 
-    client.sendmail(from_, to, message.as_string())
+    client.sendmail(from_, to, message)
     client.quit()
 
 
 def make_lists(to, cc, bcc):
-    to = set(to)
-    cc = set(cc)
-    bcc = set(bcc)
+    to = set(to or [])
+    cc = set(cc or [])
+    bcc = set(bcc or [])
 
     to -= cc | bcc
     cc -= to | bcc
@@ -48,7 +48,7 @@ def make_message(from_, to, cc, subject, text_body, html_body):
         html_part = text.MIMEText(html_body, "html")
         message.attach(html_part)
 
-    return message
+    return message.as_string()
 
 
 def make_client(host, port, login, password):

@@ -5,6 +5,9 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import pymongo.errors
+
+from cephlcm.common import exceptions
 from cephlcm.common.models import generic
 from cephlcm.common import passwords
 
@@ -39,6 +42,10 @@ class UserModel(generic.Model):
 
         return []
 
+    @roles.setter
+    def roles(self, value):
+        self.role_ids = [role["id"] for role in value]
+
     @classmethod
     def list_models(cls, pagination, is_latest=True, sort_by=None):
         query = {}
@@ -66,7 +73,11 @@ class UserModel(generic.Model):
         model.full_name = full_name
         model.role_ids = role_ids
         model.initiator_id = initiator_id
-        model.save()
+
+        try:
+            model.save()
+        except pymongo.errors.DuplicateKeyError:
+            raise exceptions.UniqueConstraintViolationError()
 
         return model
 
@@ -116,16 +127,26 @@ class UserModel(generic.Model):
             [
                 ("login", generic.SORT_ASC)
             ],
-            unique=True,
             name="index_unique_login"
         )
-        collection.create_index(
-            [
-                ("email", generic.SORT_ASC)
-            ],
-            unique=True,
-            name="index_unique_email"
-        )
+
+    def check_constraints(self):
+        super(UserModel, self).check_constraints()
+
+        collection = self.collection()
+        query = {
+            "model_id": {"$ne": self.model_id},
+            "is_latest": True,
+            "time_deleted": 0,
+            "$or": [
+                {"email": self.email},
+                {"login": self.login}
+            ]
+        }
+        cursor = collection.find(query)
+
+        if cursor.count():
+            raise exceptions.UniqueConstraintViolationError()
 
     def delete(self):
         super(UserModel, self).delete()

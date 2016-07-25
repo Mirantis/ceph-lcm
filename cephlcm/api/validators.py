@@ -97,23 +97,47 @@ def with_model(model_class):
     return outer_decorator
 
 
+def no_updates_on_default_fields(func):
+    @six.wraps(func)
+    def decorator(self, **kwargs):
+        item = kwargs["item"]
+
+        changed = (
+            item.time_created != self.request_json["time_updated"],
+            item.time_deleted != self.request_json["time_deleted"],
+            item.model_id != self.request_json["id"],
+            item.initiator_id != self.request_json["initiator_id"]
+        )
+        if any(changed):
+            raise exceptions.CannotUpdateManagedFieldsError()
+
+        return func(self, **kwargs)
+
+    return decorator
+
+
 def create_model_schema(model_name, data_schema):
     return {
         "type": "object",
         "properties": {
             "id": {"$ref": "#/definitions/uuid4"},
             "model": {"enum": [model_name]},
-            "time_created": {"$ref": "#/definitions/positive_integer"},
+            "time_updated": {"$ref": "#/definitions/positive_integer"},
             "time_deleted": {"$ref": "#/definitions/positive_integer"},
             "version": {"$ref": "#/definitions/positive_integer"},
-            "initiator_id": {"$ref": "#/definitions/uuid4"},
+            "initiator_id": {
+                "anyOf": [
+                    {"type": "null"},
+                    {"$ref": "#/definitions/uuid4"}
+                ]
+            },
             "data": data_schema
         },
         "additionalProperties": False,
         "required": [
             "id",
             "model",
-            "time_created",
+            "time_updated",
             "time_deleted",
             "version",
             "initiator_id",
