@@ -5,6 +5,9 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import pymongo.errors
+
+from cephlcm.common import exceptions
 from cephlcm.common.models import generic
 from cephlcm.common import passwords
 
@@ -18,6 +21,10 @@ class UserModel(generic.Model):
 
     MODEL_NAME = "user"
     COLLECTION_NAME = "user"
+
+    LATEST_INCLUDED = 0
+    LATEST_NO = 1
+    LATEST_ONLY = 2
 
     def __init__(self):
         super(UserModel, self).__init__()
@@ -35,6 +42,24 @@ class UserModel(generic.Model):
 
         return []
 
+    @roles.setter
+    def roles(self, value):
+        self.role_ids = [role["id"] for role in value]
+
+    @classmethod
+    def list_models(cls, pagination, is_latest=True, sort_by=None):
+        query = {}
+
+        if is_latest is not None:
+            query["is_latest"] = bool(is_latest)
+
+        if sort_by is None:
+            sort_by = [("full_name", generic.SORT_ASC)]
+
+        result = cls.list_paginated(query, pagination, sort_by=sort_by)
+
+        return result
+
     @classmethod
     def make_user(cls, login, password, email, full_name, role_ids,
                   initiator_id=None):
@@ -48,7 +73,11 @@ class UserModel(generic.Model):
         model.full_name = full_name
         model.role_ids = role_ids
         model.initiator_id = initiator_id
-        model.save()
+
+        try:
+            model.save()
+        except pymongo.errors.DuplicateKeyError:
+            raise exceptions.UniqueConstraintViolationError()
 
         return model
 
@@ -68,6 +97,56 @@ class UserModel(generic.Model):
         model.update_from_db_document(document)
 
         return model
+
+    @classmethod
+    def find_all_raw(cls, latest=LATEST_ONLY, sort_by=None):
+        query = {}
+
+        if latest == cls.LATEST_ONLY:
+            query["is_latest"] = True
+        elif latest == cls.LATEST_NO:
+            query["is_latest"] = False
+        elif latest != cls.LATEST_INCLUDED:
+            raise ValueError("Unknown latest parameter {0}".format(latest))
+
+        cursor = cls.collection().find(query)
+
+        if sort_by is None:
+            sort_by = [("full_name", generic.SORT_ASC)]
+
+        cursor = cursor.sort(sort_by)
+
+        return cursor
+
+    @classmethod
+    def ensure_index(cls):
+        super(UserModel, cls).ensure_index()
+
+        collection = cls.collection()
+        collection.create_index(
+            [
+                ("login", generic.SORT_ASC)
+            ],
+            name="index_unique_login"
+        )
+
+    def check_constraints(self):
+        super(UserModel, self).check_constraints()
+
+        collection = self.collection()
+        query = {
+            "model_id": {"$ne": self.model_id},
+            "is_latest": True,
+            "time_deleted": 0,
+            "$or": [
+                {"email": self.email},
+                {"login": self.login}
+            ]
+        }
+        cursor = collection.find(query)
+
+        if cursor.count():
+            raise exceptions.UniqueConstraintViolationError()
 
     def delete(self):
         super(UserModel, self).delete()

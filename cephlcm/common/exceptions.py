@@ -12,3 +12,7 @@ class CephLCMError(Exception):
 
 class CannotUpdateDeletedModel(CephLCMError):
     """Exception which is raised if you are trying to update deleted model."""
+
+
+class UniqueConstraintViolationError(CephLCMError):
+    """Exception which is raised if db operation violates unique constraint."""

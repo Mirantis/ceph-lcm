@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 import flask
 
 from cephlcm.api.views.v1 import auth
+from cephlcm.api.views.v1 import user
 
 
 BLUEPRINT_NAME = "ApiV1"
@@ -16,4 +17,6 @@ BLUEPRINT_NAME = "ApiV1"
 BLUEPRINT = flask.Blueprint(BLUEPRINT_NAME, __name__)
 """Blueprint."""
 
+
 auth.AuthView.register_to(BLUEPRINT)
+user.UserView.register_to(BLUEPRINT)

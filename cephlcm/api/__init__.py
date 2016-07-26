@@ -15,6 +15,8 @@ from cephlcm.common.models import generic as generic_model
 
 
 def create_application():
+    """Creates and configures WSGI application."""
+
     application = flask.Flask(__name__)
 
     config.configure(application)
@@ -24,5 +26,8 @@ def create_application():
         flask_pymongo.PyMongo(application),
         application.config
     )
+
+    with application.app_context():
+        generic_model.ensure_indexes()
 
     return application

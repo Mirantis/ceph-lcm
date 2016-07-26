@@ -13,8 +13,6 @@ import six
 import werkzeug.exceptions
 
 from cephlcm.api import exceptions
-from cephlcm.common.models import generic
-from cephlcm.common import wrappers
 
 
 class View(flask.views.MethodView):
@@ -30,22 +28,6 @@ class View(flask.views.MethodView):
 
     ENDPOINT = None
     """This is an endpoint for the view."""
-
-    @classmethod
-    def endpoint_views(cls):
-        """A list of endpoint classes.
-
-        This returns a list of classes, suitable to use for endpoint needs.
-        """
-
-        suitable_views = []
-
-        for klass in cls.__subclasses__():
-            if klass.ENDPOINT:
-                suitable_views.append(klass)
-            suitable_views.extend(klass.endpoint_views())
-
-        return suitable_views
 
     @property
     def request_id(self):
@@ -66,12 +48,19 @@ class View(flask.views.MethodView):
             self.log("error", "Cannot process user request: %s", exc)
             raise exceptions.NotAcceptable
 
+    @property
+    def request_query(self):
+        """Returns a dictionary with URL Query parameters."""
+
+        return flask.request.args
+
     @classmethod
     def register_to(cls, application):
         """Registers view to the application."""
 
         application.add_url_rule(
-            cls.ENDPOINT, view_func=cls.as_view(cls.NAME.encode("utf-8"))
+            make_endpoint(cls.ENDPOINT),
+            view_func=cls.as_view(cls.NAME.encode("utf-8"))
         )
 
     def log(self, level, message, *args, **kwargs):
@@ -128,12 +117,10 @@ class ModelView(View):
     def prepare_response(self, response):
         assert isinstance(self.model_name, six.string_types)
 
-        if isinstance(response, generic.Model):
+        if hasattr(response, "make_api_structure"):
             return response.make_api_structure()
         if isinstance(response, (list, tuple)):
             return self.prepare_list_response(response)
-        elif isinstance(response, wrappers.PaginationResult):
-            return self.prepare_pagination_response(response)
         elif isinstance(response, dict):
             return self.prepare_dict_response(response)
         elif response is None:
@@ -144,18 +131,8 @@ class ModelView(View):
     def prepare_list_response(self, data):
         return [self.prepare_response(el) for el in data]
 
-    def prepare_dict_reponse(self, data):
+    def prepare_dict_response(self, data):
         return {k: self.prepare_response(v) for k, v in six.iteritems(data)}
-
-    def prepare_pagination_response(self, data):
-        page_data = [self.prepare_response(el) for el in data.page_data]
-        response = {
-            "data": page_data,
-            "page": data.current_page,
-            "total": data.total
-        }
-
-        return response
 
 
 class CRUDView(ModelView):
@@ -175,11 +152,28 @@ class CRUDView(ModelView):
     PARAMETER_TYPE = "int"
     """The type of parameter to use."""
 
+    PAGINATION_ITEMS_PER_PAGE = 25
+    """How may items per pagination page to show."""
+
+    @property
+    def pagination(self):
+        """Returns settings for current pagination."""
+
+        items_per_page = convert_dict_or(
+            self.request_query, "per_page", int,
+            self.PAGINATION_ITEMS_PER_PAGE
+        )
+        page = convert_dict_or(self.request_query, "page", int, 1)
+        pagination = {"per_page": items_per_page, "page": page}
+
+        return pagination
+
     @classmethod
     def register_to(cls, application):
         view_func = cls.as_view(cls.NAME.encode("utf-8"))
-        main_endpoint = cls.ENDPOINT
-        item_endpoint = posixpath.join(
+
+        main_endpoint = make_endpoint(cls.ENDPOINT)
+        item_endpoint = make_endpoint(
             main_endpoint, "<{0}:item_id>".format(cls.PARAMETER_TYPE)
         )
 
@@ -233,13 +227,16 @@ class VersionedCRUDView(CRUDView):
     @classmethod
     def register_to(cls, application):
         view_func = cls.as_view(cls.NAME.encode("utf-8"))
-        main_endpoint = cls.ENDPOINT
-        item_endpoint = posixpath.join(
+
+        main_endpoint = make_endpoint(cls.ENDPOINT)
+        item_endpoint = make_endpoint(
             main_endpoint, "<{0}:item_id>".format(cls.PARAMETER_TYPE)
         )
-        version_endpoint = posixpath.join(
-            item_endpoint, "<{0}:version>".format(cls.VERSION_TYPE)
+        version_endpoint = make_endpoint(item_endpoint, "version")
+        item_version_endpoint = make_endpoint(
+            version_endpoint, "<{0}:version>".format(cls.VERSION_TYPE)
         )
+
         default_get = {"item_id": None, "version": cls.ABSENT_ITEM}
         default_versions = {"version": None}
 
@@ -252,7 +249,7 @@ class VersionedCRUDView(CRUDView):
             view_func=view_func, defaults=default_versions, methods=["GET"]
         )
         application.add_url_rule(
-            version_endpoint,
+            item_version_endpoint,
             view_func=view_func, methods=["GET"]
         )
         application.add_url_rule(
@@ -261,17 +258,44 @@ class VersionedCRUDView(CRUDView):
         )
         application.add_url_rule(
             item_endpoint,
-            view_func=view_func, methods=["GET", "POST", "DELETE"]
+            view_func=view_func, methods=["GET", "PUT", "DELETE"]
         )
 
-    def get(self, item_id, version):
+    def get(self, item_id, version=ABSENT_ITEM):
         if item_id is None:
             return self.get_all()
 
         if version is self.ABSENT_ITEM:
-            return self.get_item(item_id)
+            return self.get_item(item_id=item_id)
 
         if version is None:
-            return self.get_versions(item_id)
+            return self.get_versions(item_id=item_id)
 
-        return self.get_version(item_id, version)
+        return self.get_version(item_id=item_id, version=version)
+
+
+def make_endpoint(*endpoint):
+    """Makes endpoint suitable for Flask routing."""
+
+    url = posixpath.join(*endpoint)
+
+    if not url.startswith("/"):
+        url = "/{0}".format(url)
+    if not url.endswith("/"):
+        url += "/"
+
+    return url
+
+
+def convert_dict_or(obj, name, converter, default=None):
+    """Just a shorthand to return default on getting smthng from dictionary."""
+
+    try:
+        result = converter(obj[name])
+    except Exception:
+        return default
+
+    if result <= 0:
+        return default
+
+    return result
