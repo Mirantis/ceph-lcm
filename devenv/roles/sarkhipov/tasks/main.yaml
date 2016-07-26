@@ -2,7 +2,15 @@
 # Specific development environment for Sergey Arkhipov
 # sarkhipov@mirantis.com
 
+
+- name: Install see
+  become: true
+  pip: name=see state=latest
+
 - include: dotfiles.yaml
 - include: neovim.yaml
 - include: tmux.yaml
+- include: keychain.yaml
+- include: fzf.yaml
+- include: gruvbox.yaml
 - include: environment.yaml

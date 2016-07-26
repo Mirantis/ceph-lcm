@@ -39,3 +39,5 @@ env_vars:
     value: 1
   - name: EDITOR
     value: nvim
+  - name: PYTHONSTARTUP
+    value: $HOME/.pythonrc

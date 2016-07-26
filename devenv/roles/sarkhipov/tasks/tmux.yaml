@@ -21,3 +21,8 @@
 
 - name: Add tmuxinator config
   copy: src=tmuxinator.vsm.yaml dest=.tmuxinator/vsm.yml
+
+- name: Activate tmux with tmuxinator by default
+  lineinfile: dest=.bashrc
+              line='if [ -z "$TMUX" ]; then tmux a || mux start vsm; fi'
+              state=present

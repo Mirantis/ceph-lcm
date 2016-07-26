@@ -15,4 +15,4 @@
   when: not vsm_virtualenv.stat.exists
 
 - name: Install VSM requirements
-  command: bash -ic "pyenv activate vsm && pip install -r /vagrant/requirements.txt"
+  command: bash -ic "pyenv activate vsm && pip install -r /vagrant/requirements.txt -r test-requirements.txt -e /vagrant see"
