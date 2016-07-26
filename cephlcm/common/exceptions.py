@@ -16,3 +16,7 @@ class CannotUpdateDeletedModel(CephLCMError):
 
 class UniqueConstraintViolationError(CephLCMError):
     """Exception which is raised if db operation violates unique constraint."""
+
+
+class CannotDeleteRoleWithActiveUsers(CephLCMError):
+    """Exception raised on attempt to delete role with active users."""

@@ -13,6 +13,7 @@ import flask
 import six
 
 from cephlcm.api import exceptions
+from cephlcm.common.models import role
 from cephlcm.common.models import token
 from cephlcm.common.models import user
 from cephlcm.common import passwords
@@ -36,6 +37,30 @@ def require_authentication(func):
         return func(*args, **kwargs)
 
     return decorator
+
+
+def require_authorization(permission_class, permission_name):
+    role.PermissionSet.add_permission(permission_class, permission_name)
+
+    def outer_decorator(func):
+        @six.wraps(func)
+        def inner_decorator(*args, **kwargs):
+            user_model = getattr(flask.g, "token", None)
+            user_model = getattr(user_model, "user", None)
+            if not user_model:
+                raise exceptions.Forbidden
+
+            has_permission = any(
+                r.has_permission(permission_class, permission_name)
+                for r in user_model.roles
+            )
+            if not has_permission:
+                raise exceptions.Forbidden
+
+            return func(*args, **kwargs)
+
+        return inner_decorator
+    return outer_decorator
 
 
 def authenticate(user_name, password):

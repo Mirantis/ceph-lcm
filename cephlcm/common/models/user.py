@@ -5,10 +5,13 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import collections
+
 import pymongo.errors
 
 from cephlcm.common import exceptions
 from cephlcm.common.models import generic
+from cephlcm.common.models import role
 from cephlcm.common import passwords
 
 
@@ -21,10 +24,7 @@ class UserModel(generic.Model):
 
     MODEL_NAME = "user"
     COLLECTION_NAME = "user"
-
-    LATEST_INCLUDED = 0
-    LATEST_NO = 1
-    LATEST_ONLY = 2
+    DEFAULT_SORT_BY = [("full_name", generic.SORT_ASC)]
 
     def __init__(self):
         super(UserModel, self).__init__()
@@ -34,31 +34,22 @@ class UserModel(generic.Model):
         self.email = None
         self.full_name = ""
         self.role_ids = []
+        self._roles = None
+        self._permissions = collections.defaultdict(set)
 
     @property
     def roles(self):
         """Returns a list of role models for this user."""
-        # TODO(Sergey Arkhipov): Implement after Role model
 
-        return []
+        if self._roles is None:
+            self._roles = role.RoleModel.find_by_model_ids(self.role_ids)
+
+        return self._roles
 
     @roles.setter
     def roles(self, value):
         self.role_ids = [role["id"] for role in value]
-
-    @classmethod
-    def list_models(cls, pagination, is_latest=True, sort_by=None):
-        query = {}
-
-        if is_latest is not None:
-            query["is_latest"] = bool(is_latest)
-
-        if sort_by is None:
-            sort_by = [("full_name", generic.SORT_ASC)]
-
-        result = cls.list_paginated(query, pagination, sort_by=sort_by)
-
-        return result
+        self._roles = []
 
     @classmethod
     def make_user(cls, login, password, email, full_name, role_ids,
@@ -99,24 +90,16 @@ class UserModel(generic.Model):
         return model
 
     @classmethod
-    def find_all_raw(cls, latest=LATEST_ONLY, sort_by=None):
-        query = {}
-
-        if latest == cls.LATEST_ONLY:
-            query["is_latest"] = True
-        elif latest == cls.LATEST_NO:
-            query["is_latest"] = False
-        elif latest != cls.LATEST_INCLUDED:
-            raise ValueError("Unknown latest parameter {0}".format(latest))
-
-        cursor = cls.collection().find(query)
-
-        if sort_by is None:
-            sort_by = [("full_name", generic.SORT_ASC)]
-
-        cursor = cursor.sort(sort_by)
-
-        return cursor
+    def check_revoke_role(cls, role_id, initiator_id=None):
+        items = cls.collection().find(
+            {
+                "role_ids": role_id,
+                "is_latest": True,
+                "time_deleted": 0
+            }
+        )
+        if items.count():
+            raise exceptions.CannotDeleteRoleWithActiveUsers()
 
     @classmethod
     def ensure_index(cls):
@@ -164,6 +147,8 @@ class UserModel(generic.Model):
         self.email = structure["email"]
         self.full_name = structure["full_name"]
         self.role_ids = structure["role_ids"]
+        self._roles = None
+        self._permissions = None
 
     def make_db_document_specific_fields(self):
         return {

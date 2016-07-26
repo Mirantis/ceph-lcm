@@ -119,6 +119,12 @@ class Model(object):
     Dictionary is expected. All keys are uppercased.
     """
 
+    LATEST_INCLUDED = 0
+    LATEST_NO = 1
+    LATEST_ONLY = 2
+
+    DEFAULT_SORT_BY = [("id", SORT_ASC)]
+
     @classmethod
     def database(cls):
         """This method returns a connection to the MongoDB database."""
@@ -190,6 +196,20 @@ class Model(object):
         )
 
         return paginated_result
+
+    @classmethod
+    def list_models(cls, pagination, is_latest=True, sort_by=None):
+        query = {}
+
+        if is_latest is not None:
+            query["is_latest"] = bool(is_latest)
+
+        if sort_by is None:
+            sort_by = cls.DEFAULT_SORT_BY
+
+        result = cls.list_paginated(query, pagination, sort_by=sort_by)
+
+        return result
 
     @classmethod
     def list_versions(cls, item_id, pagination):
