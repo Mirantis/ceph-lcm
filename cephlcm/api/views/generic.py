@@ -54,6 +54,15 @@ class View(flask.views.MethodView):
 
         return flask.request.args
 
+    @property
+    def initiator_id(self):
+        """Returns ID of request initiator."""
+
+        token = getattr(flask.g, "token", None)
+        user_id = getattr(token, "user_id", None)
+
+        return user_id
+
     @classmethod
     def register_to(cls, application):
         """Registers view to the application."""

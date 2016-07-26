@@ -61,8 +61,16 @@ class RoleModel(generic.Model):
     def __init__(self):
         super(RoleModel).__init__()
 
-        self.permissions = PermissionSet()
+        self._permissions = PermissionSet()
         self.name = None
+
+    @property
+    def permissions(self):
+        return self._permissions
+
+    @permissions.setter
+    def permissions(self, value):
+        self._permissions = PermissionSet(value)
 
     def get_permissions(self, permission_class):
         return self._permissions[permission_class]

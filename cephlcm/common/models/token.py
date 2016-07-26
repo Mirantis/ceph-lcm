@@ -36,6 +36,7 @@ class TokenModel(generic.Model):
         super(TokenModel, self).__init__()
 
         self.user_id = None
+        self._user = None
         self.expires_at = 0
 
     @classmethod
@@ -93,6 +94,13 @@ class TokenModel(generic.Model):
         """Returns a TTL for the token. It always returns seconds, integer."""
 
         return int(self.CONFIG[TOKEN_CONFIG_TTL])
+
+    @property
+    def user(self):
+        if self._user is None:
+            self._user = self.get_user()
+
+        return self._user
 
     def get_user(self):
         """Returns a user model for the token."""
