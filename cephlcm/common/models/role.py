@@ -37,14 +37,14 @@ class PermissionSet(object):
                     )
                 )
 
-        self.permissions[key].update(value)
+        self.permissions[key] = set(value)
 
     def __getitem__(self, key):
         return self.permissions[key]
 
     def make_api_structure(self):
         return {k: sorted(v)
-                for k, v in sorted(six.iteritems(self.permissions))}
+                for k, v in six.iteritems(self.permissions)}
 
 
 class RoleModel(generic.Model):
@@ -59,14 +59,14 @@ class RoleModel(generic.Model):
     DEFAULT_SORT_BY = [("name", generic.SORT_ASC)]
 
     def __init__(self):
-        super(RoleModel).__init__()
+        super(RoleModel, self).__init__()
 
         self._permissions = PermissionSet()
         self.name = None
 
     @property
     def permissions(self):
-        return self._permissions
+        return self._permissions.make_api_structure()
 
     @permissions.setter
     def permissions(self, value):
@@ -75,20 +75,20 @@ class RoleModel(generic.Model):
     def get_permissions(self, permission_class):
         return self._permissions[permission_class]
 
-    def add_permissions(self, permission_class, values):
-        self.permissions[permission_class] = values
+    def add_permissions(self, pclass, values):
+        self._permissions[pclass] = self._permissions[pclass] | set(values)
 
     def remove_permissions(self, pclass, values):
-        self.permissions[pclass] = self.permissions[pclass] - set(values)
+        self._permissions[pclass] = self._permissions[pclass] - set(values)
 
     def has_permission(self, pclass, permission):
-        return permission in self.permissions[pclass]
+        return permission in self._permissions[pclass]
 
     @classmethod
     def make_role(cls, name, permissions, initiator_id=None):
         model = cls()
         model.name = name
-        model.permissions = PermissionSet(permissions)
+        model.permissions = permissions
         model.initiator_id = initiator_id
         model.save()
 
@@ -141,16 +141,17 @@ class RoleModel(generic.Model):
 
         self.initiator_id = structure["initiator_id"]
         self.name = structure["name"]
-        self.permissions = PermissionSet(structure["permissions"])
+        self.permissions = structure["permissions"]
 
     def make_db_document_specific_fields(self):
         return {
             "name": self.name,
-            "permissions": self.permissions.make_api_structure()
+            "permissions": self.permissions,
+            "initiator_id": self.initiator_id
         }
 
     def make_api_specific_fields(self):
         return {
             "name": self.name,
-            "permissions": self.permissions.make_api_structure()
+            "permissions": self.permissions
         }

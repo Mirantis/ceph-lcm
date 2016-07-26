@@ -102,7 +102,7 @@ class UserModel(generic.Model):
     def revoke_role(cls, role_id, initiator_id=None):
         items = cls.collection().find(
             {
-                "role_id": role_id,
+                "role_ids": role_id,
                 "is_latest": True,
                 "time_deleted": 0
             }
