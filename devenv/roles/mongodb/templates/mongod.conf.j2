@@ -5,7 +5,7 @@ net:
   port: 27017
 
 storage:
-  dbPath: /var/lib/mongodb
+  dbPath: {{ db_path }}
   engine: wiredTiger
   journal:
     enabled: false

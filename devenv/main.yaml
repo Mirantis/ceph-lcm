@@ -13,6 +13,7 @@
   roles:
     - base
     - python
-    - mongodb
+    - role: mongodb
+      in_memory: true
     - role: sarkhipov
       when: lookup("env", "VSMDEV") == "sarkhipov"

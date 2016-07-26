@@ -11,6 +11,15 @@
   apt_repository: repo="deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse"
                   state=present
 
+- name: Put db files on tmpfs
+  become: true
+  mount: name={{ db_path }}
+         src="tmpfs"
+         fstype=tmpfs
+         opts="nodev,noatime,nodiratime,noexec,size={{ (ansible_memtotal_mb * 0.3)|int|abs }}M"
+         state=mounted
+  when: in_memory
+
 - name: Install mongodb
   become: true
   apt: name="{{ item }}={{ mongodb_version }}" update_cache=yes
@@ -28,7 +37,7 @@
 
 - name: Install mongodb config
   become: true
-  copy: src=mongod.conf dest=/etc/mongod.conf
+  template: src=mongod.conf.j2 dest=/etc/mongod.conf
 
 - name: Enable mongodb service
   become: true

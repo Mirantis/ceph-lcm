@@ -3,3 +3,5 @@
 
 repo_key: EA312927
 mongodb_version: 3.2.8
+in_memory: false
+db_path: /var/lib/mongodb
