@@ -120,7 +120,6 @@ class RoleModel(generic.Model):
         user.UserModel.check_revoke_role(self.model_id, initiator_id)
         super(RoleModel, self).delete()
 
-
     def check_constraints(self):
         super(RoleModel, self).check_constraints()
 

@@ -1,4 +1,5 @@
 # Requirements for vsm.common package
 
 PyMongo
+simplejson
 six
