@@ -46,15 +46,6 @@ class UserModel(generic.Model):
 
         return self._roles
 
-    @property
-    def permissions(self):
-        if not self._permissions:
-            for rl in self.roles:
-                for pclass, values in rl.permissions:
-                    self._permissions[pclass].update(values)
-
-        return self._permissions
-
     @roles.setter
     def roles(self, value):
         self.role_ids = [role["id"] for role in value]
@@ -99,7 +90,7 @@ class UserModel(generic.Model):
         return model
 
     @classmethod
-    def revoke_role(cls, role_id, initiator_id=None):
+    def check_revoke_role(cls, role_id, initiator_id=None):
         items = cls.collection().find(
             {
                 "role_ids": role_id,
@@ -107,13 +98,8 @@ class UserModel(generic.Model):
                 "time_deleted": 0
             }
         )
-
-        for item in items:
-            model = cls()
-            model.update_from_db_document(item)
-            model.role_ids = list(set(model.role_ids) - set([role_id]))
-            model.initiator_id = initiator_id
-            model.save()
+        if items.count():
+            raise exceptions.CannotDeleteRoleWithActiveUsers()
 
     @classmethod
     def ensure_index(cls):

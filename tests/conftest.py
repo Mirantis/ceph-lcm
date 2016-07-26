@@ -20,6 +20,8 @@ import pytest
 from cephlcm import api
 from cephlcm.api import config
 from cephlcm.common.models import generic
+from cephlcm.common.models import role
+from cephlcm.common.models import user
 
 
 class JsonApiClient(flask.testing.FlaskClient):
@@ -173,3 +175,31 @@ def email(smtp, monkeypatch):
     )
 
     return smtp
+
+
+@pytest.fixture(scope="module")
+def sudo_role(pymongo_connection):
+    return role.RoleModel.make_role(
+        str(uuid.uuid4()),
+        {k: sorted(v) for k, v in role.PermissionSet.KNOWN_PERMISSIONS.items()}
+    )
+
+
+@pytest.fixture(scope="module")
+def sudo_user(sudo_role):
+    return user.UserModel.make_user(
+        "sudo",
+        "sudo",
+        "sudo@example.com",
+        "Almighty Sudo",
+        [sudo_role.model_id]
+    )
+
+
+@pytest.yield_fixture
+def sudo_client_v1(app, sudo_user):
+    with app.test_client() as client:
+        client.AUTH_URL = "/v1/auth/"
+        client.login("sudo", "sudo")
+
+        yield client

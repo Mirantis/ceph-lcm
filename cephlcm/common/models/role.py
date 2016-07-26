@@ -115,11 +115,11 @@ class RoleModel(generic.Model):
         return models
 
     def delete(self, initiator_id=None):
-        super(RoleModel, self).delete()
-
         from cephlcm.common.models import user
 
-        user.UserModel.revoke_role(self.model_id, initiator_id)
+        user.UserModel.check_revoke_role(self.model_id, initiator_id)
+        super(RoleModel, self).delete()
+
 
     def check_constraints(self):
         super(RoleModel, self).check_constraints()

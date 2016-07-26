@@ -4,7 +4,7 @@
 
 import six
 
-# from cephlcm.api import auth
+from cephlcm.api import auth
 from cephlcm.api import exceptions as http_exceptions
 from cephlcm.api import validators
 from cephlcm.api.views import generic
@@ -34,23 +34,27 @@ POST_SCHEMA = validators.create_data_schema(DATA_SCHEMA, True)
 class RoleView(generic.VersionedCRUDView):
     """Implementation of view for /v1/role API."""
 
-    # decorators = [auth.require_authentication]
+    decorators = [auth.require_authentication]
 
     NAME = "role"
     MODEL_NAME = "role"
     ENDPOINT = "/role/"
     PARAMETER_TYPE = "uuid"
 
+    @auth.require_authorization("api", "view_role")
     def get_all(self):
         return role.RoleModel.list_models(self.pagination)
 
+    @auth.require_authorization("api", "view_role")
     @validators.with_model(role.RoleModel)
     def get_item(self, item_id, item, *args):
         return item
 
+    @auth.require_authorization("api", "view_role")
     def get_versions(self, item_id):
         return role.RoleModel.list_versions(str(item_id), self.pagination)
 
+    @auth.require_authorization("api", "view_role")
     def get_version(self, item_id, version):
         model = role.RoleModel.find_version(str(item_id), int(version))
 
@@ -59,6 +63,7 @@ class RoleView(generic.VersionedCRUDView):
 
         return model
 
+    @auth.require_authorization("api", "edit_role")
     @validators.with_model(role.RoleModel)
     @validators.require_schema(MODEL_SCHEMA)
     @validators.no_updates_on_default_fields
@@ -71,9 +76,12 @@ class RoleView(generic.VersionedCRUDView):
             item.save()
         except base_exceptions.CannotUpdateDeletedModel:
             raise http_exceptions.CannotUpdateDeletedModel()
+        except ValueError:
+            raise http_exceptions.BadRequest
 
         return item
 
+    @auth.require_authorization("api", "create_role")
     @validators.require_schema(POST_SCHEMA)
     def post(self):
         try:
@@ -84,14 +92,19 @@ class RoleView(generic.VersionedCRUDView):
             )
         except base_exceptions.UniqueConstraintViolationError:
             raise http_exceptions.ImpossibleToCreateSuchModel()
+        except ValueError:
+            raise http_exceptions.BadRequest
 
         return role_model
 
+    @auth.require_authorization("api", "delete_role")
     @validators.with_model(role.RoleModel)
     def delete(self, item_id, item):
         try:
             item.delete()
         except base_exceptions.CannotUpdateDeletedModel:
             raise http_exceptions.CannotUpdateDeletedModel()
+        except base_exceptions.CannotDeleteRoleWithActiveUsers:
+            raise http_exceptions.CannotDeleteRoleWithActiveUsers()
 
         return item

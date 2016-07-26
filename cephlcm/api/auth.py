@@ -50,7 +50,11 @@ def require_authorization(permission_class, permission_name):
             if not user_model:
                 raise exceptions.Forbidden
 
-            if permission_name not in user_model.permissions[permission_class]:
+            has_permission = any(
+                r.has_permission(permission_class, permission_name)
+                for r in user_model.roles
+            )
+            if not has_permission:
                 raise exceptions.Forbidden
 
             return func(*args, **kwargs)

@@ -110,3 +110,7 @@ class CannotUpdateManagedFieldsError(BadRequest):
 
 class CannotUpdateDeletedModel(BadRequest):
     """Exception which is raised if you are trying to update deleted model."""
+
+
+class CannotDeleteRoleWithActiveUsers(BadRequest):
+    """Exception raised on attempt to delete role with active users."""
