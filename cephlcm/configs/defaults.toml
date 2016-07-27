@@ -89,3 +89,9 @@ level = "DEBUG"
 propagate = true
 level = "DEBUG"
 handlers = ["debug"]
+
+# Settings for plugins
+[plugins.alerts.email]
+enabled = false
+send_to = ["bigboss@example.com"]
+from = "errors@example.com"
