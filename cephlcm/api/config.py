@@ -5,25 +5,14 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from cephlcm.common import config
 
-class DefaultConfig(object):
-    """Default config, suitable for development."""
 
-    # Flask settings
-    DEBUG = True
-    SECRET_KEY = "SRSLY IT IS SECRET"
-
-    # Flask-PyMongo settings
-    MONGO_HOST = "127.0.0.1"
-    MONGO_PORT = 27017
-    MONGO_DBNAME = "devel"
-    MONGO_CONNECT = False
-
-    # App settings
-    TOKEN_TTL_IN_SECONDS = 120
+CONF = config.make_api_config()
+"""API config."""
 
 
 def configure(application):
     """Rudimentary implementation of WSGI app configuration."""
 
-    application.config.from_object(DefaultConfig)
+    application.config.from_object(CONF)

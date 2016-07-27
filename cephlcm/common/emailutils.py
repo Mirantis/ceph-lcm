@@ -7,18 +7,25 @@ import smtplib
 from email.mime import multipart
 from email.mime import text
 
+from cephlcm.common import config
 
-DEFAULT_FROM = "cephlcm <cephlcm@example.com>"
-"""Default email in FROM field to use."""
+
+CONF = config.make_common_config()
+"""Config."""
 
 
 def send(to, subject, text_body, html_body=None, cc=None, bcc=None,
-         from_=DEFAULT_FROM, host="localhost", port=smtplib.SMTP_PORT,
-         login=None, password=None):
+         from_=None, host=None, port=None, login=None, password=None):
     """Send email.
 
     to, cc and bcc are user email lists.
     """
+    from_ = from_ or CONF.EMAIL_FROM
+    host = host or CONF.EMAIL_HOST
+    port = port or CONF.EMAIL_PORT
+    login = login or CONF.EMAIL_LOGIN
+    password = password or CONF.EMAIL_PASSWORD
+
     to, cc, bcc = make_lists(to, cc, bcc)
     message = make_message(from_, to, cc, subject, text_body, html_body)
     client = make_client(host, port, login, password)

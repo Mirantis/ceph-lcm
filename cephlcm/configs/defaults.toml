@@ -1,10 +1,56 @@
+# This is a default config for CephLCM tool
+#
+# It is implemented as TOML
+# https://github.com/toml-lang/toml/blob/master/versions/en/toml-v0.4.0.md
+#
+# It has all options you may find useful. If you want to redefine something,
+# just set required options, all other options would be taken from previous
+# config in load order. This config is always first.
+#
+# Load order is:
+# - This file
+# - /etc/cephlcm/config.toml
+# - $HOME/.config/cephlcm/config.toml (or $XDG_CONFIG_HOME/cephlcm/config.toml)
+# - ~/.cephlcm.toml
+# - $(pwd)/cephlcm.toml
+
+# API specific settings
+# Options here are Flask options so please check
+# http://flask.pocoo.org/docs/0.11/config/#builtin-configuration-values
 [api]
 debug = true
+testing = false
+logger_name = "cephlcm.framework"
+json_sort_keys = true
+jsonify_prettyprint_regular = true
+json_as_ascii = false
 
-[api.db]
+# Setup for Flask-PyMongo
+# https://flask-pymongo.readthedocs.io/en/latest/
+[api.mongo]
 host = "127.0.0.1"
 port = 27017
-db_name = "devel"
+dbname = "devel"
+connect = false
 
+# API options related to tokens
 [api.token]
+# Default TTL for token in seconds
 ttl_in_seconds = 120
+
+# Common options
+[common]
+# Default length of the generated passwords
+password_length = 10
+
+[common.email]
+# Default email in FROM field
+from = "noreply@mirantis.com"
+# Default SMTP host
+host = "localhost"
+# Default SMTP port
+port = 25
+# Default SMTP login (set to "" if no auth is required)
+login = ""
+# Default SMTP password (set to "" if no auth is required)
+password = ""

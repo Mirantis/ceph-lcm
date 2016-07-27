@@ -11,11 +11,14 @@ import string
 import bcrypt
 import six
 
+from cephlcm.common import config
 
-DEFAULT_PASSWORD_LENGTH = 10
-"""Default length of the newely generated password."""
+
+CONF = config.make_common_config()
+"""Config."""
 
 PASSWORD_LETTERS = string.printable.strip()
+"""A set of letters to use for password generation."""
 
 
 def hash_password(password):
@@ -30,8 +33,10 @@ def compare_passwords(password, suspected_hash):
     return bcrypt.checkpw(bytes(password), bytes(suspected_hash))
 
 
-def generate_password(length=DEFAULT_PASSWORD_LENGTH):
+def generate_password(length=None):
     """Generates secure password of given length."""
+
+    length = length or CONF.PASSWORD_LENGTH
 
     return "".join(
         random_password_character() for _ in six.moves.range(length))

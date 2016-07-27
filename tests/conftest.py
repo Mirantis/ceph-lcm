@@ -100,26 +100,25 @@ def mongo_db_name():
     """This fixture creates a separate MongoDB database."""
 
     db_name = str(uuid.uuid4())
-    old_name = config.DefaultConfig.MONGO_DBNAME
-    config.DefaultConfig.MONGO_DBNAME = db_name
+    old_name = config.CONF.MONGO_DBNAME
+    config.CONF.MONGO_DBNAME = db_name
 
     yield db_name
 
     mongo_client = pymongo.MongoClient(
-        host=config.DefaultConfig.MONGO_HOST,
-        port=config.DefaultConfig.MONGO_PORT
+        host=config.CONF.MONGO_HOST,
+        port=config.CONF.MONGO_PORT
     )
     mongo_client.drop_database(db_name)
-    mongo_client.fsync(async=True)
 
-    config.DefaultConfig.MONGO_DBNAME = old_name
+    config.CONF.MONGO_DBNAME = old_name
 
 
 @pytest.fixture(scope="module")
 def pymongo_connection(mongo_db_name):
     client = pymongo.MongoClient(
-        host=config.DefaultConfig.MONGO_HOST,
-        port=config.DefaultConfig.MONGO_PORT
+        host=config.CONF.MONGO_HOST,
+        port=config.CONF.MONGO_PORT
     )
     connection = mock.MagicMock()
     connection.db = client[mongo_db_name]
@@ -131,7 +130,7 @@ def pymongo_connection(mongo_db_name):
 def configure_model(mongo_db_name, pymongo_connection):
     """This fixture append fake config to the Model."""
 
-    generic.configure_models(pymongo_connection, config.DefaultConfig.__dict__)
+    generic.configure_models(pymongo_connection, config.CONF.__dict__)
 
     yield
 
