@@ -9,6 +9,7 @@ different error handlers and alerting system propagators.
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import sys
 import uuid
 
 import flask
@@ -17,10 +18,14 @@ import werkzeug.exceptions
 
 from cephlcm.api import exceptions
 from cephlcm.common import log
+from cephlcm.common import plugins
 
 
 LOG = log.getLogger(__name__)
 """Logger."""
+
+PLUGIN_NAMESPACE = "cephlcm.alerts"
+"""Namespace for plugins to use."""
 
 
 def set_global_request_id():
@@ -46,13 +51,18 @@ def error_to_json(error):
         json_error.code = error.code
         json_error.description = error.description
         json_error.error_name = six.text_type(error)
+    else:
+        LOG.exception("Unmanaged error: %s", error)
+        json_error = exceptions.InternalServerError()
 
-        return json_error.get_response()
+    exc_info = sys.exc_info()
+    for plugin in plugins.get_plugins(PLUGIN_NAMESPACE):
+        try:
+            plugin(flask.g.request_id, error, exc_info)
+        except Exception as exc:
+            LOG.error("Cannot execute plugin: %s", exc)
 
-    LOG.exception("Unmanaged error: %s", error)
-
-    error = exceptions.InternalServerError()
-    return error.get_response()
+    return json_error.get_response()
 
 
 def register_handlers(application):

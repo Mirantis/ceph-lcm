@@ -2,6 +2,8 @@
 """Common small utils."""
 
 
+import itertools
+
 import six
 
 
@@ -12,9 +14,21 @@ def cached(func):
 
     @six.wraps(func)
     def decorator(*args, **kwargs):
-        if func.__name__ not in caches:
-            caches[func.__name__] = func(*args, **kwargs)
+        key = cache_key(func, args, kwargs)
+        if key not in caches:
+            caches[key] = func(*args, **kwargs)
 
-        return caches[func.__name__]
+        return caches[key]
 
     return decorator
+
+
+def cache_key(func, args, kwargs):
+    args_part = "\x00".join(repr(arg) for arg in args)
+    kwargs_part = "\x00".join(
+        itertools.chain.from_iterable(
+            (repr(k), repr(v)) for k, v in six.iteritems(kwargs)
+        )
+    )
+
+    return "\x01".join([func.__name__, args_part, kwargs_part])

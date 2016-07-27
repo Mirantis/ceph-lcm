@@ -54,6 +54,10 @@ class Config(object):
     def raw_common(self):
         return self._raw["common"]
 
+    @property
+    def raw_plugins(self):
+        return self._raw["plugins"]
+
     def set(self, configdict, name, prefix=""):
         """Sets value from parsed config to self."""
 
@@ -97,6 +101,12 @@ class CommonConfig(Config):
             "formatters": self.LOGGING_FORMATTERS,
             "root": self.LOGGING_ROOT
         }
+
+
+class PluginConfig(Config):
+    """A config which has specific options for plugins."""
+
+    CONFIG_CLASS = "plugins"
 
 
 def with_parsed_configs(func):
@@ -163,3 +173,11 @@ def make_common_config(raw_config):
     """Makes Api specific config."""
 
     return CommonConfig(raw_config)
+
+
+@utils.cached
+@with_parsed_configs
+def make_plugin_config(raw_config):
+    """Makes plugin specific config."""
+
+    return PluginConfig(raw_config)
