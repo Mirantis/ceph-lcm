@@ -39,6 +39,7 @@ import pymongo
 import six
 
 from cephlcm.common import exceptions
+from cephlcm.common import log
 from cephlcm.common import timeutils
 from cephlcm.common import wrappers
 
@@ -70,6 +71,9 @@ Basically, it is JSON boilerplate.
 
 SORT_ASC = pymongo.ASCENDING
 SORT_DESC = pymongo.DESCENDING
+
+LOG = log.getLogger(__name__)
+"""Logger."""
 
 
 class CachedProperty(object):

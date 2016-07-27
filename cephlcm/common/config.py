@@ -30,9 +30,6 @@ CONFIG_FILES = (
 )
 """A list of config files in order to load/parse them."""
 
-LOG = logging.getLogger(__name__)
-"""Logger."""
-
 _PARSED_CACHE = {}
 """Internal cache to avoid reparsing of files anytime."""
 
@@ -62,17 +59,17 @@ class Config(object):
 
         setattr(self, prefix + name.upper(), configdict[name])
 
-    def set_raw(self, raw_config, prefix=""):
+    def set_raw(self, raw_config, prefix="", stop=False):
         """Set all values of config to self."""
 
         for key, value in six.iteritems(raw_config):
-            if isinstance(value, dict):
+            if not stop and isinstance(value, dict):
                 if prefix:
                     new_prefix = "{0}_{1}_".format(prefix, key.upper())
                 else:
                     new_prefix = key.upper() + "_"
 
-                self.set_raw(value, new_prefix)
+                self.set_raw(value, new_prefix, True)
             else:
                 self.set(raw_config, key, prefix)
 
@@ -87,6 +84,19 @@ class CommonConfig(Config):
     """A config which has common options."""
 
     CONFIG_CLASS = "common"
+
+    @property
+    def logging_config(self):
+        return {
+            "version": self.LOGGING_VERSION,
+            "incremental": self.LOGGING_INCREMENTAL,
+            "disable_existing_loggers": self.LOGGING_DISABLE_EXISTING_LOGGERS,
+            "filters": self.LOGGING_FILTERS,
+            "loggers": self.LOGGING_LOGGERS,
+            "handlers": self.LOGGING_HANDLERS,
+            "formatters": self.LOGGING_FORMATTERS,
+            "root": self.LOGGING_ROOT
+        }
 
 
 def with_parsed_configs(func):

@@ -13,10 +13,15 @@ import flask
 import six
 
 from cephlcm.api import exceptions
+from cephlcm.common import log
 from cephlcm.common.models import role
 from cephlcm.common.models import token
 from cephlcm.common.models import user
 from cephlcm.common import passwords
+
+
+LOG = log.getLogger(__name__)
+"""Logger."""
 
 
 def require_authentication(func):
@@ -26,10 +31,12 @@ def require_authentication(func):
     def decorator(*args, **kwargs):
         token_id = flask.request.headers.get("Authorization")
         if not token_id:
+            LOG.warning("Cannot find token in Authorization header")
             raise exceptions.Forbidden
 
         token_model = token.TokenModel.find_token(token_id)
         if not token_model:
+            LOG.warning("Cannot find not expired token %s", token_id)
             raise exceptions.Forbidden
 
         flask.g.token = token_model
@@ -48,6 +55,7 @@ def require_authorization(permission_class, permission_name):
             user_model = getattr(flask.g, "token", None)
             user_model = getattr(user_model, "user", None)
             if not user_model:
+                LOG.warning("Cannot find authenticated user model")
                 raise exceptions.Forbidden
 
             has_permission = any(
@@ -55,6 +63,8 @@ def require_authorization(permission_class, permission_name):
                 for r in user_model.roles
             )
             if not has_permission:
+                LOG.warning("User with ID %s has no enough permissions",
+                            user_model.model_id)
                 raise exceptions.Forbidden
 
             return func(*args, **kwargs)
@@ -68,11 +78,13 @@ def authenticate(user_name, password):
 
     user_model = user.UserModel.find_by_login(user_name)
     if not user_model:
+        LOG.warning("Cannot find not deleted user with login %s", user_name)
         raise exceptions.Unauthorized
 
     password = password.encode("utf-8")
     password_hash = user_model.password_hash.encode("utf-8")
     if not passwords.compare_passwords(password, password_hash):
+        LOG.warning("Password mismatch for user with login %s", user_name)
         raise exceptions.Unauthorized
 
     token_model = token.TokenModel.create(user_model.model_id)

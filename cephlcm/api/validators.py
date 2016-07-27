@@ -6,6 +6,7 @@ import jsonschema
 import six
 
 from cephlcm.api import exceptions
+from cephlcm.common import log
 
 
 JSONSCHEMA_DEFINITIONS = {
@@ -58,6 +59,8 @@ Mostly because {"type": "string"} is not good enough
 and {"format": "email"} deeply broken by design.
 """
 
+LOG = log.getLogger(__name__)
+
 
 def require_schema(schema):
     """This decorator verifies that request JSON matches given JSONSchema.
@@ -74,6 +77,7 @@ def require_schema(schema):
             errors = [err.message for err in errors]
 
             if errors:
+                LOG.warning("Cannot validate request: %s", errors)
                 raise exceptions.InvalidJSONError(errors)
 
             return func(self, *args, **kwargs)
@@ -103,6 +107,8 @@ def with_model(model_class):
 
             model = find(str(kwargs["item_id"]))
             if not model:
+                LOG.warning("Cannot find model %s of %s",
+                            kwargs["item_id"], model_class.__name__)
                 raise exceptions.NotFound
 
             kwargs["item"] = model
@@ -133,6 +139,7 @@ def no_updates_on_default_fields(func):
             item.initiator_id != self.request_json["initiator_id"]
         )
         if any(changed):
+            LOG.warning("Cannot update fields, managed by API")
             raise exceptions.CannotUpdateManagedFieldsError()
 
         return func(self, **kwargs)

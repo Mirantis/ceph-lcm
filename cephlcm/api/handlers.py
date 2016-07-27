@@ -16,6 +16,11 @@ import six
 import werkzeug.exceptions
 
 from cephlcm.api import exceptions
+from cephlcm.common import log
+
+
+LOG = log.getLogger(__name__)
+"""Logger."""
 
 
 def set_global_request_id():
@@ -44,10 +49,7 @@ def error_to_json(error):
 
         return json_error.get_response()
 
-    flask.current_app.logger.exception(
-        "[req: {0}] Unmanaged error: %s".format(flask.g.request_id),
-        error
-    )
+    LOG.exception("Unmanaged error: %s", error)
 
     error = exceptions.InternalServerError()
     return error.get_response()

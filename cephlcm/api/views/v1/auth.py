@@ -11,6 +11,7 @@ from cephlcm.api import auth
 from cephlcm.api import exceptions
 from cephlcm.api import validators
 from cephlcm.api.views import generic
+from cephlcm.common import log
 
 
 POST_SCHEMA = {
@@ -23,6 +24,9 @@ POST_SCHEMA = {
     "required": ["username", "password"]
 }
 """JSON schema of the POST request to /auth."""
+
+LOG = log.getLogger(__name__)
+"""Logger."""
 
 
 class AuthView(generic.ModelView):
@@ -37,13 +41,13 @@ class AuthView(generic.ModelView):
         username = self.request_json["username"]
         password = self.request_json["password"]
 
-        self.log("info", "Attempt to login user %s", username)
+        LOG.info("Attempt to login user %s", username)
 
         token_model = auth.authenticate(username, password)
         if not token_model:
             raise exceptions.Unauthorized
 
-        self.log("info", "User %s (id:%s) has logged in",
+        LOG.info("User %s (id:%s) has logged in",
                  username, token_model.user_id)
 
         return token_model
@@ -52,5 +56,4 @@ class AuthView(generic.ModelView):
     def delete(self):
         auth.logout(flask.g.token)
 
-        self.log("info", "User with id %s has logged out",
-                 flask.g.token.user_id)
+        LOG.info("User with id %s has logged out", flask.g.token.user_id)
