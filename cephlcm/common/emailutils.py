@@ -8,10 +8,14 @@ from email.mime import multipart
 from email.mime import text
 
 from cephlcm.common import config
+from cephlcm.common import log
 
 
 CONF = config.make_common_config()
 """Config."""
+
+LOG = log.getLogger(__name__)
+"""Logger."""
 
 
 def send(to, subject, text_body, html_body=None, cc=None, bcc=None,
@@ -29,6 +33,8 @@ def send(to, subject, text_body, html_body=None, cc=None, bcc=None,
     to, cc, bcc = make_lists(to, cc, bcc)
     message = make_message(from_, to, cc, subject, text_body, html_body)
     client = make_client(host, port, login, password)
+
+    LOG.info("Send email to %s, subject is '%s'", to, text_body)
 
     client.sendmail(from_, to, message)
     client.quit()

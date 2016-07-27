@@ -9,6 +9,7 @@ from cephlcm.api import exceptions as http_exceptions
 from cephlcm.api import validators
 from cephlcm.api.views import generic
 from cephlcm.common import exceptions as base_exceptions
+from cephlcm.common import log
 from cephlcm.common.models import role
 
 
@@ -29,6 +30,9 @@ MODEL_SCHEMA = validators.create_model_schema("role", DATA_SCHEMA)
 
 POST_SCHEMA = validators.create_data_schema(DATA_SCHEMA, True)
 """Schema for the new model request."""
+
+LOG = log.getLogger(__name__)
+"""Logger."""
 
 
 class RoleView(generic.VersionedCRUDView):
@@ -59,6 +63,7 @@ class RoleView(generic.VersionedCRUDView):
         model = role.RoleModel.find_version(str(item_id), int(version))
 
         if not model:
+            LOG.info("Cannot find model with ID %s", item_id)
             raise http_exceptions.NotFound
 
         return model
@@ -75,9 +80,18 @@ class RoleView(generic.VersionedCRUDView):
         try:
             item.save()
         except base_exceptions.CannotUpdateDeletedModel:
+            LOG.warning(
+                "Cannot update deleted role %s (deleted at %s, "
+                "version %s)",
+                item_id, item.time_deleted, item.version
+            )
             raise http_exceptions.CannotUpdateDeletedModel()
-        except ValueError:
+        except ValueError as exc:
+            LOG.warning("Incorrect permissions for role %s: %s",
+                        item_id, exc)
             raise http_exceptions.BadRequest
+
+        LOG.info("Role %s was updated by %s", item_id, self.initiator_id)
 
         return item
 
@@ -91,9 +105,17 @@ class RoleView(generic.VersionedCRUDView):
                 initiator_id=self.initiator_id
             )
         except base_exceptions.UniqueConstraintViolationError:
+            LOG.warning("Cannot create role %s (unique constraint violation)",
+                        self.request_json["name"])
             raise http_exceptions.ImpossibleToCreateSuchModel()
-        except ValueError:
+        except ValueError as exc:
+            LOG.warning("Incorrect permissions for role %s: %s",
+                        self.request_json["name"], exc)
             raise http_exceptions.BadRequest
+
+        LOG.info("Role %s (%s) created by %s",
+                 self.request_json["name"], role_model.model_id,
+                 self.initiator_id)
 
         return role_model
 
@@ -103,8 +125,12 @@ class RoleView(generic.VersionedCRUDView):
         try:
             item.delete()
         except base_exceptions.CannotUpdateDeletedModel:
+            LOG.warning("Cannot delete deleted role %s", item_id)
             raise http_exceptions.CannotUpdateDeletedModel()
         except base_exceptions.CannotDeleteRoleWithActiveUsers:
+            LOG.warning("Cannot delete role %s with active users", item_id)
             raise http_exceptions.CannotDeleteRoleWithActiveUsers()
+
+        LOG.info("Role %s was deleted by %s", item_id, self.initiator_id)
 
         return item

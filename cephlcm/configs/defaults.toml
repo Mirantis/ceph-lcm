@@ -20,7 +20,8 @@
 [api]
 debug = true
 testing = false
-logger_name = "cephlcm.framework"
+logger_name = "cephlcm.api.wsgi"
+logger_handler_policy = "never"
 json_sort_keys = true
 jsonify_prettyprint_regular = true
 json_as_ascii = false
@@ -54,3 +55,37 @@ port = 25
 login = ""
 # Default SMTP password (set to "" if no auth is required)
 password = ""
+
+# Default Python logging is used.
+# https://docs.python.org/2/library/logging.config.html#dictionary-schema-details
+[common.logging]
+version = 1
+incremental = false
+disable_existing_loggers = true
+
+[common.logging.root]
+handlers = []
+
+[common.logging.filters]
+
+[common.logging.formatters.debug]
+format = "%(asctime)s [%(levelname)-8s] (%(filename)15s:%(lineno)-4d): %(message)s"
+datefmt = "%Y-%m-%d %H:%M:%S"
+
+[common.logging.formatters.default]
+format = "%(asctime)s [%(levelname)-8s]: %(message)s"
+datefmt = "%Y-%m-%d %H:%M:%S"
+
+[common.logging.formatters.syslog]
+format = "%(name)s %(asctime)s [%(levelname)-8s]: %(message)s"
+datefmt = "%Y-%m-%d %H:%M:%S"
+
+[common.logging.handlers.debug]
+class = "logging.StreamHandler"
+formatter = "debug"
+level = "DEBUG"
+
+[common.logging.loggers.cephlcm]
+propagate = true
+level = "DEBUG"
+handlers = ["debug"]

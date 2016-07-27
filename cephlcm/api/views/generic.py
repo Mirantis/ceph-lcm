@@ -13,6 +13,11 @@ import six
 import werkzeug.exceptions
 
 from cephlcm.api import exceptions
+from cephlcm.common import log
+
+
+LOG = log.getLogger(__name__)
+"""Logger."""
 
 
 class View(flask.views.MethodView):
@@ -45,7 +50,7 @@ class View(flask.views.MethodView):
         try:
             return flask.request.get_json(force=True)
         except werkzeug.exceptions.BadRequest as exc:
-            self.log("error", "Cannot process user request: %s", exc)
+            LOG.error("Cannot process user request: %s", exc)
             raise exceptions.NotAcceptable
 
     @property
@@ -72,14 +77,6 @@ class View(flask.views.MethodView):
             view_func=cls.as_view(cls.NAME.encode("utf-8"))
         )
 
-    def log(self, level, message, *args, **kwargs):
-        """This methods prepend each log record with request id."""
-
-        method = getattr(flask.current_app.logger, level)
-        log_message = "[req: {}] ".format(self.request_id) + message
-
-        method(log_message, *args, **kwargs)
-
     def prepare_response(self, response):
         """This method prepares response to convert into JSON."""
 
@@ -91,13 +88,13 @@ class View(flask.views.MethodView):
         try:
             response = self.prepare_response(response)
         except Exception as exc:
-            self.log("error", "Cannot build model response: %s", exc)
+            LOG.error("Cannot build model response: %s", exc)
             raise exceptions.UnknownReturnValueError
 
         try:
             response = flask.json.jsonify(response)
         except Exception as exc:
-            self.log("error", "Cannot convert %s to JSON: %s", response, exc)
+            LOG.error("Cannot convert %s to JSON: %s", response, exc)
 
         return response
 
