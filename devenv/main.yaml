@@ -1,5 +1,5 @@
 ---
-# Provision for VSM project development environment
+# Provision for CephLCM project development environment
 
 
 - name: Setup development environment
@@ -10,10 +10,12 @@
     LC_MESSAGES: C
     LC_CTYPE: C
     TMUX: 1
+  vars:
+    venv: cephlcm
   roles:
     - base
     - python
     - role: mongodb
       in_memory: true
     - role: sarkhipov
-      when: lookup("env", "VSMDEV") == "sarkhipov"
+      when: lookup("env", "LCMDEV") == "sarkhipov"

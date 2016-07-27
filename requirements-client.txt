@@ -1,4 +1,4 @@
-# Requirements for vsm.client package
+# Requirements for cephlcm.client package
 
 -r requirements-common.txt
 

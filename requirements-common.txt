@@ -1,4 +1,4 @@
-# Requirements for vsm.common package
+# Requirements for cephlcm.common package
 
 PyMongo
 simplejson

@@ -1,4 +1,4 @@
-# Requirements for vsm.api package
+# Requirements for cephlcm.api package
 
 -r requirements-common.txt
 

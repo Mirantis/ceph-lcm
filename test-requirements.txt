@@ -1,6 +1,6 @@
-# Requirements to test VSM
+# Requirements to test CephLCM
 
-flake8<3.0  # incompatible with latest radon 1.4.0
+flake8 > 3.0
 flake8-coding
 flake8-debugger
 hacking
@@ -11,5 +11,5 @@ pytest
 pytest-cov
 pytest-flask
 pytest-profiling
-radon
+radon >= 1.4.2
 xenon

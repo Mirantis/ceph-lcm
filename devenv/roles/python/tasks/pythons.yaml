@@ -1,18 +1,19 @@
 ---
-# Install Pythons in Pyenv and create VSM virtualenv
+# Install Pythons in Pyenv and create CephLCM virtualenv
 
 
 - name: Install Pythons
   command: bash -ic "pyenv install -s {{ item }}"
   with_items: "{{ pyenv_pythons }}"
 
-- name: Check if VSM virtualenv exists
-  stat: path="{{ pyenv_root }}/versions/vsm"
-  register: vsm_virtualenv
+- name: Check if CephLCM virtualenv exists
+  stat: path="{{ pyenv_root }}/versions/cephlcm"
+  register: cephlcm_virtualenv
 
-- name: Create VSM virtualenv
-  command: bash -ic "pyenv virtualenv {{ vsm_python }} vsm"
-  when: not vsm_virtualenv.stat.exists
+- name: Create CephLCM virtualenv
+  command: bash -ic "pyenv virtualenv {{ cephlcm_python }} {{ venv }}"
+  when: not cephlcm_virtualenv.stat.exists
 
-- name: Install VSM requirements
-  command: bash -ic "pyenv activate vsm && pip install -r /vagrant/requirements.txt -r test-requirements.txt -e /vagrant see"
+- name: Install CephLCM requirements
+  command: bash -ic "pyenv activate {{ venv }} && pip install -r requirements.txt -r test-requirements.txt -e . see"
+          chdir=/vagrant

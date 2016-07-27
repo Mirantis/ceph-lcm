@@ -7,7 +7,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box              = "ubuntu/xenial64"
-  config.vm.hostname         = "vsm"
+  config.vm.hostname         = "cephlcm"
   config.vm.box_check_update = false
   config.ssh.forward_agent   = true
 

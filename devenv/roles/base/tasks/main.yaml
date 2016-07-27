@@ -1,5 +1,5 @@
 ---
-# Base tasks for VSM development provision
+# Base tasks for CephLCM development provision
 
 
 - include: apt.yaml

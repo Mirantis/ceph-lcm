@@ -1,4 +1,4 @@
-# All requirements for VSM project
+# All requirements for CephLCM project
 
 -r requirements-common.txt
 -r requirements-api.txt

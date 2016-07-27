@@ -28,7 +28,7 @@ pyenv_pythons:
   - "3.5.2"
   - "pypy-5.3.1"
 
-vsm_python: "2.7.12"
+cephlcm_python: "2.7.12"
 
 pyenv_plugins:
   - name: pyenv-virtualenv
