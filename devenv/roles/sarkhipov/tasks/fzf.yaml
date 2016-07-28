@@ -10,3 +10,7 @@
 
 - name: Install fzf
   command: bash -ic "{{ ansible_env.HOME }}/.fzf/install --all --64"
+
+- name: Use ag for fzf default command
+  lineinfile: dest=.bashrc
+              line='export FZF_DEFAULT_COMMAND="(ag --nocolor --nogroup -l -g \'\') 2> /dev/null"'

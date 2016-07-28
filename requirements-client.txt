@@ -1,5 +1,3 @@
 # Requirements for cephlcm.client package
 
--r requirements-common.txt
-
-requests
+requests[socks]
