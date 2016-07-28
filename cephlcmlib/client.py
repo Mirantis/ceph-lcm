@@ -241,7 +241,7 @@ class V1Client(Client):
 
         return self._session.get(url, json=payload)
 
-    def get_premissions(self):
+    def get_permissions(self):
         url = self._make_url("/v1/permission/")
         payload = {}
 

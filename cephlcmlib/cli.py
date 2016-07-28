@@ -260,3 +260,12 @@ def get_role_version(ctx, client, model_client, role_id, version):
     """Requests a list of certain version of role with ID."""
 
     return client.get_role_version(str(role_id), version)
+
+
+@cli.command()
+@with_client
+@format_output
+def get_permissions(ctx, client, model_client):
+    """Request a list of permissions avaialable in API."""
+
+    return client.get_permissions()
