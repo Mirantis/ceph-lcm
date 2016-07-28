@@ -52,16 +52,20 @@ class UserView(generic.VersionedCRUDView):
     ENDPOINT = "/user/"
     PARAMETER_TYPE = "uuid"
 
+    @auth.require_authorization("api", "view_user")
     def get_all(self):
         return user.UserModel.list_models(self.pagination)
 
+    @auth.require_authorization("api", "view_user")
     @validators.with_model(user.UserModel)
     def get_item(self, item_id, item, *args):
         return item
 
+    @auth.require_authorization("api", "view_user_versions")
     def get_versions(self, item_id):
         return user.UserModel.list_versions(str(item_id), self.pagination)
 
+    @auth.require_authorization("api", "view_user_versions")
     def get_version(self, item_id, version):
         model = user.UserModel.find_version(str(item_id), int(version))
 
@@ -72,6 +76,7 @@ class UserView(generic.VersionedCRUDView):
 
         return model
 
+    @auth.require_authorization("api", "edit_user")
     @validators.with_model(user.UserModel)
     @validators.require_schema(MODEL_SCHEMA)
     @validators.no_updates_on_default_fields
@@ -94,6 +99,7 @@ class UserView(generic.VersionedCRUDView):
 
         return item
 
+    @auth.require_authorization("api", "create_user")
     @validators.require_schema(POST_SCHEMA)
     def post(self):
         new_password = passwords.generate_password()
@@ -121,6 +127,7 @@ class UserView(generic.VersionedCRUDView):
 
         return user_model
 
+    @auth.require_authorization("api", "delete_user")
     @validators.with_model(user.UserModel)
     def delete(self, item_id, item):
         try:

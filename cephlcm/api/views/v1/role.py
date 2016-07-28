@@ -54,11 +54,11 @@ class RoleView(generic.VersionedCRUDView):
     def get_item(self, item_id, item, *args):
         return item
 
-    @auth.require_authorization("api", "view_role")
+    @auth.require_authorization("api", "view_role_versions")
     def get_versions(self, item_id):
         return role.RoleModel.list_versions(str(item_id), self.pagination)
 
-    @auth.require_authorization("api", "view_role")
+    @auth.require_authorization("api", "view_role_versions")
     def get_version(self, item_id, version):
         model = role.RoleModel.find_version(str(item_id), int(version))
 

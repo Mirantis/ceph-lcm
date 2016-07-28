@@ -200,7 +200,10 @@ def test_add_permission_to_user_view_user(
     assert response.status_code == 403
 
     add_permission_to_user(
-        sudo_client_v1, normal_user_with_role, {"api": ["view_role"]})
+        sudo_client_v1, normal_user_with_role, {
+            "api": ["view_role", "view_role_versions"]
+        }
+    )
 
     response = client_v1.get("/v1/role/")
     assert response.status_code == 200
