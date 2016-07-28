@@ -19,8 +19,10 @@ def new_password_message(monkeypatch):
 
 
 @pytest.fixture
-def clean_user_collection(pymongo_connection):
-    pymongo_connection.db.user.remove({})
+def clean_user_collection(sudo_user, pymongo_connection):
+    pymongo_connection.db.user.remove(
+        {"model_id": {"$ne": sudo_user.model_id}}
+    )
 
 
 @pytest.fixture
@@ -37,7 +39,7 @@ def valid_post_request():
     None, "1", 1, "1@", "1@@", "@.", ".@", {}
 ))
 def test_create_new_user_fail_email(
-    email, new_password_message, client_v1, user_email
+    email, new_password_message, sudo_client_v1, user_email
 ):
     request = {
         "full_name": str(uuid.uuid4()),
@@ -48,14 +50,14 @@ def test_create_new_user_fail_email(
     if user_email is not None:
         request["email"] = user_email
 
-    response = client_v1.post("/v1/user/", data=request)
+    response = sudo_client_v1.post("/v1/user/", data=request)
 
     assert response.status_code == 400
 
 
 @pytest.mark.parametrize("user_login", (None, {}, 1,))
 def test_create_new_user_fail_login(
-    email, new_password_message, client_v1, user_login
+    email, new_password_message, sudo_client_v1, user_login
 ):
     request = {
         "full_name": str(uuid.uuid4()),
@@ -66,14 +68,14 @@ def test_create_new_user_fail_login(
     if user_login is not None:
         request["login"] = user_login
 
-    response = client_v1.post("/v1/user/", data=request)
+    response = sudo_client_v1.post("/v1/user/", data=request)
 
     assert response.status_code == 400
 
 
 @pytest.mark.parametrize("user_name", (None, {}, 1,))
 def test_create_new_user_fail_name(
-    email, new_password_message, client_v1, user_name
+    email, new_password_message, sudo_client_v1, user_name
 ):
     request = {
         "login": str(uuid.uuid4()),
@@ -84,16 +86,16 @@ def test_create_new_user_fail_name(
     if user_name is not None:
         request["full_name"] = user_name
 
-    response = client_v1.post("/v1/user/", data=request)
+    response = sudo_client_v1.post("/v1/user/", data=request)
 
     assert response.status_code == 400
 
 
 def test_create_new_user(
-    pymongo_connection, email, new_password_message, client_v1, freeze_time,
-    valid_post_request
+    pymongo_connection, email, new_password_message, sudo_client_v1,
+    freeze_time, valid_post_request
 ):
-    response = client_v1.post("/v1/user/", data=valid_post_request)
+    response = sudo_client_v1.post("/v1/user/", data=valid_post_request)
     db_user = pymongo_connection.db.user.find(
         {"login": valid_post_request["login"]}
     )
@@ -136,7 +138,7 @@ def test_create_new_user(
 
 @pytest.mark.parametrize("field", ("login", "email"))
 def test_create_new_user_same_data(field, email, pymongo_connection,
-                                   client_v1, valid_post_request):
+                                   sudo_client_v1, valid_post_request):
     another_request = valid_post_request.copy()
 
     if field == "login":
@@ -144,15 +146,15 @@ def test_create_new_user_same_data(field, email, pymongo_connection,
     else:
         another_request["login"] = str(uuid.uuid4())
 
-    assert client_v1.post("/v1/user/",
-                          data=valid_post_request).status_code == 200
+    assert sudo_client_v1.post("/v1/user/",
+                               data=valid_post_request).status_code == 200
 
-    response = client_v1.post("/v1/user/", data=another_request)
+    response = sudo_client_v1.post("/v1/user/", data=another_request)
     assert response.status_code == 400
     assert response.json["code"] == 400
     assert response.json["error"] == "ImpossibleToCreateSuchModel"
 
-    response = client_v1.post("/v1/user/", data=valid_post_request)
+    response = sudo_client_v1.post("/v1/user/", data=valid_post_request)
     assert response.status_code == 400
     assert response.json["code"] == 400
     assert response.json["error"] == "ImpossibleToCreateSuchModel"
@@ -162,14 +164,15 @@ def test_create_new_user_same_data(field, email, pymongo_connection,
     assert db_user.count() == 1
 
 
-def test_update_idempotent(email, client_v1, freeze_time, valid_post_request):
-    response = client_v1.post("/v1/user/", data=valid_post_request)
+def test_update_idempotent(email, sudo_client_v1, freeze_time,
+                           valid_post_request):
+    response = sudo_client_v1.post("/v1/user/", data=valid_post_request)
 
     assert response.status_code == 200
     model = response.json
     freeze_time.return_value += 1
 
-    response = client_v1.put(
+    response = sudo_client_v1.put(
         "/v1/user/{0}/".format(model["id"]),
         data=model
     )
@@ -186,13 +189,13 @@ def test_update_idempotent(email, client_v1, freeze_time, valid_post_request):
     "email",
     "full_name"
 ))
-def test_update_field_ok(field, email, client_v1, freeze_time,
+def test_update_field_ok(field, email, sudo_client_v1, freeze_time,
                          valid_post_request):
-    response = client_v1.post("/v1/user/", data=valid_post_request)
+    response = sudo_client_v1.post("/v1/user/", data=valid_post_request)
     model = response.json
 
     model["data"][field] = "{0}@example.com".format(uuid.uuid4())
-    response = client_v1.put(
+    response = sudo_client_v1.put(
         "/v1/user/{0}/".format(model["id"]),
         data=model
     )
@@ -208,9 +211,9 @@ def test_update_field_ok(field, email, client_v1, freeze_time,
     "model",
     "id",
 ))
-def test_update_field_nok(field, email, client_v1, freeze_time,
+def test_update_field_nok(field, email, sudo_client_v1, freeze_time,
                           valid_post_request):
-    response = client_v1.post("/v1/user/", data=valid_post_request)
+    response = sudo_client_v1.post("/v1/user/", data=valid_post_request)
     model = response.json
     model_id = model["id"]
 
@@ -221,7 +224,7 @@ def test_update_field_nok(field, email, client_v1, freeze_time,
     else:
         model[field] = "{0}@example.com".format(uuid.uuid4())
 
-    response = client_v1.put(
+    response = sudo_client_v1.put(
         "/v1/user/{0}/".format(model_id),
         data=model
     )
@@ -230,24 +233,24 @@ def test_update_field_nok(field, email, client_v1, freeze_time,
 
 
 @pytest.mark.parametrize("field", ("login", "email"))
-def test_2users_update_previous_data(field, email, client_v1, freeze_time,
+def test_2users_update_previous_data(field, email, sudo_client_v1, freeze_time,
                                      valid_post_request):
     request2 = valid_post_request.copy()
     request2["login"] = str(uuid.uuid4())
     request2["email"] = "{0}@example.com".format(uuid.uuid4())
 
-    response1 = client_v1.post("/v1/user/", data=valid_post_request)
-    response2 = client_v1.post("/v1/user/", data=request2)
+    response1 = sudo_client_v1.post("/v1/user/", data=valid_post_request)
+    response2 = sudo_client_v1.post("/v1/user/", data=request2)
 
     model = response1.json
     model["data"][field] = "{0}@example.com".format(uuid.uuid4())
 
-    client_v1.put("/v1/user/{0}/".format(model["id"]), data=model)
+    sudo_client_v1.put("/v1/user/{0}/".format(model["id"]), data=model)
 
     another_model = response2.json
     another_model["data"][field] = valid_post_request[field]
 
-    response = client_v1.put(
+    response = sudo_client_v1.put(
         "/v1/user/{0}/".format(another_model["id"]),
         data=another_model
     )
@@ -256,33 +259,42 @@ def test_2users_update_previous_data(field, email, client_v1, freeze_time,
     assert response.json["data"][field] == valid_post_request[field]
 
 
-def test_user_delete_known_user(email, client_v1, freeze_time,
+def test_user_delete_known_user(email, sudo_client_v1, freeze_time,
                                 valid_post_request):
-    response = client_v1.post("/v1/user/", data=valid_post_request)
-
-    response = client_v1.delete("/v1/user/{0}/".format(response.json["id"]))
+    response = sudo_client_v1.post("/v1/user/", data=valid_post_request)
+    response = sudo_client_v1.delete(
+        "/v1/user/{0}/".format(response.json["id"])
+    )
 
     assert response.status_code == 200
     assert response.json["time_deleted"] == int(freeze_time.return_value)
     assert response.json["version"] == 2
 
 
-def test_user_delete_twice(email, client_v1, freeze_time, valid_post_request):
-    response = client_v1.post("/v1/user/", data=valid_post_request)
+def test_user_delete_twice(email, sudo_client_v1, freeze_time,
+                           valid_post_request):
+    response = sudo_client_v1.post("/v1/user/", data=valid_post_request)
 
-    response = client_v1.delete("/v1/user/{0}/".format(response.json["id"]))
-    response = client_v1.delete("/v1/user/{0}/".format(response.json["id"]))
+    response = sudo_client_v1.delete(
+        "/v1/user/{0}/".format(response.json["id"])
+    )
+    response = sudo_client_v1.delete(
+        "/v1/user/{0}/".format(response.json["id"])
+    )
 
     assert response.status_code == 400
     assert response.json["code"] == 400
     assert response.json["error"] == "CannotUpdateDeletedModel"
 
 
-def test_user_delete_update(email, client_v1, freeze_time, valid_post_request):
-    response = client_v1.post("/v1/user/", data=valid_post_request)
+def test_user_delete_update(email, sudo_client_v1, freeze_time,
+                            valid_post_request):
+    response = sudo_client_v1.post("/v1/user/", data=valid_post_request)
 
-    response = client_v1.delete("/v1/user/{0}/".format(response.json["id"]))
-    response = client_v1.put(
+    response = sudo_client_v1.delete(
+        "/v1/user/{0}/".format(response.json["id"])
+    )
+    response = sudo_client_v1.put(
         "/v1/user/{0}/".format(response.json["id"]),
         data=response.json
     )
@@ -293,24 +305,24 @@ def test_user_delete_update(email, client_v1, freeze_time, valid_post_request):
 
 
 @pytest.mark.parametrize("field", ("login", "email"))
-def test_2users_update_delete_previous_data(field, email, client_v1,
+def test_2users_update_delete_previous_data(field, email, sudo_client_v1,
                                             freeze_time, valid_post_request):
     request2 = valid_post_request.copy()
     request2["login"] = str(uuid.uuid4())
     request2["email"] = "{0}@example.com".format(uuid.uuid4())
 
-    response1 = client_v1.post("/v1/user/", data=valid_post_request)
-    response2 = client_v1.post("/v1/user/", data=request2)
+    response1 = sudo_client_v1.post("/v1/user/", data=valid_post_request)
+    response2 = sudo_client_v1.post("/v1/user/", data=request2)
 
     model = response1.json
     model["data"][field] = "{0}@example.com".format(uuid.uuid4())
 
-    client_v1.delete("/v1/user/{0}/".format(model["id"]))
+    sudo_client_v1.delete("/v1/user/{0}/".format(model["id"]))
 
     another_model = response2.json
     another_model["data"][field] = valid_post_request[field]
 
-    response = client_v1.put(
+    response = sudo_client_v1.put(
         "/v1/user/{0}/".format(another_model["id"]),
         data=another_model
     )
@@ -320,21 +332,22 @@ def test_2users_update_delete_previous_data(field, email, client_v1,
 
 
 @pytest.mark.parametrize("query, items, per_page, page", (
-    ("", 10, 25, 1),
-    ("?page=1", 10, 25, 1),
+    ("", 11, 25, 1),
+    ("?page=1", 11, 25, 1),
     ("?page=2", 0, 25, 2),
     ("?per_page=5", 5, 5, 1),
     ("?per_page=5&page=2", 5, 5, 2),
-    ("?per_page=5&page=3", 0, 5, 3),
+    ("?per_page=5&page=3", 1, 5, 3),
     ("?per_page=5&page=-1", 5, 5, 1),
     ("?per_page=5&page=x", 5, 5, 1),
-    ("?per_page=-5&page=x", 10, 25, 1),
-    ("?per_page=-5&page=1", 10, 25, 1),
-    ("?per_page=0&page=1", 10, 25, 1),
+    ("?per_page=-5&page=x", 11, 25, 1),
+    ("?per_page=-5&page=1", 11, 25, 1),
+    ("?per_page=0&page=1", 11, 25, 1),
     ("?per_page=1&page=0", 1, 1, 1)
 ))
 def test_get_pagination_page(query, items, per_page, page, email,
-                             clean_user_collection, client_v1, freeze_time):
+                             clean_user_collection, sudo_client_v1,
+                             freeze_time):
     for _ in range(10):
         request = {
             "login": str(uuid.uuid4()),
@@ -342,13 +355,14 @@ def test_get_pagination_page(query, items, per_page, page, email,
             "role_ids": [],
             "full_name": str(uuid.uuid4())
         }
-        client_v1.post("/v1/user/", data=request)
+        sudo_client_v1.post("/v1/user/", data=request)
 
-    response = client_v1.get("/v1/user/{0}".format(query))
+    response = sudo_client_v1.get("/v1/user/{0}".format(query))
 
     assert response.status_code == 200
     assert len(response.json["items"]) == items
-    assert response.json["total"] == 10
+    # 1 is sudo user here
+    assert response.json["total"] == 10 + 1
     assert response.json["per_page"] == per_page
     assert response.json["page"] == page
 
@@ -367,24 +381,27 @@ def test_get_pagination_page(query, items, per_page, page, email,
     ("?per_page=0&page=1", 10, 25, 1),
     ("?per_page=1&page=0", 1, 1, 1)
 ))
-def test_get_versions_list(query, items, per_page, page, email, client_v1,
+def test_get_versions_list(query, items, per_page, page, email, sudo_client_v1,
                            clean_user_collection, valid_post_request):
     login_base = str(uuid.uuid4())
     valid_post_request["login"] = "{0}{1}".format(login_base, 0)
-    response = client_v1.post("/v1/user/", data=valid_post_request)
+    response = sudo_client_v1.post("/v1/user/", data=valid_post_request)
 
     model = response
     for idx in range(1, 10):
         model = model.json
         model["data"]["login"] = "{0}{1}".format(login_base, idx)
-        model = client_v1.put("/v1/user/{0}/".format(model["id"]), data=model)
+        model = sudo_client_v1.put(
+            "/v1/user/{0}/".format(model["id"]), data=model
+        )
         assert model.status_code == 200
 
-    response = client_v1.get("/v1/user/")
-    assert response.json["total"] == 1
-    assert len(response.json["items"]) == 1
+    response = sudo_client_v1.get("/v1/user/")
+    # 1 is sudo user
+    assert response.json["total"] == 1 + 1
+    assert len(response.json["items"]) == 1 + 1
 
-    response = client_v1.get(
+    response = sudo_client_v1.get(
         "/v1/user/{0}/version/{1}".format(model.json["id"], query))
     assert response.status_code == 200
     assert len(response.json["items"]) == items
@@ -394,20 +411,23 @@ def test_get_versions_list(query, items, per_page, page, email, client_v1,
     assert len(set(item["id"] for item in response.json["items"])) < 2
 
 
-def test_get_version(email, client_v1, valid_post_request):
+def test_get_version(email, sudo_client_v1, valid_post_request):
     login_base = str(uuid.uuid4())
     valid_post_request["login"] = "{0}{1}".format(login_base, 0)
-    response = client_v1.post("/v1/user/", data=valid_post_request)
+    response = sudo_client_v1.post("/v1/user/", data=valid_post_request)
     initial_json = copy.deepcopy(response.json)
 
     model = response
     for idx in range(1, 3):
         model = model.json
         model["data"]["login"] = "{0}{1}".format(login_base, idx)
-        model = client_v1.put("/v1/user/{0}/".format(model["id"]), data=model)
+        model = sudo_client_v1.put(
+            "/v1/user/{0}/".format(model["id"]),
+            data=model
+        )
         assert model.status_code == 200
 
-    response2 = client_v1.get(
+    response2 = sudo_client_v1.get(
         "/v1/user/{0}/version/2/".format(model.json["id"]))
     assert response2.status_code == 200
 

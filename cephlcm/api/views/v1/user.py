@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 
 import six
 
-# from cephlcm.api import auth
+from cephlcm.api import auth
 from cephlcm.api import exceptions as http_exceptions
 from cephlcm.api import validators
 from cephlcm.api.views import generic
@@ -45,7 +45,7 @@ LOG = log.getLogger(__name__)
 class UserView(generic.VersionedCRUDView):
     """Implementation of view for /v1/user/."""
 
-    # decorators = [auth.require_authentication]
+    decorators = [auth.require_authentication]
 
     NAME = "user"
     MODEL_NAME = "user"

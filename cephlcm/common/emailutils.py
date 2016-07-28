@@ -34,7 +34,7 @@ def send(to, subject, text_body, html_body=None, cc=None, bcc=None,
     message = make_message(from_, to, cc, subject, text_body, html_body)
     client = make_client(host, port, login, password)
 
-    LOG.info("Send email to %s, subject is '%s'", to, text_body)
+    LOG.info("Send email to %s, subject is '%s'", to, subject)
 
     client.sendmail(from_, to, message)
     client.quit()
