@@ -1,4 +1,4 @@
-# -*- coding: ut-8 -*-
+# -*- coding: utf-8 -*-
 """Library to work with CephLCM API."""
 
 
