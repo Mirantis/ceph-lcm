@@ -1,6 +1,6 @@
 # All requirements for CephLCM project
 
--r requirements-common.txt
--r requirements-api.txt
--r requirements-client.txt
--r requirements-controller.txt
+-r requirements/common.txt
+-r requirements/api.txt
+-r requirements/client.txt
+-r requirements/controller.txt

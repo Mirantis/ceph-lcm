@@ -1,0 +1,6 @@
+# Optional requirements for CephLCM (suitable for development)
+
+
+ipython
+ipdb
+see
