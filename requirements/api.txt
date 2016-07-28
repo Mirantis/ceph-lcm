@@ -1,6 +1,6 @@
 # Requirements for cephlcm.api package
 
--r requirements-common.txt
+-r common.txt
 
 Flask
 Flask-PyMongo
