@@ -4,10 +4,12 @@
 
 - name: Ensure we have clean known_hosts
   file: path=.ssh/known_hosts state=absent
+  register: no_known_hosts
 
 - name: Add known hosts
   shell: ssh-keyscan -T 10 -H {{ item }} >> .ssh/known_hosts
   with_items: "{{ ssh_known_hosts }}"
+  when: no_known_hosts.changed
 
 - name: Copy local keypair to Vagrant box
   copy: src=~/.ssh/{{ item }}

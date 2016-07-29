@@ -4,7 +4,7 @@
 
 - name: Install par for Neovim
   become: true
-  apt: name=par state=latest
+  apt: name=par state=present
 
 - name: Add Neovim repository
   become: true
@@ -12,14 +12,29 @@
 
 - name: Install Neovim
   become: true
-  apt: name=neovim state=latest update_cache=true
+  apt: name=neovim state=present update_cache=true
+
+- name: Install Ruby development headers for Ruby extension
+  become: true
+  apt: name=ruby-dev state=present
 
 - name: Install Python client for Neovim
   become: true
-  command: "{{ item }} install -U neovim"
+  pip: name=neovim
+       state=latest
+       executable={{ item }}
   with_items:
     - pip2
     - pip3
+  tags:
+    # We have to do it for both Pythons
+    - skip_ansible_lint
+
+- name: Install support of Ruby plugins
+  become: true
+  gem: name=neovim state=latest user_install=no
+  tags:
+    - skip_ansible_lint
 
 - name: Ensure .vim directory is created
   file: path={{ item }}
@@ -50,3 +65,5 @@
 
 - name: Install vim plugins
   shell: "nvim --headless -c 'PlugUpdate | qall!'"
+  tags:
+    - skip_ansible_lint

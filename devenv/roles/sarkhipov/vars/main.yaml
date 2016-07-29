@@ -41,3 +41,5 @@ env_vars:
     value: nvim
   - name: PYTHONSTARTUP
     value: $HOME/.pythonrc
+
+fzf_version: 0.13.3

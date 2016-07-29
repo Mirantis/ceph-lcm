@@ -24,11 +24,13 @@
   become: true
   apt: name="{{ item }}={{ mongodb_version }}" update_cache=yes
   with_items: "{{ mongodb_components }}"
+  register: mongo_installed
 
 - name: Pin mongodb versions
   become: true
   command: apt-mark hold "{{ item }}"
   with_items: "{{ mongodb_components }}"
+  when: mongo_installed.changed
 
 - name: Install SystemD script
   become: true
@@ -47,3 +49,4 @@
 - name: Restart mongodb service
   become: true
   command: systemctl restart mongodb.service
+  when: script_result.changed

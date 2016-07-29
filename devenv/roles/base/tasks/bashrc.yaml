@@ -31,6 +31,9 @@
 
 - name: Add italic terminfo for tmux
   shell: tic /tmp/tmux-italic
+  tags:
+    # Command is idempotent
+    - skip_ansible_lint
 
 - name: Ensure proper tmux term is set
   blockinfile:

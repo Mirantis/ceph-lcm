@@ -9,10 +9,16 @@
 - name: Update packagaes
   become: true
   command: apt-get -yqq update warn=no
+  tags:
+    # This is to activate apt module :(
+    - skip_ansible_lint
 
 - name: Install aptitude
   become: true
   command: apt-get install -yqq aptitude warn=no
+  tags:
+    # This is to activate apt module :(
+    - skip_ansible_lint
 
 - name: Update host packages to the latest versions
   become: true
@@ -20,7 +26,7 @@
 
 - name: Ensure mandatory APT packages are installed
   become: true
-  apt: name="{{ item }}" state=latest
+  apt: name="{{ item }}" state=present
   with_items: "{{ apt_packages }}"
 
 - name: Remove unwanted provisioners
@@ -31,3 +37,6 @@
 - name: Remove crap
   become: true
   command: apt-get autoremove -y
+  tags:
+    # It is ok to run it a lot
+    - skip_ansible_lint

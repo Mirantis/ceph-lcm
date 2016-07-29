@@ -5,7 +5,7 @@
 
 - name: Install see
   become: true
-  pip: name=see state=latest
+  pip: name=see state=present
 
 - include: dotfiles.yaml
 - include: neovim.yaml

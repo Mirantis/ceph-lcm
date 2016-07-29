@@ -16,3 +16,6 @@
 - name: Set local timezone
   become: true
   command: timedatectl set-timezone Europe/Moscow
+  tags:
+    # timezone module will come in 2.2.0
+    - skip_ansible_lint

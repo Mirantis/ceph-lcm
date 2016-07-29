@@ -7,6 +7,9 @@
        dest=.gruvbox
        clone=yes
        depth=1
+  tags:
+    # This is rolling update repository without strict versions
+    - skip_ansible_lint
 
 - name: Source gruvbox colors
   lineinfile: dest=.bashrc

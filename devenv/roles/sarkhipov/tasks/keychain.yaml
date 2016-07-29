@@ -4,9 +4,10 @@
 
 - name: Install keychain
   become: true
-  apt: name=keychain state=latest
-
+  apt: name=keychain state=present
+  register: keychain_installed
 
 - name: Run keychain on start
   lineinfile: dest=.bashrc
               line='eval "$(keychain --nocolor --eval --agents ssh,gpg id_rsa 2> /dev/null)"'
+  when: keychain_installed.changed

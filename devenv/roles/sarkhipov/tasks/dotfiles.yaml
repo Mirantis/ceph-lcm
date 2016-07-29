@@ -4,14 +4,17 @@
 
 - name: Install GNU Stow
   become: true
-  apt: name=stow state=latest
+  apt: name=stow state=present
 
 - name: Download dotfiles
   git: repo=https://github.com/9seconds/dotfiles.git
        dest=.dotfiles
        clone=yes
        depth=1
+       version=master
+  register: dotfiles
 
 - name: Stow dotfiles
   command: bash -ic "stow -t ~ -R {{ item }}" chdir=.dotfiles
   with_items: "{{ stow_dotfiles }}"
+  when: dotfiles.changed

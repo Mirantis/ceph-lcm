@@ -11,4 +11,7 @@
 
 - name: Install tox
   become: true
-  command: pip3 install -U tox
+  pip: name=tox
+       state=present
+       executable=pip3
+       version={{ tox_version }}

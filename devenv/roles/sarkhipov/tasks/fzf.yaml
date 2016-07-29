@@ -7,9 +7,13 @@
        dest=.fzf
        clone=yes
        depth=1
+       version={{ fzf_version }}
 
 - name: Install fzf
   command: bash -ic "{{ ansible_env.HOME }}/.fzf/install --all --64"
+  tags:
+    # For some reason, I failed to register result of Clone fzf repository
+    - skip_ansible_result
 
 - name: Use ag for fzf default command
   lineinfile: dest=.bashrc

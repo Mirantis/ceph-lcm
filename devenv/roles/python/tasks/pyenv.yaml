@@ -4,7 +4,7 @@
 
 - name: Install packages, required to build Pythons
   become: true
-  apt: name="{{ item }}" state=latest
+  apt: name="{{ item }}" state=present
   with_items: "{{ build_requirements }}"
 
 - name: Clone PyEnv repository
@@ -12,6 +12,7 @@
        dest="{{ pyenv_root }}"
        depth=1
        clone=yes
+       version=master
 
 - name: Ensure PYENV_ROOT is correct
   lineinfile: dest=.bashrc
