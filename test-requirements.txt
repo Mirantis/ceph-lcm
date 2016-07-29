@@ -1,5 +1,6 @@
 # Requirements to test CephLCM
 
+ansible-lint
 flake8 < 3.0
 flake8-coding
 flake8-debugger

@@ -13,7 +13,7 @@
   command: bash -ic "{{ ansible_env.HOME }}/.fzf/install --all --64"
   tags:
     # For some reason, I failed to register result of Clone fzf repository
-    - skip_ansible_result
+    - skip_ansible_lint
 
 - name: Use ag for fzf default command
   lineinfile: dest=.bashrc
