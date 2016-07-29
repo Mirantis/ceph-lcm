@@ -11,7 +11,7 @@ from cephlcm.common import config
 from cephlcm.common import log
 
 
-CONF = config.make_common_config()
+CONF = config.make_config()
 """Config."""
 
 LOG = log.getLogger(__name__)
@@ -24,11 +24,11 @@ def send(to, subject, text_body, html_body=None, cc=None, bcc=None,
 
     to, cc and bcc are user email lists.
     """
-    from_ = from_ or CONF.EMAIL_FROM
-    host = host or CONF.EMAIL_HOST
-    port = port or CONF.EMAIL_PORT
-    login = login or CONF.EMAIL_LOGIN
-    password = password or CONF.EMAIL_PASSWORD
+    from_ = from_ or CONF.COMMON_EMAIL["from"]
+    host = host or CONF.COMMON_EMAIL["host"]
+    port = port or CONF.COMMON_EMAIL["port"]
+    login = login or CONF.COMMON_EMAIL["login"]
+    password = password or CONF.COMMON_EMAIL["password"]
 
     to, cc, bcc = make_lists(to, cc, bcc)
     message = make_message(from_, to, cc, subject, text_body, html_body)

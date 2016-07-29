@@ -14,7 +14,7 @@ import six
 from cephlcm.common import config
 
 
-CONF = config.make_common_config()
+CONF = config.make_config()
 """Config."""
 
 PASSWORD_LETTERS = string.printable.strip()
@@ -36,7 +36,7 @@ def compare_passwords(password, suspected_hash):
 def generate_password(length=None):
     """Generates secure password of given length."""
 
-    length = length or CONF.PASSWORD_LENGTH
+    length = length or CONF.COMMON_PASSWORD_LENGTH
 
     return "".join(
         random_password_character() for _ in six.moves.range(length))

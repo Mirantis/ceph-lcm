@@ -5,12 +5,6 @@
 import logging
 import logging.config
 
-from cephlcm.common import config
-
-
-CONF = config.make_common_config()
-"""Config."""
-
 
 try:
     import flask
@@ -35,8 +29,5 @@ else:
     logging.setLoggerClass(RequestIDLogger)
 
 
-def configure_logging(config):
-    logging.config.dictConfig(config)
-
-
 getLogger = logging.getLogger
+configure_logging = logging.config.dictConfig

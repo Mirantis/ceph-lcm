@@ -36,7 +36,7 @@ Description: {error.description}
 """.strip()
 """Text message to send on managed exception."""
 
-CONF = config.make_plugin_config()
+CONF = config.make_config()
 """Config."""
 
 LOG = log.getLogger(__name__)
@@ -55,8 +55,11 @@ def alert(request_id, error, sys_exc_info):
         message = alert_unmanaged_error(request_id, error, sys_exc_info)
         subject = "Unmanaged internal server error"
 
-    emailutils.send(CONF.ALERTS_EMAIL["send_to"], subject, message,
-                    from_=CONF.ALERTS_EMAIL["from"])
+    emailutils.send(
+        CONF.PLUGINS_ALERTS["email"]["send_to"],
+        subject, message,
+        from_=CONF.PLUGINS_ALERTS["email"]["from"]
+    )
 
 
 def alert_managed_error(request_id, error):

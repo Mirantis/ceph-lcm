@@ -12,7 +12,7 @@ from cephlcm.common import config
 from cephlcm.common import passwords
 
 
-CONF = config.make_common_config()
+CONF = config.make_config()
 """Config."""
 
 
@@ -29,5 +29,5 @@ def test_password_hashing(password):
 def test_generate_password():
     password = passwords.generate_password()
 
-    assert len(password) == CONF.PASSWORD_LENGTH
+    assert len(password) == CONF.COMMON_PASSWORD_LENGTH
     assert all(c in passwords.PASSWORD_LETTERS for c in password)

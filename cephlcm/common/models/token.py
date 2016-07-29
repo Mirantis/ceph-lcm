@@ -12,13 +12,14 @@ from __future__ import unicode_literals
 
 import bson.objectid
 
+from cephlcm.common import config
 from cephlcm.common.models import generic
 from cephlcm.common.models import user
 from cephlcm.common import timeutils
 
 
-TOKEN_CONFIG_TTL = "TOKEN_TTL_IN_SECONDS"
-"""Configuration option for token TTL."""
+CONF = config.make_api_config()
+"""Config."""
 
 
 class TokenModel(generic.Model):
@@ -93,7 +94,7 @@ class TokenModel(generic.Model):
     def default_ttl(self):
         """Returns a TTL for the token. It always returns seconds, integer."""
 
-        return int(self.CONFIG[TOKEN_CONFIG_TTL])
+        return int(CONF.API_TOKEN["ttl_in_seconds"])
 
     @property
     def user(self):

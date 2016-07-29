@@ -37,52 +37,13 @@ _PARSED_CACHE = {}
 class Config(object):
     """Base class for config."""
 
-    CONFIG_CLASS = None
-    """The name of the main config option class."""
-
     def __init__(self, config):
         self._raw = config
 
-        if self.CONFIG_CLASS:
-            self.set_raw(self._raw[self.CONFIG_CLASS])
-
-    @property
-    def raw_api(self):
-        return self._raw["api"]
-
-    @property
-    def raw_common(self):
-        return self._raw["common"]
-
-    @property
-    def raw_plugins(self):
-        return self._raw["plugins"]
-
-    @property
-    def raw_controller(self):
-        return self._raw["controller"]
-
-    def set(self, configdict, name, prefix=""):
-        """Sets value from parsed config to self."""
-
-        setattr(self, prefix + name.upper(), configdict[name])
-
-    def set_raw(self, raw_config, prefix="", stop=False):
-        """Set all values of config to self."""
-
-        for key, value in six.iteritems(raw_config):
-            if not stop and isinstance(value, dict):
-                if prefix:
-                    new_prefix = "{0}_{1}_".format(prefix, key.upper())
-                else:
-                    new_prefix = key.upper() + "_"
-
-                self.set_raw(value, new_prefix, True)
-            else:
-                self.set(raw_config, key, prefix)
-
-
-class LoggingMixin(object):
+        for section_key, section_values in six.iteritems(config):
+            for key, value in six.iteritems(section_values):
+                set_key = "_".join([section_key, key]).upper()
+                setattr(self, set_key, value)
 
     @property
     def logging_config(self):
@@ -90,36 +51,54 @@ class LoggingMixin(object):
             "version": self.LOGGING_VERSION,
             "incremental": self.LOGGING_INCREMENTAL,
             "disable_existing_loggers": self.LOGGING_DISABLE_EXISTING_LOGGERS,
-            "filters": self.LOGGING_FILTERS,
-            "loggers": self.LOGGING_LOGGERS,
-            "handlers": self.LOGGING_HANDLERS,
             "formatters": self.LOGGING_FORMATTERS,
+            "handlers": self.LOGGING_HANDLERS,
+            "filters": self.LOGGING_FILTERS,
             "root": self.LOGGING_ROOT
         }
 
 
-class ApiConfig(LoggingMixin, Config):
+class ApiConfig(Config):
     """A config which has specific options for API."""
 
-    CONFIG_CLASS = "api"
+    def __init__(self, config):
+        super(ApiConfig, self).__init__(config)
+
+        self.MONGO_HOST = self.DB_HOST
+        self.MONGO_PORT = self.DB_PORT
+        self.MONGO_DBNAME = self.DB_DBNAME
+        self.MONGO_CONNECT = self.DB_CONNECT
+
+        self.DEBUG = self.API_DEBUG
+        self.TESTING = self.API_TESTING
+        self.LOGGER_NAME = self.API_LOGGER_NAME
+        self.LOGGER_HANDLER_POLICY = self.API_LOGGER_HANDLER_POLICY
+        self.JSON_SORT_KEYS = self.API_JSON_SORT_KEYS
+        self.JSONIFY_PRETTYPRINT_REGULAR = \
+            self.API_JSONIFY_PRETTYPRINT_REGULAR
+        self.JSON_AS_ASCII = self.API_JSON_AS_ASCII
+
+    @property
+    def logging_config(self):
+        config = super(ApiConfig, self).logging_config
+        config["loggers"] = {
+            "cephlcm": self.API_LOGGING
+        }
+
+        return config
 
 
-class CommonConfig(Config):
-    """A config which has common options."""
-
-    CONFIG_CLASS = "common"
-
-
-class PluginConfig(Config):
-    """A config which has specific options for plugins."""
-
-    CONFIG_CLASS = "plugins"
-
-
-class ControllerConfig(LoggingMixin, Config):
+class ControllerConfig(Config):
     """A config which has specific options for controller."""
 
-    CONFIG_CLASS = "controller"
+    @property
+    def logging_config(self):
+        config = super(ControllerConfig, self).logging_config
+        config["loggers"] = {
+            "cephlcm": self.CONTROLLER_LOGGING
+        }
+
+        return config
 
 
 def with_parsed_configs(func):
@@ -174,26 +153,18 @@ def collect_config(filenames):
 
 @utils.cached
 @with_parsed_configs
+def make_config(raw_config):
+    """Makes Api specific config."""
+
+    return Config(raw_config)
+
+
+@utils.cached
+@with_parsed_configs
 def make_api_config(raw_config):
     """Makes Api specific config."""
 
     return ApiConfig(raw_config)
-
-
-@utils.cached
-@with_parsed_configs
-def make_common_config(raw_config):
-    """Makes Api specific config."""
-
-    return CommonConfig(raw_config)
-
-
-@utils.cached
-@with_parsed_configs
-def make_plugin_config(raw_config):
-    """Makes plugin specific config."""
-
-    return PluginConfig(raw_config)
 
 
 @utils.cached

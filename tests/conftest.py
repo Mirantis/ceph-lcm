@@ -98,7 +98,7 @@ def freeze_time(request):
 
 @pytest.fixture(scope="session", autouse=True)
 def configure_logging():
-    log.configure_logging()
+    log.configure_logging(api.CONF.logging_config)
 
 
 @pytest.yield_fixture(scope="module")
