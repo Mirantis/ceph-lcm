@@ -39,6 +39,40 @@ connect = false
 # Default TTL for token in seconds
 ttl_in_seconds = 120
 
+# Default Python logging is used.
+# https://docs.python.org/2/library/logging.config.html#dictionary-schema-details
+[api.logging]
+version = 1
+incremental = false
+disable_existing_loggers = true
+
+[api.logging.root]
+handlers = []
+
+[api.logging.filters]
+
+[api.logging.formatters.debug]
+format = "%(asctime)s [%(levelname)-8s] (%(filename)15s:%(lineno)-4d): %(message)s"
+datefmt = "%Y-%m-%d %H:%M:%S"
+
+[api.logging.formatters.default]
+format = "%(asctime)s [%(levelname)-8s]: %(message)s"
+datefmt = "%Y-%m-%d %H:%M:%S"
+
+[api.logging.formatters.syslog]
+format = "%(name)s %(asctime)s [%(levelname)-8s]: %(message)s"
+datefmt = "%Y-%m-%d %H:%M:%S"
+
+[api.logging.handlers.debug]
+class = "logging.StreamHandler"
+formatter = "debug"
+level = "DEBUG"
+
+[api.logging.loggers.cephlcm]
+propagate = true
+level = "DEBUG"
+handlers = ["debug"]
+
 # Common options
 [common]
 # Default length of the generated passwords
@@ -56,42 +90,46 @@ login = ""
 # Default SMTP password (set to "" if no auth is required)
 password = ""
 
-# Default Python logging is used.
-# https://docs.python.org/2/library/logging.config.html#dictionary-schema-details
-[common.logging]
-version = 1
-incremental = false
-disable_existing_loggers = true
-
-[common.logging.root]
-handlers = []
-
-[common.logging.filters]
-
-[common.logging.formatters.debug]
-format = "%(asctime)s [%(levelname)-8s] (%(filename)15s:%(lineno)-4d): %(message)s"
-datefmt = "%Y-%m-%d %H:%M:%S"
-
-[common.logging.formatters.default]
-format = "%(asctime)s [%(levelname)-8s]: %(message)s"
-datefmt = "%Y-%m-%d %H:%M:%S"
-
-[common.logging.formatters.syslog]
-format = "%(name)s %(asctime)s [%(levelname)-8s]: %(message)s"
-datefmt = "%Y-%m-%d %H:%M:%S"
-
-[common.logging.handlers.debug]
-class = "logging.StreamHandler"
-formatter = "debug"
-level = "DEBUG"
-
-[common.logging.loggers.cephlcm]
-propagate = true
-level = "DEBUG"
-handlers = ["debug"]
-
 # Settings for plugins
 [plugins.alerts.email]
 enabled = false
 send_to = ["bigboss@example.com"]
 from = "errors@example.com"
+
+[controller]
+pidfile = "/tmp/cephlcm-controller.pid"
+daemon = true
+
+# Default Python logging is used.
+# https://docs.python.org/2/library/logging.config.html#dictionary-schema-details
+[controller.logging]
+version = 1
+incremental = false
+disable_existing_loggers = true
+
+[controller.logging.root]
+handlers = []
+
+[controller.logging.filters]
+
+[controller.logging.formatters.debug]
+format = "%(asctime)s [%(levelname)-8s] (%(filename)15s:%(lineno)-4d): %(message)s"
+datefmt = "%Y-%m-%d %H:%M:%S"
+
+[controller.logging.formatters.default]
+format = "%(asctime)s [%(levelname)-8s]: %(message)s"
+datefmt = "%Y-%m-%d %H:%M:%S"
+
+[controller.logging.formatters.syslog]
+format = "%(name)s %(asctime)s [%(levelname)-8s]: %(message)s"
+datefmt = "%Y-%m-%d %H:%M:%S"
+
+[controller.logging.handlers.debug]
+class = "logging.handlers.SysLogHandler"
+formatter = "debug"
+level = "DEBUG"
+
+[controller.logging.loggers.cephlcm]
+propagate = true
+level = "DEBUG"
+handlers = ["syslog"]

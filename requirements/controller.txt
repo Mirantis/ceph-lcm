@@ -1,3 +1,6 @@
 # Requirements for ceplcm.controller package
 
 -r common.txt
+
+daemonocle
+click

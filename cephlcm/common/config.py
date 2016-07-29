@@ -58,6 +58,10 @@ class Config(object):
     def raw_plugins(self):
         return self._raw["plugins"]
 
+    @property
+    def raw_controller(self):
+        return self._raw["controller"]
+
     def set(self, configdict, name, prefix=""):
         """Sets value from parsed config to self."""
 
@@ -78,16 +82,7 @@ class Config(object):
                 self.set(raw_config, key, prefix)
 
 
-class ApiConfig(Config):
-    """A config which has specific options for API."""
-
-    CONFIG_CLASS = "api"
-
-
-class CommonConfig(Config):
-    """A config which has common options."""
-
-    CONFIG_CLASS = "common"
+class LoggingMixin(object):
 
     @property
     def logging_config(self):
@@ -103,10 +98,28 @@ class CommonConfig(Config):
         }
 
 
+class ApiConfig(LoggingMixin, Config):
+    """A config which has specific options for API."""
+
+    CONFIG_CLASS = "api"
+
+
+class CommonConfig(Config):
+    """A config which has common options."""
+
+    CONFIG_CLASS = "common"
+
+
 class PluginConfig(Config):
     """A config which has specific options for plugins."""
 
     CONFIG_CLASS = "plugins"
+
+
+class ControllerConfig(LoggingMixin, Config):
+    """A config which has specific options for controller."""
+
+    CONFIG_CLASS = "controller"
 
 
 def with_parsed_configs(func):
@@ -181,3 +194,11 @@ def make_plugin_config(raw_config):
     """Makes plugin specific config."""
 
     return PluginConfig(raw_config)
+
+
+@utils.cached
+@with_parsed_configs
+def make_controller_config(raw_config):
+    """Makes controller specific config."""
+
+    return ControllerConfig(raw_config)

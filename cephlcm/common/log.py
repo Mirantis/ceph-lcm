@@ -35,8 +35,8 @@ else:
     logging.setLoggerClass(RequestIDLogger)
 
 
-def configure_logging(config=None):
-    logging.config.dictConfig(config or CONF.logging_config)
+def configure_logging(config):
+    logging.config.dictConfig(config)
 
 
 getLogger = logging.getLogger
