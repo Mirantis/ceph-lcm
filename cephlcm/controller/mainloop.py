@@ -3,6 +3,7 @@
 
 
 import os
+import sys
 import threading
 
 from cephlcm.common import config
@@ -19,16 +20,13 @@ LOG = log.getLogger(__name__)
 SHUTDOWN_EVENT = threading.Event()
 """Event which should be set by signal handler."""
 
-TASK_FETCHER_FINISHED = threading.Event()
-"""Event which is set when main loop is finished."""
-
 
 def main():
     """Daemon main loop."""
 
-    LOG.info("Controller proces has been started. PID %s", os.getpid())
+    LOG.info("Controller process has been started. PID %s", os.getpid())
 
-    exc_to_raise = None
+    exc_info = None
     try:
         for tsk in task.Task.watch(stop_condition=SHUTDOWN_EVENT):
             LOG.info(
@@ -40,17 +38,18 @@ def main():
                 LOG.info("Task %s is temporarily skipped.", tsk._id)
             else:
                 process_task(tsk)
-    except Exception as exc:
-        LOG.exception("Uncontroller exception has been raised: %s", exc)
-    except SystemExit as exc:  # by shutdown_callback
-        exc_to_raise = exc
+    except BaseException:  # SystemExit is raised by shutdown_callback
+        exc_info = sys.exc_info()
+        if isinstance(exc_info[0], Exception):
+            LOG.exception("Uncontroller exception has been raised: %s",
+                          exc_info[0])
 
     wait_to_finish()
 
     LOG.info("Controller has been shutdown")
 
-    if exc_to_raise:
-        raise exc
+    if exc_info:
+        raise exc_info
 
 
 def wait_to_finish():
