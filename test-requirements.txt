@@ -13,4 +13,5 @@ pytest-cov
 pytest-flask
 pytest-profiling
 radon >= 1.4.2
+vulture
 xenon
