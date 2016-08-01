@@ -24,7 +24,11 @@ PASSWORD_LETTERS = string.printable.strip()
 def hash_password(password):
     """This function creates secure password hash from the given password."""
 
-    return bcrypt.hashpw(bytes(password), bcrypt.gensalt())
+    salt = bcrypt.gensalt(CONF.COMMON_BCRYPT_ROUNDS)
+    password = bytes(password)
+    hashed = bcrypt.hashpw(password, salt)
+
+    return hashed
 
 
 def compare_passwords(password, suspected_hash):

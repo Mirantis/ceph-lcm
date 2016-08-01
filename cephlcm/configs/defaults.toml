@@ -92,6 +92,9 @@ pagination_per_page = 25
 [common]
 # Default length of the generated passwords
 password_length = 10
+# Minimal amount of rounds for testing purposes.
+# Please set to 12 in production.
+bcrypt_rounds = 5
 
     [common.email]
     # Default email in FROM field
