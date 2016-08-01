@@ -160,7 +160,7 @@ class UserModel(generic.Model):
             "role_ids": self.role_ids
         }
 
-    def make_api_specific_fields(self):
+    def make_api_specific_fields(self, *args, **kwargs):
         return {
             "login": self.login,
             "email": self.email,

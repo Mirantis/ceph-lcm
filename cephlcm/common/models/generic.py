@@ -313,7 +313,7 @@ class Model(Base):
 
         raise NotImplementedError
 
-    def make_api_structure(self):
+    def make_api_structure(self, *args, **kwargs):
         """This method build a structure, suitable for API."""
 
         structure = copy.deepcopy(MODEL_API_STRUCTURE)
@@ -324,7 +324,7 @@ class Model(Base):
         structure["time_updated"] = self.time_created
         structure["time_deleted"] = self.time_deleted
         structure["initiator_id"] = self.initiator_id
-        structure["data"] = self.make_api_specific_fields()
+        structure["data"] = self.make_api_specific_fields(*args, **kwargs)
 
         return structure
 
