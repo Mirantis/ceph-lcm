@@ -181,6 +181,6 @@ def convert_to_positive_int(value):
 
     value = int(float(value))
     if value <= 0:
-        raise ValueError("Value %s has to be positive integer".format(value))
+        raise ValueError("Value {0} has to be positive integer".format(value))
 
     return value

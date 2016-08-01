@@ -29,7 +29,7 @@ def make_user(login, password):
 @pytest.mark.parametrize("data", (
     None,
     "",
-    "{}",
+    "{}",  # NOQA
     "{''user}",
     "{'username': '1'}",
     "{'username': 1}",

@@ -36,8 +36,8 @@ class TestPermisionSet(object):
         role.PermissionSet.add_permission("playbook", "1")
 
         assert role.PermissionSet.KNOWN_PERMISSIONS == {
-            "api": set(["1", "2"]),
-            "playbook": set(["1"])
+            "api": {"1", "2"},
+            "playbook": {"1"}
         }
 
     def test_init_without_known_permissions(self):
@@ -53,7 +53,7 @@ class TestPermisionSet(object):
         role.PermissionSet.add_permission("api", "2")
         pset = role.PermissionSet({"api": ["2"]})
 
-        assert pset["api"] == set(["2"])
+        assert pset["api"] == {"2"}
 
     def test_unknown_permission_class(self):
         role.PermissionSet.add_permission("api", "1")

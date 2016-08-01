@@ -410,7 +410,7 @@ def test_get_versions_list(query, items, per_page, page, email, sudo_client_v1,
     assert response.json["total"] == 10
     assert response.json["per_page"] == per_page
     assert response.json["page"] == page
-    assert len(set(item["id"] for item in response.json["items"])) < 2
+    assert len({item["id"] for item in response.json["items"]}) < 2
 
 
 def test_get_version(email, sudo_client_v1, valid_post_request):
