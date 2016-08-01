@@ -19,17 +19,18 @@ DATA_SCHEMA = {
     "name": {"$ref": "#/definitions/non_empty_string"},
     "fqdn": {"$ref": "#/definitions/hostname"},
     "ip": {"$ref": "#/definitions/ip"},
-    "state": {"type": "string", "enum": list(server.Server.STATES)},
+    "state": {"type": "string", "enum": list(server.ServerModel.STATES)},
     "cluster_id": {"$ref": "#/definitions/uuid4"},
     "facts": {"type": "object"}
 }
 """Schema for the payload."""
 
 SERVER_DISCOVERY_DATA_SCHEMA = {
-    "host": {"oneOf": [
+    "host": {"anyOf": [
         {"$ref": "#/definitions/hostname"},
         {"$ref": "#/definitions/ip"}
-    ]}
+    ]},
+    "username": {"$ref": "#/definitions/non_empty_string"}
 }
 """Data schema for the server discovery."""
 
@@ -66,10 +67,12 @@ class ServerView(generic.VersionedCRUDView):
     def get_item(self, item_id, item, *args):
         return item
 
+    @auth.require_authorization("api", "view_server")
     @auth.require_authorization("api", "view_server_versions")
     def get_versions(self, item_id):
         return server.ServerModel.list_versions(str(item_id), self.pagination)
 
+    @auth.require_authorization("api", "view_server")
     @auth.require_authorization("api", "view_server_versions")
     def get_version(self, item_id, version):
         model = server.ServerModel.find_version(str(item_id), int(version))
@@ -81,14 +84,15 @@ class ServerView(generic.VersionedCRUDView):
 
         return model
 
+    @auth.require_authorization("api", "view_server")
     @auth.require_authorization("api", "edit_server")
     @validators.with_model(server.ServerModel)
     @validators.require_schema(MODEL_SCHEMA)
     @validators.no_updates_on_default_fields
     def put(self, item_id, item):
-        item.name = self.request_json["name"]
-        item.fqdn = self.request_json["fqdn"]
-        item.ip = self.request_json["ip"]
+        item.name = self.request_json["data"]["name"]
+        item.fqdn = self.request_json["data"]["fqdn"]
+        item.ip = self.request_json["data"]["ip"]
 
         try:
             item.save()
@@ -109,17 +113,21 @@ class ServerView(generic.VersionedCRUDView):
     @validators.require_schema(SERVER_DISCOVERY_SCHEMA)
     def post(self):
         tsk = task.ServerDiscoveryTask(
-            self.request_json["host"], self.initiator_id
+            self.request_json["host"],
+            self.request_json["username"],
+            self.request_id  # execution for server discovery is request
         )
         tsk.create()
 
         LOG.info(
-            "Created task %s for server discovery of %s by %s",
-            tsk._id, self.request_json["host"], self.initiator_id
+            "Created task %s for server discovery of %s@%s by %s",
+            tsk._id, self.request_json["username"],
+            self.request_json["host"], self.initiator_id
         )
 
         return {}
 
+    @auth.require_authorization("api", "view_server")
     @auth.require_authorization("api", "delete_server")
     @validators.with_model(server.ServerModel)
     def delete(self, item_id, item):

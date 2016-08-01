@@ -59,8 +59,8 @@ def normal_user_with_role(normal_user, sudo_user):
 
 def test_api_get_access(sudo_client_v1, client_v1, sudo_user, freeze_time):
     response = client_v1.get("/v1/role/")
-    assert response.status_code == 403
-    assert response.json["error"] == "Forbidden"
+    assert response.status_code == 401
+    assert response.json["error"] == "Unauthorized"
 
     response = sudo_client_v1.get("/v1/role/")
     assert response.status_code == 200
@@ -69,8 +69,8 @@ def test_api_get_access(sudo_client_v1, client_v1, sudo_user, freeze_time):
 def test_api_create_model(client_v1, sudo_client_v1, valid_request,
                           mongo_collection, sudo_user, freeze_time):
     response = client_v1.post("/v1/role/", data=valid_request)
-    assert response.status_code == 403
-    assert response.json["error"] == "Forbidden"
+    assert response.status_code == 401
+    assert response.json["error"] == "Unauthorized"
 
     response = sudo_client_v1.post("/v1/role/", data=valid_request)
     assert response.status_code == 200
@@ -128,7 +128,7 @@ def test_add_permission_to_role(client_v1, sudo_client_v1, sudo_role,
     resp = client_v1.put(
         "/v1/role/{0}/".format(response.json["id"]), data=model
     )
-    assert resp.status_code == 403
+    assert resp.status_code == 401
 
     resp = sudo_client_v1.put(
         "/v1/role/{0}/".format(response.json["id"]), data=model
@@ -148,7 +148,7 @@ def test_remove_permission_from_role(client_v1, sudo_client_v1, sudo_role,
     resp = client_v1.put(
         "/v1/role/{0}/".format(response.json["id"]), data=model
     )
-    assert resp.status_code == 403
+    assert resp.status_code == 401
 
     resp = sudo_client_v1.put(
         "/v1/role/{0}/".format(response.json["id"]), data=model
@@ -167,7 +167,7 @@ def test_update_name(client_v1, sudo_client_v1, valid_request):
     resp = client_v1.put(
         "/v1/role/{0}/".format(response.json["id"]), data=model
     )
-    assert resp.status_code == 403
+    assert resp.status_code == 401
 
     resp = sudo_client_v1.put(
         "/v1/role/{0}/".format(response.json["id"]), data=model

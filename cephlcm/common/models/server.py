@@ -46,6 +46,7 @@ class ServerModel(generic.Model):
         super(ServerModel, self).__init__()
 
         self.name = None
+        self.username = None
         self.fqdn = None
         self.ip = None
         self._state = None
@@ -54,11 +55,12 @@ class ServerModel(generic.Model):
         self.facts = {}
 
     @classmethod
-    def create(cls, name, fqdn, ip,
+    def create(cls, name, username, fqdn, ip,
                facts=None, cluster_id=None, state=STATE_OPERATIONAL,
                initiator_id=None):
         model = cls()
         model.name = name
+        model.username = username
         model.fqdn = fqdn
         model.ip = ip
         model.facts = facts or {}
@@ -108,6 +110,7 @@ class ServerModel(generic.Model):
         super(ServerModel, self).update_from_db_document(structure)
 
         self.name = structure["name"]
+        self.username = structure["username"]
         self.fqdn = structure["fqdn"]
         self.ip = structure["ip"]
         self.state = structure["state"]
@@ -124,6 +127,7 @@ class ServerModel(generic.Model):
     def make_db_document_specific_fields(self):
         return {
             "name": self.name,
+            "username": self.username,
             "fqdn": self.fqdn,
             "ip": self.ip,
             "state": self.state,
@@ -137,6 +141,7 @@ class ServerModel(generic.Model):
 
         return {
             "name": self.name,
+            "username": self.username,
             "fqdn": self.fqdn,
             "ip": self.ip,
             "state": self.state,

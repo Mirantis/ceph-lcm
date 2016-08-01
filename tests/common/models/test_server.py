@@ -40,15 +40,17 @@ def test_set_state_ok(state):
 def test_create(state, facts, cluster_id, random_ip, pymongo_connection,
                 configure_model, freeze_time):
     name = str(uuid.uuid4())
+    username = str(uuid.uuid4())
     fqdn = str(uuid.uuid4())
     ip = random_ip
     initiator_id = str(uuid.uuid4())
 
     model = server.ServerModel.create(
-        name, fqdn, ip, facts, cluster_id, state, initiator_id
+        name, username, fqdn, ip, facts, cluster_id, state, initiator_id
     )
 
     assert model.name == name
+    assert model.username == username
     assert model.fqdn == fqdn
     assert model.ip == random_ip
     assert model.facts == (facts or {})
@@ -62,6 +64,7 @@ def test_create(state, facts, cluster_id, random_ip, pymongo_connection,
     db_model = pymongo_connection.db.server.find_one({"_id": model._id})
 
     assert model.name == db_model["name"]
+    assert model.username == db_model["username"]
     assert model.fqdn == db_model["fqdn"]
     assert model.ip == db_model["ip"]
     assert model.facts == db_model["facts"]
@@ -78,11 +81,12 @@ def test_create(state, facts, cluster_id, random_ip, pymongo_connection,
 @pytest.mark.parametrize("expand_facts", (True, False))
 def test_make_api_structure(facts, expand_facts, random_ip, configure_model):
     name = str(uuid.uuid4())
+    username = str(uuid.uuid4())
     fqdn = str(uuid.uuid4())
     initiator_id = str(uuid.uuid4())
     ip = random_ip
 
-    model = server.ServerModel.create(name, fqdn, ip, facts,
+    model = server.ServerModel.create(name, username, fqdn, ip, facts,
                                       initiator_id=initiator_id)
     assert model.make_api_structure(expand_facts) == {
         "id": model.model_id,
@@ -93,6 +97,7 @@ def test_make_api_structure(facts, expand_facts, random_ip, configure_model):
         "initiator_id": initiator_id,
         "data": {
             "name": model.name,
+            "username": model.username,
             "fqdn": model.fqdn,
             "ip": ip,
             "state": server.ServerModel.STATE_OPERATIONAL,

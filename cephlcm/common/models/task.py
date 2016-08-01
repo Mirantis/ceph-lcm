@@ -352,8 +352,9 @@ class Task(generic.Base):
 
 class ServerDiscoveryTask(Task):
 
-    def __init__(self, host, initiator_id):
+    def __init__(self, host, user, initiator_id):
         super(ServerDiscoveryTask, self).__init__(
             self.TASK_TYPE_SERVER_DISCOVERY, initiator_id)
 
-        self["data"]["host"] = host
+        self.data["host"] = host
+        self.data["username"] = user

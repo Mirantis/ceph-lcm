@@ -174,11 +174,14 @@ class Model(Base):
         return paginated_result
 
     @classmethod
-    def list_models(cls, pagination, is_latest=True, sort_by=None):
-        query = {}
+    def list_models(cls, pagination, include_deleted=False, is_latest=True,
+                    sort_by=None):
+        query = {"time_deleted": 0}
 
         if is_latest is not None:
             query["is_latest"] = bool(is_latest)
+        if include_deleted:
+            query.pop("time_deleted", None)
 
         if sort_by is None:
             sort_by = cls.DEFAULT_SORT_BY
