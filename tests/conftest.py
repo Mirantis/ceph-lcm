@@ -137,11 +137,9 @@ def configure_model(mongo_db_name, pymongo_connection):
     """This fixture append fake config to the Model."""
 
     generic.configure_models(pymongo_connection, config.CONF.__dict__)
-
+    generic.ensure_indexes()
     yield
-
-    generic.Model.CONNECTION = None
-    generic.Model.CONNECTION = None
+    generic.configure_models(None, None)
 
 
 @pytest.yield_fixture

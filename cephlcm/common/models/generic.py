@@ -101,33 +101,13 @@ class CachedProperty(object):
         self.cached = value
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Model(object):
-    """A common class for the model.
-
-    All models, which are working with DB, should be subclasses.
-    """
-
-    MODEL_NAME = None
-    """The name of the model."""
+class Base(object):
 
     COLLECTION_NAME = None
     """The name of the collection where model documents are stored."""
 
     CONNECTION = None
     """The connection to the MongoDB."""
-
-    CONFIG = None
-    """Config for the models.
-
-    Dictionary is expected. All keys are uppercased.
-    """
-
-    LATEST_INCLUDED = 0
-    LATEST_NO = 1
-    LATEST_ONLY = 2
-
-    DEFAULT_SORT_BY = [("id", SORT_ASC)]
 
     @classmethod
     def database(cls):
@@ -140,6 +120,33 @@ class Model(object):
         """This method returns a connection to the collection."""
 
         return cls.database()[cls.COLLECTION_NAME]
+
+    @classmethod
+    def ensure_index(cls):
+        pass
+
+
+@six.add_metaclass(abc.ABCMeta)
+class Model(Base):
+    """A common class for the model.
+
+    All models, which are working with DB, should be subclasses.
+    """
+
+    MODEL_NAME = None
+    """The name of the model."""
+
+    CONFIG = None
+    """Config for the models.
+
+    Dictionary is expected. All keys are uppercased.
+    """
+
+    LATEST_INCLUDED = 0
+    LATEST_NO = 1
+    LATEST_ONLY = 2
+
+    DEFAULT_SORT_BY = [("id", SORT_ASC)]
 
     @classmethod
     def find_by_model_id(cls, item_id):
@@ -368,8 +375,12 @@ class Model(object):
 
     @classmethod
     def ensure_index(cls):
-        collection = cls.collection()
+        super(Model, cls).ensure_index()
 
+        if not cls.COLLECTION_NAME:
+            return
+
+        collection = cls.collection()
         collection.create_index(
             [
                 ("is_latest", pymongo.DESCENDING)
@@ -394,10 +405,10 @@ def configure_models(connection, config):
     models are configured with DB client only.
     """
 
-    Model.CONNECTION = connection
-    Model.CONFIG = config
+    Base.CONNECTION = connection
+    Base.CONFIG = config
 
 
 def ensure_indexes():
-    for mdl in Model.__subclasses__():
+    for mdl in Base.__subclasses__():
         mdl.ensure_index()
