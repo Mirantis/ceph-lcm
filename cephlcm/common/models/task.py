@@ -3,7 +3,7 @@
 
 
 import copy
-import time
+import threading
 import uuid
 
 import pymongo
@@ -308,7 +308,7 @@ class Task(generic.Base):
         )
 
     @classmethod
-    def watch(cls, exit_on_empty=False):
+    def watch(cls, stop_condition=None, exit_on_empty=False):
         """Watch for a new tasks appear in queue.
 
         It is a generator, which yields tasks in correct order to be managed.
@@ -326,18 +326,21 @@ class Task(generic.Base):
         }
         sortby = [("time.created", generic.SORT_ASC)]
         collection = cls.collection()
+        stop_condition = stop_condition or threading.Event()
 
         try:
-            while True:
+            while not stop_condition.is_set():
                 for document in collection.find(query, sort=sortby):
+                    if stop_condition.is_set():
+                        raise StopIteration
                     task = cls(document["task_type"], document["execution_id"])
                     task.set_state(document)
                     yield task
 
                 if exit_on_empty:
-                    return
+                    raise StopIteration
 
-                time.sleep(1)
+                stop_condition.wait(1)
         except pymongo.errors.OperationFailure as exc:
             LOG.exception("Cannot continue to listen to queue: %s", exc)
             raise exceptions.InternalDBError()

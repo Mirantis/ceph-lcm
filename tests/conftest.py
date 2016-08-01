@@ -22,6 +22,7 @@ from cephlcm.api import config
 from cephlcm.common import log
 from cephlcm.common.models import generic
 from cephlcm.common.models import role
+from cephlcm.common.models import task
 from cephlcm.common.models import user
 from cephlcm.common import wrappers
 
@@ -205,3 +206,13 @@ def sudo_client_v1(app, sudo_user):
         client.login("sudo", "sudo")
 
         yield client
+
+
+@pytest.fixture
+def task_watch(monkeypatch, configure_model):
+    old_method = task.Task.watch
+
+    def new_method(cls, stop_condition=None, exit_on_empty=False):
+        return old_method(cls, stop_condition, True)
+
+    monkeypatch.setattr(task.Task.watch, new_method)

@@ -76,7 +76,7 @@ def test_create_task_watchable(task_type, configure_model, no_sleep,
     new_task = task.Task(task_type, executor_id)
     new_task.create()
 
-    iterator = task.Task.watch(True)
+    iterator = task.Task.watch(exit_on_empty=True)
     assert new_task._id == iterator.next()._id
 
 

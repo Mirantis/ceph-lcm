@@ -58,6 +58,11 @@ disable_existing_loggers = true
     formatter = "stderr_default"
     level = "DEBUG"
 
+    [logging.handlers.syslog]
+    class = "logging.handlers.SysLogHandler"
+    formatter = "syslog"
+    level = "DEBUG"
+
 
 # API specific settings
 # Options here are Flask options so please check
@@ -113,9 +118,10 @@ enabled = []
 
 [controller]
 pidfile = "/tmp/cephlcm-controller.pid"
-daemon = true
+daemon = false
+timeout = 60
 
     [controller.logging]
     propagate = true
     level = "DEBUG"
-    handlers = ["syslog"]
+    handlers = ["syslog", "stderr_debug"]
