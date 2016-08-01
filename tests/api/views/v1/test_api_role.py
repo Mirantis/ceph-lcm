@@ -271,7 +271,9 @@ def test_add_permission_to_create_user(client_v1, sudo_client_v1, sudo_role,
     assert response.status_code == 403
 
     add_permission_to_user(
-        sudo_client_v1, normal_user_with_role, {"api": ["create_role"]})
+        sudo_client_v1, normal_user_with_role,
+        {"api": ["view_role", "create_role"]}
+    )
 
     response = client_v1.post("/v1/role/", data=valid_request)
     assert response.status_code == 200
@@ -297,6 +299,17 @@ def test_add_permission_to_edit_user(client_v1, sudo_client_v1, sudo_role,
     response = client_v1.put(
         "/v1/role/{0}/".format(role_data["id"]), data=role_data
     )
+    assert response.status_code == 403
+
+    role_data["data"]["permissions"]["api"].append("view_role")
+    response = sudo_client_v1.put(
+        "/v1/role/{0}/".format(role_data["id"]), data=role_data
+    )
+
+    role_data = response.json
+    response = client_v1.put(
+        "/v1/role/{0}/".format(role_data["id"]), data=role_data
+    )
     assert response.status_code == 200
 
 
@@ -311,7 +324,9 @@ def test_add_permission_to_delete_user(client_v1, sudo_client_v1, sudo_role,
     assert response.status_code == 403
 
     add_permission_to_user(
-        sudo_client_v1, normal_user_with_role, {"api": ["delete_role"]})
+        sudo_client_v1, normal_user_with_role,
+        {"api": ["view_role", "delete_role"]}
+    )
 
 
 def test_delete_role_with_active_user(sudo_client_v1, normal_user_with_role):

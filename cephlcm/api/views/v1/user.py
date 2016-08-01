@@ -45,18 +45,19 @@ LOG = log.getLogger(__name__)
 class UserView(generic.VersionedCRUDView):
     """Implementation of view for /v1/user/."""
 
-    decorators = [auth.require_authentication]
+    decorators = [
+        auth.require_authorization("api", "view_user"),
+        auth.require_authentication
+    ]
 
     NAME = "user"
     MODEL_NAME = "user"
     ENDPOINT = "/user/"
     PARAMETER_TYPE = "uuid"
 
-    @auth.require_authorization("api", "view_user")
     def get_all(self):
         return user.UserModel.list_models(self.pagination)
 
-    @auth.require_authorization("api", "view_user")
     @validators.with_model(user.UserModel)
     def get_item(self, item_id, item, *args):
         return item
