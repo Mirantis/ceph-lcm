@@ -28,10 +28,7 @@ def create_application():
     app_config.configure(application)
     handlers.register_handlers(application)
     views.register_api(application)
-    generic_model.configure_models(
-        flask_pymongo.PyMongo(application),
-        application.config
-    )
+    generic_model.configure_models(flask_pymongo.PyMongo(application))
 
     with application.app_context():
         generic_model.ensure_indexes()

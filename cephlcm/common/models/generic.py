@@ -76,31 +76,6 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class CachedProperty(object):
-    """Model descriptor for properties which should be lazy calculated."""
-
-    SENTINEL = object()
-    # The result stored in cached property might be any type
-    # and it is not possible to make any suggestions on that.
-    # It might be None, even Elipsis.
-    #
-    # But it is always possible to check identity of arbitrary
-    # object, preliminary created.
-
-    def __init__(self, function):
-        self.cached = self.SENTINEL
-        self.function = function
-
-    def __get__(self, obj, objtype):
-        if self.cached is self.SENTINEL:
-            self.cached = self.function(obj)
-
-        return self.cached
-
-    def __set__(self, obj, value):
-        self.cached = value
-
-
 class Base(object):
 
     COLLECTION_NAME = None
@@ -135,16 +110,6 @@ class Model(Base):
 
     MODEL_NAME = None
     """The name of the model."""
-
-    CONFIG = None
-    """Config for the models.
-
-    Dictionary is expected. All keys are uppercased.
-    """
-
-    LATEST_INCLUDED = 0
-    LATEST_NO = 1
-    LATEST_ONLY = 2
 
     DEFAULT_SORT_BY = [("id", SORT_ASC)]
 
@@ -398,7 +363,7 @@ class Model(Base):
         )
 
 
-def configure_models(connection, config):
+def configure_models(connection):
     """This configures models to use database.
 
     Basically, all configuration of DB connection is done externally,
@@ -406,7 +371,6 @@ def configure_models(connection, config):
     """
 
     Base.CONNECTION = connection
-    Base.CONFIG = config
 
 
 def ensure_indexes():

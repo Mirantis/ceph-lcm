@@ -23,6 +23,7 @@ from cephlcm.common import log
 from cephlcm.common.models import generic
 from cephlcm.common.models import role
 from cephlcm.common.models import user
+from cephlcm.common import wrappers
 
 
 class JsonApiClient(flask.testing.FlaskClient):
@@ -122,24 +123,22 @@ def mongo_db_name():
 
 @pytest.fixture(scope="module")
 def pymongo_connection(mongo_db_name):
-    client = pymongo.MongoClient(
+    return wrappers.MongoDBWrapper(
         host=config.CONF.MONGO_HOST,
-        port=config.CONF.MONGO_PORT
+        port=config.CONF.MONGO_PORT,
+        dbname=config.CONF.MONGO_DBNAME,
+        connect=config.CONF.MONGO_CONNECT
     )
-    connection = mock.MagicMock()
-    connection.db = client[mongo_db_name]
-
-    return connection
 
 
 @pytest.yield_fixture(scope="module")
 def configure_model(mongo_db_name, pymongo_connection):
     """This fixture append fake config to the Model."""
 
-    generic.configure_models(pymongo_connection, config.CONF.__dict__)
+    generic.configure_models(pymongo_connection)
     generic.ensure_indexes()
     yield
-    generic.configure_models(None, None)
+    generic.configure_models(None)
 
 
 @pytest.yield_fixture

@@ -5,6 +5,14 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import pymongo
+
+from cephlcm.common import config
+
+
+CONF = config.make_config()
+"""Config."""
+
 
 class PaginationResult(object):
     """PaginationResult wraps a data about a certain page in pagination."""
@@ -31,3 +39,25 @@ class PaginationResult(object):
             "per_page": self.pagination["per_page"],
             "total": self.total
         }
+
+
+class MongoDBWrapper(object):
+    """Simple wrapper for MongoClient.
+
+    This is require to support Flask-PyMongo way of DB referring.
+    """
+
+    def __init__(self, host=None, port=None, dbname=None, connect=None):
+        host = host or CONF.DB_HOST
+        port = port or CONF.DB_PORT
+        dbname = dbname or CONF.DB_DBNAME
+        connect = connect if connect is not None else CONF.DB_CONNECT
+
+        self.dbname = dbname
+        self.client = pymongo.MongoClient(
+            host=host, port=port, connect=connect
+        )
+
+    @property
+    def db(self):
+        return self.client[self.dbname]
