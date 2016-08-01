@@ -2,8 +2,10 @@
 
 ansible-lint
 flake8 < 3.0
+flake8-builtins
 flake8-coding
 flake8-debugger
+flake8-quotes < 0.7
 hacking
 mock
 pep8

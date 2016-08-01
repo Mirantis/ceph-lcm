@@ -14,7 +14,7 @@ except ImportError:
     import json
 
 
-CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 """Context settings for the Click."""
 
 
@@ -87,13 +87,13 @@ def paginate(method, page, per_page, *args, **kwargs):
     help="Run in debug mode."
 )
 @click.option(
-    "--format", "-f",
+    "--output-format", "-f",
     default="json",
     type=click.Choice(["json"]),
     help="How to format output. Currently only JSON is supported."
 )
 @click.pass_context
-def cli(ctx, url, login, password, debug, format):
+def cli(ctx, url, login, password, debug, output_format):
     """cephlcm command line tool.
 
     With this CLI it is possible to access all API endpoints
@@ -114,7 +114,7 @@ def cli(ctx, url, login, password, debug, format):
         "login": login,
         "password": password,
         "debug": debug,
-        "format": format,
+        "format": output_format,
         "client": Client(url, login, password)
     }
     ctx.obj["model_client"] = ModelClient(ctx.obj["client"])
