@@ -18,7 +18,7 @@
   when: not cephlcm_virtualenv.stat.exists
 
 - name: Install CephLCM requirements
-  command: bash -ic "pyenv activate {{ venv }} && pip install -r requirements.txt -r test-requirements.txt -r optional-requirements.txt -e ."
+  command: bash -ic "pyenv activate {{ venv }} && pip install -r requirements.txt -r test-requirements.txt -r optional-requirements.txt -c constraints.txt -e ."
           chdir=/vagrant
   tags:
     # This is to update requirements

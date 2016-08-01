@@ -1,6 +1,6 @@
 # Requirements for cephlcm.common package
 
-PyMongo
+pymongo
 simplejson
 six
 toml
