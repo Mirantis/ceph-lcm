@@ -33,7 +33,7 @@ TASK_TEMPLATE = {
         "host": "",
         "pid": 0
     },
-    "error": "errorororororr",
+    "error": "",
     "data": {}
 }
 """DB task template."""
@@ -60,7 +60,11 @@ class Task(generic.Base):
     TASK_TYPE_CANCEL = "cancel"
     """Type of cancelling playbook task."""
 
-    TASK_TYPES = set([TASK_TYPE_PLAYBOOK, TASK_TYPE_CANCEL])
+    TASK_TYPE_SERVER_DISCOVERY = "server_discovery"
+    """Type of playbook for server discovery."""
+
+    TASK_TYPES = set((
+        TASK_TYPE_PLAYBOOK, TASK_TYPE_CANCEL, TASK_TYPE_SERVER_DISCOVERY))
     """Supported task types."""
 
     @staticmethod
