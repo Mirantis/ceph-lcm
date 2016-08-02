@@ -6,11 +6,9 @@ to another module.
 """
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+import functools
 
 import flask
-import six
 
 from cephlcm.api import exceptions
 from cephlcm.common import log
@@ -27,7 +25,7 @@ LOG = log.getLogger(__name__)
 def require_authentication(func):
     """Decorator, which require request authenticated."""
 
-    @six.wraps(func)
+    @functools.wraps(func)
     def decorator(*args, **kwargs):
         token_id = flask.request.headers.get("Authorization")
         if not token_id:
@@ -50,7 +48,7 @@ def require_authorization(permission_class, permission_name):
     role.PermissionSet.add_permission(permission_class, permission_name)
 
     def outer_decorator(func):
-        @six.wraps(func)
+        @functools.wraps(func)
         def inner_decorator(*args, **kwargs):
             user_model = getattr(flask.g, "token", None)
             user_model = getattr(user_model, "user", None)

@@ -6,7 +6,6 @@ import re
 
 import flask.json
 import jsonschema
-import six
 
 from cephlcm.common import config
 from cephlcm.common import log
@@ -151,8 +150,8 @@ def parse_filter(params):
     jsonschema.validate(filter_, FILTER_SCHEMA)
 
     new_filter = {}
-    for key, value in six.iteritems(filter_):
-        if isinstance(value, int) or isinstance(value, six.string_types):
+    for key, value in filter_.items():
+        if isinstance(value, int) or isinstance(value, str):
             new_filter[key] = value
             continue
 
@@ -161,7 +160,7 @@ def parse_filter(params):
             continue
 
         new_filter[key] = {}
-        for fk, fv in six.iteritems(value):
+        for fk, fv in value.items():
             new_filter[key]["${0}".format(fk)] = fv
 
     return new_filter
@@ -173,7 +172,7 @@ def parse_sort_by(params):
     sort_by = flask.json.loads(params["sort_by"])
     jsonschema.validate(sort_by, SORT_BY_SCHEMA)
 
-    return list(six.iteritems(sort_by))
+    return list(sort_by.items())
 
 
 def convert_to_positive_int(value):

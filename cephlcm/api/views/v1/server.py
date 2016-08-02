@@ -2,9 +2,6 @@
 """This module contains view for /v1/server API."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from cephlcm.api import auth
 from cephlcm.api import exceptions as http_exceptions
 from cephlcm.api import validators

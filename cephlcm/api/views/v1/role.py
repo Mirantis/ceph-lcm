@@ -2,8 +2,6 @@
 """This module contains view for /v1/role API."""
 
 
-import six
-
 from cephlcm.api import auth
 from cephlcm.api import exceptions as http_exceptions
 from cephlcm.api import validators
@@ -74,7 +72,7 @@ class RoleView(generic.VersionedCRUDView):
     @validators.require_schema(MODEL_SCHEMA)
     @validators.no_updates_on_default_fields
     def put(self, item_id, item):
-        for key, value in six.iteritems(self.request_json["data"]):
+        for key, value in self.request_json["data"].items():
             setattr(item, key, value)
         item.initiator_id = self.initiator_id
 

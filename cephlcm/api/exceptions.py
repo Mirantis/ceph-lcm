@@ -2,11 +2,7 @@
 """This module contains exceptions specific for API."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import flask.json
-import six
 
 from werkzeug import exceptions
 
@@ -33,7 +29,7 @@ class CephLCMJSONMixin(app_exceptions.CephLCMError, exceptions.HTTPException):
 
     def get_body(self, environ=None):
         error = self.error_name or self.__class__.__name__
-        error = six.text_type(error)
+        error = str(error)
 
         error_message = {
             "code": self.code,
@@ -92,7 +88,7 @@ class UnknownReturnValueError(InternalServerError):
 class InvalidJSONError(BadRequest):
 
     def __init__(self, errors):
-        super(BadRequest, self).__init__("\n".join(errors))
+        super().__init__("\n".join(errors))
 
 
 class ImpossibleToCreateSuchModel(BadRequest):

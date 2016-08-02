@@ -2,14 +2,10 @@
 """This module has implementation of the generic view."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import posixpath
 
 import flask.json
 import flask.views
-import six
 import werkzeug.exceptions
 
 from cephlcm.api import exceptions
@@ -84,7 +80,7 @@ class View(flask.views.MethodView):
         return response
 
     def dispatch_request(self, *args, **kwargs):
-        response = super(View, self).dispatch_request(*args, **kwargs)
+        response = super().dispatch_request(*args, **kwargs)
 
         try:
             response = self.prepare_response(response)
@@ -123,7 +119,7 @@ class ModelView(View):
         return self.MODEL_NAME or self.NAME
 
     def prepare_response(self, response):
-        assert isinstance(self.model_name, six.string_types)
+        assert isinstance(self.model_name, str)
 
         if hasattr(response, "make_api_structure"):
             return response.make_api_structure()
@@ -140,7 +136,7 @@ class ModelView(View):
         return [self.prepare_response(el) for el in data]
 
     def prepare_dict_response(self, data):
-        return {k: self.prepare_response(v) for k, v in six.iteritems(data)}
+        return {k: self.prepare_response(v) for k, v in data.items()}
 
 
 class CRUDView(ModelView):
