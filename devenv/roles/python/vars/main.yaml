@@ -28,7 +28,7 @@ pyenv_pythons:
   - "3.5.2"
   - "pypy-5.3.1"
 
-cephlcm_python: "2.7.12"
+cephlcm_python: "3.5.2"
 tox_version: "2.3.1"
 
 pyenv_plugins:

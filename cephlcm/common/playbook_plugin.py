@@ -7,6 +7,7 @@ import copy
 import distutils.spawn
 import os
 import subprocess
+
 import pkg_resources
 
 try:

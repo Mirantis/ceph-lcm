@@ -3,6 +3,7 @@
 
 
 import functools
+
 import pkg_resources
 
 from cephlcm.common import config
