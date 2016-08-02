@@ -83,12 +83,12 @@ class UserView(generic.VersionedCRUDView):
 
         try:
             item.save()
-        except base_exceptions.CannotUpdateDeletedModel:
+        except base_exceptions.CannotUpdateDeletedModel as exc:
             LOG.warning(
                 "Cannot update deleted model %s (deleted at %s, "
                 "version %s)",
                 item.model_id, item.time_deleted, item.version)
-            raise http_exceptions.CannotUpdateDeletedModel()
+            raise http_exceptions.CannotUpdateDeletedModel() from exc
 
         LOG.info("User model %s was updated to version %s by %s",
                  item.model_id, item.version, self.initiator_id)
@@ -109,12 +109,12 @@ class UserView(generic.VersionedCRUDView):
                 self.request_json["role_ids"],
                 initiator_id=self.initiator_id
             )
-        except base_exceptions.UniqueConstraintViolationError:
+        except base_exceptions.UniqueConstraintViolationError as exc:
             LOG.warning(
                 "Cannot create new user %s: violation of unique constraint",
                 self.request_json["login"]
             )
-            raise http_exceptions.ImpossibleToCreateSuchModel()
+            raise http_exceptions.ImpossibleToCreateSuchModel() from exc
 
         LOG.info("User %s was created by %s",
                  user_model.model_id, self.initiator_id)
@@ -128,9 +128,9 @@ class UserView(generic.VersionedCRUDView):
     def delete(self, item_id, item):
         try:
             item.delete()
-        except base_exceptions.CannotUpdateDeletedModel:
+        except base_exceptions.CannotUpdateDeletedModel as exc:
             LOG.warning("Cannot delete deleted user %s", item_id)
-            raise http_exceptions.CannotUpdateDeletedModel()
+            raise http_exceptions.CannotUpdateDeletedModel() from exc
 
         LOG.info("User %s was deleted by %s", item_id, self.initiator_id)
 

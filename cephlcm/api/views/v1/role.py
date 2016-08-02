@@ -78,17 +78,17 @@ class RoleView(generic.VersionedCRUDView):
 
         try:
             item.save()
-        except base_exceptions.CannotUpdateDeletedModel:
+        except base_exceptions.CannotUpdateDeletedModel as exc:
             LOG.warning(
                 "Cannot update deleted role %s (deleted at %s, "
                 "version %s)",
                 item_id, item.time_deleted, item.version
             )
-            raise http_exceptions.CannotUpdateDeletedModel()
+            raise http_exceptions.CannotUpdateDeletedModel() from exc
         except ValueError as exc:
             LOG.warning("Incorrect permissions for role %s: %s",
                         item_id, exc)
-            raise http_exceptions.BadRequest
+            raise http_exceptions.BadRequest from exc
 
         LOG.info("Role %s was updated by %s", item_id, self.initiator_id)
 
@@ -103,14 +103,14 @@ class RoleView(generic.VersionedCRUDView):
                 self.request_json["permissions"],
                 initiator_id=self.initiator_id
             )
-        except base_exceptions.UniqueConstraintViolationError:
+        except base_exceptions.UniqueConstraintViolationError as exc:
             LOG.warning("Cannot create role %s (unique constraint violation)",
                         self.request_json["name"])
-            raise http_exceptions.ImpossibleToCreateSuchModel()
+            raise http_exceptions.ImpossibleToCreateSuchModel() from exc
         except ValueError as exc:
             LOG.warning("Incorrect permissions for role %s: %s",
                         self.request_json["name"], exc)
-            raise http_exceptions.BadRequest
+            raise http_exceptions.BadRequest from exc
 
         LOG.info("Role %s (%s) created by %s",
                  self.request_json["name"], role_model.model_id,
@@ -123,12 +123,12 @@ class RoleView(generic.VersionedCRUDView):
     def delete(self, item_id, item):
         try:
             item.delete()
-        except base_exceptions.CannotUpdateDeletedModel:
+        except base_exceptions.CannotUpdateDeletedModel as exc:
             LOG.warning("Cannot delete deleted role %s", item_id)
-            raise http_exceptions.CannotUpdateDeletedModel()
-        except base_exceptions.CannotDeleteRoleWithActiveUsers:
+            raise http_exceptions.CannotUpdateDeletedModel() from exc
+        except base_exceptions.CannotDeleteRoleWithActiveUsers as exc:
             LOG.warning("Cannot delete role %s with active users", item_id)
-            raise http_exceptions.CannotDeleteRoleWithActiveUsers()
+            raise http_exceptions.CannotDeleteRoleWithActiveUsers() from exc
 
         LOG.info("Role %s was deleted by %s", item_id, self.initiator_id)
 

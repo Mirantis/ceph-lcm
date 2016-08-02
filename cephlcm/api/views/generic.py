@@ -48,7 +48,7 @@ class View(flask.views.MethodView):
             return flask.request.get_json(force=True)
         except werkzeug.exceptions.BadRequest as exc:
             LOG.error("Cannot process user request: %s", exc)
-            raise exceptions.NotAcceptable
+            raise exceptions.NotAcceptable() from exc
 
     @property
     def request_query(self):
@@ -86,13 +86,13 @@ class View(flask.views.MethodView):
             response = self.prepare_response(response)
         except Exception as exc:
             LOG.error("Cannot build model response: %s", exc)
-            raise exceptions.UnknownReturnValueError
+            raise exceptions.UnknownReturnValueError from exc
 
         try:
             response = flask.json.jsonify(response)
         except Exception as exc:
             LOG.error("Cannot convert %s to JSON: %s", response, exc)
-            raise exceptions.CannotConvertResultToJSONError()
+            raise exceptions.CannotConvertResultToJSONError() from exc
 
         return response
 

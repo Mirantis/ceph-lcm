@@ -64,8 +64,8 @@ class UserModel(generic.Model):
 
         try:
             model.save()
-        except pymongo.errors.DuplicateKeyError:
-            raise exceptions.UniqueConstraintViolationError()
+        except pymongo.errors.DuplicateKeyError as exc:
+            raise exceptions.UniqueConstraintViolationError() from exc
 
         return model
 
