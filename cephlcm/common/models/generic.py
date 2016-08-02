@@ -76,7 +76,7 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class Base(object):
+class Base:
 
     COLLECTION_NAME = None
     """The name of the collection where model documents are stored."""
@@ -101,8 +101,7 @@ class Base(object):
         pass
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Model(Base):
+class Model(Base, metaclass=abc.ABCMeta):
     """A common class for the model.
 
     All models, which are working with DB, should be subclasses.
@@ -340,6 +339,7 @@ class Model(Base):
 
     @classmethod
     def ensure_index(cls):
+        # super().ensure_index()
         super(Model, cls).ensure_index()
 
         if not cls.COLLECTION_NAME:

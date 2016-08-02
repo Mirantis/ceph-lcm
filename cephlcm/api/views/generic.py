@@ -75,7 +75,7 @@ class View(flask.views.MethodView):
 
         application.add_url_rule(
             make_endpoint(cls.ENDPOINT),
-            view_func=cls.as_view(cls.NAME.encode("utf-8"))
+            view_func=cls.as_view(cls.NAME)
         )
 
     def prepare_response(self, response):
@@ -171,7 +171,7 @@ class CRUDView(ModelView):
 
     @classmethod
     def register_to(cls, application):
-        view_func = cls.as_view(cls.NAME.encode("utf-8"))
+        view_func = cls.as_view(cls.NAME)
 
         main_endpoint = make_endpoint(cls.ENDPOINT)
         item_endpoint = make_endpoint(
@@ -227,7 +227,7 @@ class VersionedCRUDView(CRUDView):
 
     @classmethod
     def register_to(cls, application):
-        view_func = cls.as_view(cls.NAME.encode("utf-8"))
+        view_func = cls.as_view(cls.NAME)
 
         main_endpoint = make_endpoint(cls.ENDPOINT)
         item_endpoint = make_endpoint(

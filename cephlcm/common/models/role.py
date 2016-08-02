@@ -9,7 +9,7 @@ from cephlcm.common import exceptions
 from cephlcm.common.models import generic
 
 
-class PermissionSet(object):
+class PermissionSet:
 
     KNOWN_PERMISSIONS = collections.defaultdict(set)
 

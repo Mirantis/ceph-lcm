@@ -129,7 +129,7 @@ def test_create_new_user(
     ] == valid_post_request["role_ids"]
     assert [r["id"] for r in data["data"]["roles"]] == db_user["role_ids"]
 
-    email.sendmail.assert_called_once()
+    assert len(email.sendmail.mock_calls) == 1
     to, cc, password = email.sendmail.call_args[0][-1]
 
     assert to == [db_user["email"]]

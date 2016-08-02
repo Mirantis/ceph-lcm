@@ -49,7 +49,9 @@ def main():
     LOG.info("Controller has been shutdown")
 
     if exc_info:
-        raise exc_info
+        exc = exc_info[0](exc_info[1])
+        exc.__traceback__ = exc_info[2]
+        raise exc
 
 
 def wait_to_finish():

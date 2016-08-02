@@ -81,9 +81,7 @@ def authenticate(user_name, password):
         LOG.warning("Cannot find not deleted user with login %s", user_name)
         raise exceptions.Unauthorized
 
-    password = password.encode("utf-8")
-    password_hash = user_model.password_hash.encode("utf-8")
-    if not passwords.compare_passwords(password, password_hash):
+    if not passwords.compare_passwords(password, user_model.password_hash):
         LOG.warning("Password mismatch for user with login %s", user_name)
         raise exceptions.Unauthorized
 

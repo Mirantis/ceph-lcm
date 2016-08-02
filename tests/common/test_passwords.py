@@ -18,7 +18,7 @@ CONF = config.make_config()
 
 @pytest.mark.parametrize("password", (
     six.text_type("password"),
-    bytes("password")
+    bytes("password", "utf-8")
 ))
 def test_password_hashing(password):
     hashed = passwords.hash_password(password)
