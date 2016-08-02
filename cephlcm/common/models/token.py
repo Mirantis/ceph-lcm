@@ -7,9 +7,6 @@ and expired tokens are invalid.
 """
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import bson.objectid
 
 from cephlcm.common import config
@@ -34,7 +31,7 @@ class TokenModel(generic.Model):
     COLLECTION_NAME = "token"
 
     def __init__(self):
-        super(TokenModel, self).__init__()
+        super().__init__()
 
         self.user_id = None
         self._user = None
@@ -109,7 +106,7 @@ class TokenModel(generic.Model):
         return user.UserModel.find_by_model_id(self.user_id)
 
     def update_from_db_document(self, structure):
-        super(TokenModel, self).update_from_db_document(structure)
+        super().update_from_db_document(structure)
 
         self.user_id = structure["user_id"]
         self.expires_at = structure["expires_at"]

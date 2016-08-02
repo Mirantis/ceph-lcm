@@ -27,16 +27,12 @@ information as well.
 """
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import abc
 import copy
 import uuid
 
 import bson.objectid
 import pymongo
-import six
 
 from cephlcm.common import exceptions
 from cephlcm.common import log
@@ -220,7 +216,6 @@ class Model(Base, metaclass=abc.ABCMeta):
     def get_initiator(self):
         """This method returns a model of initiator."""
 
-        # FIXME(Sergey Arkhipov)
         # It looks like a dirty hack but I refer specific model
         # from the generic one.
         #

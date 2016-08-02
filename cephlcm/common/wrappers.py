@@ -2,9 +2,6 @@
 """This module has different wrappers for the data structures."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import pymongo
 
 from cephlcm.common import config

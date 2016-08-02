@@ -2,14 +2,10 @@
 """Password related utilities."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import os
 import string
 
 import bcrypt
-import six
 
 from cephlcm.common import config
 
@@ -48,8 +44,7 @@ def generate_password(length=None):
 
     length = length or CONF.COMMON_PASSWORD_LENGTH
 
-    return "".join(
-        random_password_character() for _ in six.moves.range(length))
+    return "".join(random_password_character() for _ in range(length))
 
 
 def random_password_character():

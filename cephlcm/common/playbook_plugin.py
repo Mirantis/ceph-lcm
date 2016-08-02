@@ -2,9 +2,6 @@
 """Base plugin structure for playbook."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import abc
 import copy
 import distutils.spawn
@@ -17,7 +14,6 @@ try:
 except ImportError:
     import json
 
-import six
 import toml
 
 from cephlcm.common import config
@@ -37,8 +33,7 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Base(object):
+class Base(metaclass=abc.ABCMeta):
 
     NAME = None
     PLAYBOOK_FILENAME = None

@@ -8,7 +8,6 @@ import os
 import os.path
 import pkg_resources
 
-import six
 import toml
 
 
@@ -33,14 +32,14 @@ _PARSED_CACHE = {}
 """Internal cache to avoid reparsing of files anytime."""
 
 
-class Config(object):
+class Config:
     """Base class for config."""
 
     def __init__(self, config):
         self._raw = config
 
-        for section_key, section_values in six.iteritems(config):
-            for key, value in six.iteritems(section_values):
+        for section_key, section_values in config.items():
+            for key, value in section_values.items():
                 set_key = "_".join([section_key, key]).upper()
                 setattr(self, set_key, value)
 
@@ -61,7 +60,7 @@ class ApiConfig(Config):
     """A config which has specific options for API."""
 
     def __init__(self, config):
-        super(ApiConfig, self).__init__(config)
+        super().__init__(config)
 
         self.MONGO_HOST = self.DB_HOST
         self.MONGO_PORT = self.DB_PORT
@@ -79,7 +78,7 @@ class ApiConfig(Config):
 
     @property
     def logging_config(self):
-        config = super(ApiConfig, self).logging_config
+        config = super().logging_config
         config["loggers"] = {
             "cephlcm": self.API_LOGGING
         }
@@ -92,7 +91,7 @@ class ControllerConfig(Config):
 
     @property
     def logging_config(self):
-        config = super(ControllerConfig, self).logging_config
+        config = super().logging_config
         config["loggers"] = {
             "cephlcm": self.CONTROLLER_LOGGING
         }
@@ -101,7 +100,8 @@ class ControllerConfig(Config):
 
 
 def with_parsed_configs(func):
-    @six.wraps(func)
+    @functools.wraps(func)
+    @functools.lru_cache(maxsize=32)
     def decorator(*args, **kwargs):
         if not _PARSED_CACHE:
             _PARSED_CACHE.update(collect_config(CONFIG_FILES))
@@ -128,12 +128,12 @@ def parse_configs(filenames):
 def merge_config(dest, src):
     """Merges src dict into dest."""
 
-    for key, value in six.iteritems(src):
+    for key, value in src.items():
         if key not in dest:
             dest[key] = value
             continue
 
-        for skey, svalue in six.iteritems(value):
+        for skey, svalue in value.items():
             dest[key][skey] = svalue
 
     return dest

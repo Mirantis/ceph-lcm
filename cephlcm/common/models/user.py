@@ -2,9 +2,6 @@
 """This module contains a User model."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import collections
 
 import pymongo.errors
@@ -27,7 +24,7 @@ class UserModel(generic.Model):
     DEFAULT_SORT_BY = [("full_name", generic.SORT_ASC)]
 
     def __init__(self):
-        super(UserModel, self).__init__()
+        super().__init__()
 
         self.login = None
         self.password_hash = None
@@ -103,7 +100,7 @@ class UserModel(generic.Model):
 
     @classmethod
     def ensure_index(cls):
-        super(UserModel, cls).ensure_index()
+        super().ensure_index()
 
         collection = cls.collection()
         collection.create_index(
@@ -114,7 +111,7 @@ class UserModel(generic.Model):
         )
 
     def check_constraints(self):
-        super(UserModel, self).check_constraints()
+        super().check_constraints()
 
         collection = self.collection()
         query = {
@@ -132,14 +129,14 @@ class UserModel(generic.Model):
             raise exceptions.UniqueConstraintViolationError()
 
     def delete(self):
-        super(UserModel, self).delete()
+        super().delete()
 
         from cephlcm.common.models import token
 
         token.revoke_for_user(self.model_id)
 
     def update_from_db_document(self, structure):
-        super(UserModel, self).update_from_db_document(structure)
+        super().update_from_db_document(structure)
 
         self.initiator_id = structure["initiator_id"]
         self.login = structure["login"]
