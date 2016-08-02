@@ -55,7 +55,8 @@ class ServerModel(generic.Model):
 
     @classmethod
     def create(cls, name, fqdn, ip,
-               facts=None, cluster_id=None, state=STATE_OPERATIONAL):
+               facts=None, cluster_id=None, state=STATE_OPERATIONAL,
+               initiator_id=None):
         model = cls()
         model.name = name
         model.fqdn = fqdn
@@ -63,6 +64,7 @@ class ServerModel(generic.Model):
         model.facts = facts or {}
         model.cluster_id = cluster_id
         model.state = state
+        model.initiator_id = initiator_id
         model.save()
 
         return model
@@ -78,10 +80,14 @@ class ServerModel(generic.Model):
 
     @state.setter
     def state(self, value):
-        if value not in self.STATES:
-            raise ValueError("Unknown server state {0}".format(value))
+        try:
+            if value in self.STATES:
+                self._state = value
+                return
+        except Exception:
+            pass
 
-        self._state = value
+        raise ValueError("Unknown server state {0}".format(value))
 
     @classmethod
     def ensure_index(cls):
