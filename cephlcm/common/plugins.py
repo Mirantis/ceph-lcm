@@ -47,21 +47,26 @@ def get_playbook_plugins(namespace=NS_PLAYBOOKS):
         if plugin.name in CONF.PLUGINS_PLAYBOOKS["disabled"]:
             continue
 
-        try:
-            loaded = plugin.load()
-        except Exception as exc:
-            LOG.exception("Cannot load plugin %s: %s", plugin.name, exc)
-            continue
-
-        if not issubclass(loaded, playbook_plugin.Base):
-            LOG.error("Plugin %s is not subclass of base plugin", plugin.name)
-            continue
-
-        try:
-            loaded = loaded(plugin.name, plugin.module_name)
-        except Exception as exc:
-            LOG.exception("Cannot initialize plugin %s: %s", plugin.name, exc)
-        else:
+        loaded = load_playbook_plugin(plugin)
+        if loaded:
             plugins.append(loaded)
 
     return plugins
+
+
+def load_playbook_plugin(plugin):
+    try:
+        loaded = plugin.load()
+    except Exception as exc:
+        LOG.exception("Cannot load plugin %s: %s", plugin.name, exc)
+        return
+
+    if not issubclass(loaded, playbook_plugin.Base):
+        LOG.error("Plugin %s is not subclass of base plugin", plugin.name)
+        return
+
+    try:
+        return loaded(plugin.name, plugin.module_name)
+    except Exception as exc:
+        LOG.exception("Cannot initialize plugin %s: %s", plugin.name, exc)
+        return
