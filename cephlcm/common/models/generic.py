@@ -76,58 +76,13 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class CachedProperty(object):
-    """Model descriptor for properties which should be lazy calculated."""
-
-    SENTINEL = object()
-    # The result stored in cached property might be any type
-    # and it is not possible to make any suggestions on that.
-    # It might be None, even Elipsis.
-    #
-    # But it is always possible to check identity of arbitrary
-    # object, preliminary created.
-
-    def __init__(self, function):
-        self.cached = self.SENTINEL
-        self.function = function
-
-    def __get__(self, obj, objtype):
-        if self.cached is self.SENTINEL:
-            self.cached = self.function(obj)
-
-        return self.cached
-
-    def __set__(self, obj, value):
-        self.cached = value
-
-
-@six.add_metaclass(abc.ABCMeta)
-class Model(object):
-    """A common class for the model.
-
-    All models, which are working with DB, should be subclasses.
-    """
-
-    MODEL_NAME = None
-    """The name of the model."""
+class Base(object):
 
     COLLECTION_NAME = None
     """The name of the collection where model documents are stored."""
 
     CONNECTION = None
     """The connection to the MongoDB."""
-
-    CONFIG = None
-    """Config for the models.
-
-    Dictionary is expected. All keys are uppercased.
-    """
-
-    LATEST_INCLUDED = 0
-    LATEST_NO = 1
-    LATEST_ONLY = 2
-
-    DEFAULT_SORT_BY = [("id", SORT_ASC)]
 
     @classmethod
     def database(cls):
@@ -140,6 +95,23 @@ class Model(object):
         """This method returns a connection to the collection."""
 
         return cls.database()[cls.COLLECTION_NAME]
+
+    @classmethod
+    def ensure_index(cls):
+        pass
+
+
+@six.add_metaclass(abc.ABCMeta)
+class Model(Base):
+    """A common class for the model.
+
+    All models, which are working with DB, should be subclasses.
+    """
+
+    MODEL_NAME = None
+    """The name of the model."""
+
+    DEFAULT_SORT_BY = [("id", SORT_ASC)]
 
     @classmethod
     def find_by_model_id(cls, item_id):
@@ -368,8 +340,12 @@ class Model(object):
 
     @classmethod
     def ensure_index(cls):
-        collection = cls.collection()
+        super(Model, cls).ensure_index()
 
+        if not cls.COLLECTION_NAME:
+            return
+
+        collection = cls.collection()
         collection.create_index(
             [
                 ("is_latest", pymongo.DESCENDING)
@@ -387,17 +363,16 @@ class Model(object):
         )
 
 
-def configure_models(connection, config):
+def configure_models(connection):
     """This configures models to use database.
 
     Basically, all configuration of DB connection is done externally,
     models are configured with DB client only.
     """
 
-    Model.CONNECTION = connection
-    Model.CONFIG = config
+    Base.CONNECTION = connection
 
 
 def ensure_indexes():
-    for mdl in Model.__subclasses__():
+    for mdl in Base.__subclasses__():
         mdl.ensure_index()

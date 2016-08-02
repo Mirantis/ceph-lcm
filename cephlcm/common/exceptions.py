@@ -20,3 +20,27 @@ class UniqueConstraintViolationError(CephLCMError):
 
 class CannotDeleteRoleWithActiveUsers(CephLCMError):
     """Exception raised on attempt to delete role with active users."""
+
+
+class CannotStartTaskError(CephLCMError):
+    """Exception raised if it is impossible to start such task."""
+
+
+class CannotCancelTaskError(CephLCMError):
+    """Exception raised if it is impossible to cancel such task."""
+
+
+class CannotCompleteTaskError(CephLCMError):
+    """Exception raised if it is impossible to complete such task."""
+
+
+class CannotFailTask(CephLCMError):
+    """Exception raised if it is impossible to fail such task."""
+
+
+class CannotSetExecutorError(CephLCMError):
+    """Exception raised if it is impossible to set executor data."""
+
+
+class InternalDBError(CephLCMError):
+    """Exception raised if it is impossible to complete DB request."""

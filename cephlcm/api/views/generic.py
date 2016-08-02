@@ -95,6 +95,7 @@ class View(flask.views.MethodView):
             response = flask.json.jsonify(response)
         except Exception as exc:
             LOG.error("Cannot convert %s to JSON: %s", response, exc)
+            raise exceptions.CannotConvertResultToJSONError()
 
         return response
 

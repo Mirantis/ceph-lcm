@@ -16,7 +16,7 @@ from cephlcm.common import log
 from cephlcm.common.models import generic as generic_model
 
 
-CONF = base_config.make_common_config()
+CONF = base_config.make_api_config()
 """Common config."""
 
 
@@ -28,15 +28,11 @@ def create_application():
     app_config.configure(application)
     handlers.register_handlers(application)
     views.register_api(application)
-    generic_model.configure_models(
-        flask_pymongo.PyMongo(application),
-        application.config
-    )
+    generic_model.configure_models(flask_pymongo.PyMongo(application))
 
     with application.app_context():
         generic_model.ensure_indexes()
 
-    log.configure_logging()
-    # application.logger.handlers[:] = []
+    log.configure_logging(CONF.logging_config)
 
     return application

@@ -14,6 +14,56 @@
 # - ~/.cephlcm.toml
 # - $(pwd)/cephlcm.toml
 
+# Database related settings
+# MongoDB is used.
+[db]
+host = "127.0.0.1"
+port = 27017
+dbname = "devel"
+connect = false
+task_queue_length = 1000
+
+
+# Default Python logging is used.
+# https://docs.python.org/2/library/logging.config.html#dictionary-schema-details
+[logging]
+version = 1
+incremental = false
+disable_existing_loggers = true
+
+    [logging.root]
+    handlers = []
+
+    [logging.filters]
+
+    [logging.formatters.stderr_debug]
+    format = "%(asctime)s [%(levelname)-8s] (%(filename)15s:%(lineno)-4d): %(message)s"
+    datefmt = "%Y-%m-%d %H:%M:%S"
+
+    [logging.formatters.stderr_default]
+    format = "%(asctime)s [%(levelname)-8s]: %(message)s"
+    datefmt = "%Y-%m-%d %H:%M:%S"
+
+    [logging.formatters.syslog]
+    format = "%(name)s %(asctime)s [%(levelname)-8s]: %(message)s"
+    datefmt = "%Y-%m-%d %H:%M:%S"
+
+    [logging.handlers.stderr_debug]
+    class = "logging.StreamHandler"
+    formatter = "stderr_debug"
+    level = "DEBUG"
+
+    [logging.handlers.stderr_default]
+    class = "logging.StreamHandler"
+    formatter = "stderr_default"
+    level = "DEBUG"
+
+    [logging.handlers.syslog]
+    class = "logging.handlers.SysLogHandler"
+    formatter = "syslog"
+    level = "DEBUG"
+
+
 # API specific settings
 # Options here are Flask options so please check
 # http://flask.pocoo.org/docs/0.11/config/#builtin-configuration-values
@@ -26,72 +76,52 @@ json_sort_keys = true
 jsonify_prettyprint_regular = true
 json_as_ascii = false
 
-# Setup for Flask-PyMongo
-# https://flask-pymongo.readthedocs.io/en/latest/
-[api.mongo]
-host = "127.0.0.1"
-port = 27017
-dbname = "devel"
-connect = false
+    # API options related to tokens
+    [api.token]
+    # Default TTL for token in seconds
+    ttl_in_seconds = 120
 
-# API options related to tokens
-[api.token]
-# Default TTL for token in seconds
-ttl_in_seconds = 120
+    [api.logging]
+    propagate = true
+    level = "DEBUG"
+    handlers = ["stderr_debug"]
+
 
 # Common options
 [common]
 # Default length of the generated passwords
 password_length = 10
 
-[common.email]
-# Default email in FROM field
-from = "noreply@mirantis.com"
-# Default SMTP host
-host = "localhost"
-# Default SMTP port
-port = 25
-# Default SMTP login (set to "" if no auth is required)
-login = ""
-# Default SMTP password (set to "" if no auth is required)
-password = ""
+    [common.email]
+    # Default email in FROM field
+    from = "noreply@mirantis.com"
+    # Default SMTP host
+    host = "localhost"
+    # Default SMTP port
+    port = 25
+    # Default SMTP login (set to "" if no auth is required)
+    login = ""
+    # Default SMTP password (set to "" if no auth is required)
+    password = ""
 
-# Default Python logging is used.
-# https://docs.python.org/2/library/logging.config.html#dictionary-schema-details
-[common.logging]
-version = 1
-incremental = false
-disable_existing_loggers = true
 
-[common.logging.root]
-handlers = []
+# Plugins settings
+[plugins.alerts]
+enabled = []
 
-[common.logging.filters]
+    # Settings for plugins
+    [plugins.alerts.email]
+    enabled = false
+    send_to = ["bigboss@example.com"]
+    from = "errors@example.com"
 
-[common.logging.formatters.debug]
-format = "%(asctime)s [%(levelname)-8s] (%(filename)15s:%(lineno)-4d): %(message)s"
-datefmt = "%Y-%m-%d %H:%M:%S"
 
-[common.logging.formatters.default]
-format = "%(asctime)s [%(levelname)-8s]: %(message)s"
-datefmt = "%Y-%m-%d %H:%M:%S"
+[controller]
+pidfile = "/tmp/cephlcm-controller.pid"
+daemon = false
+timeout = 60
 
-[common.logging.formatters.syslog]
-format = "%(name)s %(asctime)s [%(levelname)-8s]: %(message)s"
-datefmt = "%Y-%m-%d %H:%M:%S"
-
-[common.logging.handlers.debug]
-class = "logging.StreamHandler"
-formatter = "debug"
-level = "DEBUG"
-
-[common.logging.loggers.cephlcm]
-propagate = true
-level = "DEBUG"
-handlers = ["debug"]
-
-# Settings for plugins
-[plugins.alerts.email]
-enabled = false
-send_to = ["bigboss@example.com"]
-from = "errors@example.com"
+    [controller.logging]
+    propagate = true
+    level = "DEBUG"
+    handlers = ["syslog", "stderr_debug"]

@@ -12,8 +12,6 @@ try:
 except ImportError:
     import mock
 
-import flask.json
-import flask.testing
 import pymongo
 import pytest
 
@@ -23,53 +21,7 @@ from cephlcm.common import log
 from cephlcm.common.models import generic
 from cephlcm.common.models import role
 from cephlcm.common.models import user
-
-
-class JsonApiClient(flask.testing.FlaskClient):
-
-    AUTH_URL = None
-    LOGIN = None
-    PASSWORD = None
-
-    def __init__(self, *args, **kwargs):
-        super(JsonApiClient, self).__init__(*args, **kwargs)
-        self.auth_token = None
-
-    def login(self, login=None, password=None):
-        login = login or self.LOGIN
-        password = password or self.PASSWORD
-        response = self.post(
-            self.AUTH_URL, data={"username": login, "password": password})
-
-        if 200 <= response.status_code < 299:
-            self.auth_token = response.json["id"]
-
-        return response
-
-    def logout(self, login=None, password=None):
-        response = self.delete(self.AUTH_URL)
-
-        if 200 <= response.status_code < 299:
-            self.auth_token = None
-
-        return response
-
-    def open(self, *args, **kwargs):
-        data = kwargs.get("data")
-        if data is not None and not kwargs.get("content_type"):
-            kwargs["data"] = flask.json.dumps(data)
-            kwargs["content_type"] = "application/json"
-
-        if self.auth_token:
-            self.install_token(kwargs)
-
-        return super(JsonApiClient, self).open(*args, **kwargs)
-
-    def install_token(self, kwargs):
-        headers = dict(kwargs.pop("headers", []))
-        headers["Authorization"] = self.auth_token
-
-        kwargs["headers"] = sorted(headers.items())
+from cephlcm.common import wrappers
 
 
 def have_mocked(request, *mock_args, **mock_kwargs):
@@ -98,7 +50,7 @@ def freeze_time(request):
 
 @pytest.fixture(scope="session", autouse=True)
 def configure_logging():
-    log.configure_logging()
+    log.configure_logging(api.CONF.logging_config)
 
 
 @pytest.yield_fixture(scope="module")
@@ -122,43 +74,22 @@ def mongo_db_name():
 
 @pytest.fixture(scope="module")
 def pymongo_connection(mongo_db_name):
-    client = pymongo.MongoClient(
+    return wrappers.MongoDBWrapper(
         host=config.CONF.MONGO_HOST,
-        port=config.CONF.MONGO_PORT
+        port=config.CONF.MONGO_PORT,
+        dbname=config.CONF.MONGO_DBNAME,
+        connect=config.CONF.MONGO_CONNECT
     )
-    connection = mock.MagicMock()
-    connection.db = client[mongo_db_name]
-
-    return connection
 
 
 @pytest.yield_fixture(scope="module")
 def configure_model(mongo_db_name, pymongo_connection):
     """This fixture append fake config to the Model."""
 
-    generic.configure_models(pymongo_connection, config.CONF.__dict__)
-
+    generic.configure_models(pymongo_connection)
+    generic.ensure_indexes()
     yield
-
-    generic.Model.CONNECTION = None
-    generic.Model.CONNECTION = None
-
-
-@pytest.yield_fixture
-def app(configure_model):
-    application = api.create_application()
-    application.testing = True
-    application.test_client_class = JsonApiClient
-
-    with application.app_context():
-        yield application
-
-
-@pytest.fixture
-def client_v1(client):
-    client.AUTH_URL = "/v1/auth/"
-
-    return client
+    generic.configure_models(None)
 
 
 @pytest.fixture
@@ -199,12 +130,3 @@ def sudo_user(sudo_role):
         "Almighty Sudo",
         [sudo_role.model_id]
     )
-
-
-@pytest.yield_fixture
-def sudo_client_v1(app, sudo_user):
-    with app.test_client() as client:
-        client.AUTH_URL = "/v1/auth/"
-        client.login("sudo", "sudo")
-
-        yield client
