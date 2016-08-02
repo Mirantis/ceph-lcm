@@ -2,6 +2,7 @@
 """This module contains configuration routines for CephLCM."""
 
 
+import functools
 import logging
 import os
 import os.path
@@ -9,8 +10,6 @@ import pkg_resources
 
 import six
 import toml
-
-from cephlcm.common import utils
 
 
 HOME = os.path.expanduser("~")
@@ -151,7 +150,7 @@ def collect_config(filenames):
     return config
 
 
-@utils.cached
+@functools.lru_cache(maxsize=2)
 @with_parsed_configs
 def make_config(raw_config):
     """Makes Api specific config."""
@@ -159,7 +158,7 @@ def make_config(raw_config):
     return Config(raw_config)
 
 
-@utils.cached
+@functools.lru_cache(maxsize=2)
 @with_parsed_configs
 def make_api_config(raw_config):
     """Makes Api specific config."""
@@ -167,7 +166,7 @@ def make_api_config(raw_config):
     return ApiConfig(raw_config)
 
 
-@utils.cached
+@functools.lru_cache(maxsize=2)
 @with_parsed_configs
 def make_controller_config(raw_config):
     """Makes controller specific config."""

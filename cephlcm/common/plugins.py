@@ -2,12 +2,12 @@
 """Utilities for plugin management."""
 
 
+import functools
 import pkg_resources
 
 from cephlcm.common import config
 from cephlcm.common import log
 from cephlcm.common import playbook_plugin
-from cephlcm.common import utils
 
 
 NS_ALERT = "cephlcm.alerts"
@@ -23,7 +23,7 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-@utils.cached
+@functools.lru_cache(maxsize=2)
 def get_alert_plugins(namespace=NS_ALERT):
     """Generator, which yield plugin entrypoints for enabled ones."""
 
@@ -39,7 +39,7 @@ def get_alert_plugins(namespace=NS_ALERT):
     return plugins
 
 
-@utils.cached
+@functools.lru_cache(maxsize=2)
 def get_playbook_plugins(namespace=NS_PLAYBOOKS):
     plugins = []
 
