@@ -6,8 +6,8 @@ import abc
 import copy
 import distutils.spawn
 import os
-import pkg_resources
 import subprocess
+import pkg_resources
 
 try:
     import simplejson as json

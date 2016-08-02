@@ -12,8 +12,8 @@ import pymongo.errors
 from cephlcm.common import config
 from cephlcm.common import exceptions
 from cephlcm.common import log
-from cephlcm.common.models import generic
 from cephlcm.common import timeutils
+from cephlcm.common.models import generic
 
 
 TASK_TEMPLATE = {

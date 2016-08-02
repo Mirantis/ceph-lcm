@@ -2,9 +2,8 @@
 """Common pytest fixtures for all tests."""
 
 
-import uuid
-
 import unittest.mock as mock
+import uuid
 
 import mongomock
 import pytest

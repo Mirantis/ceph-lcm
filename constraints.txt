@@ -8,10 +8,12 @@ bcrypt==3.1.0
 click==6.6
 daemonocle==1.0.1
 flake8==2.6.2
+flake8-bugbear==16.7.1
 flake8-builtins==0.2
 flake8-coding==1.2.2
 flake8-comprehensions==1.2.1
 flake8-debugger==1.4.0
+flake8-import-order==0.9.1
 flake8-mutable==1.0.4
 flake8-polyfill==1.0.1
 flake8-quotes==0.6.0

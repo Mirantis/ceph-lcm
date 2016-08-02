@@ -8,8 +8,8 @@ import uuid
 
 import pytest
 
-from cephlcm.common.models import user
 from cephlcm.common import passwords
+from cephlcm.common.models import user
 
 
 @pytest.fixture

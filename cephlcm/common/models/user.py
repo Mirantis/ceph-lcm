@@ -7,9 +7,9 @@ import collections
 import pymongo.errors
 
 from cephlcm.common import exceptions
+from cephlcm.common import passwords
 from cephlcm.common.models import generic
 from cephlcm.common.models import role
-from cephlcm.common import passwords
 
 
 class UserModel(generic.Model):

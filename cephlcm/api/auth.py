@@ -12,10 +12,10 @@ import flask
 
 from cephlcm.api import exceptions
 from cephlcm.common import log
+from cephlcm.common import passwords
 from cephlcm.common.models import role
 from cephlcm.common.models import token
 from cephlcm.common.models import user
-from cephlcm.common import passwords
 
 
 LOG = log.getLogger(__name__)

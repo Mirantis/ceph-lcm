@@ -9,8 +9,8 @@ from cephlcm.api.views import generic
 from cephlcm.common import emailutils
 from cephlcm.common import exceptions as base_exceptions
 from cephlcm.common import log
-from cephlcm.common.models import user
 from cephlcm.common import passwords
+from cephlcm.common.models import user
 
 
 DATA_SCHEMA = {

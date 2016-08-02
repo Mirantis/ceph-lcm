@@ -10,9 +10,9 @@ and expired tokens are invalid.
 import bson.objectid
 
 from cephlcm.common import config
+from cephlcm.common import timeutils
 from cephlcm.common.models import generic
 from cephlcm.common.models import user
-from cephlcm.common import timeutils
 
 
 CONF = config.make_api_config()

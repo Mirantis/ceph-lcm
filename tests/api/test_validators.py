@@ -2,9 +2,8 @@
 """Tests for cephlcm.api.validators."""
 
 
-import uuid
-
 import unittest.mock as mock
+import uuid
 
 import pytest
 
