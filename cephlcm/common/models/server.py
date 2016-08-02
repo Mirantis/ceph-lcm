@@ -53,6 +53,20 @@ class ServerModel(generic.Model):
         self._cluster = None
         self.facts = {}
 
+    @classmethod
+    def create(cls, name, fqdn, ip,
+               facts=None, cluster_id=None, state=STATE_OPERATIONAL):
+        model = cls()
+        model.name = name
+        model.fqdn = fqdn
+        model.ip = ip
+        model.facts = facts or {}
+        model.cluster_id = cluster_id
+        model.state = state
+        model.save()
+
+        return model
+
     @property
     def cluster(self):
         # TODO(Sergey Arkhipov): Implement after Cluster model will be add
@@ -96,6 +110,10 @@ class ServerModel(generic.Model):
         self.facts = structure["facts"]
 
         self._cluster = None
+
+    def delete(self):
+        # TODO(Sergey Arkhipov): After create of cluster model, implement.
+        super(ServerModel, self).delete()
 
     def make_db_document_specific_fields(self):
         return {

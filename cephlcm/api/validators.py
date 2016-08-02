@@ -51,6 +51,16 @@ JSONSCHEMA_DEFINITIONS = {
             "[a-f0-9]{12}"
             "$"
         )
+    },
+    "hostname": {
+        "type": "string",
+        "format": "hostname"
+    },
+    "ip": {
+        "oneOf": [
+            {"type": "string", "format": "ipv4"},
+            {"type": "string", "format": "ipv6"}
+        ]
     }
 }
 """Some common type definitions for JSON Schema
@@ -68,7 +78,10 @@ def require_schema(schema):
     http://json-schema.org
     """
 
-    validator = jsonschema.Draft4Validator(schema)
+    validator = jsonschema.Draft4Validator(
+        schema,
+        format_checker=jsonschema.FormatChecker()
+    )
 
     def outer_decorator(func):
         @six.wraps(func)
