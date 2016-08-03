@@ -126,7 +126,7 @@ class TokenModel(generic.Model):
             "initiator_id": self.initiator_id
         }
 
-    def make_api_specific_fields(self):
+    def make_api_specific_fields(self, *args, **kwargs):
         user_model = self.get_user()
         if user_model:
             user_model = user_model.make_api_structure()

@@ -42,7 +42,7 @@ class PermissionSet(object):
     def __getitem__(self, key):
         return self.permissions[key]
 
-    def make_api_structure(self):
+    def make_api_structure(self, *args, **kwargs):
         return {k: sorted(v)
                 for k, v in six.iteritems(self.permissions)}
 
@@ -149,7 +149,7 @@ class RoleModel(generic.Model):
             "initiator_id": self.initiator_id
         }
 
-    def make_api_specific_fields(self):
+    def make_api_specific_fields(self, *args, **kwargs):
         return {
             "name": self.name,
             "permissions": self.permissions

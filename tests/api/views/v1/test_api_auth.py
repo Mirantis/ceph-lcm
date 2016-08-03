@@ -118,8 +118,8 @@ def test_logout_without_correct_token(was_logged_in, token, client_v1):
 
     response = client_v1.delete("/v1/auth/", headers=headers)
 
-    assert response.status_code == 403
-    assert response.json["error"] == "Forbidden"
+    assert response.status_code == 401
+    assert response.json["error"] == "Unauthorized"
 
 
 def test_logout_deleted_user(client_v1):
@@ -131,5 +131,5 @@ def test_logout_deleted_user(client_v1):
     user_model.delete()
     response = client_v1.logout()
 
-    assert response.status_code == 403
-    assert response.json["error"] == "Forbidden"
+    assert response.status_code == 401
+    assert response.json["error"] == "Unauthorized"

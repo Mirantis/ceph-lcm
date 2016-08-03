@@ -16,4 +16,4 @@ def test_access_ok(sudo_client_v1):
 def test_access_authentication(client_v1):
     response = client_v1.get("/v1/permission/")
 
-    assert response.status_code == 403
+    assert response.status_code == 401

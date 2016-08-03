@@ -348,3 +348,13 @@ class Task(generic.Base):
         except pymongo.errors.OperationFailure as exc:
             LOG.exception("Cannot continue to listen to queue: %s", exc)
             raise exceptions.InternalDBError()
+
+
+class ServerDiscoveryTask(Task):
+
+    def __init__(self, host, user, initiator_id):
+        super(ServerDiscoveryTask, self).__init__(
+            self.TASK_TYPE_SERVER_DISCOVERY, initiator_id)
+
+        self.data["host"] = host
+        self.data["username"] = user

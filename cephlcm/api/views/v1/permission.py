@@ -12,11 +12,13 @@ from cephlcm.common.models import role
 
 class PermissionView(generic.ModelView):
 
-    decorators = [auth.require_authentication]
+    decorators = [
+        auth.require_authorization("api", "view_role"),
+        auth.require_authentication
+    ]
 
     NAME = "permission"
     ENDPOINT = "/permission/"
 
-    @auth.require_authorization("api", "view_role")
     def get(self):
         return role.PermissionSet(role.PermissionSet.KNOWN_PERMISSIONS)

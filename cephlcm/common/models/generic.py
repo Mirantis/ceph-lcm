@@ -174,11 +174,14 @@ class Model(Base):
         return paginated_result
 
     @classmethod
-    def list_models(cls, pagination, is_latest=True, sort_by=None):
-        query = {}
+    def list_models(cls, pagination, include_deleted=False, is_latest=True,
+                    sort_by=None):
+        query = {"time_deleted": 0}
 
         if is_latest is not None:
             query["is_latest"] = bool(is_latest)
+        if include_deleted:
+            query.pop("time_deleted", None)
 
         if sort_by is None:
             sort_by = cls.DEFAULT_SORT_BY
@@ -313,7 +316,7 @@ class Model(Base):
 
         raise NotImplementedError
 
-    def make_api_structure(self):
+    def make_api_structure(self, *args, **kwargs):
         """This method build a structure, suitable for API."""
 
         structure = copy.deepcopy(MODEL_API_STRUCTURE)
@@ -324,7 +327,7 @@ class Model(Base):
         structure["time_updated"] = self.time_created
         structure["time_deleted"] = self.time_deleted
         structure["initiator_id"] = self.initiator_id
-        structure["data"] = self.make_api_specific_fields()
+        structure["data"] = self.make_api_specific_fields(*args, **kwargs)
 
         return structure
 

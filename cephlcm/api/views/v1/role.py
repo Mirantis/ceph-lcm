@@ -38,18 +38,19 @@ LOG = log.getLogger(__name__)
 class RoleView(generic.VersionedCRUDView):
     """Implementation of view for /v1/role API."""
 
-    decorators = [auth.require_authentication]
+    decorators = [
+        auth.require_authorization("api", "view_role"),
+        auth.require_authentication
+    ]
 
     NAME = "role"
     MODEL_NAME = "role"
     ENDPOINT = "/role/"
     PARAMETER_TYPE = "uuid"
 
-    @auth.require_authorization("api", "view_role")
     def get_all(self):
         return role.RoleModel.list_models(self.pagination)
 
-    @auth.require_authorization("api", "view_role")
     @validators.with_model(role.RoleModel)
     def get_item(self, item_id, item, *args):
         return item

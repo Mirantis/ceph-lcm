@@ -32,12 +32,12 @@ def require_authentication(func):
         token_id = flask.request.headers.get("Authorization")
         if not token_id:
             LOG.warning("Cannot find token in Authorization header")
-            raise exceptions.Forbidden
+            raise exceptions.Unauthorized
 
         token_model = token.TokenModel.find_token(token_id)
         if not token_model:
             LOG.warning("Cannot find not expired token %s", token_id)
-            raise exceptions.Forbidden
+            raise exceptions.Unauthorized
 
         flask.g.token = token_model
 
