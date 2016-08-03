@@ -13,6 +13,7 @@ import six
 import werkzeug.exceptions
 
 from cephlcm.api import exceptions
+from cephlcm.api import pagination
 from cephlcm.common import log
 
 
@@ -166,14 +167,7 @@ class CRUDView(ModelView):
     def pagination(self):
         """Returns settings for current pagination."""
 
-        items_per_page = convert_dict_or(
-            self.request_query, "per_page", int,
-            self.PAGINATION_ITEMS_PER_PAGE
-        )
-        page = convert_dict_or(self.request_query, "page", int, 1)
-        pagination = {"per_page": items_per_page, "page": page}
-
-        return pagination
+        return pagination.make_pagination(self.request_query)
 
     @classmethod
     def register_to(cls, application):
@@ -292,17 +286,3 @@ def make_endpoint(*endpoint):
         url += "/"
 
     return url
-
-
-def convert_dict_or(obj, name, converter, default=None):
-    """Just a shorthand to return default on getting smthng from dictionary."""
-
-    try:
-        result = converter(obj[name])
-    except Exception:
-        return default
-
-    if result <= 0:
-        return default
-
-    return result

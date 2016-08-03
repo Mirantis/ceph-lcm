@@ -75,6 +75,7 @@ logger_handler_policy = "never"
 json_sort_keys = true
 jsonify_prettyprint_regular = true
 json_as_ascii = false
+pagination_per_page = 25
 
     # API options related to tokens
     [api.token]
