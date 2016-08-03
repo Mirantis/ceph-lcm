@@ -3,10 +3,12 @@
 
 
 import copy
+import json
 import uuid
 
 import pytest
 
+from cephlcm.common.models import user
 from cephlcm.common import passwords
 
 
@@ -439,3 +441,41 @@ def test_get_version(email, sudo_client_v1, valid_post_request):
     version["version"] = 1
 
     assert version == initial_json
+
+
+def test_user_filtering(sudo_client_v1, email, clean_user_collection):
+    login = ""
+    for _ in range(10):
+        model = user.UserModel.make_user(
+            "1" + str(uuid.uuid4()),
+            "qqq",
+            "{0}@example.com".format(uuid.uuid4()),
+            str(uuid.uuid4()),
+            []
+        )
+        login = model.login
+
+    response = sudo_client_v1.get(
+        "/v1/user/?filter={0}".format(json.dumps({"login": login}))
+    )
+    assert response.json["total"] == 1
+
+    response = sudo_client_v1.get(
+        "/v1/user/?filter={0}".format(json.dumps({"login": {"eq": login}}))
+    )
+    assert response.json["total"] == 1
+
+    response = sudo_client_v1.get(
+        "/v1/user/?filter={0}".format(json.dumps({"login": {"regexp": login}}))
+    )
+    assert response.json["total"] == 1
+
+    response = sudo_client_v1.get(
+        "/v1/user/?filter={0}".format(json.dumps({"login": {"in": [login]}}))
+    )
+    assert response.json["total"] == 1
+
+    response = sudo_client_v1.get(
+        "/v1/user/?filter={0}".format(json.dumps({"login": {"ne": login}}))
+    )
+    assert response.json["total"] == 10
