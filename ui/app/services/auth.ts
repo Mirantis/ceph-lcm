@@ -1,7 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Http, Headers} from '@angular/http';
 import {CookieService} from 'angular2-cookie/core';
-import {Router, CanActivate} from '@angular/router';
+import {Router, CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot} from '@angular/router';
+import {Observable} from 'rxjs/Observable';
+
 import * as _ from 'lodash';
 
 @Injectable()
@@ -10,23 +12,36 @@ export class AuthService {
 
   constructor(private http: Http, private cookieService: CookieService) {}
 
-  login(email: string, password: string) {
-    let headers = new Headers();
-    headers.append('Content-Type', 'application/json');
+  redirectUrl: string;
 
-    return this.http
-      .post(
-        '/login',
-        JSON.stringify({email, password}),
-        {headers}
-      )
-      .map(res => res.json())
-      .map((res) => {
-        if (res.success) {
-          this.cookieService.put('auth_token', res.auth_token);
-        }
-        return res.success;
-      });
+  login(email: string, password: string): Observable<any> {
+    this.cookieService.put('auth_token', 'bla-bla-token');
+    return Observable.empty();
+
+    // let headers = new Headers();
+    // headers.append('Content-Type', 'application/json');
+
+    // return this.http
+    //   .post(
+    //     '/login',
+    //     JSON.stringify({email, password}),
+    //     {headers}
+    //   )
+    //   .map(res => res.json())
+    //   .map((res) => {
+    //     if (res.success) {
+    //       this.cookieService.put('auth_token', res.auth_token);
+    //     }
+    //     return res.success;
+    //   })
+    //   .catch(this.handleError);
+  }
+  
+  private handleError (error: any) {
+    let errMsg = (error.message) ? error.message :
+      error.status ? `${error.status} - ${error.statusText}` : 'Server error';
+    console.error(errMsg);
+    return Observable.throw(errMsg);
   }
 
   logout() {
@@ -40,9 +55,13 @@ export class AuthService {
 
 @Injectable()
 export class LoggedIn implements CanActivate {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate() {
-    return this.authService.isLoggedIn();
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    if (this.authService.isLoggedIn()) {return true;}
+    this.authService.redirectUrl = state.url;
+    this.router.navigate(['/login']);
+    return false;
+
   }
 };

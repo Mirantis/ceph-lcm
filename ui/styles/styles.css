@@ -1,0 +1,13 @@
+ul.navigation li {
+  display: inline-block;
+  width: 80px;
+}
+ul.navigation li a {
+  cursor: hand;
+}
+ul.navigation li a.active {
+  cursor: default;
+  font-weight: 800;
+  color: #000;
+  text-decoration: none;
+}

@@ -18,4 +18,5 @@ _temp
 !wallaby.js
 
 .DS_Store
+*.log
 
