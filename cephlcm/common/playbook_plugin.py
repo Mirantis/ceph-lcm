@@ -2,6 +2,9 @@
 """Base plugin structure for playbook."""
 
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import abc
 import copy
 import distutils.spawn
@@ -41,6 +44,7 @@ class Base(object):
     PLAYBOOK_FILENAME = None
     CONFIG_FILENAME = None
     DESCRIPTION = ""
+    REQUIRED_SERVER_LIST = True
 
     ENV_PLAYBOOK_CONFIG_ID = "CEPHLCM_PLAYBOOK_CONFIG_ID"
     ENV_CLUSTER_ID = "CEPHLCM_PLAYBOOK_CLUSTER_ID"
