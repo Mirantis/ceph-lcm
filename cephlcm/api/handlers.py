@@ -24,9 +24,6 @@ from cephlcm.common import plugins
 LOG = log.getLogger(__name__)
 """Logger."""
 
-PLUGIN_NAMESPACE = "cephlcm.alerts"
-"""Namespace for plugins to use."""
-
 
 def set_global_request_id():
     """This handler sets global request ID for every request."""
@@ -56,7 +53,7 @@ def error_to_json(error):
         json_error = exceptions.InternalServerError()
 
     exc_info = sys.exc_info()
-    for plugin in plugins.get_plugins(PLUGIN_NAMESPACE):
+    for plugin in plugins.get_alert_plugins():
         try:
             plugin(flask.g.request_id, error, exc_info)
         except Exception as exc:

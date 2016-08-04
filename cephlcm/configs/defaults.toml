@@ -94,7 +94,7 @@ pagination_per_page = 25
 password_length = 10
 # Minimal amount of rounds for testing purposes.
 # Please set to 12 in production.
-bcrypt_rounds = 5
+bcrypt_rounds = 4
 
     [common.email]
     # Default email in FROM field
@@ -119,11 +119,15 @@ enabled = []
     send_to = ["bigboss@example.com"]
     from = "errors@example.com"
 
+[plugins.playbooks]
+disabled = []
+
 
 [controller]
 pidfile = "/tmp/cephlcm-controller.pid"
 daemon = false
 timeout = 60
+ansible_config = "/etc/ansible/ansible.cfg"
 
     [controller.logging]
     propagate = true
