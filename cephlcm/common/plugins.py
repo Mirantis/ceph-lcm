@@ -65,3 +65,13 @@ def get_playbook_plugins(namespace=NS_PLAYBOOKS):
             plugins.append(loaded)
 
     return plugins
+
+
+@utils.cached
+def playbook_plugin_names(namespace=NS_PLAYBOOKS):
+    names = []
+
+    for plugin in get_playbook_plugins(namespace):
+        names.append(plugin.NAME)
+
+    return names

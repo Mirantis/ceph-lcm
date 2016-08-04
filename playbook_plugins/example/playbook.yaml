@@ -1,0 +1,9 @@
+---
+# This is the playbook for Example plugin
+
+
+- hosts: localhost
+  connection: local
+  tasks:
+    - setup:
+    - debug: msg="Hello world"

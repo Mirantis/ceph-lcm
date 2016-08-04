@@ -3,8 +3,11 @@
 
 
 import abc
+import copy
 import distutils.spawn
+import os
 import pkg_resources
+import subprocess
 
 try:
     import simplejson as json
@@ -14,6 +17,7 @@ except ImportError:
 import six
 import toml
 
+from cephlcm.common import config
 from cephlcm.common import log
 
 
@@ -22,6 +26,9 @@ DYNAMIC_INVENTORY_PATH = "/usr/bin/cephlcm-inventory"
 
 ANSIBLE_CMD = distutils.spawn.find_executable("ansible-playbook")
 """Executable for ansible"""
+
+CONF = config.make_controller_config()
+"""Config."""
 
 LOG = log.getLogger(__name__)
 """Logger."""
@@ -33,6 +40,10 @@ class Base(object):
     NAME = None
     PLAYBOOK_FILENAME = None
     CONFIG_FILENAME = None
+    DESCRIPTION = ""
+
+    ENV_PLAYBOOK_CONFIG_ID = "CEPHLCM_PLAYBOOK_CONFIG_ID"
+    ENV_CLUSTER_ID = "CEPHLCM_PLAYBOOK_CLUSTER_ID"
 
     def __init__(self, entry_point, module_name):
         self.NAME = self.NAME or entry_point
@@ -41,7 +52,7 @@ class Base(object):
 
         self.module_name = module_name
         self.entry_point = entry_point
-        self.config = self.load_config(module_name, self.CONFIG_FILENAME)
+        self.config = self.load_config(self.CONFIG_FILENAME)
 
     def get_filename(self, filename):
         return pkg_resources.resource_filename(self.module_name, filename)
@@ -62,7 +73,13 @@ class Base(object):
 
     def get_environment_variables(self, playbook_configuration,
                                   cluster_id=None):
-        return {}
+        new_env = copy.deepcopy(os.environ)
+
+        new_env[self.ENV_CLUSTER_ID] = str(cluster_id or "")
+        new_env[self.ENV_PLAYBOOK_CONFIG_ID] = str(playbook_configuration._id)
+        new_env["ANSIBLE_CONFIG"] = str(CONF.CONTROLLER_ANSIBLE_CONFIG)
+
+        return new_env
 
     def playbook_cmdline(self, playbook_configuration, cluster_id=None):
         if not ANSIBLE_CMD:
@@ -80,3 +97,27 @@ class Base(object):
         cmdline.append(self.get_filename(self.PLAYBOOK_FILENAME))
 
         return cmdline
+
+    def run_playbook_configuration(
+        self, playbook_configuration, cluster_id=None,
+        stdin=None, stdout=None, stderr=None
+    ):
+        cmdline = self.playbook_cmdline(playbook_configuration, cluster_id)
+        env = self.get_environment_variables(playbook_configuration,
+                                             cluster_id)
+
+        LOG.info(
+            "Run provisioner for playbook configuration %s "
+            "(cluster ID is %s): %s",
+            playbook_configuration._id, cluster_id,
+            subprocess.list2cmdline(cmdline)
+        )
+
+        return subprocess.Popen(
+            cmdline,
+            stdin=stdin,
+            stdout=stdout,
+            stderr=stderr,
+            shell=False,
+            env=env
+        )
