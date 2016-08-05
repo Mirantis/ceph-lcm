@@ -8,7 +8,7 @@
     'angular2-in-memory-web-api': 'node_modules/angular2-in-memory-web-api',
     'rxjs':                       'node_modules/rxjs',
     'angular2-cookie':            'node_modules/angular2-cookie',
-    'lodash':                     'node_modules/lodash/lodash.js'
+    'lodash':                     'node_modules/lodash'
   };
 
   // packages tells the System loader how to load when no filename and/or no extension
@@ -17,6 +17,7 @@
     'angular2-cookie':            { main: 'core.js',  defaultExtension: 'js' },
     'rxjs':                       { defaultExtension: 'js' },
     'angular2-in-memory-web-api': { main: 'index.js', defaultExtension: 'js' },
+    'lodash':                     { main: 'lodash.js', defaultExtension: 'js' }
   };
 
   var ngPackageNames = [

@@ -4,7 +4,7 @@ import {HomeComponent} from './components/home';
 import {LoginComponent} from './components/login';
 import {DashboardComponent} from './components/dashboard';
 import {PageNotFoundComponent} from './components/404';
-import {LoggedIn} from './services/auth'
+import {LoggedIn} from './services/session'
 
 export const routes = [
   {path: '', component: HomeComponent, terminal: true},

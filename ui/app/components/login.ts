@@ -1,29 +1,35 @@
 import {Component} from '@angular/core';
 import {Router} from '@angular/router';
 
+import {SessionService} from '../services/session';
 import {AuthService} from '../services/auth';
 
 @Component({
-  selector: 'login',
   template: `<h2>Login Form</h2>
-  <div>User is currently logged {{authService.isLoggedIn() ? 'in' : 'out'}}</div>
+  <div>User is currently logged {{auth.isLoggedIn() ? 'in' : 'out'}}</div>
 <button (click)='login("a", "b")'>Get In</button>
 <button (click)='logout()'>Log out</button>
   `
 })
 
 export class LoginComponent {
-  constructor(public authService: AuthService, private router: Router) {}
+  constructor(public auth: AuthService, public session: SessionService, private router: Router) {}
 
   login(email: string, password: string) {
-    this.authService.login(email, password).subscribe((result) => {
-      if (result) {
-        this.router.navigate(['dashboard']);
-      }
-    });
+    return this.session.login(email, password)
+      .then((result: any) => {
+        if (result) {
+          this.router.navigate([this.session.redirectUrl || 'dashboard']);
+        }
+      },
+      (error: any) => {
+        console.log(error);
+        return true;
+      });
   };
 
   logout() {
-    this.authService.logout();    
+    this.session.logout()
+      .catch(() => true);
   }
 }
