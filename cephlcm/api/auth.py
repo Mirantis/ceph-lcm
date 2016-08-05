@@ -6,18 +6,16 @@ to another module.
 """
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+import functools
 
 import flask
-import six
 
 from cephlcm.api import exceptions
 from cephlcm.common import log
+from cephlcm.common import passwords
 from cephlcm.common.models import role
 from cephlcm.common.models import token
 from cephlcm.common.models import user
-from cephlcm.common import passwords
 
 
 LOG = log.getLogger(__name__)
@@ -27,7 +25,7 @@ LOG = log.getLogger(__name__)
 def require_authentication(func):
     """Decorator, which require request authenticated."""
 
-    @six.wraps(func)
+    @functools.wraps(func)
     def decorator(*args, **kwargs):
         token_id = flask.request.headers.get("Authorization")
         if not token_id:
@@ -50,7 +48,7 @@ def require_authorization(permission_class, permission_name):
     role.PermissionSet.add_permission(permission_class, permission_name)
 
     def outer_decorator(func):
-        @six.wraps(func)
+        @functools.wraps(func)
         def inner_decorator(*args, **kwargs):
             user_model = getattr(flask.g, "token", None)
             user_model = getattr(user_model, "user", None)
@@ -81,9 +79,7 @@ def authenticate(user_name, password):
         LOG.warning("Cannot find not deleted user with login %s", user_name)
         raise exceptions.Unauthorized
 
-    password = password.encode("utf-8")
-    password_hash = user_model.password_hash.encode("utf-8")
-    if not passwords.compare_passwords(password, password_hash):
+    if not passwords.compare_passwords(password, user_model.password_hash):
         LOG.warning("Password mismatch for user with login %s", user_name)
         raise exceptions.Unauthorized
 

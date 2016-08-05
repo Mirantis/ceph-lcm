@@ -2,9 +2,6 @@
 """Small API to list playbooks plugins available in application."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from cephlcm.api import auth
 from cephlcm.api.views import generic
 from cephlcm.common import plugins

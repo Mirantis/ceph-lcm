@@ -12,8 +12,8 @@ import pymongo.errors
 from cephlcm.common import config
 from cephlcm.common import exceptions
 from cephlcm.common import log
-from cephlcm.common.models import generic
 from cephlcm.common import timeutils
+from cephlcm.common.models import generic
 
 
 TASK_TEMPLATE = {
@@ -97,7 +97,7 @@ class Task(generic.Base):
             if task_type not in self.TASK_TYPES:
                 raise ValueError("Unknown task type {0}".format(task_type))
         except TypeError:
-                raise ValueError("Unknown task type {0}".format(task_type))
+            raise ValueError("Unknown task type {0}".format(task_type))
 
         self._id = None
         self.task_type = task_type
@@ -203,8 +203,8 @@ class Task(generic.Base):
         collection = self.collection()
         try:
             document = collection.insert_one(state)
-        except pymongo.errors.DuplicateKeyError:
-            raise exceptions.UniqueConstraintViolationError
+        except pymongo.errors.DuplicateKeyError as exc:
+            raise exceptions.UniqueConstraintViolationError from exc
 
         document = collection.find_one({"_id": document.inserted_id})
         self.set_state(document)
@@ -347,14 +347,13 @@ class Task(generic.Base):
                 stop_condition.wait(1)
         except pymongo.errors.OperationFailure as exc:
             LOG.exception("Cannot continue to listen to queue: %s", exc)
-            raise exceptions.InternalDBError()
+            raise exceptions.InternalDBError() from exc
 
 
 class ServerDiscoveryTask(Task):
 
     def __init__(self, host, user, initiator_id):
-        super(ServerDiscoveryTask, self).__init__(
-            self.TASK_TYPE_SERVER_DISCOVERY, initiator_id)
+        super().__init__(self.TASK_TYPE_SERVER_DISCOVERY, initiator_id)
 
         self.data["host"] = host
         self.data["username"] = user

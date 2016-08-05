@@ -77,7 +77,7 @@ def test_create_task_watchable(task_type, configure_model, no_sleep,
     new_task.create()
 
     iterator = task.Task.watch(exit_on_empty=True)
-    assert new_task._id == iterator.next()._id
+    assert new_task._id == next(iterator)._id
 
 
 @pytest.mark.parametrize("task_type", task.Task.TASK_TYPES)

@@ -2,12 +2,8 @@
 """Tests for cephlcm.api.validators."""
 
 
+import unittest.mock as mock
 import uuid
-
-try:
-    import unittest.mock as mock
-except ImportError:
-    import mock
 
 import pytest
 

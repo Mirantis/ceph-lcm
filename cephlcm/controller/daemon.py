@@ -7,8 +7,8 @@ import daemonocle.cli
 
 from cephlcm.common import config
 from cephlcm.common import log
-from cephlcm.common.models import generic
 from cephlcm.common import wrappers
+from cephlcm.common.models import generic
 from cephlcm.controller import mainloop
 
 

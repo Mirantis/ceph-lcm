@@ -2,9 +2,6 @@
 """This module creates and configures WSGI application."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import flask
 import flask_pymongo
 

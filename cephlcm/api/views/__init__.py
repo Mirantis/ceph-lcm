@@ -9,9 +9,6 @@ require to have view as plugins.
 """
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from cephlcm.api.views import v1
 
 

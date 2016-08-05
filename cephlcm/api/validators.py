@@ -2,8 +2,9 @@
 """This module contains validators for different API calls."""
 
 
+import functools
+
 import jsonschema
-import six
 
 from cephlcm.api import exceptions
 from cephlcm.common import log
@@ -84,7 +85,7 @@ def require_schema(schema):
     )
 
     def outer_decorator(func):
-        @six.wraps(func)
+        @functools.wraps(func)
         def inner_decorator(self, *args, **kwargs):
             errors = validator.iter_errors(self.request_json)
             errors = [err.message for err in errors]
@@ -114,7 +115,7 @@ def with_model(model_class):
     find = model_class.find_by_model_id
 
     def outer_decorator(func):
-        @six.wraps(func)
+        @functools.wraps(func)
         def inner_decorator(self, **kwargs):
             assert kwargs["item_id"]
 
@@ -140,7 +141,7 @@ def no_updates_on_default_fields(func):
     something suspicious.
     """
 
-    @six.wraps(func)
+    @functools.wraps(func)
     def decorator(self, **kwargs):
         item = kwargs["item"]
 

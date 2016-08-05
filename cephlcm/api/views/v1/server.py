@@ -2,9 +2,6 @@
 """This module contains view for /v1/server API."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from cephlcm.api import auth
 from cephlcm.api import exceptions as http_exceptions
 from cephlcm.api import validators
@@ -96,13 +93,13 @@ class ServerView(generic.VersionedCRUDView):
 
         try:
             item.save()
-        except base_exceptions.CannotUpdateDeletedModel:
+        except base_exceptions.CannotUpdateDeletedModel as exc:
             LOG.warning(
                 "Cannot update deleted model %s (deleted at %s, "
                 "version %s)",
                 item.model_id, item.time_deleted, item.version
             )
-            raise http_exceptions.CannotUpdateDeletedModel()
+            raise http_exceptions.CannotUpdateDeletedModel() from exc
 
         LOG.info("Server model %s was update to version %s by %s",
                  item.model_id, item.version, self.initiator_id)
@@ -133,9 +130,9 @@ class ServerView(generic.VersionedCRUDView):
     def delete(self, item_id, item):
         try:
             item.delete()
-        except base_exceptions.CannotUpdateDeletedModel:
+        except base_exceptions.CannotUpdateDeletedModel as exc:
             LOG.warning("Cannot delete deleted server %s", item_id)
-            raise http_exceptions.CannotUpdateDeletedModel()
+            raise http_exceptions.CannotUpdateDeletedModel() from exc
 
         LOG.info("Server %s was deleted by %s", item_id, self.initiator_id)
 

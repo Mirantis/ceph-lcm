@@ -3,13 +3,12 @@
 
 
 import collections
-import six
 
 from cephlcm.common import exceptions
 from cephlcm.common.models import generic
 
 
-class PermissionSet(object):
+class PermissionSet:
 
     KNOWN_PERMISSIONS = collections.defaultdict(set)
 
@@ -21,7 +20,7 @@ class PermissionSet(object):
         initial = initial or {}
 
         self.permissions = collections.defaultdict(set)
-        for pclass, values in six.iteritems(initial):
+        for pclass, values in initial.items():
             self[pclass] = values
 
     def __setitem__(self, key, value):
@@ -43,8 +42,7 @@ class PermissionSet(object):
         return self.permissions[key]
 
     def make_api_structure(self, *args, **kwargs):
-        return {k: sorted(v)
-                for k, v in six.iteritems(self.permissions)}
+        return {k: sorted(v) for k, v in self.permissions.items()}
 
 
 class RoleModel(generic.Model):
@@ -59,7 +57,7 @@ class RoleModel(generic.Model):
     DEFAULT_SORT_BY = [("name", generic.SORT_ASC)]
 
     def __init__(self):
-        super(RoleModel, self).__init__()
+        super().__init__()
 
         self._permissions = PermissionSet()
         self.name = None
@@ -118,10 +116,10 @@ class RoleModel(generic.Model):
         from cephlcm.common.models import user
 
         user.UserModel.check_revoke_role(self.model_id, initiator_id)
-        super(RoleModel, self).delete()
+        super().delete()
 
     def check_constraints(self):
-        super(RoleModel, self).check_constraints()
+        super().check_constraints()
 
         collection = self.collection()
         query = {
@@ -136,7 +134,7 @@ class RoleModel(generic.Model):
             raise exceptions.UniqueConstraintViolationError()
 
     def update_from_db_document(self, structure):
-        super(RoleModel, self).update_from_db_document(structure)
+        super().update_from_db_document(structure)
 
         self.initiator_id = structure["initiator_id"]
         self.name = structure["name"]

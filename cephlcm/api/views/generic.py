@@ -2,14 +2,10 @@
 """This module has implementation of the generic view."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import posixpath
 
 import flask.json
 import flask.views
-import six
 import werkzeug.exceptions
 
 from cephlcm.api import exceptions
@@ -52,7 +48,7 @@ class View(flask.views.MethodView):
             return flask.request.get_json(force=True)
         except werkzeug.exceptions.BadRequest as exc:
             LOG.error("Cannot process user request: %s", exc)
-            raise exceptions.NotAcceptable
+            raise exceptions.NotAcceptable() from exc
 
     @property
     def request_query(self):
@@ -75,7 +71,7 @@ class View(flask.views.MethodView):
 
         application.add_url_rule(
             make_endpoint(cls.ENDPOINT),
-            view_func=cls.as_view(cls.NAME.encode("utf-8"))
+            view_func=cls.as_view(cls.NAME)
         )
 
     def prepare_response(self, response):
@@ -84,19 +80,19 @@ class View(flask.views.MethodView):
         return response
 
     def dispatch_request(self, *args, **kwargs):
-        response = super(View, self).dispatch_request(*args, **kwargs)
+        response = super().dispatch_request(*args, **kwargs)
 
         try:
             response = self.prepare_response(response)
         except Exception as exc:
             LOG.error("Cannot build model response: %s", exc)
-            raise exceptions.UnknownReturnValueError
+            raise exceptions.UnknownReturnValueError from exc
 
         try:
             response = flask.json.jsonify(response)
         except Exception as exc:
             LOG.error("Cannot convert %s to JSON: %s", response, exc)
-            raise exceptions.CannotConvertResultToJSONError()
+            raise exceptions.CannotConvertResultToJSONError() from exc
 
         return response
 
@@ -123,7 +119,7 @@ class ModelView(View):
         return self.MODEL_NAME or self.NAME
 
     def prepare_response(self, response):
-        assert isinstance(self.model_name, six.string_types)
+        assert isinstance(self.model_name, str)
 
         if hasattr(response, "make_api_structure"):
             return response.make_api_structure()
@@ -140,7 +136,7 @@ class ModelView(View):
         return [self.prepare_response(el) for el in data]
 
     def prepare_dict_response(self, data):
-        return {k: self.prepare_response(v) for k, v in six.iteritems(data)}
+        return {k: self.prepare_response(v) for k, v in data.items()}
 
 
 class CRUDView(ModelView):
@@ -171,7 +167,7 @@ class CRUDView(ModelView):
 
     @classmethod
     def register_to(cls, application):
-        view_func = cls.as_view(cls.NAME.encode("utf-8"))
+        view_func = cls.as_view(cls.NAME)
 
         main_endpoint = make_endpoint(cls.ENDPOINT)
         item_endpoint = make_endpoint(
@@ -227,7 +223,7 @@ class VersionedCRUDView(CRUDView):
 
     @classmethod
     def register_to(cls, application):
-        view_func = cls.as_view(cls.NAME.encode("utf-8"))
+        view_func = cls.as_view(cls.NAME)
 
         main_endpoint = make_endpoint(cls.ENDPOINT)
         item_endpoint = make_endpoint(

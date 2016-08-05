@@ -6,10 +6,6 @@ using API. It has to be created after Ansible playbook invocation.
 """
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
-
 from cephlcm.common.models import generic
 
 
@@ -43,7 +39,7 @@ class ServerModel(generic.Model):
     """Possible server states."""
 
     def __init__(self):
-        super(ServerModel, self).__init__()
+        super().__init__()
 
         self.name = None
         self.username = None
@@ -93,7 +89,7 @@ class ServerModel(generic.Model):
 
     @classmethod
     def ensure_index(cls):
-        super(ServerModel, cls).ensure_index()
+        super().ensure_index()
 
         collection = cls.collection()
         for fieldname in "name", "fqdn", "ip", "state", "cluster_id":
@@ -107,7 +103,7 @@ class ServerModel(generic.Model):
             )
 
     def update_from_db_document(self, structure):
-        super(ServerModel, self).update_from_db_document(structure)
+        super().update_from_db_document(structure)
 
         self.name = structure["name"]
         self.username = structure["username"]
@@ -122,7 +118,7 @@ class ServerModel(generic.Model):
 
     def delete(self):
         # TODO(Sergey Arkhipov): After create of cluster model, implement.
-        super(ServerModel, self).delete()
+        super().delete()
 
     def make_db_document_specific_fields(self):
         return {

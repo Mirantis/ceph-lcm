@@ -2,9 +2,6 @@
 """This module contains a view for /auth API."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import flask
 
 from cephlcm.api import auth

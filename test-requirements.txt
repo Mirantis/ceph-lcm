@@ -5,14 +5,15 @@
 
 ansible-lint
 flake8
+flake8-bugbear
 flake8-builtins
 flake8-coding
 flake8_comprehensions
 flake8-debugger
+flake8-import-order
 flake8-mutable
 flake8-quotes
 flake8-string-format
-hacking
 mock
 mongomock
 pep8-naming

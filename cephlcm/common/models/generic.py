@@ -27,16 +27,12 @@ information as well.
 """
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import abc
 import copy
 import uuid
 
 import bson.objectid
 import pymongo
-import six
 
 from cephlcm.common import exceptions
 from cephlcm.common import log
@@ -76,7 +72,7 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class Base(object):
+class Base:
 
     COLLECTION_NAME = None
     """The name of the collection where model documents are stored."""
@@ -101,8 +97,7 @@ class Base(object):
         pass
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Model(Base):
+class Model(Base, metaclass=abc.ABCMeta):
     """A common class for the model.
 
     All models, which are working with DB, should be subclasses.
@@ -221,7 +216,6 @@ class Model(Base):
     def get_initiator(self):
         """This method returns a model of initiator."""
 
-        # FIXME(Sergey Arkhipov)
         # It looks like a dirty hack but I refer specific model
         # from the generic one.
         #
@@ -340,6 +334,7 @@ class Model(Base):
 
     @classmethod
     def ensure_index(cls):
+        # super().ensure_index()
         super(Model, cls).ensure_index()
 
         if not cls.COLLECTION_NAME:

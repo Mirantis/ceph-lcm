@@ -7,9 +7,9 @@ import uuid
 import pytest
 
 from cephlcm.common import exceptions
+from cephlcm.common import passwords
 from cephlcm.common.models import token
 from cephlcm.common.models import user
-from cephlcm.common import passwords
 
 
 def make_user(role_ids=None, initiator_id=None):

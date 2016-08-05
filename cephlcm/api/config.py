@@ -2,9 +2,6 @@
 """This module has routines to configure API."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from cephlcm.common import config
 
 

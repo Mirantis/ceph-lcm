@@ -2,15 +2,8 @@
 """Common pytest fixtures for all tests."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
+import unittest.mock as mock
 import uuid
-
-try:
-    import unittest.mock as mock
-except ImportError:
-    import mock
 
 import mongomock
 import pytest
