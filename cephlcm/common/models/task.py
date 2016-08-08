@@ -289,6 +289,12 @@ class Task(generic.Base):
         return self._update(query, setfields,
                             exceptions.CannotSetExecutorError)
 
+    def refresh(self):
+        document = self.collection().fine_one({"_id": self._id})
+        self.set_state(document)
+
+        return self
+
     @classmethod
     def ensure_index(cls):
         collection = cls.collection()

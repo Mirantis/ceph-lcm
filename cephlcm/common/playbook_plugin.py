@@ -86,7 +86,7 @@ class Base(metaclass=abc.ABCMeta):
                  subprocess.list2cmdline(commandline), self.entry_point)
 
         try:
-            self.run(commandline, env)
+            yield self.run(commandline, env)
         finally:
             LOG.info("Execute post-run step for %s", self.entry_point)
             self.on_post_execute(task, *sys.exc_info())
@@ -107,10 +107,10 @@ class Base(metaclass=abc.ABCMeta):
         pass
 
     def run(commandline, env):
-        with open(os.devnull) as devnull:
-            subprocess.check_call(
-                commandline, stdout=devnull, stderr=devnull
-            )
+        return subprocess.Popen(
+            commandline,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env
+        )
 
 
 class Ansible(Base):

@@ -9,6 +9,7 @@ import threading
 from cephlcm.common import config
 from cephlcm.common import log
 from cephlcm.common.models import task
+from cephlcm.controller import taskpool
 
 
 CONF = config.make_controller_config()
@@ -19,6 +20,8 @@ LOG = log.getLogger(__name__)
 
 SHUTDOWN_EVENT = threading.Event()
 """Event which should be set by signal handler."""
+
+TASK_POOL = taskpool.TaskPool(CONF.CONTROLLER_WORKER_THREADS)
 
 
 def main():
@@ -78,6 +81,4 @@ def process_task(tsk):
 
     tsk.start()
 
-    LOG.info("Finish to process task %s", tsk._id)
-
-    tsk.complete()
+    TASK_POOL.submit(tsk)

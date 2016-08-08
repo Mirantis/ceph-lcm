@@ -42,7 +42,7 @@ def get_alert_plugins(namespace=NS_ALERT):
 
 @functools.lru_cache(maxsize=2)
 def get_playbook_plugins(namespace=NS_PLAYBOOKS):
-    plugins = []
+    plugins = {}
 
     for plugin in pkg_resources.iter_entry_points(group=namespace):
         if plugin.name in CONF.PLUGINS_PLAYBOOKS["disabled"]:
@@ -50,7 +50,7 @@ def get_playbook_plugins(namespace=NS_PLAYBOOKS):
 
         loaded = load_playbook_plugin(plugin)
         if loaded:
-            plugins.append(loaded)
+            plugins[loaded.entry_point] = loaded
 
     return plugins
 
