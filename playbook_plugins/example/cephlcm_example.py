@@ -5,7 +5,7 @@
 from cephlcm.common import playbook_plugin
 
 
-class Example(playbook_plugin.Base):
+class Example(playbook_plugin.Playbook):
 
     DESCRIPTION = "This is an example playbook plugin for CephLCM"
 

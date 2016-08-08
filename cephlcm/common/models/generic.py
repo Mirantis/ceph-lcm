@@ -132,6 +132,7 @@ class Model(Base, metaclass=abc.ABCMeta):
         if not item_id:
             return None
 
+        item_id = bson.objectid.ObjectId(item_id)
         document = cls.collection().find_one({"_id": item_id})
         if not document:
             return None

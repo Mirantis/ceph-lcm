@@ -4,9 +4,10 @@
 
 import abc
 import copy
-import distutils.spawn
 import os
+import shutil
 import subprocess
+import sys
 
 import pkg_resources
 
@@ -24,9 +25,6 @@ from cephlcm.common import log
 DYNAMIC_INVENTORY_PATH = "/usr/bin/cephlcm-inventory"
 """Path to the dynamic inventory."""
 
-ANSIBLE_CMD = distutils.spawn.find_executable("ansible-playbook")
-"""Executable for ansible"""
-
 CONF = config.make_controller_config()
 """Config."""
 
@@ -40,11 +38,9 @@ class Base(metaclass=abc.ABCMeta):
     PLAYBOOK_FILENAME = None
     CONFIG_FILENAME = None
     DESCRIPTION = ""
-    REQUIRED_SERVER_LIST = True
     PUBLIC = True
-
-    ENV_PLAYBOOK_CONFIG_ID = "CEPHLCM_PLAYBOOK_CONFIG_ID"
-    ENV_CLUSTER_ID = "CEPHLCM_PLAYBOOK_CLUSTER_ID"
+    DYNAMIC_INVENTORY_PATH = "/usr/bin/cephlcm-inventory"
+    ENV_PLUGIN_ENTRY_POINT = "CEPHLCM_ENTRYPOINT"
 
     def __init__(self, entry_point, module_name):
         self.NAME = self.NAME or entry_point
@@ -61,64 +57,86 @@ class Base(metaclass=abc.ABCMeta):
     def load_config(self, config):
         return toml.load(self.get_filename(config or self.CONFIG_FILENAME))
 
-    @abc.abstractmethod
-    def make_playbook_configuration(self, servers, cluster_id=None):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def get_dynamic_inventory(self, playbook_configuration, cluster_id=None):
-        raise NotImplementedError()
-
-    def get_extra_vars(self, playbook_configuration, cluster_id=None):
+    def get_extra_vars(self):
         return {}
 
-    def get_environment_variables(self, playbook_configuration,
-                                  cluster_id=None):
+    def get_environment_variables(self, task):
+        assert self.ENV_PLUGIN_ENTRY_POINT
+
         new_env = copy.deepcopy(os.environ)
 
-        new_env[self.ENV_CLUSTER_ID] = str(cluster_id or "")
-        new_env[self.ENV_PLAYBOOK_CONFIG_ID] = str(playbook_configuration._id)
+        new_env[self.ENV_PLUGIN_ENTRY_POINT] = self.entry_point
         new_env["ANSIBLE_CONFIG"] = str(CONF.CONTROLLER_ANSIBLE_CONFIG)
 
         return new_env
 
-    def playbook_cmdline(self, playbook_configuration, cluster_id=None):
-        if not ANSIBLE_CMD:
-            LOG.warning("Cannot find proper ansible-playbook executor")
-            cmdline = ["ansible-playbook"]
-        else:
-            cmdline = [ANSIBLE_CMD]
+    @abc.abstractmethod
+    def get_dynamic_inventory(self):
+        raise NotImplementedError()
 
-        cmdline.extend(["-i", DYNAMIC_INVENTORY_PATH])
+    def execute(self, task):
+        LOG.info("Execute pre-run step for %s", self.entry_point)
+        self.on_pre_execute(task)
+        LOG.info("Finish execution of pre-run step for %s", self.entry_point)
 
-        extra_vars = self.get_extra_vars(playbook_configuration, cluster_id)
-        if extra_vars:
-            cmdline.extend(["--extra-vars", json.dumps(extra_vars)])
+        commandline = self.compose_command(task)
+        env = self.get_environment_variables(task)
 
-        cmdline.append(self.get_filename(self.PLAYBOOK_FILENAME))
+        LOG.info("Execute %s for %s",
+                 subprocess.list2cmdline(commandline), self.entry_point)
+
+        try:
+            self.run(commandline, env)
+        finally:
+            LOG.info("Execute post-run step for %s", self.entry_point)
+            self.on_post_execute(task, *sys.exc_info())
+            LOG.info("Finish execution of post-run step for %s",
+                     self.entry_point)
+
+        LOG.info("Finish execute %s for %s",
+                 subprocess.list2cmdline(commandline), self.entry_point)
+
+    def on_pre_execute(self, task):
+        pass
+
+    def on_post_execute(self, task, *exc_info):
+        pass
+
+    @abc.abstractmethod
+    def compose_command(self, task):
+        pass
+
+    def run(commandline, env):
+        with open(os.devnull) as devnull:
+            subprocess.check_call(
+                commandline, stdout=devnull, stderr=devnull
+            )
+
+
+class Ansible(Base):
+
+    ANSIBLE_CMD = shutil.which("ansible")
+    MODULE = None
+
+    @abc.abstractmethod
+    def compose_command(self):
+        if not self.ANSIBLE_CMD:
+            # TODO(Sergey Arkhipov): Proper exception class
+            raise Exception
+        if not self.MODULE:
+            # TODO(Sergey Arkhipov): Proper exception class
+            raise Exception
+
+        cmdline = [self.ANSIBLE_CMD]
+        cmdline.extend(["--inventory-file", self.DYNAMIC_INVENTORY_PATH])
+        cmdline.extend(["--module-name", self.MODULE])
+
+        extra = self.get_extra_vars()
+        if extra:
+            cmdline.extend(["--extra-vars", json.dumps(extra)])
 
         return cmdline
 
-    def run_playbook_configuration(
-        self, playbook_configuration, cluster_id=None,
-        stdin=None, stdout=None, stderr=None
-    ):
-        cmdline = self.playbook_cmdline(playbook_configuration, cluster_id)
-        env = self.get_environment_variables(playbook_configuration,
-                                             cluster_id)
 
-        LOG.info(
-            "Run provisioner for playbook configuration %s "
-            "(cluster ID is %s): %s",
-            playbook_configuration._id, cluster_id,
-            subprocess.list2cmdline(cmdline)
-        )
-
-        return subprocess.Popen(
-            cmdline,
-            stdin=stdin,
-            stdout=stdout,
-            stderr=stderr,
-            shell=False,
-            env=env
-        )
+class Playbook(Base, metaclass=abc.ABCMeta):
+    pass
