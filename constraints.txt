@@ -4,6 +4,7 @@
 #                                                                       These lines matter
 
 ansible-lint==3.2.5
+bandit==1.0.1
 bcrypt==3.1.0
 click==6.6
 daemonocle==1.0.1

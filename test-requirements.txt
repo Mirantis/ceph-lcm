@@ -3,6 +3,7 @@
 # Cannot use it here because pbr still do not understand such line.
 # -c constraints.txt
 
+bandit
 flake8
 flake8-bugbear
 flake8-builtins
