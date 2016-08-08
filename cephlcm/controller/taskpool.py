@@ -8,13 +8,14 @@ import multiprocessing
 import os
 import platform
 import threading
+import time
 
 from cephlcm.common import config
 from cephlcm.common import log
 from cephlcm.common import plugins
 
 
-TaskState = collections.namedtuple("TaskState", ["future", "stop_evenv"])
+TaskState = collections.namedtuple("TaskState", ["future", "stop_event"])
 """Task state."""
 
 CONF = config.make_controller_config()
@@ -40,23 +41,24 @@ class TaskPool:
         stop_event = threading.Event()
 
         def done_callback(result):
-            tsk.refresh()
             LOG.debug("Finish execution of task %s", tsk._id)
 
-            exception = result.exception()
-
-            if result.cancelled() or stop_event.is_set():
-                LOG.info("Cancel task %s", tsk._id)
-                tsk.cancel()
-            elif exception:
-                LOG.info("Fail task %s: %s", tsk._id, exception)
-                tsk.fail(str(exception))
-            else:
-                LOG.info("Complete task %s", tsk._id)
-                tsk.complete()
+            try:
+                if result.cancelled() or stop_event.is_set():
+                    LOG.info("Cancel task %s", tsk._id)
+                    tsk.cancel()
+                elif result.exception():
+                    exc = result.exception()
+                    LOG.info("Fail task %s: %s", tsk._id, exc)
+                    tsk.fail(str(exc))
+                else:
+                    LOG.info("Complete task %s", tsk._id)
+                    tsk.complete()
+            except Exception as exc:
+                LOG.exception("Cannot finish task %s: %s", tsk._id, exc)
 
             with self.data_lock:
-                self.data.pop(tsk._id)
+                self.data.pop(tsk._id, None)
                 LOG.debug("Removed finished task %s. Current active tasks %d",
                           tsk._id, len(self.data))
 
@@ -71,17 +73,24 @@ class TaskPool:
                          "requested.", tsk._id)
 
     def execute(self, tsk, stop_ev):
-        tsk = tsk.set_executor_data(platform.node(), os.getpid())
+        # Small hack to prevent execution of callback BEFORE task
+        # happen to arrive into self.data. It is possible because
+        # submitting task into pool is eager.
+        while tsk._id not in self.data:
+            time.sleep(0.1)
+
         plugin = self.get_plugin(tsk)
 
         with plugin.execute(tsk) as process:
+            tsk = tsk.set_executor_data(platform.node(), process.pid)
+
             LOG.info(
                 "Management process for task %s was started. Pid %d",
                 tsk._id, process.pid
             )
 
             while not stop_ev.is_set() and process.poll() is None:
-                stop_ev.wait(1)
+                stop_ev.wait(0.5)
 
             self.gentle_stop_process(process)
 
@@ -99,11 +108,18 @@ class TaskPool:
         self.global_stop_event.set()
 
         with self.data_lock:
-            for task_id in self.data:
-                self.cancel(task_id)
-            LOG.debug("Waiting for all tasks to be cancelled.")
-            concurrent.futures.wait([ts.future for ts in self.data.values()])
-            LOG.debug("All tasks were stopped.")
+            for ts in list(self.data.values()):
+                if not ts.future.cancel():
+                    ts.stop_event.set()
+
+        LOG.debug("Waiting for all tasks to be cancelled.")
+        while True:
+            if self.data:
+                LOG.debug("!!! Tasks %d: %s", len(self.data), self.data)
+                time.sleep(0.2)
+            else:
+                LOG.debug("All tasks were stopped.")
+                return
 
     def cancel(self, task_id):
         if self.global_stop_event.is_set():
@@ -150,7 +166,6 @@ class TaskPool:
                 process.pid
             )
             process.kill()
+            process.wait()
         else:
             LOG.debug("Process %d has been stopped after SIGTERM", process.pid)
-
-        process.wait()
