@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Pool of executed tasks."""
+"""This module contains implementation of task pool for controller."""
 
 
 import collections

@@ -51,9 +51,8 @@ class ServerDiscovery(playbook_plugin.Ansible):
 
         self.tempdir = None
 
-    def get_dynamic_inventory(self):
-        server_task_id = os.getenv(playbook_plugin.ENV_TASK_ID)
-        server_task = task.Task.find_by_id(server_task_id)
+    def get_dynamic_inventory(self, task_id):
+        server_task = task.Task.find_by_id(task_id)
 
         if not server_task:
             # TODO(Sergey Arkhipov): Raise proper exception here

@@ -73,7 +73,7 @@ class Base(metaclass=abc.ABCMeta):
         return new_env
 
     @abc.abstractmethod
-    def get_dynamic_inventory(self):
+    def get_dynamic_inventory(self, task_id):
         raise NotImplementedError()
 
     @contextlib.contextmanager

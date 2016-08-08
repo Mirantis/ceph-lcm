@@ -40,3 +40,8 @@ def mainloop_possible_to_process(request):
     mocked.return_value = True
 
     return mocked
+
+
+@pytest.fixture
+def mocked_sysexit(request):
+    return have_mocked(request, "sys.exit")
