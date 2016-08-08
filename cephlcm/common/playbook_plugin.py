@@ -3,6 +3,7 @@
 
 
 import abc
+import contextlib
 import copy
 import os
 import shutil
@@ -22,14 +23,15 @@ from cephlcm.common import config
 from cephlcm.common import log
 
 
-DYNAMIC_INVENTORY_PATH = "/usr/bin/cephlcm-inventory"
-"""Path to the dynamic inventory."""
-
 CONF = config.make_controller_config()
 """Config."""
 
 LOG = log.getLogger(__name__)
 """Logger."""
+
+ENV_ENTRY_POINT = "CEPHLCM_ENTRYPOINT"
+ENV_TASK_ID = "CEPHLCM_TASK_ID"
+DYNAMIC_INVENTORY_PATH = shutil.which("cephlcm-inventory")
 
 
 class Base(metaclass=abc.ABCMeta):
@@ -39,8 +41,9 @@ class Base(metaclass=abc.ABCMeta):
     CONFIG_FILENAME = None
     DESCRIPTION = ""
     PUBLIC = True
-    DYNAMIC_INVENTORY_PATH = "/usr/bin/cephlcm-inventory"
-    ENV_PLUGIN_ENTRY_POINT = "CEPHLCM_ENTRYPOINT"
+    PROCESS_STDOUT = subprocess.PIPE
+    PROCESS_STDERR = subprocess.PIPE
+    PROCESS_STDIN = subprocess.DEVNULL
 
     def __init__(self, entry_point, module_name):
         self.NAME = self.NAME or entry_point
@@ -61,11 +64,10 @@ class Base(metaclass=abc.ABCMeta):
         return {}
 
     def get_environment_variables(self, task):
-        assert self.ENV_PLUGIN_ENTRY_POINT
-
         new_env = copy.deepcopy(os.environ)
 
-        new_env[self.ENV_PLUGIN_ENTRY_POINT] = self.entry_point
+        new_env[ENV_ENTRY_POINT] = self.entry_point
+        new_env[ENV_TASK_ID] = str(task._id)
         new_env["ANSIBLE_CONFIG"] = str(CONF.CONTROLLER_ANSIBLE_CONFIG)
 
         return new_env
@@ -74,6 +76,7 @@ class Base(metaclass=abc.ABCMeta):
     def get_dynamic_inventory(self):
         raise NotImplementedError()
 
+    @contextlib.contextmanager
     def execute(self, task):
         LOG.info("Execute pre-run step for %s", self.entry_point)
         self.on_pre_execute(task)
@@ -85,9 +88,17 @@ class Base(metaclass=abc.ABCMeta):
         LOG.info("Execute %s for %s",
                  subprocess.list2cmdline(commandline), self.entry_point)
 
+        process = None
         try:
-            yield self.run(commandline, env)
+            process = self.run(commandline, env)
         finally:
+            if process:
+                if self.PROCESS_STDOUT is subprocess.PIPE:
+                    LOG.debug("STDOUT of %d: %s",
+                              process.pid, process.stdout.read())
+                if self.PROCESS_STDERR is subprocess.PIPE:
+                    LOG.debug("STDERR of %d: %s",
+                              process.pid, process.stderr.read())
             LOG.info("Execute post-run step for %s", self.entry_point)
             self.on_post_execute(task, *sys.exc_info())
             LOG.info("Finish execution of post-run step for %s",
@@ -106,10 +117,11 @@ class Base(metaclass=abc.ABCMeta):
     def compose_command(self, task):
         pass
 
-    def run(commandline, env):
+    def run(self, commandline, env):
         return subprocess.Popen(
-            commandline,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env
+            commandline, env=env,
+            stdout=self.PROCESS_STDOUT, stdin=self.PROCESS_STDIN,
+            stderr=self.PROCESS_STDERR
         )
 
 
@@ -119,7 +131,7 @@ class Ansible(Base):
     MODULE = None
 
     @abc.abstractmethod
-    def compose_command(self):
+    def compose_command(self, task):
         if not self.ANSIBLE_CMD:
             # TODO(Sergey Arkhipov): Proper exception class
             raise Exception
@@ -128,7 +140,7 @@ class Ansible(Base):
             raise Exception
 
         cmdline = [self.ANSIBLE_CMD]
-        cmdline.extend(["--inventory-file", self.DYNAMIC_INVENTORY_PATH])
+        cmdline.extend(["--inventory-file", DYNAMIC_INVENTORY_PATH])
         cmdline.extend(["--module-name", self.MODULE])
 
         extra = self.get_extra_vars()

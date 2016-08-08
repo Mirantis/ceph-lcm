@@ -6,6 +6,7 @@ import copy
 import threading
 import uuid
 
+import bson.objectid
 import pymongo
 import pymongo.errors
 
@@ -91,6 +92,16 @@ class Task(generic.Base):
         model.set_state(document)
 
         return model
+
+    @classmethod
+    def find_by_id(cls, task_id):
+        tsk = cls(cls.TASK_TYPE_SERVER_DISCOVERY, "")
+        task_id = bson.objectid.ObjectId(task_id)
+        document = cls.collection().find_one({"_id": task_id})
+
+        tsk.set_state(document)
+
+        return tsk
 
     def __init__(self, task_type, execution_id):
         try:
@@ -290,7 +301,7 @@ class Task(generic.Base):
                             exceptions.CannotSetExecutorError)
 
     def refresh(self):
-        document = self.collection().fine_one({"_id": self._id})
+        document = self.collection().find_one({"_id": self._id})
         self.set_state(document)
 
         return self

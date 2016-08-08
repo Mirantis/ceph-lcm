@@ -2,6 +2,7 @@
 """Main loop of the controller process."""
 
 
+import atexit
 import os
 import sys
 import threading
@@ -26,6 +27,8 @@ TASK_POOL = taskpool.TaskPool(CONF.CONTROLLER_WORKER_THREADS)
 
 def main():
     """Daemon main loop."""
+
+    atexit.register(TASK_POOL.stop)
 
     LOG.info("Controller process has been started. PID %s", os.getpid())
 

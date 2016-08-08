@@ -12,7 +12,6 @@ import threading
 from cephlcm.common import config
 from cephlcm.common import log
 from cephlcm.common import plugins
-from cephlcm.common.models import task
 
 
 TaskState = collections.namedtuple("TaskState", ["future", "stop_evenv"])
@@ -70,6 +69,7 @@ class TaskPool:
             else:
                 LOG.info("Do not submit task %s because global stop is "
                          "requested.", tsk._id)
+        LOG.info("OK")
 
     def execute(self, tsk, stop_ev):
         tsk = tsk.set_executor_data(platform.node(), os.getpid())
@@ -109,7 +109,8 @@ class TaskPool:
     def cancel(self, task_id):
         if self.global_stop_event.is_set():
             LOG.debug(
-                "Cannot cancel task %s because global stop is already set."
+                "Cannot cancel task %s because global stop is already set.",
+                task_id
             )
             return
 

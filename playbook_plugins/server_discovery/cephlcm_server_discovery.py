@@ -17,7 +17,7 @@ except ImportError:
 from cephlcm.common import log
 from cephlcm.common import playbook_plugin
 from cephlcm.common.models import task
-from cephlcm.common.server import server
+from cephlcm.common.models import server
 
 
 DESCRIPTION = """
@@ -46,16 +46,14 @@ class ServerDiscovery(playbook_plugin.Ansible):
     PUBLIC = False
     MODULE = "setup"
 
-    ENV_TASK_ID = "CEPHLCM_TASK_ID"
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.tempdir = None
 
     def get_dynamic_inventory(self):
-        server_task_id = os.getenv(self.ENV_TASK_ID)
-        server_task = task.TaskModel.find_by_id(server_task_id)
+        server_task_id = os.getenv(playbook_plugin.ENV_TASK_ID)
+        server_task = task.Task.find_by_id(server_task_id)
 
         if not server_task:
             # TODO(Sergey Arkhipov): Raise proper exception here
@@ -74,16 +72,9 @@ class ServerDiscovery(playbook_plugin.Ansible):
             }
         }
 
-    def get_environment_variables(self, task):
-        env = super().get_environment_variables(task)
-
-        env[self.ENV_TASK_ID] = str(task._id)
-
-        return env
-
-    def compose_command(self):
-        cmdline = super().compose_command()
-        cmdline.extend("--tree", self.tempdir)
+    def compose_command(self, task):
+        cmdline = super().compose_command(task)
+        cmdline.extend(["--tree", self.tempdir])
         cmdline.append("new")
 
         return cmdline
@@ -113,8 +104,8 @@ class ServerDiscovery(playbook_plugin.Ansible):
     def create_server(self, task, json_result):
         facts = json_result["ansible_facts"]
         server_model = server.ServerModel.create(
-            name=facts["anbsible_nodename"],
-            fqdn=facts["anbsible_nodename"],
+            name=facts["ansible_nodename"],
+            fqdn=facts["ansible_nodename"],
             username=task.data["username"],
             ip=self.get_host_ip(task),
             facts=facts
