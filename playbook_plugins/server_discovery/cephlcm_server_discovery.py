@@ -113,6 +113,8 @@ class ServerDiscovery(playbook_plugin.Ansible):
         LOG.info("Creates server %s for task %s",
                  server_model.model_id, task._id)
 
+        return server_model
+
     def get_host_ip(self, task):
         if not NOT_IP_REGEXP.search(task.data["host"]):
             return task.data["host"]
