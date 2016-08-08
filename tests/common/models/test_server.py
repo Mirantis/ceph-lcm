@@ -101,7 +101,53 @@ def test_make_api_structure(facts, expand_facts, random_ip, configure_model):
             "fqdn": model.fqdn,
             "ip": ip,
             "state": server.ServerModel.STATE_OPERATIONAL,
-            "cluster_id": model.cluster_id,
+            "cluster": None,
             "facts": (facts if expand_facts else {})
         }
     }
+
+
+def test_set_clusterid(configure_model):
+    name = str(uuid.uuid4())
+    username = str(uuid.uuid4())
+    fqdn = str(uuid.uuid4())
+    initiator_id = str(uuid.uuid4())
+    ip = random_ip
+
+    model = server.ServerModel.create(name, username, fqdn, ip, {},
+                                      initiator_id=initiator_id)
+    cluster_id1 = str(uuid.uuid4())
+    model.cluster = cluster_id1
+    model.save()
+
+    cluster_id2 = str(uuid.uuid4())
+    with pytest.raises(ValueError):
+        model.cluster = cluster_id2
+
+    model.cluster = None
+    model.save()
+
+    model.cluster = cluster_id2
+    model.save()
+
+
+def test_delete_if_cluster_id_set(configure_model):
+    name = str(uuid.uuid4())
+    username = str(uuid.uuid4())
+    fqdn = str(uuid.uuid4())
+    initiator_id = str(uuid.uuid4())
+    cluster_id = str(uuid.uuid4())
+    ip = random_ip
+
+    model = server.ServerModel.create(name, username, fqdn, ip, {},
+                                      initiator_id=initiator_id,
+                                      cluster_id=cluster_id)
+
+    # TODO(Sergey Arkhipov): Put proper exception here
+    with pytest.raises(Exception):
+        model.delete()
+
+    model.cluster = None
+    model.save()
+
+    model.delete()

@@ -111,7 +111,7 @@ class ClusterModel(generic.Model):
     def add_servers(self, role, servers):
         for srv in servers:
             if srv.cluster_id != self.model_id:
-                srv.cluster_id = self.model_id
+                srv.cluster = self.model_id
                 srv.save()
             self._configuration[role].add(srv.model_id)
 
@@ -134,7 +134,7 @@ class ClusterModel(generic.Model):
 
         for srv in servers:
             if srv.model_id not in existing_servers:
-                srv.cluster_id = None
+                srv.cluster = None
                 srv.save()
 
         self.save()

@@ -180,6 +180,6 @@ class ServerModel(generic.Model):
             "fqdn": self.fqdn,
             "ip": self.ip,
             "state": self.state,
-            "cluster_id": self.cluster_id,
+            "cluster": self.cluster,
             "facts": facts
         }
