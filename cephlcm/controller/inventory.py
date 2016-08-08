@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Dynamic inventory for CephLCM."""
 
 
@@ -27,38 +28,53 @@ LOG = log.getLogger("cephlcm.cephlcm_inventory")
 
 
 def main():
+    configure()
+    options = get_options()
+
+    LOG.debug("Options are %s", options)
+
+    entry_point, task_id = get_entrypoint_and_task_id()
+    plugin = get_plugin(entry_point)
+    inventory = plugin.get_dynamic_inventory()
+
+    if options.list:
+        dumps(inventory)
+    elif options.host not in inventory["_meta"]["hostvars"]:
+        sys.exit("Cannot find required host {0}".format(options.host))
+    else:
+        dumps(inventory["_meta"]["hostvars"][options.host])
+
+    return os.EX_OK
+
+
+def configure():
     log.configure_logging(CONF.logging_config)
     generic.configure_models(wrappers.MongoDBWrapper())
 
-    options = get_options()
 
+def get_entrypoint_and_task_id():
     entry_point = os.getenv(playbook_plugin.ENV_ENTRY_POINT)
     task_id = os.getenv(playbook_plugin.ENV_TASK_ID)
 
-    LOG.debug("Options are %s", options)
     LOG.debug("Entrypoint: %s", entry_point)
     LOG.debug("Task ID: %s", task_id)
 
     if not entry_point:
-        return "Unknown entrypoint"
+        sys.exit("Unknown entrypoint")
     if not task_id:
-        return "Unknown task ID"
+        sys.exit("Unknown task ID")
 
+    return entry_point, task_id
+
+
+def get_plugin(entry_point):
     plugs = plugins.get_playbook_plugins()
     plugin = plugs.get(entry_point)
 
     if not plugin:
-        return "Unknown plugin for {0}".format(entry_point)
+        sys.exit("Unknown plugin for {0}".format(entry_point))
 
-    inventory = plugin.get_dynamic_inventory()
-    if options.list:
-        print(json.dumps(inventory))
-    elif options.host not in inventory["_meta"]["hostvars"]:
-        return "Cannot find required host {0}".format(options.host)
-    else:
-        print(json.dumps(inventory["_meta"]["hostvars"][options.host]))
-
-    return os.EX_OK
+    return plugin
 
 
 def get_options():
@@ -78,6 +94,11 @@ def get_options():
     )
 
     return parser.parse_args()
+
+
+def dumps(obj):
+    result = json.dumps(obj, indent=4, sort_keys=True)
+    print(result)
 
 
 if __name__ == "__main__":

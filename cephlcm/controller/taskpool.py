@@ -69,7 +69,6 @@ class TaskPool:
             else:
                 LOG.info("Do not submit task %s because global stop is "
                          "requested.", tsk._id)
-        LOG.info("OK")
 
     def execute(self, tsk, stop_ev):
         tsk = tsk.set_executor_data(platform.node(), os.getpid())
