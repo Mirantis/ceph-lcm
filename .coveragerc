@@ -5,6 +5,7 @@ omit =
   */site-packages/*
 source =
   cephlcm/
+  playbook_plugins/
 
 [report]
 precision = 2
