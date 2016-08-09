@@ -7,8 +7,8 @@ import {AuthService} from '../services/auth';
 @Component({
   template: `<h2>Login Form</h2>
   <div>User is currently logged {{auth.isLoggedIn() ? 'in' : 'out'}}</div>
-<button (click)='login("a", "b")'>Get In</button>
-<button (click)='logout()'>Log out</button>
+<button (click)='login("a", "b")' *ngIf='!auth.isLoggedIn()'>Get In</button>
+<button (click)='logout()' *ngIf='auth.isLoggedIn()'>Log out</button>
   `
 })
 
@@ -17,13 +17,13 @@ export class LoginComponent {
 
   login(email: string, password: string) {
     return this.session.login(email, password)
-      .then((result: any) => {
-        if (result) {
-          this.router.navigate([this.session.redirectUrl || 'dashboard']);
+      .then((url: string) => {
+        if (url) {
+          this.router.navigate([url || 'dashboard']);
         }
       },
       (error: any) => {
-        console.log(error);
+        console.warn(error);
         return true;
       });
   };

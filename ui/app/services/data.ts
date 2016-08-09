@@ -1,0 +1,83 @@
+import * as _ from 'lodash';
+
+import {Injectable} from '@angular/core';
+import {DataStore, Record, Mapper} from 'js-data';
+import {HttpAdapter} from 'js-data-http';
+import {AuthService} from './auth';
+
+export class User extends Record {
+  login: string;
+  full_name: string;
+  time_updated: Date;
+  email: string;
+  role: string;
+}
+
+type supportedMappers = 'auth' | 'user';
+
+@Injectable()
+export class DataService {
+  constructor(private auth: AuthService) {
+    this.store.registerAdapter('http', this.adapter, {default: true});
+  }
+
+  token(): Mapper {return this.getMapper('auth')}
+
+  user(): Mapper {return this.getMapper('user')}
+
+  store = new DataStore();
+  // FIXME: to be moved to configuration
+  adapter = new HttpAdapter({basePath: 'http://private-47d2dd-cephlcm.apiary-mock.com/v1'});
+  mappers = {};
+
+  private modelsProperties = {
+    auth: {
+     user_id: {type: 'string'},
+     expires_at: {type: 'number'}
+    },
+    user: {
+      login: {type: 'string'},
+      full_name: {type: 'string'},
+      time_updated: {type: 'number'},
+      email: {type: 'string'},
+      role: {type: 'string'}
+    }
+  };
+
+  private getMapper(name: supportedMappers): Mapper {
+    let mapper: Mapper;
+    if (this.mappers.hasOwnProperty(name)) {
+      // return cached value
+      mapper = this.mappers[name];
+    } else {
+      // lazily create one
+      mapper = this.store.defineMapper(name, {
+        endpoint: name,
+        schema: _.extend(
+          {
+            properties: {
+              id: {type: 'string', indexed: true},
+              model: {type: 'string'},
+              version: {type: 'number'},
+              time_updated: {type: 'number'},
+              is_deleted: {type: 'boolean'},
+              data: {'$ref': '#/definitions/model_data'}
+            },
+            definitions: {
+              model_data: {
+                type: 'object',
+                properties: this.modelsProperties[name]
+              }
+            }
+          })
+      });
+      this.mappers[name] = mapper;
+    }
+    // set authorization header
+    // FIXME: Shift to be called in one of Mapper' pre-send hooks
+    mapper.headers = {
+      Authorization: this.auth.getToken()
+    };
+    return mapper;
+  }
+}

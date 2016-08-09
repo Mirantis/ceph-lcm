@@ -8,7 +8,9 @@
     'angular2-in-memory-web-api': 'node_modules/angular2-in-memory-web-api',
     'rxjs':                       'node_modules/rxjs',
     'angular2-cookie':            'node_modules/angular2-cookie',
-    'lodash':                     'node_modules/lodash'
+    'lodash':                     'node_modules/lodash',
+    'js-data':                    'node_modules/js-data',
+    'js-data-http':               'node_modules/js-data-http'
   };
 
   // packages tells the System loader how to load when no filename and/or no extension
@@ -17,7 +19,9 @@
     'angular2-cookie':            { main: 'core.js',  defaultExtension: 'js' },
     'rxjs':                       { defaultExtension: 'js' },
     'angular2-in-memory-web-api': { main: 'index.js', defaultExtension: 'js' },
-    'lodash':                     { main: 'lodash.js', defaultExtension: 'js' }
+    'lodash':                     { main: 'lodash.js', defaultExtension: 'js' },
+    'js-data':                    { main: 'dist/js-data.js', defaultExtension: 'js' },
+    'js-data-http':               { main: 'dist/js-data-http.js', defaultExtension: 'js' }
   };
 
   var ngPackageNames = [
@@ -31,7 +35,9 @@
     'router',
     'router-deprecated',
     'upgrade',
-    'lodash'
+    'lodash',
+    'jd-data',
+    'js-data-http'
   ];
 
   // Individual files (~300 requests):

@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers} from '@angular/http';
+import {Http, Headers, Response} from '@angular/http';
 import {AuthService} from './auth';
 import {Router, CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot} from '@angular/router';
-import {Observable} from 'rxjs/Observable';
-import {BaseApiService} from './base';
+// import {Observable} from 'rxjs/Observable';
+import {DataService} from './data';
 
 import * as _ from 'lodash';
 
@@ -12,20 +12,29 @@ export class SessionService {
 
   constructor(
     private http: Http,
-    private auth: AuthService, private api: BaseApiService
+    private auth: AuthService,
+    private data: DataService
   ) {}
 
   redirectUrl: string;
 
-  login(email: string, password: string) {
-    return this.api.get('/auth', {email, password})
-      .catch(() => '5345353-34534732-343-3753211')  // TODO: handle
-      .then(token => this.auth.saveToken(token));
+  login(email: string, password: string): Promise<any> {
+    return this.data.getMapper('auth')
+      .create({login: email, password: password})
+      .then((result: Response) => {
+        console.log('Result', result, result.model_data);
+        this.auth.saveToken(result.id);
+        let url = this.redirectUrl;
+        this.redirectUrl = null;
+        return url;
+      }, (error) => {
+        console.warn(error);
+      })
   }
 
-  logout() {
-    return this.api.delete('/auth')
-      .catch(() => true)  // TODO: handle
+  logout(): Promise<any> {
+    return this.data.getMapper('auth')
+      .destroy(null)
       .then(() => {
         this.auth.removeToken();
       });
