@@ -60,7 +60,7 @@ class UserModel(generic.Model):
         model.email = email
         model.full_name = full_name
         model.role_ids = role_ids
-        model.initiator_id = initiator_id
+        model.initiator = initiator_id
 
         try:
             model.save()
@@ -138,7 +138,7 @@ class UserModel(generic.Model):
     def update_from_db_document(self, structure):
         super().update_from_db_document(structure)
 
-        self.initiator_id = structure["initiator_id"]
+        self.initiator = structure["initiator_id"]
         self.login = structure["login"]
         self.password_hash = structure["password_hash"]
         self.email = structure["email"]

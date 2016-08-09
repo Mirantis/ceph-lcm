@@ -12,7 +12,7 @@ import bson.objectid
 from cephlcm.common import config
 from cephlcm.common import timeutils
 from cephlcm.common.models import generic
-from cephlcm.common.models import user
+from cephlcm.common.models import properties
 
 
 CONF = config.make_api_config()
@@ -34,8 +34,13 @@ class TokenModel(generic.Model):
         super().__init__()
 
         self.user_id = None
-        self._user = None
+        self.user = None
         self.expires_at = 0
+
+    user = properties.ModelProperty(
+        "cephlcm.common.models.user.UserModel",
+        "user_id"
+    )
 
     @classmethod
     def find_token(cls, token_id):
@@ -69,7 +74,7 @@ class TokenModel(generic.Model):
         """
 
         model = cls()
-        model.user_id = user_id
+        model.user = user_id
         model.initiator_id = user_id
         model.save()
 
@@ -93,18 +98,6 @@ class TokenModel(generic.Model):
 
         return int(CONF.API_TOKEN["ttl_in_seconds"])
 
-    @property
-    def user(self):
-        if self._user is None:
-            self._user = self.get_user()
-
-        return self._user
-
-    def get_user(self):
-        """Returns a user model for the token."""
-
-        return user.UserModel.find_by_model_id(self.user_id)
-
     def update_from_db_document(self, structure):
         super().update_from_db_document(structure)
 
@@ -124,7 +117,7 @@ class TokenModel(generic.Model):
         }
 
     def make_api_specific_fields(self, *args, **kwargs):
-        user_model = self.get_user()
+        user_model = self.user
         if user_model:
             user_model = user_model.make_api_structure()
 

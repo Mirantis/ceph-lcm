@@ -177,15 +177,12 @@ def test_check_initiator_set(configure_model):
     initial_user.save()
     derivative_user = make_user(initiator_id=initial_user.model_id)
 
-    assert not initial_user.get_initiator()
+    assert not initial_user.initiator
     assert derivative_user.initiator_id == initial_user.model_id
-    assert derivative_user.get_initiator()._id == initial_user._id
-
-    initial_user.save()
-    assert derivative_user.get_initiator()._id == initial_user._id
+    assert derivative_user.initiator._id == initial_user._id
 
     derivative_user = user.UserModel.find_by_login(derivative_user.login)
-    assert derivative_user.get_initiator()._id == initial_user._id
+    assert derivative_user.initiator._id == initial_user._id
 
 
 def test_all_tokens_for_deleted_user_are_revoked(

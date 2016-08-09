@@ -8,7 +8,6 @@ import pytest
 
 from cephlcm.common.models import cluster
 from cephlcm.common.models import server
-from cephlcm.common.models import user
 
 
 @pytest.fixture
