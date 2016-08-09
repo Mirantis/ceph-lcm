@@ -2,17 +2,15 @@
 """Tests for /v1/auth API."""
 
 
-import uuid
-
 import pytest
 
 from cephlcm.common.models import user
 
 
 def make_user(login, password):
-    email = str(uuid.uuid4()) + "@example.com"
-    full_name = str(uuid.uuid4())
-    initiator_id = str(uuid.uuid4())
+    email = pytest.faux.gen_email()
+    full_name = pytest.faux.gen_alphanumeric()
+    initiator_id = pytest.faux.gen_uuid()
     role_ids = []
 
     new_user = user.UserModel.make_user(
@@ -46,8 +44,8 @@ def test_incorrect_login_data(content_type, data, client_v1):
 
 
 def test_login_known_user(client_v1):
-    login = str(uuid.uuid4())
-    password = str(uuid.uuid4())
+    login = pytest.faux.gen_alphanumeric()
+    password = pytest.faux.gen_alphanumeric()
     make_user(login, password)
 
     token1 = client_v1.login(login, password)
@@ -62,8 +60,8 @@ def test_login_known_user(client_v1):
 
 
 def test_check_self_is_returned_in_token(client_v1):
-    login = str(uuid.uuid4())
-    password = str(uuid.uuid4())
+    login = pytest.faux.gen_alphanumeric()
+    password = pytest.faux.gen_alphanumeric()
     user = make_user(login, password)
 
     response = client_v1.login(login, password)
@@ -73,8 +71,8 @@ def test_check_self_is_returned_in_token(client_v1):
 
 
 def test_cannot_login_after_user_delete(client_v1):
-    login = str(uuid.uuid4())
-    password = str(uuid.uuid4())
+    login = pytest.faux.gen_alphanumeric()
+    password = pytest.faux.gen_alphanumeric()
     user = make_user(login, password)
 
     client_v1.login(login, password)
@@ -87,8 +85,8 @@ def test_cannot_login_after_user_delete(client_v1):
 
 
 def test_logout_ok(client_v1):
-    login = str(uuid.uuid4())
-    password = str(uuid.uuid4())
+    login = pytest.faux.gen_alphanumeric()
+    password = pytest.faux.gen_alphanumeric()
     make_user(login, password)
 
     client_v1.LOGIN = login
@@ -104,8 +102,8 @@ def test_logout_ok(client_v1):
 @pytest.mark.parametrize("was_logged_in", (True, False))
 @pytest.mark.parametrize("token", (None, "", "1"))
 def test_logout_without_correct_token(was_logged_in, token, client_v1):
-    login = str(uuid.uuid4())
-    password = str(uuid.uuid4())
+    login = pytest.faux.gen_alphanumeric()
+    password = pytest.faux.gen_alphanumeric()
     make_user(login, password)
 
     if was_logged_in:
@@ -123,8 +121,8 @@ def test_logout_without_correct_token(was_logged_in, token, client_v1):
 
 
 def test_logout_deleted_user(client_v1):
-    login = str(uuid.uuid4())
-    password = str(uuid.uuid4())
+    login = pytest.faux.gen_alphanumeric()
+    password = pytest.faux.gen_alphanumeric()
     user_model = make_user(login, password)
 
     client_v1.login(login, password)

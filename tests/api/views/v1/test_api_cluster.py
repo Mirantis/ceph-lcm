@@ -12,18 +12,6 @@ from cephlcm.common.models import user
 
 
 @pytest.fixture
-def normal_user(sudo_user):
-    return user.UserModel.make_user(
-        pytest.faux.gen_alphanumeric(),
-        "qwerty",
-        pytest.faux.gen_email(domain="example.com"),
-        pytest.faux.gen_uuid(),
-        [],
-        initiator_id=sudo_user.model_id
-    )
-
-
-@pytest.fixture
 def mongo_collection(pymongo_connection):
     return pymongo_connection.db.cluster
 

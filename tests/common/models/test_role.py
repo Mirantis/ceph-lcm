@@ -3,7 +3,6 @@
 
 
 import collections
-import uuid
 
 import pytest
 
@@ -110,10 +109,10 @@ class TestRoleModel(object):
         assert model.has_permission("api", "delete_user")
 
     def test_make_role(self, configure_model, pymongo_connection):
-        role_name = str(uuid.uuid4())
+        role_name = pytest.faux.gen_alpha()
         role_model = role.RoleModel.make_role(
             role_name, {"api": ["view_user"]},
-            initiator_id=str(uuid.uuid4())
+            initiator_id=pytest.faux.gen_uuid()
         )
 
         db_role = pymongo_connection.db.role.find_one({"_id": role_model._id})
@@ -128,10 +127,10 @@ class TestRoleModel(object):
         assert role_model.permissions == {"api": ["view_user"]}
 
     def test_make_api_structure(self, configure_model, freeze_time):
-        role_name = str(uuid.uuid4())
+        role_name = pytest.faux.gen_alpha()
         role_model = role.RoleModel.make_role(
             role_name, {"api": ["view_user", "create_user"]},
-            initiator_id=str(uuid.uuid4())
+            initiator_id=pytest.faux.gen_uuid()
         )
 
         assert role_model.make_api_structure() == {
@@ -148,9 +147,9 @@ class TestRoleModel(object):
         }
 
     def test_user_revoke_role(self, configure_model):
-        role_name = str(uuid.uuid4())
-        user_name = str(uuid.uuid4())
-        user_email = "{0}@example.com".format(uuid.uuid4())
+        role_name = pytest.faux.gen_alpha()
+        user_name = pytest.faux.gen_alpha()
+        user_email = pytest.faux.gen_email()
 
         role_model = role.RoleModel.make_role(
             role_name, {"api": ["view_user", "create_user"]}
@@ -172,17 +171,17 @@ class TestRoleModel(object):
 
     def test_find_by_model_ids(self, configure_model):
         role_model1 = role.RoleModel.make_role(
-            str(uuid.uuid4()), {"api": ["view_user", "create_user"]}
+            pytest.faux.gen_alpha(), {"api": ["view_user", "create_user"]}
         )
         role_model2 = role.RoleModel.make_role(
-            str(uuid.uuid4()), {"api": ["view_user", "create_user"]}
+            pytest.faux.gen_alpha(), {"api": ["view_user", "create_user"]}
         )
 
         role_model1.save()
-        role_model1.name = str(uuid.uuid4())
+        role_model1.name = pytest.faux.gen_alpha()
         role_model1.save()
 
-        role_model2.name = str(uuid.uuid4())
+        role_model2.name = pytest.faux.gen_alpha()
         role_model2.save()
 
         fetched_models = role.RoleModel.find_by_model_ids(

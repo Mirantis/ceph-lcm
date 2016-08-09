@@ -2,17 +2,11 @@
 """Tests for cephlcm.common.models.server."""
 
 
-import random
 import uuid
 
 import pytest
 
 from cephlcm.common.models import server
-
-
-def random_ip():
-    ints = [random.randint(1, 255) for _ in range(4)]
-    return ".".join(map(str, ints))
 
 
 @pytest.mark.parametrize("state", (
@@ -38,11 +32,11 @@ def test_set_state_ok(state):
 @pytest.mark.parametrize("cluster_id", (None, str(uuid.uuid4())))
 def test_create(state, facts, cluster_id, pymongo_connection,
                 configure_model, freeze_time):
-    name = str(uuid.uuid4())
-    username = str(uuid.uuid4())
-    fqdn = str(uuid.uuid4())
-    ip = random_ip()
-    initiator_id = str(uuid.uuid4())
+    name = pytest.faux.gen_alphanumeric()
+    username = pytest.faux.gen_alphanumeric()
+    fqdn = pytest.faux.gen_alphanumeric()
+    ip = pytest.faux.gen_ipaddr()
+    initiator_id = pytest.faux.gen_uuid()
 
     model = server.ServerModel.create(
         name, username, fqdn, ip, facts, cluster_id, state, initiator_id
@@ -79,11 +73,11 @@ def test_create(state, facts, cluster_id, pymongo_connection,
 @pytest.mark.parametrize("facts", ({}, {"a": 1}))
 @pytest.mark.parametrize("expand_facts", (True, False))
 def test_make_api_structure(facts, expand_facts, configure_model):
-    name = str(uuid.uuid4())
-    username = str(uuid.uuid4())
-    fqdn = str(uuid.uuid4())
-    initiator_id = str(uuid.uuid4())
-    ip = random_ip()
+    name = pytest.faux.gen_alphanumeric()
+    username = pytest.faux.gen_alphanumeric()
+    fqdn = pytest.faux.gen_alphanumeric()
+    ip = pytest.faux.gen_ipaddr()
+    initiator_id = pytest.faux.gen_uuid()
 
     model = server.ServerModel.create(name, username, fqdn, ip, facts,
                                       initiator_id=initiator_id)
@@ -107,19 +101,19 @@ def test_make_api_structure(facts, expand_facts, configure_model):
 
 
 def test_set_clusterid(configure_model):
-    name = str(uuid.uuid4())
-    username = str(uuid.uuid4())
-    fqdn = str(uuid.uuid4())
-    initiator_id = str(uuid.uuid4())
-    ip = random_ip()
+    name = pytest.faux.gen_alphanumeric()
+    username = pytest.faux.gen_alphanumeric()
+    fqdn = pytest.faux.gen_alphanumeric()
+    ip = pytest.faux.gen_ipaddr()
+    initiator_id = pytest.faux.gen_uuid()
 
     model = server.ServerModel.create(name, username, fqdn, ip, {},
                                       initiator_id=initiator_id)
-    cluster_id1 = str(uuid.uuid4())
+    cluster_id1 = pytest.faux.gen_uuid()
     model.cluster = cluster_id1
     model.save()
 
-    cluster_id2 = str(uuid.uuid4())
+    cluster_id2 = pytest.faux.gen_uuid()
     with pytest.raises(ValueError):
         model.cluster = cluster_id2
 
@@ -131,12 +125,12 @@ def test_set_clusterid(configure_model):
 
 
 def test_delete_if_cluster_id_set(configure_model):
-    name = str(uuid.uuid4())
-    username = str(uuid.uuid4())
-    fqdn = str(uuid.uuid4())
-    initiator_id = str(uuid.uuid4())
-    cluster_id = str(uuid.uuid4())
-    ip = random_ip()
+    name = pytest.faux.gen_alphanumeric()
+    username = pytest.faux.gen_alphanumeric()
+    fqdn = pytest.faux.gen_alphanumeric()
+    ip = pytest.faux.gen_ipaddr()
+    initiator_id = pytest.faux.gen_uuid()
+    cluster_id = pytest.faux.gen_uuid()
 
     model = server.ServerModel.create(name, username, fqdn, ip, {},
                                       initiator_id=initiator_id,

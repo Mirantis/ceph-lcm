@@ -6,7 +6,6 @@ import builtins
 import json
 import os
 import unittest.mock
-import uuid
 
 import pytest
 
@@ -72,7 +71,7 @@ def test_get_entrypoint_and_task_id_ok(monkeypatch):
 
 def test_get_plugin_fail():
     with pytest.raises(exceptions.InventoryError):
-        inventory.get_plugin(str(uuid.uuid4()))
+        inventory.get_plugin(pytest.faux.gen_alpha())
 
 
 def test_get_plugin_ok():
@@ -107,9 +106,9 @@ def test_dumps(mocked_print):
 
 def test_main_list(monkeypatch, mocked_print, mocked_sysexit,
                    mocked_configure):
-    host = str(uuid.uuid4())
-    username = str(uuid.uuid4())
-    initiator_id = str(uuid.uuid4())
+    host = pytest.faux.gen_alphanumeric()
+    username = pytest.faux.gen_alphanumeric()
+    initiator_id = pytest.faux.gen_uuid()
 
     tsk = task.ServerDiscoveryTask(host, username, initiator_id)
     tsk = tsk.create()
@@ -132,9 +131,9 @@ def test_main_list(monkeypatch, mocked_print, mocked_sysexit,
 
 def test_main_host_ok(monkeypatch, mocked_print, mocked_sysexit,
                       mocked_configure):
-    host = str(uuid.uuid4())
-    username = str(uuid.uuid4())
-    initiator_id = str(uuid.uuid4())
+    host = pytest.faux.gen_alphanumeric()
+    username = pytest.faux.gen_alphanumeric()
+    initiator_id = pytest.faux.gen_uuid()
 
     tsk = task.ServerDiscoveryTask(host, username, initiator_id)
     tsk = tsk.create()
@@ -156,10 +155,10 @@ def test_main_host_ok(monkeypatch, mocked_print, mocked_sysexit,
 
 def test_main_host_failed(monkeypatch, mocked_print, mocked_sysexit,
                           mocked_configure):
-    host = str(uuid.uuid4())
-    unknown_host = str(uuid.uuid4())
-    username = str(uuid.uuid4())
-    initiator_id = str(uuid.uuid4())
+    host = pytest.faux.gen_alphanumeric()
+    unknown_host = pytest.faux.gen_alphanumeric()
+    username = pytest.faux.gen_alphanumeric()
+    initiator_id = pytest.faux.gen_uuid()
 
     tsk = task.ServerDiscoveryTask(host, username, initiator_id)
     tsk = tsk.create()

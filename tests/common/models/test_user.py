@@ -2,8 +2,6 @@
 """This module contains tests for cephlcm.common.models.user."""
 
 
-import uuid
-
 import pytest
 
 from cephlcm.common import exceptions
@@ -13,11 +11,11 @@ from cephlcm.common.models import user
 
 
 def make_user(role_ids=None, initiator_id=None):
-    login = str(uuid.uuid4())
-    password = str(uuid.uuid4())
-    email = str(uuid.uuid4()) + "@example.com"
-    full_name = str(uuid.uuid4())
-    initiator_id = initiator_id or str(uuid.uuid4())
+    login = pytest.faux.gen_alpha()
+    password = pytest.faux.gen_alphanumeric()
+    email = pytest.faux.gen_email()
+    full_name = pytest.faux.gen_alphanumeric()
+    initiator_id = initiator_id or pytest.faux.gen_uuid()
     role_ids = role_ids or []
 
     new_user = user.UserModel.make_user(
@@ -27,10 +25,10 @@ def make_user(role_ids=None, initiator_id=None):
 
 
 def test_create_new_user(configure_model, pymongo_connection, freeze_time):
-    login = str(uuid.uuid4())
-    password = str(uuid.uuid4())
-    email = str(uuid.uuid4()) + "@example.com"
-    full_name = str(uuid.uuid4())
+    login = pytest.faux.gen_alpha()
+    password = pytest.faux.gen_alphanumeric()
+    email = pytest.faux.gen_email()
+    full_name = pytest.faux.gen_alphanumeric()
     role_ids = []
 
     new_user = user.UserModel.make_user(

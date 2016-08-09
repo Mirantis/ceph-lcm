@@ -6,6 +6,7 @@ import flask.testing
 import pytest
 
 from cephlcm import api
+from cephlcm.common.models import user
 
 
 class JsonApiClient(flask.testing.FlaskClient):
@@ -79,3 +80,15 @@ def sudo_client_v1(app, sudo_user):
         client.login("sudo", "sudo")
 
         yield client
+
+
+@pytest.fixture
+def normal_user(sudo_user):
+    return user.UserModel.make_user(
+        pytest.faux.gen_alphanumeric(),
+        "qwerty",
+        pytest.faux.gen_email(domain="example.com"),
+        pytest.faux.gen_uuid(),
+        [],
+        initiator_id=sudo_user.model_id
+    )

@@ -3,7 +3,6 @@
 
 
 import random
-import uuid
 
 import pytest
 
@@ -12,25 +11,23 @@ from cephlcm.common.models import cluster
 from cephlcm.common.models import server
 
 
-def create_server(fake):
-    name = str(uuid.uuid4())
-    username = str(uuid.uuid4())
-    fqdn = str(uuid.uuid4())
-    ip = fake.ipv4()
-    initiator_id = str(uuid.uuid4())
+def create_server():
+    name = pytest.faux.gen_alphanumeric()
+    username = pytest.faux.gen_alpha()
+    fqdn = pytest.faux.gen_alphanumeric()
+    ip = pytest.faux.gen_ipaddr()
+    initiator_id = pytest.faux.gen_uuid()
 
     return server.ServerModel.create(name, username, fqdn, ip,
                                      initiator_id=initiator_id)
 
 
 @pytest.fixture
-def config(fake, configure_model):
-    osds = [create_server(fake) for _ in range(random.randint(1, 10))]
-    rgws = [create_server(fake) for _ in range(random.randint(1, 10))]
-    mons = [create_server(fake) for _ in range(random.randint(1, 10))] \
-        + rgws[:2]
-    mds = [create_server(fake) for _ in range(random.randint(1, 10))] \
-        + [mons[0]]
+def config(configure_model):
+    osds = [create_server() for _ in range(random.randint(1, 10))]
+    rgws = [create_server() for _ in range(random.randint(1, 10))]
+    mons = [create_server() for _ in range(random.randint(1, 10))] + rgws[:2]
+    mds = [create_server() for _ in range(random.randint(1, 10))] + [mons[0]]
 
     return {
         "osds": osds,
@@ -41,9 +38,9 @@ def config(fake, configure_model):
 
 
 def test_create(pymongo_connection, config, freeze_time):
-    initiator_id = str(uuid.uuid4())
-    name = str(uuid.uuid4())
-    execution_id = str(uuid.uuid4())
+    initiator_id = pytest.faux.gen_uuid()
+    execution_id = pytest.faux.gen_uuid()
+    name = pytest.faux.gen_alphanumeric()
     clstr = cluster.ClusterModel.create(name, config, execution_id,
                                         initiator_id)
 
@@ -75,9 +72,9 @@ def test_create(pymongo_connection, config, freeze_time):
 
 
 def test_create_empty_config(configure_model):
-    initiator_id = str(uuid.uuid4())
-    name = str(uuid.uuid4())
-    execution_id = str(uuid.uuid4())
+    initiator_id = pytest.faux.gen_uuid()
+    execution_id = pytest.faux.gen_uuid()
+    name = pytest.faux.gen_alphanumeric()
     clstr = cluster.ClusterModel.create(name, {}, execution_id,
                                         initiator_id)
 
@@ -85,13 +82,13 @@ def test_create_empty_config(configure_model):
 
 
 def test_update(config):
-    initiator_id = str(uuid.uuid4())
-    name = str(uuid.uuid4())
-    execution_id = str(uuid.uuid4())
+    initiator_id = pytest.faux.gen_uuid()
+    execution_id = pytest.faux.gen_uuid()
+    name = pytest.faux.gen_alphanumeric()
     clstr = cluster.ClusterModel.create(name, config, execution_id,
                                         initiator_id)
 
-    new_name = str(uuid.uuid4())
+    new_name = pytest.faux.gen_alphanumeric()
 
     clstr.name = new_name
     clstr.save()
@@ -100,14 +97,14 @@ def test_update(config):
     assert clstr.version == 3
 
 
-def test_add_servers(config, fake):
-    initiator_id = str(uuid.uuid4())
-    name = str(uuid.uuid4())
-    execution_id = str(uuid.uuid4())
+def test_add_servers(config):
+    initiator_id = pytest.faux.gen_uuid()
+    execution_id = pytest.faux.gen_uuid()
+    name = pytest.faux.gen_alphanumeric()
     clstr = cluster.ClusterModel.create(name, config, execution_id,
                                         initiator_id)
 
-    servers = [create_server(fake), create_server(fake)]
+    servers = [create_server(), create_server()]
     clstr.add_servers("rgws", servers)
 
     assert clstr.version == 2
@@ -121,14 +118,14 @@ def test_add_servers(config, fake):
         assert srv.model_id not in clstr.configuration["mds"]
 
 
-def test_remove_servers_partly(config, fake):
-    initiator_id = str(uuid.uuid4())
-    name = str(uuid.uuid4())
-    execution_id = str(uuid.uuid4())
+def test_remove_servers_partly(config):
+    initiator_id = pytest.faux.gen_uuid()
+    execution_id = pytest.faux.gen_uuid()
+    name = pytest.faux.gen_alphanumeric()
     clstr = cluster.ClusterModel.create(name, config, execution_id,
                                         initiator_id)
 
-    servers = [create_server(fake), create_server(fake)]
+    servers = [create_server(), create_server()]
     clstr.add_servers("rgws", servers)
     clstr.add_servers("mons", servers)
     clstr.save()
@@ -143,14 +140,14 @@ def test_remove_servers_partly(config, fake):
         assert srv.model_id not in clstr.configuration["mds"]
 
 
-def test_remove_servers_all(config, fake):
-    initiator_id = str(uuid.uuid4())
-    name = str(uuid.uuid4())
-    execution_id = str(uuid.uuid4())
+def test_remove_servers_all(config):
+    initiator_id = pytest.faux.gen_uuid()
+    execution_id = pytest.faux.gen_uuid()
+    name = pytest.faux.gen_alphanumeric()
     clstr = cluster.ClusterModel.create(name, config, execution_id,
                                         initiator_id)
 
-    servers = [create_server(fake), create_server(fake)]
+    servers = [create_server(), create_server()]
     clstr.add_servers("rgws", servers)
     clstr.add_servers("mons", servers)
     clstr.save()
@@ -166,9 +163,9 @@ def test_remove_servers_all(config, fake):
 
 
 def test_delete(config, freeze_time):
-    initiator_id = str(uuid.uuid4())
-    name = str(uuid.uuid4())
-    execution_id = str(uuid.uuid4())
+    initiator_id = pytest.faux.gen_uuid()
+    execution_id = pytest.faux.gen_uuid()
+    name = pytest.faux.gen_alphanumeric()
     clstr = cluster.ClusterModel.create(name, config, execution_id,
                                         initiator_id)
 
@@ -185,9 +182,9 @@ def test_delete(config, freeze_time):
 
 
 def test_api_response_no_expand(config, freeze_time):
-    initiator_id = str(uuid.uuid4())
-    name = str(uuid.uuid4())
-    execution_id = str(uuid.uuid4())
+    initiator_id = pytest.faux.gen_uuid()
+    execution_id = pytest.faux.gen_uuid()
+    name = pytest.faux.gen_alphanumeric()
     clstr = cluster.ClusterModel.create(name, config, execution_id,
                                         initiator_id)
     structure = clstr.make_api_structure(expand_servers=False)

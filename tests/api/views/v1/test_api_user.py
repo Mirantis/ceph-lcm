@@ -4,7 +4,6 @@
 
 import copy
 import json
-import uuid
 
 import pytest
 
@@ -30,10 +29,10 @@ def clean_user_collection(sudo_user, pymongo_connection):
 @pytest.fixture
 def valid_post_request():
     return {
-        "login": str(uuid.uuid4()),
-        "email": "{0}@example.com".format(uuid.uuid4()),
+        "login": pytest.faux.gen_alpha(),
+        "email": pytest.faux.gen_email(),
         "role_ids": [],
-        "full_name": str(uuid.uuid4())
+        "full_name": pytest.faux.gen_alphanumeric()
     }
 
 
@@ -44,8 +43,8 @@ def test_create_new_user_fail_email(
     email, new_password_message, sudo_client_v1, user_email
 ):
     request = {
-        "full_name": str(uuid.uuid4()),
-        "login": str(uuid.uuid4()),
+        "full_name": pytest.faux.gen_alphanumeric(),
+        "login": pytest.faux.gen_alphanumeric(),
         "role_ids": []
     }
 
@@ -62,8 +61,8 @@ def test_create_new_user_fail_login(
     email, new_password_message, sudo_client_v1, user_login
 ):
     request = {
-        "full_name": str(uuid.uuid4()),
-        "email": "{0}@example.com".format(uuid.uuid4()),
+        "full_name": pytest.faux.gen_alpha(),
+        "email": pytest.faux.gen_email(),
         "role_ids": []
     }
 
@@ -80,8 +79,8 @@ def test_create_new_user_fail_name(
     email, new_password_message, sudo_client_v1, user_name
 ):
     request = {
-        "login": str(uuid.uuid4()),
-        "email": "{0}@example.com".format(uuid.uuid4()),
+        "login": pytest.faux.gen_alpha(),
+        "email": pytest.faux.gen_email(),
         "role_ids": []
     }
 
@@ -144,9 +143,9 @@ def test_create_new_user_same_data(field, email, pymongo_connection,
     another_request = valid_post_request.copy()
 
     if field == "login":
-        another_request["email"] = "{0}@example.com".format(uuid.uuid4())
+        another_request["email"] = pytest.faux.gen_email()
     else:
-        another_request["login"] = str(uuid.uuid4())
+        another_request["login"] = pytest.faux.gen_alpha()
 
     assert sudo_client_v1.post("/v1/user/",
                                data=valid_post_request).status_code == 200
@@ -196,7 +195,7 @@ def test_update_field_ok(field, email, sudo_client_v1, freeze_time,
     response = sudo_client_v1.post("/v1/user/", data=valid_post_request)
     model = response.json
 
-    model["data"][field] = "{0}@example.com".format(uuid.uuid4())
+    model["data"][field] = pytest.faux.gen_email()
     response = sudo_client_v1.put(
         "/v1/user/{0}/".format(model["id"]),
         data=model
@@ -222,9 +221,9 @@ def test_update_field_nok(field, email, sudo_client_v1, freeze_time,
     if field in ("time_updated", "time_deleted"):
         model[field] += 100
     elif field == "id":
-        model[field] = str(uuid.uuid4())
+        model[field] = pytest.faux.gen_alpha()
     else:
-        model[field] = "{0}@example.com".format(uuid.uuid4())
+        model[field] = pytest.faux.gen_email()
 
     response = sudo_client_v1.put(
         "/v1/user/{0}/".format(model_id),
@@ -238,14 +237,14 @@ def test_update_field_nok(field, email, sudo_client_v1, freeze_time,
 def test_2users_update_previous_data(field, email, sudo_client_v1, freeze_time,
                                      valid_post_request):
     request2 = valid_post_request.copy()
-    request2["login"] = str(uuid.uuid4())
-    request2["email"] = "{0}@example.com".format(uuid.uuid4())
+    request2["login"] = pytest.faux.gen_alpha()
+    request2["email"] = pytest.faux.gen_email()
 
     response1 = sudo_client_v1.post("/v1/user/", data=valid_post_request)
     response2 = sudo_client_v1.post("/v1/user/", data=request2)
 
     model = response1.json
-    model["data"][field] = "{0}@example.com".format(uuid.uuid4())
+    model["data"][field] = pytest.faux.gen_email()
 
     sudo_client_v1.put("/v1/user/{0}/".format(model["id"]), data=model)
 
@@ -310,14 +309,14 @@ def test_user_delete_update(email, sudo_client_v1, freeze_time,
 def test_2users_update_delete_previous_data(field, email, sudo_client_v1,
                                             freeze_time, valid_post_request):
     request2 = valid_post_request.copy()
-    request2["login"] = str(uuid.uuid4())
-    request2["email"] = "{0}@example.com".format(uuid.uuid4())
+    request2["login"] = pytest.faux.gen_alpha()
+    request2["email"] = pytest.faux.gen_email()
 
     response1 = sudo_client_v1.post("/v1/user/", data=valid_post_request)
     response2 = sudo_client_v1.post("/v1/user/", data=request2)
 
     model = response1.json
-    model["data"][field] = "{0}@example.com".format(uuid.uuid4())
+    model["data"][field] = pytest.faux.gen_email()
 
     sudo_client_v1.delete("/v1/user/{0}/".format(model["id"]))
 
@@ -352,10 +351,10 @@ def test_get_pagination_page(query, items, per_page, page, email,
                              freeze_time):
     for _ in range(10):
         request = {
-            "login": str(uuid.uuid4()),
-            "email": "{0}@example.com".format(uuid.uuid4()),
+            "login": pytest.faux.gen_alpha(),
+            "email": pytest.faux.gen_email(),
             "role_ids": [],
-            "full_name": str(uuid.uuid4())
+            "full_name": pytest.faux.gen_alpha()
         }
         sudo_client_v1.post("/v1/user/", data=request)
 
@@ -385,7 +384,7 @@ def test_get_pagination_page(query, items, per_page, page, email,
 ))
 def test_get_versions_list(query, items, per_page, page, email, sudo_client_v1,
                            clean_user_collection, valid_post_request):
-    login_base = str(uuid.uuid4())
+    login_base = pytest.faux.gen_alpha()
     valid_post_request["login"] = "{0}{1}".format(login_base, 0)
     response = sudo_client_v1.post("/v1/user/", data=valid_post_request)
 
@@ -414,7 +413,7 @@ def test_get_versions_list(query, items, per_page, page, email, sudo_client_v1,
 
 
 def test_get_version(email, sudo_client_v1, valid_post_request):
-    login_base = str(uuid.uuid4())
+    login_base = pytest.faux.gen_alpha()
     valid_post_request["login"] = "{0}{1}".format(login_base, 0)
     response = sudo_client_v1.post("/v1/user/", data=valid_post_request)
     initial_json = copy.deepcopy(response.json)
@@ -447,10 +446,10 @@ def test_user_filtering(sudo_client_v1, email, clean_user_collection):
     login = ""
     for _ in range(10):
         model = user.UserModel.make_user(
-            "1" + str(uuid.uuid4()),
-            "qqq",
-            "{0}@example.com".format(uuid.uuid4()),
-            str(uuid.uuid4()),
+            "1" + pytest.faux.gen_alpha(),
+            pytest.faux.gen_alpha(),
+            pytest.faux.gen_email(),
+            pytest.faux.gen_uuid(),
             []
         )
         login = model.login

@@ -6,7 +6,6 @@ import os
 import platform
 import time
 import unittest.mock
-import uuid
 
 import pytest
 
@@ -20,9 +19,9 @@ CONF = config.make_controller_config()
 
 
 def create_task():
-    host = str(uuid.uuid4())
-    username = str(uuid.uuid4())
-    initiator_id = str(uuid.uuid4())
+    host = pytest.faux.gen_alphanumeric()
+    username = pytest.faux.gen_alpha()
+    initiator_id = pytest.faux.gen_uuid()
     tsk = task.ServerDiscoveryTask(host, username, initiator_id)
     tsk = tsk.create()
     tsk = tsk.start()
