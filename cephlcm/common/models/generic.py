@@ -33,6 +33,7 @@ import uuid
 
 import bson.objectid
 import pymongo
+import pymongo.errors
 
 from cephlcm.common import exceptions
 from cephlcm.common import log
@@ -274,7 +275,10 @@ class Model(Base, metaclass=abc.ABCMeta):
     def insert_document(self, db_document):
         """Inserts DB structure into the MongoDB."""
 
-        return self.collection().insert(db_document)
+        try:
+            return self.collection().insert(db_document)
+        except pymongo.errors.DuplicateKeyError as exc:
+            raise exceptions.UniqueConstraintViolationError() from exc
 
     def update_from_db_document(self, db_document):
         """Updates model fields with document from database.
@@ -369,6 +373,7 @@ def configure_models(connection):
     Base.CONNECTION = connection
 
 
-def ensure_indexes():
-    for mdl in Base.__subclasses__():
+def ensure_indexes(root=Base):
+    for mdl in root.__subclasses__():
         mdl.ensure_index()
+        ensure_indexes(mdl)

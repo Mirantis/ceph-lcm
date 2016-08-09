@@ -107,13 +107,12 @@ class UserModel(generic.Model):
             [
                 ("login", generic.SORT_ASC)
             ],
-            name="index_unique_login"
+            name="index_login"
         )
 
     def check_constraints(self):
         super().check_constraints()
 
-        collection = self.collection()
         query = {
             "model_id": {"$ne": self.model_id},
             "is_latest": True,
@@ -123,9 +122,10 @@ class UserModel(generic.Model):
                 {"login": self.login}
             ]
         }
-        cursor = collection.find(query)
+        if self.model_id:
+            query["model_id"] = {"$ne": self.model_id}
 
-        if cursor.count():
+        if self.collection().find_one(query):
             raise exceptions.UniqueConstraintViolationError()
 
     def delete(self):

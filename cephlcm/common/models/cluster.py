@@ -9,6 +9,7 @@ them to roles.
 import collections
 import itertools
 
+from cephlcm.common import exceptions
 from cephlcm.common import log
 from cephlcm.common.models import generic
 from cephlcm.common.models import server
@@ -78,31 +79,19 @@ class ClusterModel(generic.Model):
 
         return model
 
-    @classmethod
-    def ensure_index(cls):
-        super().ensure_index()
-
-        collection = cls.collection()
-        for fieldname in "name", "execution_id":
-            collection.create_index(
-                [
-                    (fieldname, generic.SORT_ASC),
-                    ("time_deleted", generic.SORT_ASC)
-                ],
-                unique=True,
-                name="index_{0}".format(fieldname)
-            )
-
     def delete(self):
         if self.server_list:
-            # TODO(Sergey Arkhipov): Raise proper exception
-            raise Exception
+            raise exceptions.CannotDeleteClusterWithServers()
 
         super().delete()
 
     def check_constraints(self):
         super().check_constraints()
 
+        self.check_constraint_mutable_exclusive_servers()
+        self.check_constraint_unique_params()
+
+    def check_constraint_mutable_exclusive_servers(self):
         existing_servers = self.server_list
         query = {
             "model_id": {"$in": list(existing_servers)},
@@ -116,8 +105,21 @@ class ClusterModel(generic.Model):
             existing_servers.discard(srv["model_id"])
 
         if existing_servers:
-            # TODO(Sergey Arkhipov): Raise proper exception
-            raise Exception
+            raise exceptions.UniqueConstraintViolationError()
+
+    def check_constraint_unique_params(self):
+        query = {
+            "is_latest": True,
+            "time_deleted": 0,
+            "$or": [{"name": self.name}]
+        }
+        if self.execution_id:
+            query["$or"].append({"execution_id": self.execution_id})
+        if self.model_id:
+            query["model_id"] = {"$ne": self.model_id}
+
+        if self.collection().find_one(query):
+            raise exceptions.UniqueConstraintViolationError()
 
     def add_servers(self, role, servers):
         for srv in servers:
@@ -162,9 +164,11 @@ class ClusterModel(generic.Model):
     def make_api_specific_fields(self, expand_servers=True):
         configuration = self.configuration
 
-        if expand_servers:
+        if not expand_servers:
+            configuration = {k: sorted(v) for k, v in configuration.items()}
+        else:
             servers = server.ServerModel.cluster_servers(self.model_id)
-            servers = {srv.model_id: srv for srv in servers.items()}
+            servers = {srv.model_id: srv for srv in servers}
             new_config = {}
 
             for role, server_list in configuration.items():
@@ -179,10 +183,13 @@ class ClusterModel(generic.Model):
                             srv_id
                         )
 
-            configuration = new_config
+            configuration = {k: sorted(
+                (el.make_api_structure(expand_cluster=False) for el in v),
+                key=lambda el: el["id"]
+            ) for k, v in new_config.items()}
 
         return {
             "name": self.name,
             "execution_id": self.execution_id,
-            "configuration": {k: sorted(v) for k, v in configuration.items()}
+            "configuration": configuration
         }

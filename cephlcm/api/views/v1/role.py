@@ -85,6 +85,11 @@ class RoleView(generic.VersionedCRUDView):
                 item_id, item.time_deleted, item.version
             )
             raise http_exceptions.CannotUpdateDeletedModel() from exc
+        except base_exceptions.UniqueConstraintViolationError as exc:
+            LOG.warning("Cannot update role %s (unique constraint "
+                        "violation)", self.request_json["data"]["name"])
+            raise http_exceptions.CannotUpdateModelWithSuchParameters() \
+                from exc
         except ValueError as exc:
             LOG.warning("Incorrect permissions for role %s: %s",
                         item_id, exc)
@@ -107,6 +112,8 @@ class RoleView(generic.VersionedCRUDView):
             LOG.warning("Cannot create role %s (unique constraint violation)",
                         self.request_json["name"])
             raise http_exceptions.ImpossibleToCreateSuchModel() from exc
+        except base_exceptions.UniqueConstraintViolationError as exc:
+            raise http_exceptions.UniqueConstraintViolationError() from exc
         except ValueError as exc:
             LOG.warning("Incorrect permissions for role %s: %s",
                         self.request_json["name"], exc)

@@ -7,14 +7,15 @@ import uuid
 
 import pytest
 
+from cephlcm.common import exceptions
 from cephlcm.common.models import cluster
 from cephlcm.common.models import server
 
 
 def create_server(fake):
     name = str(uuid.uuid4())
-    username = fake.simple_profile(sex=None)["username"]
-    fqdn = fake.domain_name()
+    username = str(uuid.uuid4())
+    fqdn = str(uuid.uuid4())
     ip = fake.ipv4()
     initiator_id = str(uuid.uuid4())
 
@@ -172,8 +173,7 @@ def test_delete(config, freeze_time):
                                         initiator_id)
 
     for role, servers in config.items():
-        # TODO(Sergey Arkhipov): Put proper exception here
-        with pytest.raises(Exception):
+        with pytest.raises(exceptions.CannotDeleteClusterWithServers):
             clstr.delete()
 
         clstr.remove_servers(servers, role=role)
@@ -202,8 +202,8 @@ def test_api_response_no_expand(config, freeze_time):
     assert structure["model"] == "cluster"
     assert structure["data"]["name"] == clstr.name
     assert structure["data"]["execution_id"] == clstr.execution_id
-    assert list(structure["data"]["configuration"].keys()) == \
-        list(clstr.configuration)
+    assert sorted(structure["data"]["configuration"].keys()) == \
+        sorted(clstr.configuration)
 
     for role, server_list in structure["data"]["configuration"].items():
         assert server_list == sorted(srv.model_id for srv in config[role])

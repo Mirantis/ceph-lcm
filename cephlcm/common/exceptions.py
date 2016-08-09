@@ -18,6 +18,10 @@ class CannotDeleteRoleWithActiveUsers(CephLCMError):
     """Exception raised on attempt to delete role with active users."""
 
 
+class CannotDeleteClusterWithServers(CephLCMError):
+    """Exception raised on attempt to delete cluster with servers."""
+
+
 class CannotStartTaskError(CephLCMError):
     """Exception raised if it is impossible to start such task."""
 

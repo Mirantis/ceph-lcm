@@ -6,6 +6,7 @@ using API. It has to be created after Ansible playbook invocation.
 """
 
 
+from cephlcm.common import exceptions
 from cephlcm.common.models import generic
 
 
@@ -76,7 +77,13 @@ class ServerModel(generic.Model):
             "time_deleted": 0
         }
 
-        return cls.list_raw(query)
+        servers = []
+        for srv in cls.list_raw(query):
+            model = cls()
+            model.update_from_db_document(srv)
+            servers.append(model)
+
+        return servers
 
     @property
     def cluster(self):
@@ -132,11 +139,26 @@ class ServerModel(generic.Model):
             collection.create_index(
                 [
                     (fieldname, generic.SORT_ASC),
-                    ("time_deleted", generic.SORT_ASC)
                 ],
-                unique=True,
                 name="index_{0}".format(fieldname)
             )
+
+    def check_constraints(self):
+        super().check_constraints()
+
+        query = {
+            "time_deleted": 0,
+            "$or": [
+                {"name": self.name},
+                {"fqdn": self.fqdn},
+                {"ip": self.ip},
+            ]
+        }
+        if self.model_id:
+            query["model_id"] = {"$ne": self.model_id}
+
+        if self.collection().find_one(query):
+            raise exceptions.UniqueConstraintViolationError()
 
     def update_from_db_document(self, structure):
         super().update_from_db_document(structure)
@@ -171,7 +193,7 @@ class ServerModel(generic.Model):
             "facts": self.facts
         }
 
-    def make_api_specific_fields(self, expand_facts=True):
+    def make_api_specific_fields(self, expand_cluster=True, expand_facts=True):
         facts = self.facts if expand_facts else {}
 
         return {
@@ -180,6 +202,6 @@ class ServerModel(generic.Model):
             "fqdn": self.fqdn,
             "ip": self.ip,
             "state": self.state,
-            "cluster": self.cluster,
+            "cluster": self.cluster if expand_cluster else self.cluster_id,
             "facts": facts
         }
