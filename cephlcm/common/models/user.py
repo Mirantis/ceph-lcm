@@ -151,5 +151,5 @@ class UserModel(generic.Model):
             "login": self.login,
             "email": self.email,
             "full_name": self.full_name,
-            "roles": [role.make_api_structure() for role in self.roles]
+            "role_ids": self.role_ids
         }

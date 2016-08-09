@@ -169,7 +169,7 @@ class ServerModel(generic.Model):
             "facts": self.facts
         }
 
-    def make_api_specific_fields(self, expand_cluster=True, expand_facts=True):
+    def make_api_specific_fields(self, expand_facts=True):
         facts = self.facts if expand_facts else {}
 
         return {
@@ -178,6 +178,6 @@ class ServerModel(generic.Model):
             "fqdn": self.fqdn,
             "ip": self.ip,
             "state": self.state,
-            "cluster": self.cluster if expand_cluster else self.cluster_id,
+            "cluster_id": self.cluster_id,
             "facts": facts
         }

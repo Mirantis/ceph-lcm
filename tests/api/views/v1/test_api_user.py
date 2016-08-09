@@ -123,10 +123,8 @@ def test_create_new_user(
     assert data["data"]["email"] == valid_post_request["email"]
     assert data["data"]["full_name"] == valid_post_request["full_name"]
     assert data["data"]["full_name"] == db_user["full_name"]
-    assert [
-        r["id"] for r in data["data"]["roles"]
-    ] == valid_post_request["role_ids"]
-    assert [r["id"] for r in data["data"]["roles"]] == db_user["role_ids"]
+    assert data["data"]["role_ids"] == valid_post_request["role_ids"]
+    assert data["data"]["role_ids"] == db_user["role_ids"]
 
     assert len(email.sendmail.mock_calls) == 1
     to, cc, password = email.sendmail.call_args[0][-1]

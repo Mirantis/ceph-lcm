@@ -94,7 +94,7 @@ def test_make_api_structure(facts, expand_facts, configure_model):
             "fqdn": model.fqdn,
             "ip": ip,
             "state": server.ServerModel.STATE_OPERATIONAL,
-            "cluster": None,
+            "cluster_id": None,
             "facts": (facts if expand_facts else {})
         }
     }

@@ -187,7 +187,7 @@ def test_api_response_no_expand(config, freeze_time):
     name = pytest.faux.gen_alphanumeric()
     clstr = cluster.ClusterModel.create(name, config, execution_id,
                                         initiator_id)
-    structure = clstr.make_api_structure(expand_servers=False)
+    structure = clstr.make_api_structure()
 
     assert len(structure) == 7
     assert len(structure["data"]) == 3

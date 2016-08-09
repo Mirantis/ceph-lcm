@@ -161,32 +161,9 @@ class ClusterModel(generic.Model):
                               for k, v in self.configuration.items() if v}
         }
 
-    def make_api_specific_fields(self, expand_servers=True):
+    def make_api_specific_fields(self):
         configuration = self.configuration
-
-        if not expand_servers:
-            configuration = {k: sorted(v) for k, v in configuration.items()}
-        else:
-            servers = server.ServerModel.cluster_servers(self.model_id)
-            servers = {srv.model_id: srv for srv in servers}
-            new_config = {}
-
-            for role, server_list in configuration.items():
-                for srv_id in server_list:
-                    if srv_id in servers:
-                        new_config.setdefault(role, []).append(servers[srv_id])
-                    else:
-                        LOG.warning(
-                            "Inconsistent list of servers: "
-                            "server %s present in configuration but absent "
-                            "from the cluster list",
-                            srv_id
-                        )
-
-            configuration = {k: sorted(
-                (el.make_api_structure(expand_cluster=False) for el in v),
-                key=lambda el: el["id"]
-            ) for k, v in new_config.items()}
+        configuration = {k: sorted(v) for k, v in configuration.items()}
 
         return {
             "name": self.name,

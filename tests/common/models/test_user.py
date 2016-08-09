@@ -137,7 +137,7 @@ def test_api_response(configure_model, freeze_time):
         "time_deleted": new_user.time_deleted,
         "initiator_id": new_user.initiator_id,
         "data": {
-            "roles": [],
+            "role_ids": [],
             "full_name": new_user.full_name,
             "login": new_user.login,
             "email": new_user.email
