@@ -8,6 +8,7 @@ bandit==1.0.1
 bcrypt==3.1.0
 click==6.6
 daemonocle==1.0.1
+fake-factory==0.6.0
 flake8==3.0.4
 flake8-bugbear==16.7.1
 flake8-builtins==0.2

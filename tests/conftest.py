@@ -5,6 +5,7 @@
 import unittest.mock as mock
 import uuid
 
+import faker
 import mongomock
 import pytest
 
@@ -38,6 +39,11 @@ def no_sleep(monkeypatch):
 @pytest.fixture
 def freeze_time(request):
     return have_mocked(request, "time.time", return_value=100.5)
+
+
+@pytest.fixture
+def fake():
+    return faker.Faker()
 
 
 @pytest.fixture(scope="session", autouse=True)

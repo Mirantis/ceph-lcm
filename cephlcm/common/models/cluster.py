@@ -45,19 +45,36 @@ class ClusterModel(generic.Model):
     def configuration(self, value):
         self._configuration = collections.defaultdict(set)
 
-        for role, server_list in value:
+        for role, server_list in value.items():
             for srv in server_list:
                 if isinstance(srv, dict):
                     srv = srv["id"]
+                elif hasattr(srv, "model_id"):
+                    srv = srv.model_id
                 self._configuration[role].add(srv)
 
+    @property
+    def server_list(self):
+        servers = itertools.chain.from_iterable(self.configuration.values())
+        servers = set(servers)
+
+        return servers
+
     @classmethod
-    def create(cls, name, configuration=None, execution_id=None):
+    def create(cls, name, configuration=None, execution_id=None,
+               initiator_id=None):
         model = cls()
         model.name = name
+        model.configuration = {}
         model.execution_id = execution_id
-        model.configuration = configuration or {}
+        model.initiator_id = initiator_id
         model.save()
+
+        configuration = configuration or {}
+        for role, servers in configuration.items():
+            model.add_servers(role, servers)
+        if configuration:
+            model.save()
 
         return model
 
@@ -77,11 +94,7 @@ class ClusterModel(generic.Model):
             )
 
     def delete(self):
-        existing_servers = itertools.chain.from_iterable(
-            self.configuration.values())
-        existing_servers = set(existing_servers)
-
-        if existing_servers:
+        if self.server_list:
             # TODO(Sergey Arkhipov): Raise proper exception
             raise Exception
 
@@ -90,9 +103,7 @@ class ClusterModel(generic.Model):
     def check_constraints(self):
         super().check_constraints()
 
-        existing_servers = itertools.chain.from_iterable(
-            self.configuration.values())
-        existing_servers = set(existing_servers)
+        existing_servers = self.server_list
         query = {
             "model_id": {"$in": list(existing_servers)},
             "time_deleted": 0,
@@ -115,8 +126,6 @@ class ClusterModel(generic.Model):
                 srv.save()
             self._configuration[role].add(srv.model_id)
 
-        self.save()
-
     def remove_servers(self, servers, role=None):
         srv_ids = {srv.model_id for srv in servers}
 
@@ -128,16 +137,11 @@ class ClusterModel(generic.Model):
         for role in roles:
             self._configuration[role] -= srv_ids
 
-        existing_servers = itertools.chain.from_iterable(
-            self.configuration.values())
-        existing_servers = set(existing_servers)
-
+        existing_servers = self.server_list
         for srv in servers:
             if srv.model_id not in existing_servers:
                 srv.cluster = None
                 srv.save()
-
-        self.save()
 
     def update_from_db_document(self, structure):
         super().update_from_db_document(structure)
@@ -152,7 +156,7 @@ class ClusterModel(generic.Model):
             "initiator_id": self.initiator_id,
             "execution_id": self.execution_id,
             "configuration": {k: list(v)
-                              for k, v in self.configuration.items()}
+                              for k, v in self.configuration.items() if v}
         }
 
     def make_api_specific_fields(self, expand_servers=True):
@@ -180,5 +184,5 @@ class ClusterModel(generic.Model):
         return {
             "name": self.name,
             "execution_id": self.execution_id,
-            "configuration": configuration
+            "configuration": {k: sorted(v) for k, v in configuration.items()}
         }
