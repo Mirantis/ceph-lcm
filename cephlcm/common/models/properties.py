@@ -24,7 +24,7 @@ class ChoicesProperty(Property):
 
     def __set__(self, instance, value):
         choices = self.choices
-        if callable(self.choices):
+        if callable(choices):
             choices = choices()
         choices = set(choices)
 

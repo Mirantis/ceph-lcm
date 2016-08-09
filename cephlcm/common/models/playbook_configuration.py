@@ -28,7 +28,7 @@ class PlaybookConfigurationModel(generic.Model):
         self.name = None
         self.cluster = None
         self.servers = []
-        self.playbook = None
+        self._playbook = None
         self.configuration = {}
 
     cluster = properties.ModelProperty(
@@ -43,7 +43,7 @@ class PlaybookConfigurationModel(generic.Model):
 
     playbook = properties.ChoicesProperty(
         "_playbook",
-        plugins.get_public_playbook_plugins()
+        plugins.get_public_playbook_plugins
     )
 
     @classmethod
