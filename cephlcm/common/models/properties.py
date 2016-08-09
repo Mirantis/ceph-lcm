@@ -12,7 +12,7 @@ class Property:
 class ChoicesProperty(Property):
 
     def __init__(self, attr_name, choices):
-        self.choices = set(choices)
+        self.choices = choices
         self.attr_name = attr_name
 
     def __get__(self, instance, owner):
@@ -23,8 +23,13 @@ class ChoicesProperty(Property):
         return value
 
     def __set__(self, instance, value):
+        choices = self.choices
+        if callable(self.choices):
+            choices = choices()
+        choices = set(choices)
+
         try:
-            if value in self.choices:
+            if value in choices:
                 setattr(instance, self.attr_name, value)
                 return
         except TypeError:
