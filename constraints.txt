@@ -8,7 +8,7 @@ bandit==1.0.1
 bcrypt==3.1.0
 click==6.6
 daemonocle==1.0.1
-fake-factory==0.6.0
+fauxfactory==2.0.9
 flake8==3.0.4
 flake8-bugbear==16.7.1
 flake8-builtins==0.2
@@ -32,6 +32,7 @@ pycodestyle==2.0.0
 pymongo==3.3.0
 pytest==2.9.2
 pytest-cov==2.3.1
+pytest-fauxfactory==1.0
 pytest-flask==0.10.0
 pytest-profiling==1.1.1
 radon==1.4.2

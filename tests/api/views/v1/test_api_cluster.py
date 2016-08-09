@@ -3,7 +3,6 @@
 
 
 import random
-import uuid
 
 import pytest
 
@@ -13,12 +12,13 @@ from cephlcm.common.models import user
 
 
 @pytest.fixture
-def normal_user(sudo_user, fake):
+def normal_user(sudo_user):
     return user.UserModel.make_user(
-        str(uuid.uuid4()),
+        pytest.faux.gen_alphanumeric(),
         "qwerty",
-        "{0}@example.com".format(uuid.uuid4()),
-        str(uuid.uuid4()), [],
+        pytest.faux.gen_email(domain="example.com"),
+        pytest.faux.gen_uuid(),
+        [],
         initiator_id=sudo_user.model_id
     )
 
@@ -34,13 +34,11 @@ def clean_cluster_collection(mongo_collection):
 
 
 @pytest.fixture
-def config(fake, configure_model):
-    osds = [create_server(fake) for _ in range(random.randint(1, 10))]
-    rgws = [create_server(fake) for _ in range(random.randint(1, 10))]
-    mons = [create_server(fake) for _ in range(random.randint(1, 10))] \
-        + rgws[:2]
-    mds = [create_server(fake) for _ in range(random.randint(1, 10))] \
-        + [mons[0]]
+def config(configure_model):
+    osds = [create_server() for _ in range(random.randint(1, 10))]
+    rgws = [create_server() for _ in range(random.randint(1, 10))]
+    mons = [create_server() for _ in range(random.randint(1, 10))] + rgws[:2]
+    mds = [create_server() for _ in range(random.randint(1, 10))] + [mons[0]]
 
     return {
         "osds": osds,
@@ -50,15 +48,14 @@ def config(fake, configure_model):
     }
 
 
-def create_server(fake):
-    name = str(uuid.uuid4())
-    username = str(uuid.uuid4())
-    fqdn = str(uuid.uuid4())
-    ip = fake.ipv4()
-    initiator_id = str(uuid.uuid4())
-
-    return server.ServerModel.create(name, username, fqdn, ip,
-                                     initiator_id=initiator_id)
+def create_server():
+    return server.ServerModel.create(
+        pytest.faux.gen_alpha(),
+        pytest.faux.gen_alphanumeric(),
+        pytest.faux.gen_alpha(),
+        pytest.faux.gen_ipaddr(),
+        initiator_id=pytest.faux.gen_uuid()
+    )
 
 
 def test_api_get_access(sudo_client_v1, client_v1, sudo_user, freeze_time,
@@ -78,9 +75,9 @@ def test_api_get_access(sudo_client_v1, client_v1, sudo_user, freeze_time,
 
 def test_get_cluster(sudo_client_v1, clean_cluster_collection, config,
                      freeze_time):
-    initiator_id = str(uuid.uuid4())
-    name = str(uuid.uuid4())
-    execution_id = str(uuid.uuid4())
+    initiator_id = pytest.faux.gen_uuid()
+    name = pytest.faux.gen_alpha()
+    execution_id = pytest.faux.gen_uuid()
     clstr = cluster.ClusterModel.create(name, config, execution_id,
                                         initiator_id)
     freeze_time.return_value += 1
@@ -126,7 +123,7 @@ def test_get_cluster(sudo_client_v1, clean_cluster_collection, config,
 
 
 def test_create_new_cluster(sudo_client_v1, normal_user, client_v1):
-    request = {"name": str(uuid.uuid4())}
+    request = {"name": pytest.faux.gen_uuid()}
 
     response = client_v1.post("/v1/cluster/", data=request)
     assert response.status_code == 401
@@ -145,7 +142,7 @@ def test_create_new_cluster(sudo_client_v1, normal_user, client_v1):
 
 
 def test_create_cluster_same_name(sudo_client_v1):
-    request = {"name": str(uuid.uuid4())}
+    request = {"name": pytest.faux.gen_uuid()}
     response = sudo_client_v1.post("/v1/cluster/", data=request)
     response = sudo_client_v1.post("/v1/cluster/", data=request)
     assert response.status_code == 400
@@ -153,16 +150,16 @@ def test_create_cluster_same_name(sudo_client_v1):
 
 def test_update_cluster_onlyname(sudo_client_v1, normal_user, client_v1,
                                  config):
-    initiator_id = str(uuid.uuid4())
-    name = str(uuid.uuid4())
-    execution_id = str(uuid.uuid4())
+    initiator_id = pytest.faux.gen_uuid()
+    name = pytest.faux.gen_alpha()
+    execution_id = pytest.faux.gen_uuid()
     clstr = cluster.ClusterModel.create(name, config, execution_id,
                                         initiator_id)
 
     api_model = clstr.make_api_structure()
     del api_model["data"]["configuration"]["rgws"]
-    api_model["data"]["execution_id"] = str(uuid.uuid4())
-    api_model["data"]["name"] = str(uuid.uuid4())
+    api_model["data"]["execution_id"] = pytest.faux.gen_uuid()
+    api_model["data"]["name"] = pytest.faux.gen_alpha()
 
     response = client_v1.put(
         "/v1/cluster/{0}/".format(api_model["id"]),
@@ -188,9 +185,9 @@ def test_update_cluster_onlyname(sudo_client_v1, normal_user, client_v1,
 
 
 def test_delete_cluster_empty(sudo_client_v1, normal_user, client_v1):
-    initiator_id = str(uuid.uuid4())
-    name = str(uuid.uuid4())
-    execution_id = str(uuid.uuid4())
+    initiator_id = pytest.faux.gen_uuid()
+    name = pytest.faux.gen_alpha()
+    execution_id = pytest.faux.gen_uuid()
     clstr = cluster.ClusterModel.create(name, {}, execution_id,
                                         initiator_id)
 
@@ -206,9 +203,9 @@ def test_delete_cluster_empty(sudo_client_v1, normal_user, client_v1):
 
 
 def test_delete_cluster_with_config(sudo_client_v1, config):
-    initiator_id = str(uuid.uuid4())
-    name = str(uuid.uuid4())
-    execution_id = str(uuid.uuid4())
+    initiator_id = pytest.faux.gen_uuid()
+    name = pytest.faux.gen_alpha()
+    execution_id = pytest.faux.gen_uuid()
     clstr = cluster.ClusterModel.create(name, config, execution_id,
                                         initiator_id)
 
