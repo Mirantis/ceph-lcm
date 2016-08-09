@@ -31,7 +31,7 @@ class PlaybookView(generic.ModelView):
     def get(self):
         data = []
 
-        for plugin in plugins.get_playbook_plugins():
+        for plugin in plugins.get_playbook_plugins().values():
             if plugin.PUBLIC:
                 plugin_data = {
                     "name": plugin.NAME,

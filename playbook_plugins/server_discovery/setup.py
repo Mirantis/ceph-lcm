@@ -1,29 +1,28 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Setup script for Example plugin."""
+"""Setup script for Server Discovery plugin."""
 
 
 import setuptools
 
 
 setuptools.setup(
-    name="cephlcm-example",
-    description="Example playbook plugin for CephLCM",
+    name="cephlcm-server-discovery",
+    description="Server discovery plugin for CephLCM",
     version="0.1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
-    py_modules=["cephlcm_example"],
+    py_modules=["cephlcm_server_discovery"],
     entry_points={
         "cephlcm.playbooks": [
-            "example = cephlcm_example:Example"
+            "server_discovery = cephlcm_server_discovery:ServerDiscovery"
         ]
     },
     include_package_data=False,
     package_data={
-        "cephlcm_example": [
+        "cephlcm_server_discovery": [
             "config.toml",
-            "playbook.yaml"
         ]
     }
 )

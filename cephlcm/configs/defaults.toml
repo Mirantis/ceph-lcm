@@ -128,6 +128,9 @@ pidfile = "/tmp/cephlcm-controller.pid"
 daemon = false
 timeout = 60
 ansible_config = "/etc/ansible/ansible.cfg"
+# 0 worker_threads means that we will have 2 * CPU count threads
+worker_threads = 0
+graceful_stop = 10
 
     [controller.logging]
     propagate = true
