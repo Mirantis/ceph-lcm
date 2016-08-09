@@ -6,7 +6,6 @@ import unittest.mock
 
 import pytest
 
-from cephlcm.common import plugins
 from cephlcm.common.models import cluster
 from cephlcm.common.models import playbook_configuration
 from cephlcm.common.models import server
@@ -53,13 +52,6 @@ def playbook_name():
         yield name
 
 
-@pytest.fixture
-def configuration():
-    return {
-        pytest.faux.gen_alpha(): pytest.faux.gen_alphanumeric(),
-    }
-
-
 def test_create(new_cluster, new_servers, playbook_name, pymongo_connection,
                 freeze_time):
     name = pytest.faux.gen_alpha()
@@ -78,9 +70,7 @@ def test_create(new_cluster, new_servers, playbook_name, pymongo_connection,
     assert db_pc
     assert pcmodel.name == db_pc["name"]
     assert pcmodel.playbook == db_pc["playbook"]
-    assert pcmodel.server_ids == db_pc["server_ids"]
     assert pcmodel.configuration == db_pc["configuration"]
-    assert pcmodel.cluster_id == db_pc["cluster_id"]
     assert pcmodel.model_id == db_pc["model_id"]
     assert pcmodel.version == db_pc["version"]
     assert pcmodel.time_created == db_pc["time_created"]
@@ -89,14 +79,9 @@ def test_create(new_cluster, new_servers, playbook_name, pymongo_connection,
 
     assert pcmodel.name == name
     assert pcmodel.playbook == playbook_name
-    assert pcmodel.cluster.model_id == new_cluster.model_id
-    assert pcmodel.server_ids == [srv.model_id for srv in new_servers]
     assert pcmodel.version == 1
     assert pcmodel.time_created == int(freeze_time.return_value)
     assert pcmodel.time_deleted == 0
-
-    assert pcmodel.cluster.model_id == pcmodel.cluster_id
-    assert pcmodel.server_ids == [srv.model_id for srv in pcmodel.servers]
 
 
 def test_update(new_cluster, new_servers, playbook_name, pymongo_connection,

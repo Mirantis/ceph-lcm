@@ -26,20 +26,8 @@ class PlaybookConfigurationModel(generic.Model):
         super().__init__()
 
         self.name = None
-        self.cluster = None
-        self.servers = []
         self._playbook = None
         self.configuration = {}
-
-    cluster = properties.ModelProperty(
-        "cephlcm.common.models.cluster.ClusterModel",
-        "cluster_id"
-    )
-
-    servers = properties.ModelListProperty(
-        "cephlcm.common.models.server.ServerModel",
-        "server_ids"
-    )
 
     playbook = properties.ChoicesProperty(
         "_playbook",
@@ -51,15 +39,13 @@ class PlaybookConfigurationModel(generic.Model):
         model = cls()
         model.name = name
         model.playbook = playbook
-        model.cluster = cluster
-        model.servers = servers
-        model.configuration = model.make_configuration()
+        model.configuration = model.make_configuration(cluster, servers)
         model.initiator_id = initiator_id
         model.save()
 
         return model
 
-    def make_configuration(self):
+    def make_configuration(self, cluster, servers):
         # TODO(Sergey Arkhipov): Temporarily commented out
         # Return it back when at least 1 public playbook plugin will be done.
         # plug = plugins.get_public_playbook_plugins()
@@ -75,16 +61,13 @@ class PlaybookConfigurationModel(generic.Model):
 
         self.name = structure["name"]
         self.playbook = structure["playbook"]
-        self.cluster = structure["cluster_id"]
-        self.servers = structure["server_ids"]
+        self.configuration = structure["configuration"]
 
     def make_db_document_specific_fields(self):
         return {
             "name": self.name,
             "initiator_id": self.initiator_id,
             "playbook": self.playbook,
-            "cluster_id": self.cluster_id,
-            "server_ids": self.server_ids,
             "configuration": self.configuration
         }
 
@@ -92,7 +75,5 @@ class PlaybookConfigurationModel(generic.Model):
         return {
             "name": self.name,
             "playbook": self.playbook,
-            "cluster_id": self.cluster_id,
-            "server_ids": self.server_ids,
             "configuration": self.configuration
         }

@@ -116,3 +116,24 @@ class CannotUpdateModelWithSuchParameters(ImpossibleToCreateSuchModel):
 
 class CannotDeleteClusterWithServers(BadRequest):
     description = "Cluster still has servers"
+
+
+class UnknownPlaybookError(BadRequest):
+    description = "Unknown playbook {0}"
+
+    def __init__(self, playbook_name):
+        super().__init__(self.description.format(playbook_name))
+
+
+class ServerListIsRequiredForPlaybookError(BadRequest):
+    description = "Explicit server list is required for playbook {0}"
+
+    def __init__(self, playbook_name):
+        super().__init__(self.description.format(playbook_name))
+
+
+class UnknownClusterError(BadRequest):
+    description = "There is not cluster with ID {0}"
+
+    def __init__(self, cluster_id):
+        super().__init__(self.description.format(cluster_id))

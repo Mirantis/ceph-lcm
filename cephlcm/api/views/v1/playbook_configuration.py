@@ -16,9 +16,7 @@ from cephlcm.common.models import playbook_configuration
 DATA_SCHEMA = {
     "name": {"$ref": "#/definitions/non_empty_string"},
     "playbook": {"$ref": "#/definitions/non_empty_string"},
-    "configuration": {"type": "object"},
-    "cluster_id": {"$ref": "#/definitions/uuid4"},
-    "server_ids": {"$ref": "#/definitions/uuid4_array"}
+    "configuration": {"type": "object"}
 }
 """Data schema for the model."""
 
@@ -29,6 +27,7 @@ MODEL_SCHEMA = validators.create_model_schema(
 """Schema for the model with optional data fields."""
 
 POST_SCHEMA = {
+    "name": {"$ref": "#/definitions/non_empty_string"},
     "cluster_id": {"$ref": "#/definitions/uuid4"},
     "playbook": {"$ref": "#/definitions/non_empty_string"},
     "server_ids": {"$ref": "#/definitions/uuid4_array"}
@@ -85,7 +84,7 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
     @validators.require_schema(MODEL_SCHEMA)
     @validators.no_updates_on_default_fields
     def put(self, item_id, item):
-        for fieldname in "configuraion", "name":
+        for fieldname in "configuration", "name":
             if fieldname in self.request_json["data"]:
                 setattr(item, fieldname, self.request_json["data"][fieldname])
 
@@ -158,28 +157,26 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
 
         return item
 
-    def servers_for_playbook(self, playbook_name, suggested_servers,
-                             cluster_model):
+    def get_servers_for_playbook(self, playbook_name, suggested_servers,
+                                 cluster_model):
         plugs = plugins.get_public_playbook_plugins()
         if playbook_name not in plugs:
-            # TODO(Sergey Arkhipov): Raise proper exception
-            raise Exception
+            raise http_exceptions.UnknownPlaybookError(playbook_name)
 
         plug = plugs[playbook_name]
-        if plug.REQUIRED_SERVER_LIST:  # not all servers
+        if plug.REQUIRED_SERVER_LIST:
+            if not suggested_servers:
+                raise http_exceptions.ServerListIsRequiredForPlaybookError(
+                    playbook_name
+                )
             return suggested_servers
-
-        if suggested_servers:
-            # TODO(Sergey Arkhipov): Raise proper exception
-            raise Exception
 
         return cluster_model.server_list
 
     def get_cluster_model(self, cluster_id):
         cluster_model = cluster.ClusterModel.find_by_model_id(cluster_id)
 
-        if not cluster_model:
-            # TODO(Sergey Arkhipov): Raise proper exception
-            raise http_exceptions.BadRequest
+        if not (cluster_model and not cluster_model.time_deleted):
+            raise http_exceptions.UnknownClusterError(cluster_id)
 
         return cluster_model
