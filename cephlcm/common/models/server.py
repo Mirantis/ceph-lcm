@@ -57,6 +57,8 @@ class ServerModel(generic.Model):
         "cluster_id"
     )
 
+    state = properties.ChoicesProperty("_state", STATES)
+
     @classmethod
     def create(cls, name, username, fqdn, ip,
                facts=None, cluster_id=None, state=STATE_OPERATIONAL,
@@ -90,7 +92,6 @@ class ServerModel(generic.Model):
 
         return servers
 
-
     @property
     def cluster(self):
         return self._cluster
@@ -106,21 +107,6 @@ class ServerModel(generic.Model):
                 raise ValueError(
                     "Already defined cluster {0}. "
                     "Set to None first".format(self.cluster_id))
-
-    @property
-    def state(self):
-        return self._state
-
-    @state.setter
-    def state(self, value):
-        try:
-            if value in self.STATES:
-                self._state = value
-                return
-        except Exception:
-            pass
-
-        raise ValueError("Unknown server state {0}".format(value))
 
     @classmethod
     def ensure_index(cls):
