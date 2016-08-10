@@ -1,31 +1,71 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers} from '@angular/http';
-import {CookieService} from 'angular2-cookie/core';
 import {Router, CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot} from '@angular/router';
-import {Observable} from 'rxjs/Observable';
 import {SessionService} from './session';
+import {DataService} from './data';
 
 import * as _ from 'lodash';
 
 @Injectable()
 export class AuthService {
-  constructor(private http: Http, private cookieService: CookieService) {}
+  constructor(
+    private session: SessionService,
+    private data: DataService,
+    private router: Router
+  ) {}
 
-  tokenKey = 'auth_token';
+  redirectUrl: string;
+  loggedUser: any = null;
 
-  saveToken(token: string) {
-    this.cookieService.put(this.tokenKey, token);
+  login(email: string, password: string): Promise<any> {
+    return this.data.token()
+      .create({login: email, password: password})
+      .then((token: any) => {
+        this.session.saveToken(token);
+
+        var url = this.redirectUrl || '/dashboard';
+        this.redirectUrl = null;
+        this.router.navigate([url]);
+      }, (error) => {
+        console.warn(error);
+      })
   }
 
-  removeToken() {
-    this.cookieService.remove(this.tokenKey);
+  logout(): Promise<any> {
+    this.session.removeToken();
+    return this.data.token().destroy(null)
+      .then(() => this.router.navigate(['/login']));
   }
 
   isLoggedIn() {
-    return !_.isEmpty(this.getToken());
+    return !_.isEmpty(this.session.getToken());
   }
 
-  getToken() {
-    return this.cookieService.get(this.tokenKey);
+  getLoggedUser() {
+    if (!this.loggedUser) {
+      this.loggedUser = this.data.user().find(this.session.getLoggedUserId())
+        .then((user) => {
+          this.loggedUser = user;
+          return this.loggedUser;
+        });
+    }
+    return this.loggedUser;
+  }
+}
+
+
+@Injectable()
+export class LoggedIn implements CanActivate {
+  constructor(
+    private auth: AuthService,
+    private router: Router
+  ) {}
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    if (this.auth.isLoggedIn()) {
+      return true;
+    }
+    this.auth.redirectUrl = state.url;
+    this.router.navigate(['/login']);
+    return false;
   }
 };

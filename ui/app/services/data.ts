@@ -3,32 +3,23 @@ import * as _ from 'lodash';
 import {Injectable} from '@angular/core';
 import {DataStore, Record, Mapper} from 'js-data';
 import {HttpAdapter} from 'js-data-http';
-import {AuthService} from './auth';
-
-export class User extends Record {
-  login: string;
-  full_name: string;
-  time_updated: Date;
-  email: string;
-  role: string;
-}
+import {SessionService} from './session';
 
 type supportedMappers = 'auth' | 'user';
 
 @Injectable()
 export class DataService {
-  constructor(private auth: AuthService) {
+  constructor(private session: SessionService) {
     this.store.registerAdapter('http', this.adapter, {default: true});
   }
-
-  token(): Mapper {return this.getMapper('auth')}
-
-  user(): Mapper {return this.getMapper('user')}
 
   store = new DataStore();
   // FIXME: to be moved to configuration
   adapter = new HttpAdapter({basePath: 'http://private-47d2dd-cephlcm.apiary-mock.com/v1'});
   mappers = {};
+
+  token(): Mapper {return this.getMapper('auth')}
+  user(): Mapper {return this.getMapper('user')}
 
   private modelsProperties = {
     auth: {
@@ -39,8 +30,7 @@ export class DataService {
       login: {type: 'string'},
       full_name: {type: 'string'},
       time_updated: {type: 'number'},
-      email: {type: 'string'},
-      role: {type: 'string'}
+      email: {type: 'string'}
     }
   };
 
@@ -56,7 +46,12 @@ export class DataService {
         schema: _.extend(
           {
             properties: {
-              id: {type: 'string', indexed: true},
+              id: {
+                 oneOf: [
+                   {type: 'string', indexed: true},
+                   {type: 'number', indexed: true}
+                 ]
+              },
               model: {type: 'string'},
               version: {type: 'number'},
               time_updated: {type: 'number'},
@@ -75,8 +70,8 @@ export class DataService {
     }
     // set authorization header
     // FIXME: Shift to be called in one of Mapper' pre-send hooks
-    mapper.headers = {
-      Authorization: this.auth.getToken()
+    mapper['headers'] = {
+      Authorization: this.session.getToken()
     };
     return mapper;
   }

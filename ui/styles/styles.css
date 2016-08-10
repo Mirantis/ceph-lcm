@@ -1,13 +1,17 @@
-ul.navigation li {
-  display: inline-block;
-  width: 80px;
-}
-ul.navigation li a {
+a {
   cursor: hand;
 }
-ul.navigation li a.active {
+a.active {
   cursor: default;
   font-weight: 800;
   color: #000;
   text-decoration: none;
+}
+ul.navigation li {
+  display: inline-block;
+  min-width: 80px;
+}
+ul.navigation li.right {
+  float: right;
+  white-space: nowrap;
 }

@@ -1,15 +1,20 @@
+a {
+  cursor: hand;
+
+  &.active {
+    cursor: default;
+    font-weight: 800;
+    color: #000;
+    text-decoration: none;
+  }
+}
+
 ul.navigation li {
   display: inline-block;
-  width: 80px;
+  min-width: 80px;
 
-  a {
-    cursor: hand;
-    
-    &.active {
-      cursor: default;
-      font-weight: 800;
-      color: #000;
-      text-decoration: none;
-    }
+  &.right {
+    float: right;
+    white-space: nowrap;
   }
 }

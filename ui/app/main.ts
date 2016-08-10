@@ -3,8 +3,8 @@ import {HTTP_PROVIDERS} from '@angular/http';
 import {bootstrap}    from '@angular/platform-browser-dynamic';
 import {AppComponent} from './components/app';
 import {CookieService} from 'angular2-cookie/core';
-import {SessionService, LoggedIn} from './services/session'
-import {AuthService} from './services/auth'
+import {SessionService} from './services/session'
+import {AuthService, LoggedIn} from './services/auth'
 import {DataService} from './services/data';
 
 bootstrap(AppComponent, [
