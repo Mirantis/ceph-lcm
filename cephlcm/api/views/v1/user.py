@@ -89,6 +89,11 @@ class UserView(generic.VersionedCRUDView):
                 "version %s)",
                 item.model_id, item.time_deleted, item.version)
             raise http_exceptions.CannotUpdateDeletedModel() from exc
+        except base_exceptions.UniqueConstraintViolationError as exc:
+            LOG.warning("Cannot update user %s (unique constraint "
+                        "violation)", self.request_json["data"]["login"])
+            raise http_exceptions.CannotUpdateModelWithSuchParameters() \
+                from exc
 
         LOG.info("User model %s was updated to version %s by %s",
                  item.model_id, item.version, self.initiator_id)

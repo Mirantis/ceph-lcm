@@ -121,16 +121,15 @@ class RoleModel(generic.Model):
     def check_constraints(self):
         super().check_constraints()
 
-        collection = self.collection()
         query = {
-            "model_id": {"$ne": self.model_id},
             "is_latest": True,
             "time_deleted": 0,
             "name": self.name
         }
-        cursor = collection.find(query)
+        if self.model_id:
+            query["model_id"] = {"$ne": self.model_id}
 
-        if cursor.count():
+        if self.collection().find_one(query):
             raise exceptions.UniqueConstraintViolationError()
 
     def update_from_db_document(self, structure):

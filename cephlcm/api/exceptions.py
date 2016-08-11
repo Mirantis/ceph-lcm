@@ -92,7 +92,6 @@ class InvalidJSONError(BadRequest):
 
 
 class ImpossibleToCreateSuchModel(BadRequest):
-
     description = (
         "It is impossible to create such model because it violates "
         "data model contracts."
@@ -100,7 +99,6 @@ class ImpossibleToCreateSuchModel(BadRequest):
 
 
 class CannotUpdateManagedFieldsError(BadRequest):
-
     description = "It is forbidden to update automanaged fields."
 
 
@@ -110,3 +108,11 @@ class CannotUpdateDeletedModel(BadRequest):
 
 class CannotDeleteRoleWithActiveUsers(BadRequest):
     """Exception raised on attempt to delete role with active users."""
+
+
+class CannotUpdateModelWithSuchParameters(ImpossibleToCreateSuchModel):
+    """Exception raised on attempt to save data which violaties uniquiness."""
+
+
+class CannotDeleteClusterWithServers(BadRequest):
+    description = "Cluster still has servers"

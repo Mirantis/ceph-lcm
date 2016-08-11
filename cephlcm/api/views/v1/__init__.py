@@ -5,6 +5,7 @@
 import flask
 
 from cephlcm.api.views.v1 import auth
+from cephlcm.api.views.v1 import cluster
 from cephlcm.api.views.v1 import permission
 from cephlcm.api.views.v1 import playbook
 from cephlcm.api.views.v1 import role
@@ -20,6 +21,7 @@ BLUEPRINT = flask.Blueprint(BLUEPRINT_NAME, __name__)
 
 
 auth.AuthView.register_to(BLUEPRINT)
+cluster.ClusterView.register_to(BLUEPRINT)
 permission.PermissionView.register_to(BLUEPRINT)
 playbook.PlaybookView.register_to(BLUEPRINT)
 role.RoleView.register_to(BLUEPRINT)

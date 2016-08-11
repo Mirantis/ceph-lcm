@@ -6,6 +6,7 @@ using API. It has to be created after Ansible playbook invocation.
 """
 
 
+from cephlcm.common import exceptions
 from cephlcm.common.models import generic
 
 
@@ -61,16 +62,58 @@ class ServerModel(generic.Model):
         model.ip = ip
         model.facts = facts or {}
         model.cluster_id = cluster_id
+        model._cluster = None
         model.state = state
         model.initiator_id = initiator_id
         model.save()
 
         return model
 
+    @classmethod
+    def cluster_servers(cls, cluster_id):
+        query = {
+            "cluster_id": cluster_id,
+            "is_latest": True,
+            "time_deleted": 0
+        }
+
+        servers = []
+        for srv in cls.list_raw(query):
+            model = cls()
+            model.update_from_db_document(srv)
+            servers.append(model)
+
+        return servers
+
     @property
     def cluster(self):
-        # TODO(Sergey Arkhipov): Implement after Cluster model will be add
-        return {}
+        if self._cluster:
+            return self._cluster
+
+        from cephlcm.common.models import cluster
+
+        self._cluster = cluster.ClusterModel.find_by_model_id(self.cluster_id)
+
+        return self._cluster
+
+    @cluster.setter
+    def cluster(self, value):
+        new_cluster_id = None
+
+        if hasattr(value, "model_id"):
+            new_cluster_id = value.model_id
+        elif isinstance(value, dict):
+            new_cluster_id = value["id"]
+        else:
+            new_cluster_id = value
+
+        if self.cluster_id is not None and new_cluster_id is not None:
+            raise ValueError(
+                "Already defined cluster {0}. "
+                "Set to None first".format(self.cluster_id))
+
+        self.cluster_id = new_cluster_id
+        self._cluster = None
 
     @property
     def state(self):
@@ -96,11 +139,26 @@ class ServerModel(generic.Model):
             collection.create_index(
                 [
                     (fieldname, generic.SORT_ASC),
-                    ("time_deleted", generic.SORT_ASC)
                 ],
-                unique=True,
                 name="index_{0}".format(fieldname)
             )
+
+    def check_constraints(self):
+        super().check_constraints()
+
+        query = {
+            "time_deleted": 0,
+            "$or": [
+                {"name": self.name},
+                {"fqdn": self.fqdn},
+                {"ip": self.ip},
+            ]
+        }
+        if self.model_id:
+            query["model_id"] = {"$ne": self.model_id}
+
+        if self.collection().find_one(query):
+            raise exceptions.UniqueConstraintViolationError()
 
     def update_from_db_document(self, structure):
         super().update_from_db_document(structure)
@@ -117,7 +175,10 @@ class ServerModel(generic.Model):
         self._cluster = None
 
     def delete(self):
-        # TODO(Sergey Arkhipov): After create of cluster model, implement.
+        if self.cluster_id:
+            # TODO(Sergey Arkhipov): Raise proper exception
+            raise Exception
+
         super().delete()
 
     def make_db_document_specific_fields(self):
@@ -132,7 +193,7 @@ class ServerModel(generic.Model):
             "facts": self.facts
         }
 
-    def make_api_specific_fields(self, expand_facts=True):
+    def make_api_specific_fields(self, expand_cluster=True, expand_facts=True):
         facts = self.facts if expand_facts else {}
 
         return {
@@ -141,6 +202,6 @@ class ServerModel(generic.Model):
             "fqdn": self.fqdn,
             "ip": self.ip,
             "state": self.state,
-            "cluster_id": self.cluster_id,
+            "cluster": self.cluster if expand_cluster else self.cluster_id,
             "facts": facts
         }

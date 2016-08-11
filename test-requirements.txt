@@ -4,6 +4,7 @@
 # -c constraints.txt
 
 bandit
+fake-factory
 flake8
 flake8-bugbear
 flake8-builtins

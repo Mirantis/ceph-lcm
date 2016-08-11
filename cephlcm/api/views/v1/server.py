@@ -100,6 +100,11 @@ class ServerView(generic.VersionedCRUDView):
                 item.model_id, item.time_deleted, item.version
             )
             raise http_exceptions.CannotUpdateDeletedModel() from exc
+        except base_exceptions.UniqueConstraintViolationError as exc:
+            LOG.warning("Cannot update server %s (unique constraint "
+                        "violation)", self.request_json["data"]["name"])
+            raise http_exceptions.CannotUpdateModelWithSuchParameters() \
+                from exc
 
         LOG.info("Server model %s was update to version %s by %s",
                  item.model_id, item.version, self.initiator_id)

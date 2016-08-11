@@ -5,6 +5,7 @@
 import unittest.mock as mock
 import uuid
 
+import faker
 import mongomock
 import pytest
 
@@ -12,6 +13,7 @@ from cephlcm import api
 from cephlcm.api import config
 from cephlcm.common import log
 from cephlcm.common.models import generic
+
 from cephlcm.common.models import role
 from cephlcm.common.models import user
 
@@ -38,6 +40,11 @@ def no_sleep(monkeypatch):
 @pytest.fixture
 def freeze_time(request):
     return have_mocked(request, "time.time", return_value=100.5)
+
+
+@pytest.fixture
+def fake():
+    return faker.Faker()
 
 
 @pytest.fixture(scope="session", autouse=True)

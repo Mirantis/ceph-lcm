@@ -171,8 +171,8 @@ def test_update_server(sudo_client_v1, client_v1, normal_user):
     assert response.json["data"]["fqdn"] == api_model["data"]["fqdn"]
     assert response.json["data"]["state"] == old_model["data"]["state"]
     assert response.json["data"]["facts"] == old_model["data"]["facts"]
-    assert response.json["data"]["cluster_id"] == \
-        old_model["data"]["cluster_id"]
+    assert response.json["data"]["cluster"] == \
+        old_model["data"]["cluster"]
 
 
 def test_delete_server(sudo_client_v1, client_v1, normal_user, freeze_time):
