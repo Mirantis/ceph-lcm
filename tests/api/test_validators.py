@@ -138,7 +138,7 @@ def test_require_schema_uuid_ok():
     function = validators.require_schema(schema)(dummy_function)
 
     mck = mock.MagicMock()
-    mck.request_json = {"data": str(uuid.uuid4())}
+    mck.request_json = {"data": pytest.faux.gen_uuid()}
 
     function(mck)
 

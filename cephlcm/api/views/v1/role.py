@@ -23,7 +23,8 @@ DATA_SCHEMA = {
 }
 """Schema for the payload."""
 
-MODEL_SCHEMA = validators.create_model_schema("role", DATA_SCHEMA)
+MODEL_SCHEMA = validators.create_model_schema(
+    role.RoleModel.MODEL_NAME, DATA_SCHEMA)
 """Schema for the model with optional data fields."""
 
 POST_SCHEMA = validators.create_data_schema(DATA_SCHEMA, True)

@@ -4,7 +4,7 @@
 # -c constraints.txt
 
 bandit
-fake-factory
+fauxfactory
 flake8
 flake8-bugbear
 flake8-builtins
@@ -20,6 +20,7 @@ pep8-naming
 pycodestyle
 pytest
 pytest-cov
+pytest-fauxfactory
 pytest-flask
 pytest-profiling
 radon

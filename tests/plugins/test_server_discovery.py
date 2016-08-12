@@ -6,7 +6,6 @@ import getopt
 import json
 import os.path
 import shutil
-import uuid
 
 import pytest
 
@@ -16,8 +15,8 @@ from cephlcm.common.models import task
 
 @pytest.fixture
 def new_task(configure_model):
-    username = str(uuid.uuid4())
-    initiator_id = str(uuid.uuid4())
+    username = pytest.faux.gen_alpha()
+    initiator_id = pytest.faux.gen_uuid()
 
     tsk = task.ServerDiscoveryTask("localhost", username, initiator_id)
     tsk = tsk.create()
@@ -94,7 +93,7 @@ def test_on_post_execute_ok(new_task, plugin):
 
     object_to_dump = {
         "ansible_facts": {
-            "ansible_nodename": str(uuid.uuid4())
+            "ansible_nodename": pytest.faux.gen_uuid()
         },
         "changed": False
     }
@@ -121,7 +120,7 @@ def test_on_post_execute_fail(new_task, plugin, pymongo_connection):
 
     object_to_dump = {
         "ansible_facts": {
-            "ansible_nodename": str(uuid.uuid4())
+            "ansible_nodename": pytest.faux.gen_uuid()
         },
         "changed": False
     }

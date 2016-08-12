@@ -9,7 +9,7 @@ import pymongo.errors
 from cephlcm.common import exceptions
 from cephlcm.common import passwords
 from cephlcm.common.models import generic
-from cephlcm.common.models import role
+from cephlcm.common.models import properties
 
 
 class UserModel(generic.Model):
@@ -30,23 +30,13 @@ class UserModel(generic.Model):
         self.password_hash = None
         self.email = None
         self.full_name = ""
-        self.role_ids = []
-        self._roles = None
+        self.roles = []
         self._permissions = collections.defaultdict(set)
 
-    @property
-    def roles(self):
-        """Returns a list of role models for this user."""
-
-        if self._roles is None:
-            self._roles = role.RoleModel.find_by_model_ids(self.role_ids)
-
-        return self._roles
-
-    @roles.setter
-    def roles(self, value):
-        self.role_ids = [role["id"] for role in value]
-        self._roles = []
+    roles = properties.ModelListProperty(
+        "cephlcm.common.models.role.RoleModel",
+        "role_ids"
+    )
 
     @classmethod
     def make_user(cls, login, password, email, full_name, role_ids,
@@ -59,8 +49,8 @@ class UserModel(generic.Model):
         model.password_hash = passwords.hash_password(password)
         model.email = email
         model.full_name = full_name
-        model.role_ids = role_ids
-        model.initiator_id = initiator_id
+        model.roles = role_ids
+        model.initiator = initiator_id
 
         try:
             model.save()
@@ -138,13 +128,12 @@ class UserModel(generic.Model):
     def update_from_db_document(self, structure):
         super().update_from_db_document(structure)
 
-        self.initiator_id = structure["initiator_id"]
+        self.initiator = structure["initiator_id"]
         self.login = structure["login"]
         self.password_hash = structure["password_hash"]
         self.email = structure["email"]
         self.full_name = structure["full_name"]
-        self.role_ids = structure["role_ids"]
-        self._roles = None
+        self.roles = structure["role_ids"]
         self._permissions = None
 
     def make_db_document_specific_fields(self):
@@ -162,5 +151,5 @@ class UserModel(generic.Model):
             "login": self.login,
             "email": self.email,
             "full_name": self.full_name,
-            "roles": [role.make_api_structure() for role in self.roles]
+            "role_ids": self.role_ids
         }

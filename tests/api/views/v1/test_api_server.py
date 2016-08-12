@@ -3,24 +3,11 @@
 
 
 import copy
-import random
-import uuid
 
 import pytest
 
 from cephlcm.common.models import server
 from cephlcm.common.models import task
-from cephlcm.common.models import user
-
-
-@pytest.fixture(scope="module")
-def normal_user(sudo_user):
-    return user.UserModel.make_user(
-        str(uuid.uuid4()), "qwerty",
-        "{0}@example.com".format(uuid.uuid4()),
-        str(uuid.uuid4()), [],
-        initiator_id=sudo_user.model_id
-    )
 
 
 @pytest.fixture
@@ -33,19 +20,11 @@ def clean_server_collection(pymongo_connection):
     pymongo_connection.db.server.remove({})
 
 
-def random_ip():
-    ints = [random.randint(1, 255) for _ in range(4)]
-    ints = map(str, ints)
-    ints = ".".join(ints)
-
-    return ints
-
-
 def create_server():
-    name = str(uuid.uuid4())
-    username = str(uuid.uuid4())
-    fqdn = str(uuid.uuid4())
-    ip = random_ip()
+    name = pytest.faux.gen_alphanumeric()
+    username = pytest.faux.gen_alphanumeric()
+    fqdn = pytest.faux.gen_alphanumeric()
+    ip = pytest.faux.gen_ipaddr()
 
     return server.ServerModel.create(name, username, fqdn, ip)
 
@@ -114,7 +93,7 @@ def test_post_server(host, client_v1, normal_user, sudo_client_v1,
                      freeze_time, clean_server_collection, pymongo_connection):
     request = {
         "host": host,
-        "username": str(uuid.uuid4())
+        "username": pytest.faux.gen_alpha()
     }
     response = client_v1.post("/v1/server/", data=request)
     assert response.status_code == 401
@@ -149,9 +128,11 @@ def test_update_server(sudo_client_v1, client_v1, normal_user):
     old_model = copy.deepcopy(api_model)
 
     for key in api_model["data"]:
-        api_model["data"][key] = str(uuid.uuid4())
-    api_model["data"]["ip"] = random_ip()
-    api_model["data"]["facts"] = {str(uuid.uuid4()): str(uuid.uuid4())}
+        api_model["data"][key] = pytest.faux.gen_alphanumeric()
+    api_model["data"]["ip"] = pytest.faux.gen_ipaddr()
+    api_model["data"]["facts"] = {
+        pytest.faux.gen_alpha(): pytest.faux.gen_alpha()
+    }
     api_model["data"]["state"] = server.ServerModel.STATE_MAINTENANCE_RECONFIG
 
     response = client_v1.put("/v1/server/{0}/".format(srv.model_id),
@@ -171,8 +152,8 @@ def test_update_server(sudo_client_v1, client_v1, normal_user):
     assert response.json["data"]["fqdn"] == api_model["data"]["fqdn"]
     assert response.json["data"]["state"] == old_model["data"]["state"]
     assert response.json["data"]["facts"] == old_model["data"]["facts"]
-    assert response.json["data"]["cluster"] == \
-        old_model["data"]["cluster"]
+    assert response.json["data"]["cluster_id"] == \
+        old_model["data"]["cluster_id"]
 
 
 def test_delete_server(sudo_client_v1, client_v1, normal_user, freeze_time):

@@ -4,7 +4,6 @@
 
 import threading
 import time
-import uuid
 
 import pytest
 
@@ -40,7 +39,7 @@ def test_raise_exception_on_watch(
     task_type, failed_func, task_watch, mainloop_process_task,
     mainloop_possible_to_process, configure_model
 ):
-    tsk = task.Task(task_type, str(uuid.uuid4()))
+    tsk = task.Task(task_type, pytest.faux.gen_uuid())
     tsk.create()
 
     if failed_func == "process_task":
@@ -76,7 +75,7 @@ def test_do_not_process_impossible_tasks(
     task_type, task_watch, mainloop_possible_to_process, mainloop_process_task,
     configure_model
 ):
-    tsk = task.Task(task_type, str(uuid.uuid4()))
+    tsk = task.Task(task_type, pytest.faux.gen_uuid())
     tsk.create()
 
     task_watch.return_value = [tsk]
@@ -95,8 +94,8 @@ def test_process_task_list(
     task_type, task_watch, mainloop_possible_to_process, mainloop_process_task,
     configure_model
 ):
-    tsk1 = task.Task(task_type, str(uuid.uuid4()))
-    tsk2 = task.Task(task_type, str(uuid.uuid4()))
+    tsk1 = task.Task(task_type, pytest.faux.gen_uuid())
+    tsk2 = task.Task(task_type, pytest.faux.gen_uuid())
     tsk1.create()
     tsk2.create()
 

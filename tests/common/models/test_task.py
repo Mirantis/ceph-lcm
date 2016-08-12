@@ -2,8 +2,6 @@
 """Test for cephlcm.common.models.task."""
 
 
-import uuid
-
 import pytest
 
 from cephlcm.common import exceptions
@@ -30,7 +28,7 @@ def test_create_task_with_unknown_type(task_type, configure_model):
 @pytest.mark.parametrize("task_type", task.Task.TASK_TYPES)
 def test_create_task_in_db(task_type, configure_model, pymongo_connection,
                            freeze_time):
-    executor_id = str(uuid.uuid4())
+    executor_id = pytest.faux.gen_uuid()
     new_task = task.Task(task_type, executor_id)
 
     assert new_task.task_type == task_type
@@ -72,7 +70,7 @@ def test_create_task_in_db(task_type, configure_model, pymongo_connection,
 @pytest.mark.parametrize("task_type", task.Task.TASK_TYPES)
 def test_create_task_watchable(task_type, configure_model, no_sleep,
                                clean_tasks):
-    executor_id = str(uuid.uuid4())
+    executor_id = pytest.faux.gen_uuid()
     new_task = task.Task(task_type, executor_id)
     new_task.create()
 
@@ -82,7 +80,7 @@ def test_create_task_watchable(task_type, configure_model, no_sleep,
 
 @pytest.mark.parametrize("task_type", task.Task.TASK_TYPES)
 def test_create_task_for_same_exec_id(task_type, configure_model):
-    executor_id = str(uuid.uuid4())
+    executor_id = pytest.faux.gen_uuid()
     task.Task(task_type, executor_id).create()
 
     with pytest.raises(exceptions.UniqueConstraintViolationError):
@@ -92,7 +90,7 @@ def test_create_task_for_same_exec_id(task_type, configure_model):
 @pytest.mark.parametrize("task_type", task.Task.TASK_TYPES)
 @pytest.mark.parametrize("finish_action", ("fail", "complete", "cancel"))
 def test_restart_task(task_type, finish_action, configure_model, freeze_time):
-    executor_id = str(uuid.uuid4())
+    executor_id = pytest.faux.gen_uuid()
     new_task = task.Task(task_type, executor_id).create()
 
     new_task.start()
@@ -108,8 +106,8 @@ def test_restart_task(task_type, finish_action, configure_model, freeze_time):
 
 @pytest.mark.parametrize("task_type", task.Task.TASK_TYPES)
 def test_fail_task_error_message(task_type, configure_model):
-    executor_id = str(uuid.uuid4())
-    message = str(uuid.uuid4())
+    executor_id = pytest.faux.gen_uuid()
+    message = pytest.faux.gen_iplum()
     new_task = task.Task(task_type, executor_id).create()
     new_task.start()
     new_task.fail(message)
@@ -120,7 +118,7 @@ def test_fail_task_error_message(task_type, configure_model):
 @pytest.mark.parametrize("task_type", task.Task.TASK_TYPES)
 @pytest.mark.parametrize("finish_action", ("fail", "complete"))
 def test_finish_not_started_task(task_type, finish_action, configure_model):
-    executor_id = str(uuid.uuid4())
+    executor_id = pytest.faux.gen_uuid()
     new_task = task.Task(task_type, executor_id).create()
 
     with pytest.raises(exceptions.CephLCMError):
@@ -129,7 +127,7 @@ def test_finish_not_started_task(task_type, finish_action, configure_model):
 
 @pytest.mark.parametrize("task_type", task.Task.TASK_TYPES)
 def test_cancel_not_started_task(task_type, configure_model, freeze_time):
-    executor_id = str(uuid.uuid4())
+    executor_id = pytest.faux.gen_uuid()
     new_task = task.Task(task_type, executor_id).create()
 
     new_task.cancel()
@@ -143,7 +141,7 @@ def test_cancel_not_started_task(task_type, configure_model, freeze_time):
 @pytest.mark.parametrize("how_to_finish_again", ("fail", "complete", "cancel"))
 def test_finish_finished_task(task_type, how_to_finish, how_to_finish_again,
                               configure_model, freeze_time):
-    executor_id = str(uuid.uuid4())
+    executor_id = pytest.faux.gen_uuid()
     new_task = task.Task(task_type, executor_id).create()
     new_task.start()
     getattr(new_task, how_to_finish)()
@@ -155,7 +153,7 @@ def test_finish_finished_task(task_type, how_to_finish, how_to_finish_again,
 @pytest.mark.parametrize("task_type", task.Task.TASK_TYPES)
 @pytest.mark.parametrize("finish_action", ("fail", "complete", "cancel"))
 def test_set_executor_data(task_type, finish_action, configure_model):
-    executor_id = str(uuid.uuid4())
+    executor_id = pytest.faux.gen_uuid()
     new_task = task.Task(task_type, executor_id)
     new_task.create()
 
@@ -179,7 +177,7 @@ def test_set_executor_data(task_type, finish_action, configure_model):
 
 @pytest.mark.parametrize("task_type", task.Task.TASK_TYPES)
 def test_get_by_execution_id(task_type, configure_model):
-    executor_id = str(uuid.uuid4())
+    executor_id = pytest.faux.gen_uuid()
 
     assert task.Task.get_by_execution_id(executor_id, task_type) is None
 

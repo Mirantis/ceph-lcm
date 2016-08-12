@@ -8,6 +8,7 @@ using API. It has to be created after Ansible playbook invocation.
 
 from cephlcm.common import exceptions
 from cephlcm.common.models import generic
+from cephlcm.common.models import properties
 
 
 class ServerModel(generic.Model):
@@ -51,6 +52,13 @@ class ServerModel(generic.Model):
         self._cluster = None
         self.facts = {}
 
+    _cluster = properties.ModelProperty(
+        "cephlcm.common.models.cluster.ClusterModel",
+        "cluster_id"
+    )
+
+    state = properties.ChoicesProperty("_state", STATES)
+
     @classmethod
     def create(cls, name, username, fqdn, ip,
                facts=None, cluster_id=None, state=STATE_OPERATIONAL,
@@ -61,8 +69,7 @@ class ServerModel(generic.Model):
         model.fqdn = fqdn
         model.ip = ip
         model.facts = facts or {}
-        model.cluster_id = cluster_id
-        model._cluster = None
+        model.cluster = cluster_id
         model.state = state
         model.initiator_id = initiator_id
         model.save()
@@ -87,48 +94,19 @@ class ServerModel(generic.Model):
 
     @property
     def cluster(self):
-        if self._cluster:
-            return self._cluster
-
-        from cephlcm.common.models import cluster
-
-        self._cluster = cluster.ClusterModel.find_by_model_id(self.cluster_id)
-
         return self._cluster
 
     @cluster.setter
     def cluster(self, value):
-        new_cluster_id = None
+        old_cluster_id = self.cluster_id
+        self._cluster = value
 
-        if hasattr(value, "model_id"):
-            new_cluster_id = value.model_id
-        elif isinstance(value, dict):
-            new_cluster_id = value["id"]
-        else:
-            new_cluster_id = value
-
-        if self.cluster_id is not None and new_cluster_id is not None:
-            raise ValueError(
-                "Already defined cluster {0}. "
-                "Set to None first".format(self.cluster_id))
-
-        self.cluster_id = new_cluster_id
-        self._cluster = None
-
-    @property
-    def state(self):
-        return self._state
-
-    @state.setter
-    def state(self, value):
-        try:
-            if value in self.STATES:
-                self._state = value
-                return
-        except Exception:
-            pass
-
-        raise ValueError("Unknown server state {0}".format(value))
+        if old_cluster_id is not None and self.cluster_id is not None:
+            if self.cluster_id != old_cluster_id:
+                self._cluster = old_cluster_id
+                raise ValueError(
+                    "Already defined cluster {0}. "
+                    "Set to None first".format(self.cluster_id))
 
     @classmethod
     def ensure_index(cls):
@@ -169,10 +147,8 @@ class ServerModel(generic.Model):
         self.ip = structure["ip"]
         self.state = structure["state"]
         self.initiator_id = structure["initiator_id"]
-        self.cluster_id = structure["cluster_id"]
+        self.cluster = structure["cluster_id"]
         self.facts = structure["facts"]
-
-        self._cluster = None
 
     def delete(self):
         if self.cluster_id:
@@ -193,7 +169,7 @@ class ServerModel(generic.Model):
             "facts": self.facts
         }
 
-    def make_api_specific_fields(self, expand_cluster=True, expand_facts=True):
+    def make_api_specific_fields(self, expand_facts=True):
         facts = self.facts if expand_facts else {}
 
         return {
@@ -202,6 +178,6 @@ class ServerModel(generic.Model):
             "fqdn": self.fqdn,
             "ip": self.ip,
             "state": self.state,
-            "cluster": self.cluster if expand_cluster else self.cluster_id,
+            "cluster_id": self.cluster_id,
             "facts": facts
         }

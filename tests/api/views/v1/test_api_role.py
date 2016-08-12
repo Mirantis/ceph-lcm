@@ -7,7 +7,6 @@ import uuid
 import pytest
 
 from cephlcm.common.models import role
-from cephlcm.common.models import user
 
 
 @pytest.fixture
@@ -23,19 +22,9 @@ def clean_role_collection(mongo_collection, sudo_role):
 @pytest.fixture
 def valid_request(sudo_role):
     return {
-        "name": str(uuid.uuid4()),
+        "name": pytest.faux.gen_alphanumeric(),
         "permissions": sudo_role.permissions
     }
-
-
-@pytest.fixture
-def normal_user(sudo_user):
-    return user.UserModel.make_user(
-        str(uuid.uuid4()), "qwerty",
-        "{0}@example.com".format(uuid.uuid4()),
-        str(uuid.uuid4()), [],
-        initiator_id=sudo_user.model_id
-    )
 
 
 def add_permission_to_user(client, user_model, permissions):
@@ -49,7 +38,7 @@ def add_permission_to_user(client, user_model, permissions):
 
 @pytest.fixture
 def normal_user_with_role(normal_user, sudo_user):
-    new_role = role.RoleModel.make_role(str(uuid.uuid4()), [],
+    new_role = role.RoleModel.make_role(pytest.faux.gen_alphanumeric(), [],
                                         sudo_user.model_id)
     normal_user.role_ids = [new_role.model_id]
     normal_user.save()
@@ -112,7 +101,7 @@ def test_api_create_role_broken_permission(prm, sudo_client_v1, valid_request):
 
 def test_api_create_role_unknown_class(sudo_client_v1, sudo_role,
                                        valid_request):
-    valid_request["permissions"][str(uuid.uuid4())] = []
+    valid_request["permissions"][pytest.faux.gen_alpha()] = []
     response = sudo_client_v1.post("/v1/role/", data=valid_request)
 
     assert response.status_code == 400
@@ -162,7 +151,7 @@ def test_remove_permission_from_role(client_v1, sudo_client_v1, sudo_role,
 def test_update_name(client_v1, sudo_client_v1, valid_request):
     response = sudo_client_v1.post("/v1/role/", data=valid_request)
     model = response.json
-    model["data"]["name"] = str(uuid.uuid4())
+    model["data"]["name"] = pytest.faux.gen_alphanumeric()
 
     resp = client_v1.put(
         "/v1/role/{0}/".format(response.json["id"]), data=model

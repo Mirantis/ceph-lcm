@@ -39,6 +39,7 @@ from cephlcm.common import exceptions
 from cephlcm.common import log
 from cephlcm.common import timeutils
 from cephlcm.common import wrappers
+from cephlcm.common.models import properties
 
 
 MODEL_DB_STRUCTURE = {
@@ -209,23 +210,17 @@ class Model(Base, metaclass=abc.ABCMeta):
 
     def __init__(self):
         self.initiator_id = None
+        self.initiator = None
         self.model_id = None
         self.time_created = 0
         self.time_deleted = 0
         self.version = 0
         self._id = None
 
-    def get_initiator(self):
-        """This method returns a model of initiator."""
-
-        # It looks like a dirty hack but I refer specific model
-        # from the generic one.
-        #
-        # It is an isolated controlled hack. If no initiator model is
-        # required, then remove it.
-        from cephlcm.common.models import user
-
-        return user.UserModel.find_by_model_id(self.initiator_id)
+    initiator = properties.ModelProperty(
+        "cephlcm.common.models.user.UserModel",
+        "initiator_id"
+    )
 
     def save(self, structure=None):
         """This method dumps model data to the database.
@@ -289,7 +284,7 @@ class Model(Base, metaclass=abc.ABCMeta):
         This separation is done intentionally to simplify testing.
         """
 
-        self.initiator_id = db_document["initiator_id"]
+        self.initiator = db_document["initiator_id"]
         self.time_created = db_document["time_created"]
         self.time_deleted = db_document["time_deleted"]
         self.version = db_document["version"]

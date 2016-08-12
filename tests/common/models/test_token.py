@@ -2,13 +2,13 @@
 """This module contains tests for cephlcm.common.models.token."""
 
 
-import uuid
+import pytest
 
 from cephlcm.common.models import token
 
 
 def test_create_token_in_db(configure_model, pymongo_connection, freeze_time):
-    user_id = str(uuid.uuid4())
+    user_id = pytest.faux.gen_uuid()
 
     new_token = token.TokenModel.create(user_id)
     db_token = pymongo_connection.db.token.find_one({"_id": new_token._id})
@@ -31,7 +31,7 @@ def test_create_token_in_db(configure_model, pymongo_connection, freeze_time):
 
 
 def test_create_token_different(configure_model):
-    user_id = str(uuid.uuid4())
+    user_id = pytest.faux.gen_uuid()
 
     new_token1 = token.TokenModel.create(user_id)
     new_token2 = token.TokenModel.create(user_id)
@@ -42,7 +42,7 @@ def test_create_token_different(configure_model):
 
 
 def test_token_api_specific_fields(configure_model):
-    new_token = token.TokenModel.create(str(uuid.uuid4()))
+    new_token = token.TokenModel.create(pytest.faux.gen_uuid())
     api = new_token.make_api_structure()
 
     assert api == {

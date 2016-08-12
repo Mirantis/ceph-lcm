@@ -55,6 +55,11 @@ def get_playbook_plugins(namespace=NS_PLAYBOOKS):
     return plugins
 
 
+def get_public_playbook_plugins(namespace=NS_PLAYBOOKS):
+    return {k: v
+            for k, v in get_playbook_plugins(namespace).items() if v.PUBLIC}
+
+
 def load_playbook_plugin(plugin):
     try:
         loaded = plugin.load()

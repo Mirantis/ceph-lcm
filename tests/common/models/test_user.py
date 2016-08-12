@@ -2,8 +2,6 @@
 """This module contains tests for cephlcm.common.models.user."""
 
 
-import uuid
-
 import pytest
 
 from cephlcm.common import exceptions
@@ -13,11 +11,11 @@ from cephlcm.common.models import user
 
 
 def make_user(role_ids=None, initiator_id=None):
-    login = str(uuid.uuid4())
-    password = str(uuid.uuid4())
-    email = str(uuid.uuid4()) + "@example.com"
-    full_name = str(uuid.uuid4())
-    initiator_id = initiator_id or str(uuid.uuid4())
+    login = pytest.faux.gen_alpha()
+    password = pytest.faux.gen_alphanumeric()
+    email = pytest.faux.gen_email()
+    full_name = pytest.faux.gen_alphanumeric()
+    initiator_id = initiator_id or pytest.faux.gen_uuid()
     role_ids = role_ids or []
 
     new_user = user.UserModel.make_user(
@@ -27,10 +25,10 @@ def make_user(role_ids=None, initiator_id=None):
 
 
 def test_create_new_user(configure_model, pymongo_connection, freeze_time):
-    login = str(uuid.uuid4())
-    password = str(uuid.uuid4())
-    email = str(uuid.uuid4()) + "@example.com"
-    full_name = str(uuid.uuid4())
+    login = pytest.faux.gen_alpha()
+    password = pytest.faux.gen_alphanumeric()
+    email = pytest.faux.gen_email()
+    full_name = pytest.faux.gen_alphanumeric()
     role_ids = []
 
     new_user = user.UserModel.make_user(
@@ -139,7 +137,7 @@ def test_api_response(configure_model, freeze_time):
         "time_deleted": new_user.time_deleted,
         "initiator_id": new_user.initiator_id,
         "data": {
-            "roles": [],
+            "role_ids": [],
             "full_name": new_user.full_name,
             "login": new_user.login,
             "email": new_user.email
@@ -179,15 +177,12 @@ def test_check_initiator_set(configure_model):
     initial_user.save()
     derivative_user = make_user(initiator_id=initial_user.model_id)
 
-    assert not initial_user.get_initiator()
+    assert not initial_user.initiator
     assert derivative_user.initiator_id == initial_user.model_id
-    assert derivative_user.get_initiator()._id == initial_user._id
-
-    initial_user.save()
-    assert derivative_user.get_initiator()._id == initial_user._id
+    assert derivative_user.initiator._id == initial_user._id
 
     derivative_user = user.UserModel.find_by_login(derivative_user.login)
-    assert derivative_user.get_initiator()._id == initial_user._id
+    assert derivative_user.initiator._id == initial_user._id
 
 
 def test_all_tokens_for_deleted_user_are_revoked(

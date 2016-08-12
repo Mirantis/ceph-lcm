@@ -31,13 +31,12 @@ class PlaybookView(generic.ModelView):
     def get(self):
         data = []
 
-        for plugin in plugins.get_playbook_plugins().values():
-            if plugin.PUBLIC:
-                plugin_data = {
-                    "name": plugin.NAME,
-                    "description": plugin.DESCRIPTION,
-                    "required_server_list": bool(plugin.REQUIRED_SERVER_LIST)
-                }
-                data.append(plugin_data)
+        for plugin in plugins.get_public_playbook_plugins().values():
+            plugin_data = {
+                "name": plugin.NAME,
+                "description": plugin.DESCRIPTION,
+                "required_server_list": bool(plugin.REQUIRED_SERVER_LIST)
+            }
+            data.append(plugin_data)
 
         return {"playbooks": sorted(data, key=lambda elem: elem["name"])}
