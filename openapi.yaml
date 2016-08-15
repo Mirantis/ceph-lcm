@@ -8,15 +8,15 @@ info:
   version: "0.0.0"
   title: CephLCM API
   description: |
-    CephLCM API accepts and responds using data models. Each entity, manageable 
+    CephLCM API accepts and responds using data models. Each entity, manageable
     by API, is presented by JSON model in a standard way.
-    
+
     Api has some simple concepts:
-    
+
     # Model
-    
+
     CephLCM uses unified JSON representation for each model:
-    
+
     ```json
     {
         "id": "51cf0d14-c407-4ee6-8200-d3e2d5c26f82",
@@ -31,10 +31,10 @@ info:
         }
     }
     ```
-    
+
     Fields have following meaning:
-    
-    | Field        | Description                                                           |  
+
+    | Field        | Description                                                           |
     |--------------|-----------------------------------------------------------------------|
     | id           | ID of the model set.                                                  |
     | model        | Name of the model class.                                              |
@@ -43,14 +43,14 @@ info:
     | time_updated | Time when this model was updated last time (or this version created). |
     | time_deleted | Time when model was deleted.                                          |
     | data         | Model specific data.                                                  |
-    
+
     This brings several concepts up:
-    
+
       1. CephLCM does not do updates in place, it creates new versions. By
          default latest version is always used. But it is always possible
          to fetch whole story of model progression
       2. ID of the model is the ID of whole model set. Versions are
-         values within a model set, progression. Please check 
+         values within a model set, progression. Please check
          [Values of Values](https://www.youtube.com/watch?v=-6BsiVyC1kM)
          by Rich Hickey to get an idea.
       3. `time_updated` is a timestamp, when `certain version` was created,
@@ -60,9 +60,9 @@ info:
          tombstone of the whole model set.
 
     # Pagination
-    
+
     Pagination result looks like this:
-    
+
     ```json
     {
         "items": [
@@ -84,49 +84,49 @@ info:
         "total": 302
     }
     ```
-    
+
     Fields meaning is following:
-    
-    | Field        | Description                                                    |  
+
+    | Field        | Description                                                    |
     |--------------|----------------------------------------------------------------|
     | items        | A list of models.                                              |
     | page         | The number of page.                                            |
     | per_page     | How many items per page should be displayed.                   |
     | total        | How many models overall we have in the list, within all pages. |
-    
+
     In all cases, it is possible to manipualte such list with given query
     parameters:
-    
+
       - page
       - per_page
       - filter
       - sort_by
-    
+
     `page` and `per_page` parameters are simple: they are integers with
     obvious meaning: `page` is a number of page to request, `per_page` is a
     "length" of the page.
-    
+
     `filter` and `sort_by` are more complex. These parameters are JSON-encoded
     strings.
-    
+
     ### filter
-    
+
     This parameter is MongoDB-like filter with limited abilities. Key is a
-    field name and value is filter. Please check 
+    field name and value is filter. Please check
     [MongoDB documentation](https://docs.mongodb.com/manual/tutorial/query-documents/)
     to get a filter keyword meaning.
-    
+
     #### Example
-    
+
     ```json
     {
         "qq": {"$in": [1, 2, 3]},
         "tt": {"regexp": "car.*?et"}
     }
     ```
-    
+
     #### JSON Schema
-    
+
     ```json
     {
         "type": "object",
@@ -181,23 +181,23 @@ info:
         }
     }
     ```
-    
+
     ### sort_by
-    
+
     This parameter allows to define how to sort results. It is an object,
     where keys are sortkeys and values are sort directions.
-    
+
     #### Example
-    
+
     ```json
     {
         "field1": 1,
         "field2": -1
     }
     ```
-    
+
     #### JSON Schema
-    
+
     ```json
     {
         "type": "object",
@@ -207,23 +207,23 @@ info:
         }
     }
     ```
-    
+
     All pagination parameters are optional. Moreover, if some parameter is
     corrupt or malformed, then default values would be used:
-    
-    | Field        | Default value |  
+
+    | Field        | Default value |
     |--------------|---------------|
     | page         | 1             |
     | per_page     | 25            |
     | filter       | `"{}"`        |
     | sort_by      | `"{}"`        |
-    
-    
+
+
     # Authentication
-    
+
     CephLCM uses classical way of authentication with API token: on calling
     `/auth/` endpoint, user get's token model:
-    
+
     ```json
     {
         "id": "51cf0d14-c407-4ee6-8200-d3e2d5c26f82",
@@ -238,15 +238,15 @@ info:
         }
     }
     ```
-    
+
     `Token` model has 3 interesting fields: `id`, `expires_at` and `user_id`.
-    
+
     * `user_id` is ID of authenticated user
     * `id` is a token string used for further authentication
     * `expires_at` is a UNIX timestamp when CephLCM API is going to revoke
       token.
-    
-    So usage is simple: put `id` (in example, it is 
+
+    So usage is simple: put `id` (in example, it is
     `51cf0d14-c407-4ee6-8200-d3e2d5c26f82`) into `Authorization` header and
     keep it there for all requests.
 
@@ -320,8 +320,8 @@ parameters:
     in: query
     description: |
       MongoDB like filter.
-      
-      This is JSON-encoded string, please find it's description at the main 
+
+      This is JSON-encoded string, please find it's description at the main
       API description.
     type: string
     required: false
@@ -330,7 +330,7 @@ parameters:
     in: query
     description: |
       MongoDB-like sorting settings.
-      
+
       This is JSON-encoded string, please find description at the main
       API description.
     type: string
@@ -401,7 +401,7 @@ paths:
       description: |
         To logout one has to invoke such method being logged in. It means
         that `Authorization` header has to have correct token string.
-        
+
         No other requirements.
       tags:
         - Authentication
@@ -410,7 +410,7 @@ paths:
       responses:
         200:
           description: Successful logout
-  
+
   # ****************************************************************************
   # User endpoint
   # ****************************************************************************
@@ -424,7 +424,7 @@ paths:
       description: |
         This method fetches a list of users, returning it in a form of
         pagination.
-        
+
         ```json
         {
           "items": [
@@ -476,7 +476,7 @@ paths:
         - token: []
       description: |
         This method creates new user in CephLCM.
-        
+
         Please use valid email. User password will be sent to that email.
       parameters:
         - name: User data
@@ -510,7 +510,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         403:
           $ref: "#/responses/Forbidden"
-  
+
   /user/{item-id}/:
     parameters:
       - $ref: "#/parameters/item-id"
@@ -559,7 +559,7 @@ paths:
         403:
           $ref: "#/responses/Forbidden"
 
-  
+
   /user/{item-id}/version/:
     parameters:
       - $ref: "#/parameters/item-id"
@@ -642,7 +642,7 @@ paths:
       description: |
         This method fetches a list of roles, returning it in a form of
         pagination.
-        
+
         ```json
         {
           "items": [
@@ -724,7 +724,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         403:
           $ref: "#/responses/Forbidden"
-  
+
   /role/{item-id}/:
     parameters:
       - $ref: "#/parameters/item-id"
@@ -772,7 +772,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         403:
           $ref: "#/responses/Forbidden"
-  
+
   /role/{item-id}/version/:
     parameters:
       - $ref: "#/parameters/item-id"
@@ -856,7 +856,7 @@ paths:
       description: |
         This method fetches a list of servers, returning it in a form of
         pagination.
-        
+
         ```json
         {
           "items": [
@@ -932,7 +932,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         403:
           $ref: "#/responses/Forbidden"
-  
+
   /server/{item-id}/:
     parameters:
       - $ref: "#/parameters/item-id"
@@ -980,7 +980,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         403:
           $ref: "#/responses/Forbidden"
-  
+
   /server/{item-id}/version/:
     parameters:
       - $ref: "#/parameters/item-id"
@@ -1064,7 +1064,7 @@ paths:
       description: |
         This method fetches a list of clusters, returning it in a form of
         pagination.
-        
+
         ```json
         {
           "items": [
@@ -1139,7 +1139,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         403:
           $ref: "#/responses/Forbidden"
-  
+
   /cluster/{item-id}/:
     parameters:
       - $ref: "#/parameters/item-id"
@@ -1187,7 +1187,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         403:
           $ref: "#/responses/Forbidden"
-  
+
   /cluster/{item-id}/version/:
     parameters:
       - $ref: "#/parameters/item-id"
@@ -1271,7 +1271,7 @@ paths:
       description: |
         This method fetches a list of playbook configurations, returning it in a form of
         pagination.
-        
+
         ```json
         {
           "items": [
@@ -1355,7 +1355,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         403:
           $ref: "#/responses/Forbidden"
-  
+
   /playbook_configuration/{item-id}/:
     parameters:
       - $ref: "#/parameters/item-id"
@@ -1403,7 +1403,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         403:
           $ref: "#/responses/Forbidden"
-  
+
   /playbook_configuration/{item-id}/version/:
     parameters:
       - $ref: "#/parameters/item-id"
@@ -1534,9 +1534,12 @@ paths:
                   additionalProperties: false
                   required:
                     - name
+                    - id
                     - required_server_list
                     - description
                   properties:
+                    id:
+                      $ref: "#/definitions/NonEmptyString"
                     name:
                       $ref: "#/definitions/NonEmptyString"
                     description:
@@ -1558,7 +1561,7 @@ definitions:
     type: string
     minLength: 1
     maxLength: 1024
-  
+
   # A definition for email
   # http://emailregex.com/ - _good enough_ regexp for email
   Email:
@@ -1568,35 +1571,35 @@ definitions:
         format: email
       - type: string
         pattern: ^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$
-  
+
   # A definition for integer >= 0
   PositiveInteger:
     type: number
     multipleOf: 1.0
     minimum: 0
-  
+
   # A definition for UUID4 string
   UUID4:
     type: string
     pattern: ^[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}$
-  
+
   # A definition for array of UUID4 strings
   UUID4Array:
     type: array
     items:
       $ref: "#/definitions/UUID4"
-  
+
   # A definition for hostname
   Hostname:
     type: string
     format: hostname
-  
+
   # A definition for IP
   # OpenAPI does not support oneOf yet so only IPv4 are allowed
   IP:
     type: string
     format: ipv4
-  
+
   # Error response
   ErrorResponse:
     type: object
@@ -1650,7 +1653,7 @@ definitions:
             $ref: "#/definitions/PositiveInteger"
           user_id:
             $ref: "#/definitions/UUID4"
-            
+
   # A definition for User model
   User:
     type: object
@@ -1694,7 +1697,7 @@ definitions:
             $ref: "#/definitions/NonEmptyString"
           role_ids:
             $ref: "#/definitions/UUID4Array"
-            
+
   # A definition for Role model
   Role:
     type: object
@@ -1737,7 +1740,7 @@ definitions:
               items:
                 $ref: "#/definitions/NonEmptyString"
 
-  # A Server model                
+  # A Server model
   Server:
     type: object
     additionalProperties: false
@@ -1790,8 +1793,8 @@ definitions:
               - maintenance_reconfig
           facts:
             type: object
-            
-  # A Cluster model                
+
+  # A Cluster model
   Cluster:
     type: object
     additionalProperties: false
@@ -1833,8 +1836,8 @@ definitions:
             type: object
             additionalProperties:
               $ref: "#/definitions/UUID4Array"
-              
-  # A Playbook configuration model                
+
+  # A Playbook configuration model
   PlaybookConfiguration:
     type: object
     additionalProperties: false

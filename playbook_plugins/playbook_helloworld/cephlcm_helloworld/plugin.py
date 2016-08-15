@@ -20,6 +20,7 @@ class HelloWorld(playbook_plugin.Playbook):
     NAME = "Hello World"
     DESCRIPTION = DESCRIPTION
     PUBLIC = True
+    REQUIRED_SERVER_LIST = False
 
     def make_playbook_configuration(self, servers):
         inventory = {

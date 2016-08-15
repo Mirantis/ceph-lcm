@@ -2,4 +2,4 @@
 # This config is implemented in TOML
 
 port_number = 8085
-interface = 0.0.0.0
+interface = "0.0.0.0"

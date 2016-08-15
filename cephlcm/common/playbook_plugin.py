@@ -22,7 +22,6 @@ import toml
 
 from cephlcm.common import config
 from cephlcm.common import log
-from cephlcm.common.models import playbook_configuration
 from cephlcm.common.models import task
 
 
@@ -44,6 +43,7 @@ class Base(metaclass=abc.ABCMeta):
     CONFIG_FILENAME = None
     DESCRIPTION = ""
     PUBLIC = True
+    REQUIRED_SERVER_LIST = True
     PROCESS_STDOUT = subprocess.PIPE
     PROCESS_STDERR = subprocess.PIPE
     PROCESS_STDIN = subprocess.DEVNULL
@@ -190,6 +190,8 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
     @property
     def playbook_config(self):
+        from cephlcm.common.models import playbook_configuration
+
         if self._pc is not None:
             return self._pc
         if not self.task:
@@ -202,6 +204,8 @@ class Playbook(Base, metaclass=abc.ABCMeta):
         return self._pc
 
     def get_playbook_configuration(self, task):
+        from cephlcm.common.models import playbook_configuration
+
         if not task:
             return None
 
