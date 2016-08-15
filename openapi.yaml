@@ -1,0 +1,1876 @@
+# OpenAPI (Swagger 2.0) YAML file for CephLCM API
+swagger: "2.0"
+
+################################################################################
+# Common information about API
+################################################################################
+info:
+  version: "0.0.0"
+  title: CephLCM API
+  description: |
+    CephLCM API accepts and responds using data models. Each entity, manageable 
+    by API, is presented by JSON model in a standard way.
+    
+    Api has some simple concepts:
+    
+    # Model
+    
+    CephLCM uses unified JSON representation for each model:
+    
+    ```json
+    {
+        "id": "51cf0d14-c407-4ee6-8200-d3e2d5c26f82",
+        "model": "token",
+        "initiator_id": "91cb22e2-d37b-4017-804c-d98f54a1bae2",
+        "version": 2,
+        "time_updated": 1471272744,
+        "time_deleted": 0,
+        "data": {
+            "expires_at":  1471272744,
+            "user_id": "409e234c-6dab-4f7f-87a7-5a5357d59791"
+        }
+    }
+    ```
+    
+    Fields have following meaning:
+    
+    | Field        | Description                                                           |  
+    |--------------|-----------------------------------------------------------------------|
+    | id           | ID of the model set.                                                  |
+    | model        | Name of the model class.                                              |
+    | initiator_id | ID of the user, who created this version.                             |
+    | version      | Version of the model.                                                 |
+    | time_updated | Time when this model was updated last time (or this version created). |
+    | time_deleted | Time when model was deleted.                                          |
+    | data         | Model specific data.                                                  |
+    
+    This brings several concepts up:
+    
+      1. CephLCM does not do updates in place, it creates new versions. By
+         default latest version is always used. But it is always possible
+         to fetch whole story of model progression
+      2. ID of the model is the ID of whole model set. Versions are
+         values within a model set, progression. Please check 
+         [Values of Values](https://www.youtube.com/watch?v=-6BsiVyC1kM)
+         by Rich Hickey to get an idea.
+      3. `time_updated` is a timestamp, when `certain version` was created,
+         not whole model set.
+      4. `time_deleted` is a time, when model was deleted. As a rule, no
+         new model can be created after, so `time_deleted` is a
+         tombstone of the whole model set.
+
+    # Pagination
+    
+    Pagination result looks like this:
+    
+    ```json
+    {
+        "items": [
+            {
+                "id": "51cf0d14-c407-4ee6-8200-d3e2d5c26f82",
+                "model": "token",
+                "initiator_id": "91cb22e2-d37b-4017-804c-d98f54a1bae2",
+                "version": 2,
+                "time_updated": 1471272744,
+                "time_deleted": 0,
+                "data": {
+                    "expires_at":  1471272744,
+                    "user_id": "409e234c-6dab-4f7f-87a7-5a5357d59791"
+                }
+            }
+        ],
+        "page": 1,
+        "per_page": 25,
+        "total": 302
+    }
+    ```
+    
+    Fields meaning is following:
+    
+    | Field        | Description                                                    |  
+    |--------------|----------------------------------------------------------------|
+    | items        | A list of models.                                              |
+    | page         | The number of page.                                            |
+    | per_page     | How many items per page should be displayed.                   |
+    | total        | How many models overall we have in the list, within all pages. |
+    
+    In all cases, it is possible to manipualte such list with given query
+    parameters:
+    
+      - page
+      - per_page
+      - filter
+      - sort_by
+    
+    `page` and `per_page` parameters are simple: they are integers with
+    obvious meaning: `page` is a number of page to request, `per_page` is a
+    "length" of the page.
+    
+    `filter` and `sort_by` are more complex. These parameters are JSON-encoded
+    strings.
+    
+    ### filter
+    
+    This parameter is MongoDB-like filter with limited abilities. Key is a
+    field name and value is filter. Please check 
+    [MongoDB documentation](https://docs.mongodb.com/manual/tutorial/query-documents/)
+    to get a filter keyword meaning.
+    
+    #### Example
+    
+    ```json
+    {
+        "qq": {"$in": [1, 2, 3]},
+        "tt": {"regexp": "car.*?et"}
+    }
+    ```
+    
+    #### JSON Schema
+    
+    ```json
+    {
+        "type": "object",
+        "aditionalProperties": {
+            "anyOf": [
+                {"type": "string"},
+                {"type": "integer"},
+                {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "gt": {"type": "integer"},
+                        "gte": {"type": "integer"},
+                        "lt": {"type": "integer"},
+                        "gte": {"type": "integer"},
+                        "regexp": {"type": "string"},
+                        "ne": {
+                            "oneOf": [
+                                {"type": "string"},
+                                {"type": "integer"},
+                            ]
+                        },
+                        "eq": {
+                            "anyOf": [
+                                {"type": "string"},
+                                {"type": "integer"},
+                            ]
+                        },
+                        "in": {
+                            "type": "array",
+                            "items": {
+                                "anyOf": [
+                                    {"type": "integer"},
+                                    {"type": "string"}
+                                ]
+                            },
+                            "additionalItems": False
+                        }
+                    },
+                    "oneOf": [
+                        {"type": "object", "required": ["ne"]},
+                        {"type": "object", "required": ["eq"]},
+                        {"type": "object", "required": ["regexp"]},
+                        {"type": "object", "required": ["in"]},
+                        {"type": "object", "required": ["lt"]},
+                        {"type": "object", "required": ["gt"]},
+                        {"type": "object", "required": ["gte"]},
+                        {"type": "object", "required": ["lte"]}
+                    ]
+                }
+            ]
+        }
+    }
+    ```
+    
+    ### sort_by
+    
+    This parameter allows to define how to sort results. It is an object,
+    where keys are sortkeys and values are sort directions.
+    
+    #### Example
+    
+    ```json
+    {
+        "field1": 1,
+        "field2": -1
+    }
+    ```
+    
+    #### JSON Schema
+    
+    ```json
+    {
+        "type": "object",
+        "additionalProperties": {
+            "type": "integer",
+            "enum": [1, -1]
+        }
+    }
+    ```
+    
+    All pagination parameters are optional. Moreover, if some parameter is
+    corrupt or malformed, then default values would be used:
+    
+    | Field        | Default value |  
+    |--------------|---------------|
+    | page         | 1             |
+    | per_page     | 25            |
+    | filter       | `"{}"`        |
+    | sort_by      | `"{}"`        |
+    
+    
+    # Authentication
+    
+    CephLCM uses classical way of authentication with API token: on calling
+    `/auth/` endpoint, user get's token model:
+    
+    ```json
+    {
+        "id": "51cf0d14-c407-4ee6-8200-d3e2d5c26f82",
+        "model": "token",
+        "initiator_id": "91cb22e2-d37b-4017-804c-d98f54a1bae2",
+        "version": 2,
+        "time_updated": 1471272744,
+        "time_deleted": 0,
+        "data": {
+            "expires_at":  1471272744,
+            "user_id": "409e234c-6dab-4f7f-87a7-5a5357d59791"
+        }
+    }
+    ```
+    
+    `Token` model has 3 interesting fields: `id`, `expires_at` and `user_id`.
+    
+    * `user_id` is ID of authenticated user
+    * `id` is a token string used for further authentication
+    * `expires_at` is a UNIX timestamp when CephLCM API is going to revoke
+      token.
+    
+    So usage is simple: put `id` (in example, it is 
+    `51cf0d14-c407-4ee6-8200-d3e2d5c26f82`) into `Authorization` header and
+    keep it there for all requests.
+
+
+tags:
+  - name: Authentication
+  - name: Users
+  - name: Roles
+  - name: Permissions
+  - name: Playbooks
+  - name: Servers
+  - name: Clusters
+  - name: Playbook Configuration
+
+
+################################################################################
+# API metainformation
+################################################################################
+basePath: /v1
+produces:
+  - application/json
+consumes:
+  - application/json
+schemes:
+  - http
+  - https
+securityDefinitions:
+  token:
+    description: |
+      Classic API token to use. You have to get it using /auth API endpoint,
+      this endpoint returns `Token` model. Extract token string from `id`
+      parameter of the token model and use in `Authorization` header.
+    type: apiKey
+    in: header
+    name: Authorization
+
+
+################################################################################
+# Parameters
+################################################################################
+parameters:
+  item-id:
+    name: item-id
+    in: path
+    description: UUID of the item reference
+    type: string
+    format: uuid
+    required: true
+  version-number:
+    name: version-number
+    in: path
+    description: Number of the item version
+    required: true
+    type: integer
+  pagination-page:
+    name: page
+    in: query
+    description: Page to request
+    type: integer
+    required: false
+    minimum: 1
+  pagination-per-page:
+    name: per_page
+    in: query
+    description: How many items per page should be listed
+    type: integer
+    required: false
+    minimum: 1
+  pagination-filter:
+    name: filter
+    in: query
+    description: |
+      MongoDB like filter.
+      
+      This is JSON-encoded string, please find it's description at the main 
+      API description.
+    type: string
+    required: false
+  pagination-sort-by:
+    name: sort_by
+    in: query
+    description: |
+      MongoDB-like sorting settings.
+      
+      This is JSON-encoded string, please find description at the main
+      API description.
+    type: string
+    required: false
+
+
+################################################################################
+# Responses
+################################################################################
+responses:
+  Unauthorized:
+    description: Response is sent if user is not authenticated
+    schema:
+      $ref: "#/definitions/ErrorResponse"
+  Forbidden:
+    description: Response is sent if user is not authorized
+    schema:
+      $ref: "#/definitions/ErrorResponse"
+  BadRequest:
+    description: Response is sent if put incorrect data into model
+    schema:
+      $ref: "#/definitions/ErrorResponse"
+  NotFound:
+    description: Response is sent if such item was not found
+    schema:
+      $ref: "#/definitions/ErrorResponse"
+
+
+################################################################################
+# API paths
+################################################################################
+paths:
+  # ****************************************************************************
+  # Auth endpoint
+  # ****************************************************************************
+  /auth/:
+    post:
+      summary: Authenicate in CephLCM
+      description: |
+        Returns `Token` model. ID of token is an API key user has to use further
+        for `Authorization` header. `expires_at` fields set a UNIX timestamp
+        when token would be revoked.
+      tags:
+        - Authentication
+      parameters:
+        - name: login data
+          in: body
+          description: User login
+          required: true
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - login
+              - password
+            properties:
+              login:
+                $ref: "#/definitions/NonEmptyString"
+              password:
+                $ref: "#/definitions/NonEmptyString"
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: "#/definitions/Token"
+    delete:
+      summary: Logout from CephLCM
+      description: |
+        To logout one has to invoke such method being logged in. It means
+        that `Authorization` header has to have correct token string.
+        
+        No other requirements.
+      tags:
+        - Authentication
+      security:
+        - token: []
+      responses:
+        200:
+          description: Successful logout
+  
+  # ****************************************************************************
+  # User endpoint
+  # ****************************************************************************
+  /user/:
+    get:
+      tags:
+        - Users
+      security:
+        - token: []
+      summary: Fetch a list of users
+      description: |
+        This method fetches a list of users, returning it in a form of
+        pagination.
+        
+        ```json
+        {
+          "items": [
+            {User model},
+            ...
+          },
+          "page": 1,
+          "per_page": 25,
+          "total": 102
+        }
+        ```
+        User may use his own pagination settings using query filters.
+      parameters:
+        - $ref: "#/parameters/pagination-page"
+        - $ref: "#/parameters/pagination-per-page"
+        - $ref: "#/parameters/pagination-filter"
+        - $ref: "#/parameters/pagination-sort-by"
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required:
+              - items
+              - page
+              - per_page
+              - total
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/definitions/User"
+              page:
+                $ref: "#/definitions/PositiveInteger"
+              per_page:
+                $ref: "#/definitions/PositiveInteger"
+              total:
+                $ref: "#/definitions/PositiveInteger"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+    post:
+      summary: Create new user
+      tags:
+        - Users
+      security:
+        - token: []
+      description: |
+        This method creates new user in CephLCM.
+        
+        Please use valid email. User password will be sent to that email.
+      parameters:
+        - name: User data
+          in: body
+          required: true
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - login
+              - email
+              - full_name
+              - role_ids
+            properties:
+              login:
+                $ref: "#/definitions/NonEmptyString"
+              email:
+                $ref: "#/definitions/Email"
+              full_name:
+                $ref: "#/definitions/NonEmptyString"
+              role_ids:
+                $ref: "#/definitions/UUID4Array"
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: "#/definitions/User"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+  
+  /user/{item-id}/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+    get:
+      summary: Get user
+      description: |
+        Get latest version of certain `User` model.
+      tags:
+        - Users
+      security:
+        - token: []
+      responses:
+        200:
+          description: Successful response, latest user model
+          schema:
+            $ref: "#/definitions/User"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+    put:
+      summary: Update information about user
+      description: |
+        Updates `User` model. Creates new version.
+      tags:
+        - Users
+      security:
+        - token: []
+      parameters:
+        - name: User model
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        200:
+          description: Successful response, updated model
+          schema:
+            $ref: "#/definitions/User"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+
+  
+  /user/{item-id}/version/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+    get:
+      summary: Get versions of User model
+      description: |
+        Returns a list of `User` model versions.
+      tags:
+        - Users
+      security:
+        - token: []
+      parameters:
+        - $ref: "#/parameters/pagination-page"
+        - $ref: "#/parameters/pagination-per-page"
+        - $ref: "#/parameters/pagination-filter"
+        - $ref: "#/parameters/pagination-sort-by"
+      responses:
+        200:
+          description: Sucessful response
+          schema:
+            type: object
+            required:
+              - items
+              - page
+              - per_page
+              - total
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/definitions/User"
+              page:
+                $ref: "#/definitions/PositiveInteger"
+              per_page:
+                $ref: "#/definitions/PositiveInteger"
+              total:
+                $ref: "#/definitions/PositiveInteger"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /user/{item-id}/version/{version-number}/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+      - $ref: "#/parameters/version-number"
+    get:
+      summary: Get version of user model
+      description: |
+        Get a certain version of `User` model.
+      tags:
+        - Users
+      security:
+        - token: []
+      responses:
+        200:
+          description: Sucessful response
+          schema:
+            $ref: "#/definitions/User"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+
+  # ****************************************************************************
+  # Role endpoint
+  # ****************************************************************************
+  /role/:
+    get:
+      tags:
+        - Roles
+      security:
+        - token: []
+      summary: Fetch a list of roles
+      description: |
+        This method fetches a list of roles, returning it in a form of
+        pagination.
+        
+        ```json
+        {
+          "items": [
+            {Role model},
+            ...
+          },
+          "page": 1,
+          "per_page": 25,
+          "total": 102
+        }
+        ```
+        User may use his own pagination settings using query filters.
+      parameters:
+        - $ref: "#/parameters/pagination-page"
+        - $ref: "#/parameters/pagination-per-page"
+        - $ref: "#/parameters/pagination-filter"
+        - $ref: "#/parameters/pagination-sort-by"
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required:
+              - items
+              - page
+              - per_page
+              - total
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/definitions/Role"
+              page:
+                $ref: "#/definitions/PositiveInteger"
+              per_page:
+                $ref: "#/definitions/PositiveInteger"
+              total:
+                $ref: "#/definitions/PositiveInteger"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+    post:
+      summary: Create new role
+      tags:
+        - Roles
+      security:
+        - token: []
+      description: |
+        This method creates new `Role` model in CephLCM.
+      parameters:
+        - name: Role data
+          in: body
+          required: true
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - name
+              - permissions
+            properties:
+              name:
+                $ref: "#/definitions/NonEmptyString"
+              permissions:
+                type: object
+                additionalProperties:
+                  type: array
+                  items:
+                    $ref: "#/definitions/NonEmptyString"
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: "#/definitions/Role"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+  
+  /role/{item-id}/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+    get:
+      summary: Get role
+      description: |
+        Get latest version of certain `Role` model.
+      tags:
+        - Roles
+      security:
+        - token: []
+      responses:
+        200:
+          description: Successful response, latest user model
+          schema:
+            $ref: "#/definitions/Role"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+    put:
+      summary: Update information about user
+      description: |
+        Updates `Role` model. Creates new version.
+      tags:
+        - Roles
+      security:
+        - token: []
+      parameters:
+        - name: User model
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Role"
+      responses:
+        200:
+          description: Successful response, updated model
+          schema:
+            $ref: "#/definitions/Role"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+  
+  /role/{item-id}/version/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+    get:
+      summary: Get versions of Role model
+      description: |
+        Returns a list of `Role` model versions.
+      tags:
+        - Roles
+      security:
+        - token: []
+      parameters:
+        - $ref: "#/parameters/pagination-page"
+        - $ref: "#/parameters/pagination-per-page"
+        - $ref: "#/parameters/pagination-filter"
+        - $ref: "#/parameters/pagination-sort-by"
+      responses:
+        200:
+          description: Sucessful response
+          schema:
+            type: object
+            required:
+              - items
+              - page
+              - per_page
+              - total
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/definitions/Role"
+              page:
+                $ref: "#/definitions/PositiveInteger"
+              per_page:
+                $ref: "#/definitions/PositiveInteger"
+              total:
+                $ref: "#/definitions/PositiveInteger"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /role/{item-id}/version/{version-number}/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+      - $ref: "#/parameters/version-number"
+    get:
+      summary: Get version of role model
+      description: |
+        Get a certain version of `Role` model.
+      tags:
+        - Roles
+      security:
+        - token: []
+      responses:
+        200:
+          description: Sucessful response
+          schema:
+            $ref: "#/definitions/Role"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+
+
+  # ****************************************************************************
+  # Server endpoint
+  # ****************************************************************************
+  /server/:
+    get:
+      tags:
+        - Servers
+      security:
+        - token: []
+      summary: Fetch a list of servers
+      description: |
+        This method fetches a list of servers, returning it in a form of
+        pagination.
+        
+        ```json
+        {
+          "items": [
+            {Server model},
+            ...
+          },
+          "page": 1,
+          "per_page": 25,
+          "total": 102
+        }
+        ```
+        User may use his own pagination settings using query filters.
+      parameters:
+        - $ref: "#/parameters/pagination-page"
+        - $ref: "#/parameters/pagination-per-page"
+        - $ref: "#/parameters/pagination-filter"
+        - $ref: "#/parameters/pagination-sort-by"
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required:
+              - items
+              - page
+              - per_page
+              - total
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/definitions/Server"
+              page:
+                $ref: "#/definitions/PositiveInteger"
+              per_page:
+                $ref: "#/definitions/PositiveInteger"
+              total:
+                $ref: "#/definitions/PositiveInteger"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+    post:
+      summary: Create new server
+      tags:
+        - Servers
+      security:
+        - token: []
+      description: |
+        This method creates new `Server` model in CephLCM.
+      parameters:
+        - name: Server data
+          in: body
+          required: true
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - host
+              - username
+            properties:
+              host:
+                $ref: "#/definitions/NonEmptyString"
+              username:
+                $ref: "#/definitions/NonEmptyString"
+      responses:
+        200:
+          description: Successful response
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+  
+  /server/{item-id}/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+    get:
+      summary: Get server
+      description: |
+        Get latest version of certain `Server` model.
+      tags:
+        - Servers
+      security:
+        - token: []
+      responses:
+        200:
+          description: Successful response, latest user model
+          schema:
+            $ref: "#/definitions/Server"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+    put:
+      summary: Update information about server
+      description: |
+        Updates `Server` model. Creates new version.
+      tags:
+        - Servers
+      security:
+        - token: []
+      parameters:
+        - name: Server model
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Server"
+      responses:
+        200:
+          description: Successful response, updated model
+          schema:
+            $ref: "#/definitions/Server"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+  
+  /server/{item-id}/version/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+    get:
+      summary: Get versions of Server model
+      description: |
+        Returns a list of `Server` model versions.
+      tags:
+        - Servers
+      security:
+        - token: []
+      parameters:
+        - $ref: "#/parameters/pagination-page"
+        - $ref: "#/parameters/pagination-per-page"
+        - $ref: "#/parameters/pagination-filter"
+        - $ref: "#/parameters/pagination-sort-by"
+      responses:
+        200:
+          description: Sucessful response
+          schema:
+            type: object
+            required:
+              - items
+              - page
+              - per_page
+              - total
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/definitions/Server"
+              page:
+                $ref: "#/definitions/PositiveInteger"
+              per_page:
+                $ref: "#/definitions/PositiveInteger"
+              total:
+                $ref: "#/definitions/PositiveInteger"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /server/{item-id}/version/{version-number}/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+      - $ref: "#/parameters/version-number"
+    get:
+      summary: Get version of server model
+      description: |
+        Get a certain version of `Server` model.
+      tags:
+        - Servers
+      security:
+        - token: []
+      responses:
+        200:
+          description: Sucessful response
+          schema:
+            $ref: "#/definitions/Server"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+
+
+  # ****************************************************************************
+  # Cluster endpoint
+  # ****************************************************************************
+  /cluster/:
+    get:
+      tags:
+        - Clusters
+      security:
+        - token: []
+      summary: Fetch a list of clusters
+      description: |
+        This method fetches a list of clusters, returning it in a form of
+        pagination.
+        
+        ```json
+        {
+          "items": [
+            {Cluster model},
+            ...
+          },
+          "page": 1,
+          "per_page": 25,
+          "total": 102
+        }
+        ```
+        User may use his own pagination settings using query filters.
+      parameters:
+        - $ref: "#/parameters/pagination-page"
+        - $ref: "#/parameters/pagination-per-page"
+        - $ref: "#/parameters/pagination-filter"
+        - $ref: "#/parameters/pagination-sort-by"
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required:
+              - items
+              - page
+              - per_page
+              - total
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/definitions/Cluster"
+              page:
+                $ref: "#/definitions/PositiveInteger"
+              per_page:
+                $ref: "#/definitions/PositiveInteger"
+              total:
+                $ref: "#/definitions/PositiveInteger"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+    post:
+      summary: Create new cluster
+      tags:
+        - Clusters
+      security:
+        - token: []
+      description: |
+        This method creates new `Cluster` model in CephLCM.
+      parameters:
+        - name: Cluster data
+          in: body
+          required: true
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - name
+            properties:
+              name:
+                $ref: "#/definitions/NonEmptyString"
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: "#/definitions/Cluster"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+  
+  /cluster/{item-id}/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+    get:
+      summary: Get cluster
+      description: |
+        Get latest version of certain `Cluster` model.
+      tags:
+        - Clusters
+      security:
+        - token: []
+      responses:
+        200:
+          description: Successful response, latest user model
+          schema:
+            $ref: "#/definitions/Cluster"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+    put:
+      summary: Update information about cluster
+      description: |
+        Updates `Cluster` model. Creates new version.
+      tags:
+        - Clusters
+      security:
+        - token: []
+      parameters:
+        - name: Cluster model
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Cluster"
+      responses:
+        200:
+          description: Successful response, updated model
+          schema:
+            $ref: "#/definitions/Cluster"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+  
+  /cluster/{item-id}/version/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+    get:
+      summary: Get versions of Cluster model
+      description: |
+        Returns a list of `Cluster` model versions.
+      tags:
+        - Clusters
+      security:
+        - token: []
+      parameters:
+        - $ref: "#/parameters/pagination-page"
+        - $ref: "#/parameters/pagination-per-page"
+        - $ref: "#/parameters/pagination-filter"
+        - $ref: "#/parameters/pagination-sort-by"
+      responses:
+        200:
+          description: Sucessful response
+          schema:
+            type: object
+            required:
+              - items
+              - page
+              - per_page
+              - total
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/definitions/Cluster"
+              page:
+                $ref: "#/definitions/PositiveInteger"
+              per_page:
+                $ref: "#/definitions/PositiveInteger"
+              total:
+                $ref: "#/definitions/PositiveInteger"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /cluster/{item-id}/version/{version-number}/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+      - $ref: "#/parameters/version-number"
+    get:
+      summary: Get version of cluster model
+      description: |
+        Get a certain version of `Cluster` model.
+      tags:
+        - Clusters
+      security:
+        - token: []
+      responses:
+        200:
+          description: Sucessful response
+          schema:
+            $ref: "#/definitions/Cluster"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+
+
+  # ****************************************************************************
+  # Playbook configuration endpoint
+  # ****************************************************************************
+  /playbook_configuration/:
+    get:
+      tags:
+        - Playbook Configuration
+      security:
+        - token: []
+      summary: Fetch a list of playbook configurations
+      description: |
+        This method fetches a list of playbook configurations, returning it in a form of
+        pagination.
+        
+        ```json
+        {
+          "items": [
+            {PlaybookConfiguration model},
+            ...
+          },
+          "page": 1,
+          "per_page": 25,
+          "total": 102
+        }
+        ```
+        User may use his own pagination settings using query filters.
+      parameters:
+        - $ref: "#/parameters/pagination-page"
+        - $ref: "#/parameters/pagination-per-page"
+        - $ref: "#/parameters/pagination-filter"
+        - $ref: "#/parameters/pagination-sort-by"
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required:
+              - items
+              - page
+              - per_page
+              - total
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/definitions/PlaybookConfiguration"
+              page:
+                $ref: "#/definitions/PositiveInteger"
+              per_page:
+                $ref: "#/definitions/PositiveInteger"
+              total:
+                $ref: "#/definitions/PositiveInteger"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+    post:
+      summary: Create new playbook configuration
+      tags:
+        - Playbook Configuration
+      security:
+        - token: []
+      description: |
+        This method creates new `PlaybookConfiguration` model in CephLCM.
+      parameters:
+        - name: Playbook configuration data
+          in: body
+          required: true
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - name
+              - cluster_id
+              - playbook
+              - server_ids
+            properties:
+              name:
+                $ref: "#/definitions/NonEmptyString"
+              cluster_id:
+                $ref: "#/definitions/UUID4"
+              playbook:
+                $ref: "#/definitions/NonEmptyString"
+              server_ids:
+                $ref: "#/definitions/UUID4Array"
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: "#/definitions/PlaybookConfiguration"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+  
+  /playbook_configuration/{item-id}/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+    get:
+      summary: Get playbook configuration
+      description: |
+        Get latest version of certain `PlaybookConfiguration` model.
+      tags:
+        - Playbook Configuration
+      security:
+        - token: []
+      responses:
+        200:
+          description: Successful response, latest user model
+          schema:
+            $ref: "#/definitions/PlaybookConfiguration"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+    put:
+      summary: Update information about playbook configuration
+      description: |
+        Updates `PlaybookConfiguration` model. Creates new version.
+      tags:
+        - Playbook Configuration
+      security:
+        - token: []
+      parameters:
+        - name: PlaybookConfiguration model
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/PlaybookConfiguration"
+      responses:
+        200:
+          description: Successful response, updated model
+          schema:
+            $ref: "#/definitions/PlaybookConfiguration"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+  
+  /playbook_configuration/{item-id}/version/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+    get:
+      summary: Get versions of Playbook configuration model
+      description: |
+        Returns a list of `PlaybookConfiguration` model versions.
+      tags:
+        - Playbook Configuration
+      security:
+        - token: []
+      parameters:
+        - $ref: "#/parameters/pagination-page"
+        - $ref: "#/parameters/pagination-per-page"
+        - $ref: "#/parameters/pagination-filter"
+        - $ref: "#/parameters/pagination-sort-by"
+      responses:
+        200:
+          description: Sucessful response
+          schema:
+            type: object
+            required:
+              - items
+              - page
+              - per_page
+              - total
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/definitions/PlaybookConfiguration"
+              page:
+                $ref: "#/definitions/PositiveInteger"
+              per_page:
+                $ref: "#/definitions/PositiveInteger"
+              total:
+                $ref: "#/definitions/PositiveInteger"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /playbook_configuration/{item-id}/version/{version-number}/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+      - $ref: "#/parameters/version-number"
+    get:
+      summary: Get version of playbook configuration model
+      description: |
+        Get a certain version of `PlaybookConfiguration` model.
+      tags:
+        - Playbook Configuration
+      security:
+        - token: []
+      responses:
+        200:
+          description: Sucessful response
+          schema:
+            $ref: "#/definitions/PlaybookConfiguration"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+
+
+  # ****************************************************************************
+  # Permissions endpoint
+  # ****************************************************************************
+  /permissions/:
+    get:
+      tags:
+        - Permissions
+      security:
+        - token: []
+      summary: Fetch a list of permissions
+      description: This method fetches a list of permissions
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required:
+              - api
+              - playbooks
+            properties:
+              api:
+                type: array
+                items:
+                  $ref: "#/definitions/NonEmptyString"
+              playbooks:
+                type: array
+                items:
+                  $ref: "#/definitions/NonEmptyString"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+
+
+  # ****************************************************************************
+  # Playbooks endpoint
+  # ****************************************************************************
+  /playbook/:
+    get:
+      tags:
+        - Playbooks
+      security:
+        - token: []
+      summary: Fetch a list of playbooks
+      description: This method fetches a list of playbooks available to use
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required:
+              - playbooks
+            properties:
+              playbooks:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  required:
+                    - name
+                    - required_server_list
+                    - description
+                  properties:
+                    name:
+                      $ref: "#/definitions/NonEmptyString"
+                    description:
+                      $ref: "#/definitions/NonEmptyString"
+                    required_server_list:
+                      type: boolean
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+
+
+################################################################################
+# JSONSchema definitions
+################################################################################
+definitions:
+  # A definition for a string which should not be empty
+  NonEmptyString:
+    type: string
+    minLength: 1
+    maxLength: 1024
+  
+  # A definition for email
+  # http://emailregex.com/ - _good enough_ regexp for email
+  Email:
+    type: string
+    allOf:
+      - type: string
+        format: email
+      - type: string
+        pattern: ^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$
+  
+  # A definition for integer >= 0
+  PositiveInteger:
+    type: number
+    multipleOf: 1.0
+    minimum: 0
+  
+  # A definition for UUID4 string
+  UUID4:
+    type: string
+    pattern: ^[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}$
+  
+  # A definition for array of UUID4 strings
+  UUID4Array:
+    type: array
+    items:
+      $ref: "#/definitions/UUID4"
+  
+  # A definition for hostname
+  Hostname:
+    type: string
+    format: hostname
+  
+  # A definition for IP
+  # OpenAPI does not support oneOf yet so only IPv4 are allowed
+  IP:
+    type: string
+    format: ipv4
+  
+  # Error response
+  ErrorResponse:
+    type: object
+    additionalProperties: false
+    required:
+      - error
+      - code
+      - message
+    properties:
+      error:
+        $ref: "#/definitions/NonEmptyString"
+      code:
+        $ref: "#/definitions/PositiveInteger"
+      message:
+        $ref: "#/definitions/NonEmptyString"
+
+  # A definition for Token model
+  Token:
+    type: object
+    additionalProperties: false
+    required:
+     - id
+     - data
+     - model
+     - time_deleted
+     - time_updated
+     - initiator_id
+     - version
+    properties:
+      id:
+        $ref: "#/definitions/UUID4"
+      model:
+        enum:
+          - token
+      version:
+        $ref: "#/definitions/PositiveInteger"
+      time_updated:
+        $ref: "#/definitions/PositiveInteger"
+      time_deleted:
+        $ref: "#/definitions/PositiveInteger"
+      initiator_id:
+        $ref: "#/definitions/UUID4"
+      data:
+        type: object
+        additionalProperties: false
+        required:
+          - expires_at
+          - user_id
+        properties:
+          expires_at:
+            $ref: "#/definitions/PositiveInteger"
+          user_id:
+            $ref: "#/definitions/UUID4"
+            
+  # A definition for User model
+  User:
+    type: object
+    additionalProperties: false
+    required:
+     - id
+     - data
+     - model
+     - time_deleted
+     - time_updated
+     - initiator_id
+     - version
+    properties:
+      id:
+        $ref: "#/definitions/UUID4"
+      model:
+        enum:
+          - token
+      version:
+        $ref: "#/definitions/PositiveInteger"
+      time_updated:
+        $ref: "#/definitions/PositiveInteger"
+      time_deleted:
+        $ref: "#/definitions/PositiveInteger"
+      initiator_id:
+        $ref: "#/definitions/UUID4"
+      data:
+        type: object
+        additionalProperties: false
+        required:
+          - login
+          - email
+          - full_name
+          - role_ids
+        properties:
+          login:
+            $ref: "#/definitions/NonEmptyString"
+          email:
+            $ref: "#/definitions/Email"
+          full_name:
+            $ref: "#/definitions/NonEmptyString"
+          role_ids:
+            $ref: "#/definitions/UUID4Array"
+            
+  # A definition for Role model
+  Role:
+    type: object
+    additionalProperties: false
+    required:
+     - id
+     - data
+     - model
+     - time_deleted
+     - time_updated
+     - initiator_id
+     - version
+    properties:
+      id:
+        $ref: "#/definitions/UUID4"
+      model:
+        enum:
+          - token
+      version:
+        $ref: "#/definitions/PositiveInteger"
+      time_updated:
+        $ref: "#/definitions/PositiveInteger"
+      time_deleted:
+        $ref: "#/definitions/PositiveInteger"
+      initiator_id:
+        $ref: "#/definitions/UUID4"
+      data:
+        type: object
+        additionalProperties: false
+        required:
+          - name
+          - permissions
+        properties:
+          name:
+            $ref: "#/definitions/NonEmptyString"
+          permissions:
+            type: object
+            additionalProperties:
+              type: array
+              items:
+                $ref: "#/definitions/NonEmptyString"
+
+  # A Server model                
+  Server:
+    type: object
+    additionalProperties: false
+    required:
+      - id
+      - data
+      - model
+      - time_deleted
+      - time_updated
+      - initiator_id
+      - version
+    properties:
+      id:
+        $ref: "#/definitions/UUID4"
+      model:
+        enum:
+          - token
+      version:
+        $ref: "#/definitions/PositiveInteger"
+      time_updated:
+        $ref: "#/definitions/PositiveInteger"
+      time_deleted:
+        $ref: "#/definitions/PositiveInteger"
+      initiator_id:
+        $ref: "#/definitions/UUID4"
+      data:
+        type: object
+        additionalProperties: false
+        required:
+          - name
+          - fqdn
+          - ip
+          - state
+          - cluster_id
+          - facts
+        properties:
+          name:
+            $ref: "#/definitions/NonEmptyString"
+          fqdn:
+            $ref: "#/definitions/Hostname"
+          ip:
+            $ref: "#/definitions/IP"
+          cluster_id:
+            $ref: "#/definitions/UUID4"
+          state:
+            enum:
+              - operational
+              - off
+              - maintenance_no_reconfig
+              - maintenance_reconfig
+          facts:
+            type: object
+            
+  # A Cluster model                
+  Cluster:
+    type: object
+    additionalProperties: false
+    required:
+      - id
+      - data
+      - model
+      - time_deleted
+      - time_updated
+      - initiator_id
+      - version
+    properties:
+      id:
+        $ref: "#/definitions/UUID4"
+      model:
+        enum:
+          - token
+      version:
+        $ref: "#/definitions/PositiveInteger"
+      time_updated:
+        $ref: "#/definitions/PositiveInteger"
+      time_deleted:
+        $ref: "#/definitions/PositiveInteger"
+      initiator_id:
+        $ref: "#/definitions/UUID4"
+      data:
+        type: object
+        additionalProperties: false
+        required:
+          - name
+          - execution_id
+          - configuration
+        properties:
+          name:
+            $ref: "#/definitions/NonEmptyString"
+          execution_id:
+            $ref: "#/definitions/UUID4"
+          configuration:
+            type: object
+            additionalProperties:
+              $ref: "#/definitions/UUID4Array"
+              
+  # A Playbook configuration model                
+  PlaybookConfiguration:
+    type: object
+    additionalProperties: false
+    required:
+      - id
+      - data
+      - model
+      - time_deleted
+      - time_updated
+      - initiator_id
+      - version
+    properties:
+      id:
+        $ref: "#/definitions/UUID4"
+      model:
+        enum:
+          - token
+      version:
+        $ref: "#/definitions/PositiveInteger"
+      time_updated:
+        $ref: "#/definitions/PositiveInteger"
+      time_deleted:
+        $ref: "#/definitions/PositiveInteger"
+      initiator_id:
+        $ref: "#/definitions/UUID4"
+      data:
+        type: object
+        additionalProperties: false
+        required:
+          - name
+          - playbook
+          - configuration
+        properties:
+          name:
+            $ref: "#/definitions/NonEmptyString"
+          playbook:
+            $ref: "#/definitions/NonEmptyString"
+          configuration:
+            type: object
