@@ -1,0 +1,15 @@
+---
+# Gunicorn role for Hello World plugin
+
+
+- name: Ensure Gunicorn installed
+  apt: name=gunicorn state=present
+  become: true
+
+- name: Ensure /etc/gunicorn.d exist
+  become: true
+  file: path=/etc/gunicorn.d state=directory owner={{ user }} group={{ group }}
+
+- name: Ensure gunicorn started
+  become: true
+  service: name=gunicorn state=started

@@ -50,9 +50,9 @@ def main():
     options = get_options()
     LOG.debug("Options are %s", options)
 
-    entry_point, task_id = get_entrypoint_and_task_id()
+    entry_point = get_entrypoint()
     plugin = get_plugin(entry_point)
-    inventory = plugin.get_dynamic_inventory(task_id)
+    inventory = plugin.get_dynamic_inventory()
 
     if options.list:
         dumps(inventory)
@@ -76,25 +76,21 @@ def configure():
     generic.configure_models(wrappers.MongoDBWrapper())
 
 
-def get_entrypoint_and_task_id():
-    """Returns tuple of entry point and task ID.
+def get_entrypoint():
+    """Returns entry point of the plugin.
 
     It fetches environment variables to do that. All environment
     variables must be defined.
     """
 
     entry_point = os.getenv(playbook_plugin.ENV_ENTRY_POINT)
-    task_id = os.getenv(playbook_plugin.ENV_TASK_ID)
 
     LOG.debug("Entrypoint: %s", entry_point)
-    LOG.debug("Task ID: %s", task_id)
 
     if not entry_point:
         raise exceptions.InventoryError("Unknown entrypoint")
-    if not task_id:
-        raise exceptions.InventoryError("Unknown task ID")
 
-    return entry_point, task_id
+    return entry_point
 
 
 def get_plugin(entry_point):

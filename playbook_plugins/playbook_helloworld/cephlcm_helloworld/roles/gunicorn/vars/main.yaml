@@ -1,0 +1,5 @@
+---
+# Variables for HelloWorld gunicorn plugin role
+
+user: www-data
+group: www-data

@@ -16,7 +16,6 @@ except ImportError:
 
 from cephlcm.common import log
 from cephlcm.common import playbook_plugin
-from cephlcm.common.models import task
 from cephlcm.common.models import server
 
 
@@ -51,21 +50,19 @@ class ServerDiscovery(playbook_plugin.Ansible):
 
         self.tempdir = None
 
-    def get_dynamic_inventory(self, task_id):
-        server_task = task.Task.find_by_id(task_id)
-
-        if not server_task:
+    def get_dynamic_inventory(self):
+        if not self.task:
             # TODO(Sergey Arkhipov): Raise proper exception here
             raise Exception
 
         return {
             "new": {
-                "hosts": [server_task.data["host"]]
+                "hosts": [self.task.data["host"]]
             },
             "_meta": {
                 "hostvars": {
-                    server_task.data["host"]: {
-                        "ansible_user": server_task.data["username"]
+                    self.task.data["host"]: {
+                        "ansible_user": self.task.data["username"]
                     }
                 }
             }

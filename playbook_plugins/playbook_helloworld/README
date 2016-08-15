@@ -1,0 +1,14 @@
+This is a Hello world plugin for CephLCM.
+
+It's main intention is to be a generic plugin which installs something
+on the host and run some service. This plugin installs simpliest WSGI
+application on remote host and starts server. After that, application
+respond with '{"result": "ok"}' JSON on any request.
+
+It has 2 options to setup:
+
+  - interface
+    This is a interface to bind to. If you want to have it accessible
+    on any interface, use '0.0.0.0' as usual.
+  - port_number
+    This is a number of port for server to bind to.

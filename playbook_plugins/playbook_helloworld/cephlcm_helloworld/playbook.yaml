@@ -1,0 +1,8 @@
+---
+# Hello world plugin playbook
+
+
+- hosts: servers
+  roles:
+    - gunicorn
+    - application
