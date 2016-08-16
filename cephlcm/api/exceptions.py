@@ -137,3 +137,13 @@ class UnknownClusterError(BadRequest):
 
     def __init__(self, cluster_id):
         super().__init__(self.description.format(cluster_id))
+
+
+class UnknownPlaybookConfiguration(BadRequest):
+    description = (
+        "There is no playbook configuration with ID {0} and "
+        "version {1}"
+    )
+
+    def __init__(self, item_id, version):
+        super().__init__(self.description.format(item_id, version))

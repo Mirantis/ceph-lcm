@@ -17,8 +17,13 @@ from cephlcm.common.models import task
 
 POST_SCHEMA = {
     "playbook_configuration": {
-        "id": {"$ref": "#/definitions/uuid4"},
-        "version": {"$ref": "#/definitions/positive_integer"}
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["id", "version"],
+        "properties": {
+            "id": {"$ref": "#/definitions/uuid4"},
+            "version": {"$ref": "#/definitions/positive_integer"}
+        }
     }
 }
 POST_SCHEMA = validators.create_data_schema(POST_SCHEMA, True)
@@ -68,21 +73,22 @@ class ExecutionView(generic.VersionedCRUDView):
     @auth.require_authorization("api", "create_execution")
     @validators.require_schema(POST_SCHEMA)
     def post(self):
+        pc_id = self.request_json["playbook_configuration"]["id"]
+        pc_version = self.request_json["playbook_configuration"]["version"]
+
         config = playbook_configuration.PlaybookConfigurationModel
-        config = config.find_version(
-            self.request_json["playbook_configuration"]["id"],
-            self.request_json["playbook_configuration"]["version"]
-        )
+        config = config.find_version(pc_id, pc_version)
         if not config:
             LOG.warning(
                 "Cannot find playbook configuration %s of version %s",
-                self.request_json["playbook_configuration"]["id"],
-                self.request_json["playbook_configuration"]["version"]
+                pc_id, pc_version
             )
-            # TODO(Sergey Arkhipov): Put proper exception here
-            raise Exception
+            raise http_exceptions.UnknownPlaybookConfiguration(
+                pc_id, pc_version
+            )
 
-        auth.check_auth_permission(flask.g.user, "playbook", config.playbook)
+        auth.check_auth_permission(flask.g.token.user,
+                                   "playbook", config.playbook)
 
         model = execution.ExecutionModel.create(config, self.initiator_id)
         LOG.info(
@@ -101,6 +107,7 @@ class ExecutionView(generic.VersionedCRUDView):
                       model.model_id, exc)
             model.state = execution.ExecutionState.failed
             model.save()
+            raise
         else:
             LOG.info("Created task for execution %s: %s",
                      model.model_id, tsk._id)
