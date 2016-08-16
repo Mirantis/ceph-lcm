@@ -131,6 +131,7 @@ def dumps(obj):
     """Dumps dynamic inventory to JSON and prints it out."""
 
     json.dump(obj, sys.stdout, indent=4, sort_keys=True)
+    sys.stdout.write("\n")
 
 
 if __name__ == "__main__":

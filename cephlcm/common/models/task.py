@@ -99,6 +99,9 @@ class Task(generic.Base):
         task_id = bson.objectid.ObjectId(task_id)
         document = cls.collection().find_one({"_id": task_id})
 
+        if not document:
+            return None
+
         tsk.set_state(document)
 
         return tsk

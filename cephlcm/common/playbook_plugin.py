@@ -10,7 +10,6 @@ import os
 import shutil
 import subprocess
 import sys
-import threading
 
 import pkg_resources
 
@@ -181,18 +180,12 @@ class Playbook(Base, metaclass=abc.ABCMeta):
     # PROCESS_STDERR = subprocess.DEVNULL
     # PROCESS_STDIN = subprocess.DEVNULL
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self._pc = None
-        self._pc_lock = threading.RLock()
-
     @property
     def playbook_config(self):
         if not self.task:
             return None
 
-        return self._get_playbook_configuration(self.task._id)
+        return self.get_playbook_configuration(self.task)
 
     @functools.lru_cache()
     def get_playbook_configuration(self, task):
