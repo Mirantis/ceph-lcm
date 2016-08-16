@@ -16,9 +16,13 @@ from cephlcm.common.models import generic
 from cephlcm.common.models import properties
 
 
-ExecutionStepState = enum.unique(
-    execution_step.make_enum("ExecutionStepState", enum.IntEnum)
-)
+@enum.unique
+class ExecutionStepState(enum.IntEnum):
+    unknown = 0
+    ok = 1
+    error = 2
+    skipped = 3
+    unreachable = 4
 
 
 class ExecutionStep(generic.Base):
@@ -48,23 +52,7 @@ class ExecutionStep(generic.Base):
 
     result = properties.ChoicesProperty("_result", ExecutionStepState)
 
-    @property
-    def state(self):
-        """Extracts DB state from the model."""
-
-        return execution_step.make_db_model(
-            self.execution_id,
-            self.role,
-            self.name,
-            self.result,
-            self.error_message,
-            self.server_id,
-            self.time_started,
-            self.time_finished
-        )
-
-    @state.setter
-    def state(self, value):
+    def update_from_db_document(self, value):
         """Sets DB state to model, updating it in place."""
 
         self._id = value["_id"]
@@ -95,6 +83,17 @@ class ExecutionStep(generic.Base):
                 "result": self.result.name
             }
         }
+
+    @classmethod
+    def find_by_id(cls, task_id):
+        document = cls.collection().find_one({"_id": task_id})
+        if not document:
+            return None
+
+        model = cls()
+        model.update_from_db_document(document)
+
+        return model
 
     @classmethod
     def list_models(cls, execution_id, pagination):

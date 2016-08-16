@@ -34,6 +34,14 @@ class PlaybookConfigurationModel(generic.Model):
         plugins.get_public_playbook_plugins
     )
 
+    @property
+    def configuration(self):
+        return replace_dict_keys(".", "/", self._configuration)
+
+    @configuration.setter
+    def configuration(self, value):
+        self._configuration = replace_dict_keys("/", ".", value)
+
     @classmethod
     def create(cls, name, playbook, cluster, servers, initiator_id=None):
         model = cls()
@@ -73,3 +81,20 @@ class PlaybookConfigurationModel(generic.Model):
             "playbook": self.playbook,
             "configuration": self.configuration
         }
+
+
+def replace_dict_keys(src, dst, obj):
+    """Mongo does not allow dots in keys."""
+
+    if isinstance(obj, dict):
+        newdict = {}
+        for key, value in obj.items():
+            if isinstance(key, str):
+                key = key.replace(src, dst)
+            newdict[key] = replace_dict_keys(src, dst, value)
+        return newdict
+
+    elif isinstance(obj, (list, tuple, set)):
+        return obj.__class__(replace_dict_keys(src, dst, item) for item in obj)
+
+    return obj

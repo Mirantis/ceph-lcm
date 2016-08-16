@@ -7,6 +7,7 @@ import contextlib
 import copy
 import functools
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -34,6 +35,9 @@ LOG = log.getLogger(__name__)
 ENV_ENTRY_POINT = "CEPHLCM_ENTRYPOINT"
 ENV_TASK_ID = "CEPHLCM_TASK_ID"
 ENV_EXECUTION_ID = "CEPHLCM_EXECUTION_ID"
+ENV_DB_HOST = "CEPHLCM_DB_HOST"
+ENV_DB_PORT = "CEPHLCM_DB_PORT"
+ENV_DB_NAME = "CEPHLCM_DB_NAME"
 DYNAMIC_INVENTORY_PATH = shutil.which("cephlcm-inventory")
 
 
@@ -87,14 +91,15 @@ class Base(metaclass=abc.ABCMeta):
         return {}
 
     def get_environment_variables(self, task):
-        new_env = copy.deepcopy(os.environ)
-
-        new_env[ENV_ENTRY_POINT] = self.entry_point
-        new_env[ENV_TASK_ID] = str(task._id)
-        new_env[ENV_EXECUTION_ID] = str(task.execution_id or "")
-        new_env["ANSIBLE_CONFIG"] = str(CONF.CONTROLLER_ANSIBLE_CONFIG)
-
-        return new_env
+        return {
+            ENV_ENTRY_POINT: self.entry_point,
+            ENV_TASK_ID: str(task._id),
+            ENV_EXECUTION_ID: str(task.execution_id or ""),
+            ENV_DB_HOST: CONF.DB_HOST,
+            ENV_DB_PORT: str(CONF.DB_PORT),
+            ENV_DB_NAME: CONF.DB_DBNAME,
+            "ANSIBLE_CONFIG": str(CONF.CONTROLLER_ANSIBLE_CONFIG)
+        }
 
     @contextlib.contextmanager
     def execute(self, task):
@@ -107,10 +112,14 @@ class Base(metaclass=abc.ABCMeta):
 
         LOG.info("Execute %s for %s",
                  subprocess.list2cmdline(commandline), self.entry_point)
+        LOG.debug("Commandline: \"%s\"",
+                  self.make_copypaste_commandline(commandline, env))
 
+        all_env = copy.deepcopy(os.environ)
+        all_env.update(env)
         process = None
         try:
-            process = self.run(commandline, env)
+            process = self.run(commandline, all_env)
             yield process
         finally:
             if process:
@@ -127,6 +136,13 @@ class Base(metaclass=abc.ABCMeta):
 
         LOG.info("Finish execute %s for %s",
                  subprocess.list2cmdline(commandline), self.entry_point)
+
+    def make_copypaste_commandline(self, commandline, env):
+        env_string = " ".join(
+            "{0}={1}".format(k, shlex.quote(v)) for k, v in env.items())
+        commandline = subprocess.list2cmdline(commandline)
+
+        return "{0} {1}".format(env_string, commandline)
 
     def run(self, commandline, env):
         return subprocess.Popen(
@@ -178,9 +194,9 @@ class Ansible(Base, metaclass=abc.ABCMeta):
 class Playbook(Base, metaclass=abc.ABCMeta):
 
     ANSIBLE_CMD = shutil.which("ansible-playbook")
-    # PROCESS_STDOUT = subprocess.DEVNULL
-    # PROCESS_STDERR = subprocess.DEVNULL
-    # PROCESS_STDIN = subprocess.DEVNULL
+    PROCESS_STDOUT = subprocess.DEVNULL
+    PROCESS_STDERR = subprocess.DEVNULL
+    PROCESS_STDIN = subprocess.DEVNULL
 
     @property
     def playbook_config(self):

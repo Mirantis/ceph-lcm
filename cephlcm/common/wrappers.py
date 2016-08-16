@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-This module has different wrappers for the data structures.
-
-This module will be used in Ansible so please keep Python2 compatibility.
-"""
+"""This module has different wrappers for the data structures."""
 
 
 import pymongo
@@ -15,7 +11,7 @@ CONF = config.make_config()
 """Config."""
 
 
-class PaginationResult(object):
+class PaginationResult:
     """PaginationResult wraps a data about a certain page in pagination."""
 
     def __init__(self, model_class, items, pagination, total):
@@ -42,7 +38,7 @@ class PaginationResult(object):
         }
 
 
-class MongoDBWrapper(object):
+class MongoDBWrapper:
     """Simple wrapper for MongoClient.
 
     This is require to support Flask-PyMongo way of DB referring.

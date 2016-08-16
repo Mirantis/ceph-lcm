@@ -148,7 +148,7 @@ class TaskPool:
         if tsk.task_type == task.TaskType.playbook:
             plugin_name = tsk.data["playbook"]
         else:
-            plugin_name = tsk.task_type
+            plugin_name = tsk.task_type.name
 
         plug = plugs.get(plugin_name)
 
