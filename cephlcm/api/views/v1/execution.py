@@ -155,7 +155,7 @@ class ExecutionView(generic.VersionedCRUDView):
         return item
 
 
-class ExecutionStepsView(generic.ModelView):
+class ExecutionStepsView(generic.CRUDView):
 
     NAME = "execution_step"
     MODEL_NAME = "execution_step"
@@ -182,5 +182,5 @@ class ExecutionStepsView(generic.ModelView):
     @validators.with_model(execution.ExecutionModel)
     def get(self, item_id, item):
         return execution_step.ExecutionStep.list_models(
-            item_id, self.pagination
+            str(item_id), self.pagination
         )
