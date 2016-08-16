@@ -3,6 +3,7 @@
 
 
 import copy
+import enum
 import threading
 import uuid
 
@@ -15,6 +16,7 @@ from cephlcm.common import exceptions
 from cephlcm.common import log
 from cephlcm.common import timeutils
 from cephlcm.common.models import generic
+from cephlcm.common.models import properties
 
 
 TASK_TEMPLATE = {
@@ -46,6 +48,13 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
+@enum.unique
+class TaskType(enum.IntEnum):
+    playbook = 1
+    cancel = 2
+    server_discovery = 3
+
+
 class Task(generic.Base):
     """This is a class for basic task.
 
@@ -54,19 +63,6 @@ class Task(generic.Base):
     """
 
     COLLECTION_NAME = "task"
-
-    TASK_TYPE_PLAYBOOK = "playbook"
-    """Type of playbook task type."""
-
-    TASK_TYPE_CANCEL = "cancel"
-    """Type of cancelling playbook task."""
-
-    TASK_TYPE_SERVER_DISCOVERY = "server_discovery"
-    """Type of playbook for server discovery."""
-
-    TASK_TYPES = set((
-        TASK_TYPE_PLAYBOOK, TASK_TYPE_CANCEL, TASK_TYPE_SERVER_DISCOVERY))
-    """Supported task types."""
 
     @staticmethod
     def new_update_marker():
@@ -83,11 +79,11 @@ class Task(generic.Base):
         if not db_document:
             return None
 
-        if db_document["task_type"] == cls.TASK_TYPE_SERVER_DISCOVERY:
+        if db_document["task_type"] == TaskType.server_discovery.name:
             model = ServerDiscoveryTask("", "", "")
-        elif db_document["task_type"] == cls.TASK_TYPE_PLAYBOOK:
+        elif db_document["task_type"] == TaskType.playbook.name:
             model = PlaybookPluginTask("", "", "")
-        elif db_document["task_type"] == cls.TASK_TYPE_CANCEL:
+        elif db_document["task_type"] == TaskType.cancel.name:
             model = CancelPlaybookPluginTask("")
         else:
             raise ValueError("Unknown task type {0}".format(
@@ -100,6 +96,9 @@ class Task(generic.Base):
     @classmethod
     def get_by_execution_id(cls, execution_id, task_type):
         """Returns a task model by execution ID and task type."""
+
+        if hasattr(task_type, "name"):
+            task_type = task_type.name
 
         query = {"execution_id": execution_id, "task_type": task_type}
         document = cls.collection().find_one(query)
@@ -114,12 +113,6 @@ class Task(generic.Base):
         return cls.make_task(document)
 
     def __init__(self, task_type, execution_id):
-        try:
-            if task_type not in self.TASK_TYPES:
-                raise ValueError("Unknown task type {0}".format(task_type))
-        except TypeError:
-            raise ValueError("Unknown task type {0}".format(task_type))
-
         self._id = None
         self.task_type = task_type
         self.time_started = 0
@@ -134,6 +127,8 @@ class Task(generic.Base):
         self.executor_pid = 0
         self.error = ""
         self.data = {}
+
+    task_type = properties.ChoicesProperty("_task_type", TaskType)
 
     def __str__(self):
         return "{0} (execution_id: {1})".format(self._id, self.execution_id)
@@ -190,7 +185,7 @@ class Task(generic.Base):
         template = copy.deepcopy(TASK_TEMPLATE)
 
         template["_id"] = self._id
-        template["task_type"] = self.task_type
+        template["task_type"] = self.task_type.name
         template["execution_id"] = self.execution_id
         template["time"]["created"] = self.time_created
         template["time"]["started"] = self.time_started
@@ -210,7 +205,7 @@ class Task(generic.Base):
         """Sets DB state to model updating it in place."""
 
         self._id = state["_id"]
-        self.task_type = state["task_type"]
+        self.task_type = TaskType[state["task_type"]]
         self.execution_id = state["execution_id"]
         self.time_created = state["time"]["created"]
         self.time_started = state["time"]["started"]
@@ -391,7 +386,7 @@ class Task(generic.Base):
 class ServerDiscoveryTask(Task):
 
     def __init__(self, host, user, initiator_id):
-        super().__init__(self.TASK_TYPE_SERVER_DISCOVERY, initiator_id)
+        super().__init__(TaskType.server_discovery, initiator_id)
 
         self.data["host"] = host
         self.data["username"] = user
@@ -400,7 +395,7 @@ class ServerDiscoveryTask(Task):
 class PlaybookPluginTask(Task):
 
     def __init__(self, playbook, config_id, initiator_id):
-        super().__init__(self.TASK_TYPE_PLAYBOOK, initiator_id)
+        super().__init__(TaskType.playbook, initiator_id)
 
         self.data["playbook"] = playbook
         self.data["playbook_configuration_id"] = config_id
@@ -438,4 +433,4 @@ class PlaybookPluginTask(Task):
 class CancelPlaybookPluginTask(Task):
 
     def __init__(self, initiator_id):
-        super().__init__(self.TASK_TYPE_CANCEL, initiator_id)
+        super().__init__(TaskType.cancel, initiator_id)

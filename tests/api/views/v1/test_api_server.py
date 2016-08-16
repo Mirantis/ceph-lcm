@@ -109,7 +109,7 @@ def test_post_server(host, client_v1, normal_user, sudo_client_v1,
     found_task = pymongo_connection.db.task.find_one({"data.host": host})
     assert found_task
 
-    assert found_task["task_type"] == task.Task.TASK_TYPE_SERVER_DISCOVERY
+    assert found_task["task_type"] == task.TaskType.server_discovery.name
     assert found_task["time"]["created"] == int(freeze_time.return_value)
     assert found_task["data"]["host"] == host
     assert found_task["data"]["username"] == request["username"]

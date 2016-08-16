@@ -14,7 +14,6 @@ from cephlcm.common import config
 from cephlcm.common import log
 from cephlcm.common import plugins
 from cephlcm.common.models import task
-from cephlcm.common.models import execution
 
 
 TaskState = collections.namedtuple("TaskState", ["future", "stop_event"])
@@ -146,7 +145,7 @@ class TaskPool:
     def get_plugin(self, tsk):
         plugs = plugins.get_playbook_plugins()
 
-        if tsk.task_type == task.Task.TASK_TYPE_PLAYBOOK:
+        if tsk.task_type == task.TaskType.playbook:
             plugin_name = tsk.data["playbook"]
         else:
             plugin_name = tsk.task_type

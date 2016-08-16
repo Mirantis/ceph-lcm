@@ -29,7 +29,7 @@ def test_shutdown_callback(main_thread):
     assert not main_thread.is_alive()
 
 
-@pytest.mark.parametrize("task_type", task.Task.TASK_TYPES)
+@pytest.mark.parametrize("task_type", task.TaskType)
 @pytest.mark.parametrize("failed_func", (
     "process_task",
     "possible_to_process",
@@ -70,7 +70,7 @@ def test_task_watch_correct_stop_condition(
     assert mainloop.SHUTDOWN_EVENT.is_set()
 
 
-@pytest.mark.parametrize("task_type", task.Task.TASK_TYPES)
+@pytest.mark.parametrize("task_type", task.TaskType)
 def test_do_not_process_impossible_tasks(
     task_type, task_watch, mainloop_possible_to_process, mainloop_process_task,
     configure_model
@@ -89,7 +89,7 @@ def test_do_not_process_impossible_tasks(
     assert mainloop.SHUTDOWN_EVENT.is_set()
 
 
-@pytest.mark.parametrize("task_type", task.Task.TASK_TYPES)
+@pytest.mark.parametrize("task_type", task.TaskType)
 def test_process_task_list(
     task_type, task_watch, mainloop_possible_to_process, mainloop_process_task,
     configure_model
