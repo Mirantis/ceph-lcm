@@ -410,7 +410,7 @@ def test_get_versions_list(query, items, per_page, page, email, sudo_client_v1,
     assert len({item["id"] for item in response.json["items"]}) < 2
 
 
-def test_get_version(email, sudo_client_v1, valid_post_request):
+def test_get_version(email, sudo_client_v1, freeze_time, valid_post_request):
     login_base = pytest.faux.gen_alpha()
     valid_post_request["login"] = "{0}{1}".format(login_base, 0)
     response = sudo_client_v1.post("/v1/user/", data=valid_post_request)

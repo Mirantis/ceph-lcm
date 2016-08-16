@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-"""This module contains configuration routines for CephLCM."""
+"""
+This module contains configuration routines for CephLCM.
+
+This module will be used with Ansible so keep Python2 compatibility.
+"""
 
 
 import functools
@@ -33,7 +37,7 @@ _PARSED_CACHE = {}
 """Internal cache to avoid reparsing of files anytime."""
 
 
-class Config:
+class Config(object):
     """Base class for config."""
 
     def __init__(self, config):
@@ -61,7 +65,7 @@ class ApiConfig(Config):
     """A config which has specific options for API."""
 
     def __init__(self, config):
-        super().__init__(config)
+        super(ApiConfig, self).__init__(config)
 
         self.MONGO_HOST = self.DB_HOST
         self.MONGO_PORT = self.DB_PORT
@@ -79,7 +83,7 @@ class ApiConfig(Config):
 
     @property
     def logging_config(self):
-        config = super().logging_config
+        config = super(ApiConfig, self).logging_config
         config["loggers"] = {
             "cephlcm": self.API_LOGGING
         }
@@ -92,7 +96,7 @@ class ControllerConfig(Config):
 
     @property
     def logging_config(self):
-        config = super().logging_config
+        config = super(ControllerConfig, self).logging_config
         config["loggers"] = {
             "cephlcm": self.CONTROLLER_LOGGING
         }
@@ -102,12 +106,24 @@ class ControllerConfig(Config):
 
 def with_parsed_configs(func):
     @functools.wraps(func)
-    @functools.lru_cache(maxsize=32)
     def decorator(*args, **kwargs):
         if not _PARSED_CACHE:
             _PARSED_CACHE.update(collect_config(CONFIG_FILES))
 
         return func(_PARSED_CACHE, *args, **kwargs)
+
+    return decorator
+
+
+def cached(func):
+    @functools.wraps(func)
+    def decorator(*args, **kwargs):
+        if hasattr(decorator, "cached"):
+            return decorator.cached
+
+        decorator.cached = func(*args, **kwargs)
+
+        return decorator.cached
 
     return decorator
 
@@ -151,7 +167,7 @@ def collect_config(filenames):
     return config
 
 
-@functools.lru_cache(maxsize=2)
+@cached
 @with_parsed_configs
 def make_config(raw_config):
     """Makes Api specific config."""
@@ -159,7 +175,7 @@ def make_config(raw_config):
     return Config(raw_config)
 
 
-@functools.lru_cache(maxsize=2)
+@cached
 @with_parsed_configs
 def make_api_config(raw_config):
     """Makes Api specific config."""
@@ -167,7 +183,7 @@ def make_api_config(raw_config):
     return ApiConfig(raw_config)
 
 
-@functools.lru_cache(maxsize=2)
+@cached
 @with_parsed_configs
 def make_controller_config(raw_config):
     """Makes controller specific config."""

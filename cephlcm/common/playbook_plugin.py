@@ -33,6 +33,7 @@ LOG = log.getLogger(__name__)
 
 ENV_ENTRY_POINT = "CEPHLCM_ENTRYPOINT"
 ENV_TASK_ID = "CEPHLCM_TASK_ID"
+ENV_EXECUTION_ID = "CEPHLCM_EXECUTION_ID"
 DYNAMIC_INVENTORY_PATH = shutil.which("cephlcm-inventory")
 
 
@@ -90,6 +91,7 @@ class Base(metaclass=abc.ABCMeta):
 
         new_env[ENV_ENTRY_POINT] = self.entry_point
         new_env[ENV_TASK_ID] = str(task._id)
+        new_env[ENV_EXECUTION_ID] = str(task.execution_id or "")
         new_env["ANSIBLE_CONFIG"] = str(CONF.CONTROLLER_ANSIBLE_CONFIG)
 
         return new_env
