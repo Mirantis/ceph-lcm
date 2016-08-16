@@ -2,16 +2,76 @@
 """Test for cephlcm.common.models.task."""
 
 
+import unittest.mock
+
 import pytest
 
 from cephlcm.common import exceptions
 from cephlcm.common.models import task
+from cephlcm.common.models import server
+from cephlcm.common.models import cluster
+from cephlcm.common.models import execution
+from cephlcm.common.models import playbook_configuration
 
 
 @pytest.fixture
 def clean_tasks(pymongo_connection):
     pymongo_connection.db.task.drop()
     task.Task.ensure_index()
+
+
+@pytest.fixture
+def new_server(configure_model):
+    name = pytest.faux.gen_alphanumeric()
+    username = pytest.faux.gen_alpha()
+    fqdn = pytest.faux.gen_alphanumeric()
+    ip = pytest.faux.gen_ipaddr()
+    initiator_id = pytest.faux.gen_uuid()
+
+    return server.ServerModel.create(name, username, fqdn, ip,
+                                     initiator_id=initiator_id)
+
+
+@pytest.fixture
+def new_cluster(configure_model, new_server):
+    name = pytest.faux.gen_alphanumeric()
+
+    clstr = cluster.ClusterModel.create(name, {}, None, pytest.faux.gen_uuid())
+    clstr.add_servers("rgws", [new_server])
+    clstr.save()
+
+    return clstr
+
+
+@pytest.yield_fixture
+def playbook_name():
+    name = pytest.faux.gen_alphanumeric()
+    mocked_plugin = unittest.mock.MagicMock()
+    mocked_plugin.PUBLIC = True
+
+    patch = unittest.mock.patch(
+        "cephlcm.common.plugins.get_playbook_plugins",
+        return_value={name: mocked_plugin}
+    )
+
+    with patch:
+        yield name
+
+
+@pytest.fixture
+def new_pcmodel(playbook_name, new_cluster, new_server):
+    return playbook_configuration.PlaybookConfigurationModel.create(
+        name=pytest.faux.gen_alpha(),
+        playbook=playbook_name,
+        cluster=new_cluster,
+        servers=[new_server],
+        initiator_id=pytest.faux.gen_uuid()
+    )
+
+
+@pytest.fixture
+def new_execution(new_pcmodel):
+    return execution.ExecutionModel.create(new_pcmodel, pytest.faux.gen_uuid())
 
 
 @pytest.mark.parametrize("task_type", (
@@ -186,3 +246,24 @@ def test_get_by_execution_id(task_type, configure_model):
 
     found = task.Task.get_by_execution_id(executor_id, task_type)
     assert found._id == new_task._id
+
+
+@pytest.mark.parametrize("action, state", (
+    ("cancel", execution.ExecutionState.canceled),
+    ("complete", execution.ExecutionState.completed),
+    ("fail", execution.ExecutionState.failed)
+))
+def test_plugin_finish(action, state, new_pcmodel, new_execution):
+    new_task = task.PlaybookPluginTask(
+        new_pcmodel.playbook, new_pcmodel._id, new_execution.model_id)
+    new_task.create()
+    new_task.start()
+
+    new_execution = execution.ExecutionModel.find_by_model_id(
+        new_execution.model_id)
+    assert new_execution.state == execution.ExecutionState.started
+
+    getattr(new_task, action)()
+    new_execution = execution.ExecutionModel.find_by_model_id(
+        new_execution.model_id)
+    assert new_execution.state == state
