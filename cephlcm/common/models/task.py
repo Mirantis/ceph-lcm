@@ -79,32 +79,39 @@ class Task(generic.Base):
         return str(uuid.uuid4())
 
     @classmethod
+    def make_task(cls, db_document):
+        if not db_document:
+            return None
+
+        if db_document["task_type"] == cls.TASK_TYPE_SERVER_DISCOVERY:
+            model = ServerDiscoveryTask("", "", "")
+        elif db_document["task_type"] == cls.TASK_TYPE_PLAYBOOK:
+            model = PlaybookPluginTask("", "", "")
+        elif db_document["task_type"] == cls.TASK_TYPE_CANCEL:
+            model = CancelPlaybookPluginTask("")
+        else:
+            raise ValueError("Unknown task type {0}".format(
+                db_document["task_type"]))
+
+        model.set_state(db_document)
+
+        return model
+
+    @classmethod
     def get_by_execution_id(cls, execution_id, task_type):
         """Returns a task model by execution ID and task type."""
 
         query = {"execution_id": execution_id, "task_type": task_type}
         document = cls.collection().find_one(query)
 
-        if not document:
-            return
-
-        model = cls(task_type, execution_id)
-        model.set_state(document)
-
-        return model
+        return cls.make_task(document)
 
     @classmethod
     def find_by_id(cls, task_id):
-        tsk = cls(cls.TASK_TYPE_SERVER_DISCOVERY, "")
         task_id = bson.objectid.ObjectId(task_id)
         document = cls.collection().find_one({"_id": task_id})
 
-        if not document:
-            return None
-
-        tsk.set_state(document)
-
-        return tsk
+        return cls.make_task(document)
 
     def __init__(self, task_type, execution_id):
         try:
@@ -127,6 +134,13 @@ class Task(generic.Base):
         self.executor_pid = 0
         self.error = ""
         self.data = {}
+
+    def __str__(self):
+        return "{0} (execution_id: {1})".format(self._id, self.execution_id)
+
+    @property
+    def id(self):
+        return self._id
 
     def _update(self, query, setfields, exc):
         """Updates task in place.
@@ -165,6 +179,11 @@ class Task(generic.Base):
             return_document=pymongo.ReturnDocument.AFTER
         )
 
+    def get_execution(self):
+        from cephlcm.common.models import execution
+
+        return execution.ExecutionModel.find_by_model_id(self.execution_id)
+
     def get_state(self):
         """Extracts DB state from the model."""
 
@@ -192,6 +211,7 @@ class Task(generic.Base):
 
         self._id = state["_id"]
         self.task_type = state["task_type"]
+        self.execution_id = state["execution_id"]
         self.time_created = state["time"]["created"]
         self.time_started = state["time"]["started"]
         self.time_completed = state["time"]["completed"]
@@ -357,9 +377,7 @@ class Task(generic.Base):
                 for document in collection.find(query, sort=sortby):
                     if stop_condition.is_set():
                         raise StopIteration
-                    task = cls(document["task_type"], document["execution_id"])
-                    task.set_state(document)
-                    yield task
+                    yield cls.make_task(document)
 
                 if exit_on_empty:
                     raise StopIteration
@@ -386,3 +404,38 @@ class PlaybookPluginTask(Task):
 
         self.data["playbook"] = playbook
         self.data["playbook_configuration_id"] = config_id
+
+    def set_execution_state(self, new_state):
+        execution_model = self.get_execution()
+        execution_model.state = new_state
+        execution_model.save()
+
+    def start(self):
+        from cephlcm.common.models import execution
+
+        super().start()
+        self.set_execution_state(execution.ExecutionState.started)
+
+    def cancel(self):
+        from cephlcm.common.models import execution
+
+        super().cancel()
+        self.set_execution_state(execution.ExecutionState.canceled)
+
+    def complete(self):
+        from cephlcm.common.models import execution
+
+        super().complete()
+        self.set_execution_state(execution.ExecutionState.completed)
+
+    def fail(self, error_message="Internal error"):
+        from cephlcm.common.models import execution
+
+        super().fail(error_message)
+        self.set_execution_state(execution.ExecutionState.failed)
+
+
+class CancelPlaybookPluginTask(Task):
+
+    def __init__(self, initiator_id):
+        super().__init__(self.TASK_TYPE_CANCEL, initiator_id)
