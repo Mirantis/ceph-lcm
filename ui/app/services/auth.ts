@@ -24,7 +24,7 @@ export class AuthService {
 
         this.getLoggedUser();
 
-        var url = this.redirectUrl || '/dashboard';
+        var url = this.redirectUrl || '/';
         this.redirectUrl = null;
         this.router.navigate([url]);
       }, (error: any) => {
@@ -44,11 +44,11 @@ export class AuthService {
   }
 
   getLoggedUser() {
-    if (!this.loggedUser) {
+    if (this.isLoggedIn() && !this.loggedUser) {
       this.loggedUser = this.data.user().find(this.session.getLoggedUserId())
         .then((user: any) => {
           this.loggedUser = user;
-          
+
           return this.loggedUser;
         });
     }

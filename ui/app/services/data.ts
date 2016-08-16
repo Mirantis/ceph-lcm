@@ -15,7 +15,7 @@ export class DataService {
 
   store = new DataStore();
   // FIXME: to be moved to configuration
-  adapter = new HttpAdapter({basePath: 'http://private-47d2dd-cephlcm.apiary-mock.com/v1'});
+  adapter = new HttpAdapter({basePath: 'http://private-3509f-cephlcmswaggerapi.apiary-mock.com/v1'});
   mappers = {};
 
   token(): Mapper {return this.getMapper('auth')}

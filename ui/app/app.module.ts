@@ -4,9 +4,8 @@ import { FormsModule }   from '@angular/forms';
 
 
 import { AppComponent }  from './app.component';
-import { HomeComponent }  from './components/home';
-import { LoginComponent }  from './components/login';
-import { DashboardComponent }  from './components/dashboard';
+import { LoginComponent }  from './dashboard/login';
+import { DashboardComponent }  from './dashboard/dashboard';
 import { PageNotFoundComponent }  from './404';
 
 import { AuthService, LoggedIn}  from './services/auth';
@@ -19,7 +18,6 @@ import { appRoutingProviders, routing } from './app.routes';
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
     LoginComponent,
     DashboardComponent,
     PageNotFoundComponent

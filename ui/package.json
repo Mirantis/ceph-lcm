@@ -1,7 +1,7 @@
 {
-  "name": "angular2-quickstart",
+  "name": "ceph-lcm",
   "version": "1.0.0",
-  "description": "QuickStart package.json from the documentation, supplemented with testing support",
+  "description": "CEPH LCM",
   "scripts": {
     "start": "tsc && concurrently \"tsc -w\" \"lite-server\" \"watch-less -d app/styles -c -e .css\"",
     "docker-build": "docker build -t ng2-quickstart .",
