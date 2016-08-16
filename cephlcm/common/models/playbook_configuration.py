@@ -46,15 +46,11 @@ class PlaybookConfigurationModel(generic.Model):
         return model
 
     def make_configuration(self, cluster, servers):
-        # TODO(Sergey Arkhipov): Temporarily commented out
-        # Return it back when at least 1 public playbook plugin will be done.
-        # plug = plugins.get_public_playbook_plugins()
-        # plug = plug[self.playbook]
-        # configuration = plug.get_playbook_configuration(self.servers)
+        plug = plugins.get_public_playbook_plugins()
+        plug = plug[self.playbook]
+        configuration = plug.build_playbook_configuration(servers)
 
-        # return configuration
-
-        return {}
+        return configuration
 
     def update_from_db_document(self, structure):
         super().update_from_db_document(structure)

@@ -22,9 +22,9 @@ class PlaybookView(generic.ModelView):
         }
     """
 
-#     decorators = [
-#         auth.require_authentication
-#     ]
+    decorators = [
+        auth.require_authentication
+    ]
 
     NAME = "playbook"
     ENDPOINT = "/playbook/"

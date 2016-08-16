@@ -2,10 +2,8 @@
 """Tests for controller dynamic inventory."""
 
 
-import builtins
 import json
 import os
-import unittest.mock
 
 import pytest
 
@@ -19,14 +17,6 @@ from cephlcm.controller import inventory
 def mocked_configure(monkeypatch, configure_model, pymongo_connection):
     monkeypatch.setattr("cephlcm.common.wrappers.MongoDBWrapper",
                         lambda: pymongo_connection)
-
-
-@pytest.fixture
-def mocked_print(monkeypatch):
-    mocked = unittest.mock.MagicMock()
-    monkeypatch.setattr(builtins, "print", mocked)
-
-    return mocked
 
 
 def test_exit_on_error_ok(mocked_sysexit):
@@ -47,26 +37,15 @@ def test_exit_on_error_error(mocked_sysexit):
     mocked_sysexit.assert_called_once_with("ERROR")
 
 
-@pytest.mark.parametrize("entry_point, task_id", (
-    (None, None),
-    ("1", None),
-    (None, "1"),
-))
-def test_get_entrypoint_and_task_id_fail(entry_point, task_id, monkeypatch):
-    if entry_point:
-        monkeypatch.setenv(playbook_plugin.ENV_ENTRY_POINT, entry_point)
-    if task_id:
-        monkeypatch.setenv(playbook_plugin.ENV_TASK_ID, task_id)
-
+def test_get_entrypoint_fail(monkeypatch):
     with pytest.raises(exceptions.InventoryError):
-        inventory.get_entrypoint_and_task_id()
+        inventory.get_entrypoint()
 
 
 def test_get_entrypoint_and_task_id_ok(monkeypatch):
     monkeypatch.setenv(playbook_plugin.ENV_ENTRY_POINT, "1")
-    monkeypatch.setenv(playbook_plugin.ENV_TASK_ID, "2")
 
-    assert inventory.get_entrypoint_and_task_id() == ("1", "2")
+    assert inventory.get_entrypoint() == "1"
 
 
 def test_get_plugin_fail():
@@ -96,16 +75,15 @@ def test_get_options_recoginze_host_option(monkeypatch, mocked_sysexit):
     assert not opts.list
 
 
-def test_dumps(mocked_print):
+def test_dumps(capsys):
     inventory.dumps({"a": 1})
-    arg = mocked_print.mock_calls[0]
-    arg = arg[1][0]
+    out, err = capsys.readouterr()
 
-    assert json.loads(arg) == {"a": 1}
+    assert json.loads(out) == {"a": 1}
+    assert not err
 
 
-def test_main_list(monkeypatch, mocked_print, mocked_sysexit,
-                   mocked_configure):
+def test_main_list(monkeypatch, capsys, mocked_sysexit, mocked_configure):
     host = pytest.faux.gen_alphanumeric()
     username = pytest.faux.gen_alphanumeric()
     initiator_id = pytest.faux.gen_uuid()
@@ -121,16 +99,13 @@ def test_main_list(monkeypatch, mocked_print, mocked_sysexit,
 
     mocked_sysexit.assert_not_called()
 
-    arg = mocked_print.mock_calls[-1]
-    arg = arg[1][0]
-    arg = json.loads(arg)
-
+    out, _ = capsys.readouterr()
+    arg = json.loads(out)
     assert arg["new"]["hosts"] == [host]
     assert arg["_meta"]["hostvars"][host]["ansible_user"] == username
 
 
-def test_main_host_ok(monkeypatch, mocked_print, mocked_sysexit,
-                      mocked_configure):
+def test_main_host_ok(monkeypatch, capsys, mocked_sysexit, mocked_configure):
     host = pytest.faux.gen_alphanumeric()
     username = pytest.faux.gen_alphanumeric()
     initiator_id = pytest.faux.gen_uuid()
@@ -146,14 +121,12 @@ def test_main_host_ok(monkeypatch, mocked_print, mocked_sysexit,
 
     mocked_sysexit.assert_not_called()
 
-    arg = mocked_print.mock_calls[-1]
-    arg = arg[1][0]
-    arg = json.loads(arg)
-
+    out, _ = capsys.readouterr()
+    arg = json.loads(out)
     assert arg["ansible_user"] == username
 
 
-def test_main_host_failed(monkeypatch, mocked_print, mocked_sysexit,
+def test_main_host_failed(monkeypatch, capsys, mocked_sysexit,
                           mocked_configure):
     host = pytest.faux.gen_alphanumeric()
     unknown_host = pytest.faux.gen_alphanumeric()
@@ -171,4 +144,5 @@ def test_main_host_failed(monkeypatch, mocked_print, mocked_sysexit,
 
     mocked_sysexit.assert_called_once_with(
         "Cannot find required host {0}".format(unknown_host))
-    mocked_print.assert_not_called()
+    out, _ = capsys.readouterr()
+    assert not out

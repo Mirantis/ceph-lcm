@@ -9,6 +9,7 @@ import shutil
 
 import pytest
 
+from cephlcm.common import playbook_plugin
 from cephlcm.common import plugins
 from cephlcm.common.models import task
 
@@ -37,8 +38,10 @@ def plugin():
     plug.tempdir = None
 
 
-def test_dynamic_inventory(new_task, plugin):
-    assert plugin.get_dynamic_inventory(new_task._id) == {
+def test_dynamic_inventory(new_task, plugin, monkeypatch):
+    monkeypatch.setenv(playbook_plugin.ENV_TASK_ID, str(new_task._id))
+
+    assert plugin.get_dynamic_inventory() == {
         "new": {
             "hosts": [new_task.data["host"]]
         },

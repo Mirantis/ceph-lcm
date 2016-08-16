@@ -99,16 +99,23 @@ class ServerDiscovery(playbook_plugin.Ansible):
 
     def create_server(self, task, json_result):
         facts = json_result["ansible_facts"]
-        server_model = server.ServerModel.create(
-            name=facts["ansible_nodename"],
-            fqdn=facts["ansible_nodename"],
-            username=task.data["username"],
-            ip=self.get_host_ip(task),
-            facts=facts
-        )
+        ip_addr = self.get_host_ip(task)
 
-        LOG.info("Creates server %s for task %s",
-                 server_model.model_id, task._id)
+        try:
+            server_model = server.ServerModel.create(
+                name=facts["ansible_nodename"],
+                fqdn=facts["ansible_nodename"],
+                username=task.data["username"],
+                ip=ip_addr,
+                facts=facts
+            )
+        except Exception as exc:
+            LOG.exception("Cannot create server for task %s: %s",
+                          task._id, exc)
+            raise
+        else:
+            LOG.info("Creates server %s for task %s",
+                     server_model.model_id, task._id)
 
         return server_model
 

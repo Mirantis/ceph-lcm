@@ -5,6 +5,7 @@
 import abc
 import contextlib
 import copy
+import functools
 import os
 import shutil
 import subprocess
@@ -61,12 +62,7 @@ class Base(metaclass=abc.ABCMeta):
         if not self.env_task_id:
             return None
 
-        if self._task is not None:
-            with self._task_lock:
-                if self._task is not None:
-                    self._task = task.Task.find_by_id(self.env_task_id)
-
-        return self._task
+        return self.get_task(self.env_task_id)
 
     def __init__(self, entry_point, module_name):
         self.NAME = self.NAME or entry_point
@@ -76,14 +72,16 @@ class Base(metaclass=abc.ABCMeta):
         self.module_name = module_name
         self.entry_point = entry_point
         self.config = self.load_config(self.CONFIG_FILENAME)
-        self._task = None
-        self._task_lock = threading.RLock()
 
     def get_filename(self, filename):
         return pkg_resources.resource_filename(self.module_name, filename)
 
     def load_config(self, config):
         return toml.load(self.get_filename(config or self.CONFIG_FILENAME))
+
+    @functools.lru_cache()
+    def get_task(self, task_id):
+        return task.Task.find_by_id(task_id)
 
     def get_extra_vars(self, task):
         return {}
@@ -112,6 +110,7 @@ class Base(metaclass=abc.ABCMeta):
         process = None
         try:
             process = self.run(commandline, env)
+            yield process
         finally:
             if process:
                 if self.PROCESS_STDOUT is subprocess.PIPE:
@@ -190,19 +189,12 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
     @property
     def playbook_config(self):
-        from cephlcm.common.models import playbook_configuration
-
-        if self._pc is not None:
-            return self._pc
         if not self.task:
             return None
 
-        with self._pc_lock:
-            if not self._pc:
-                return self.get_playbook_configuration(self.task)
+        return self._get_playbook_configuration(self.task._id)
 
-        return self._pc
-
+    @functools.lru_cache()
     def get_playbook_configuration(self, task):
         from cephlcm.common.models import playbook_configuration
 
@@ -210,7 +202,7 @@ class Playbook(Base, metaclass=abc.ABCMeta):
             return None
 
         return playbook_configuration.PlaybookConfigurationModel.find_by_id(
-            task["data"]["playbook_configuration_id"]
+            task.data["playbook_configuration_id"]
         )
 
     def compose_command(self, task):

@@ -33,6 +33,7 @@ class HelloWorld(playbook_plugin.Playbook):
                 host_vars[key] = self.config[key]
 
         for srv in servers:
-            inventory.setdefault("_meta", {})[srv.fqdn] = host_vars
+            inventory.setdefault(
+                "_meta", {"hostvars": {}})["hostvars"][srv.fqdn] = host_vars
 
         return {}, inventory
