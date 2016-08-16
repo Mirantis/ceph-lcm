@@ -16,7 +16,10 @@ DATA_SCHEMA = {
     "name": {"$ref": "#/definitions/non_empty_string"},
     "fqdn": {"$ref": "#/definitions/hostname"},
     "ip": {"$ref": "#/definitions/ip"},
-    "state": {"type": "string", "enum": list(server.ServerModel.STATES)},
+    "state": {
+        "type": "string",
+        "enum": [st.name for st in server.ServerState]
+    },
     "cluster_id": {"$ref": "#/definitions/uuid4"},
     "facts": {"type": "object"}
 }
