@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 import abc
 import inspect
 import logging
+import socket
 
 import requests
 import six
@@ -99,11 +100,12 @@ class Client(object):
 
         return url
 
-    def __init__(self, url, login, password):
+    def __init__(self, url, login, password, timeout=None):
         self._url = self._prepare_base_url(url)
         self._login = login
         self._password = password
         self._session = requests.Session()
+        self.timeout = timeout or socket.getdefaulttimeout() or None
 
         if self.AUTH_CLASS:
             self._session.auth = self.AUTH_CLASS(self)
@@ -163,20 +165,22 @@ class V1Client(Client):
         payload = {}
         params = self._make_query_params(page=page, per_page=per_page)
 
-        return self._session.get(url, params=params, json=payload)
+        return self._session.get(url, params=params, json=payload,
+                                 timeout=self.timeout)
 
     def get_user(self, user_id):
         url = self._make_url("/v1/user/{0}/".format(user_id))
         payload = {}
 
-        return self._session.get(url, json=payload)
+        return self._session.get(url, json=payload, timeout=self.timeout)
 
     def get_user_versions(self, user_id, page=None, per_page=None):
         url = self._make_url("/v1/user/{0}/version/".format(user_id))
         payload = {}
         params = self._make_query_params(page=page, per_page=per_page)
 
-        return self._session.get(url, params=params, json=payload)
+        return self._session.get(url, params=params, json=payload,
+                                 timeout=self.timeout)
 
     def get_user_version(self, user_id, version):
         url = self._make_url(
@@ -184,7 +188,7 @@ class V1Client(Client):
         )
         payload = {}
 
-        return self._session.get(url, json=payload)
+        return self._session.get(url, json=payload, timeout=self.timeout)
 
     def create_user(self, login, email, full_name="", roles=None):
         role_ids = []
@@ -203,7 +207,7 @@ class V1Client(Client):
             "role_ids": role_ids
         }
 
-        return self._session.post(url, json=payload)
+        return self._session.post(url, json=payload, timeout=self.timeout)
 
     def update_user(self, model_data):
         if hasattr(model_data, "to_json"):
@@ -211,27 +215,29 @@ class V1Client(Client):
 
         url = self._make_url("/v1/user/{0}/".format(model_data["id"]))
 
-        return self._session.put(url, json=model_data)
+        return self._session.put(url, json=model_data, timeout=self.timeout)
 
     def get_roles(self, page=None, per_page=None):
         url = self._make_url("/v1/role")
         payload = {}
         params = self._make_query_params(page=page, per_page=per_page)
 
-        return self._session.get(url, params=params, json=payload)
+        return self._session.get(url, params=params, json=payload,
+                                 timeout=self.timeout)
 
     def get_role(self, role_id):
         url = self._make_url("/v1/role/{0}/".format(role_id))
         payload = {}
 
-        return self._session.get(url, json=payload)
+        return self._session.get(url, json=payload, timeout=self.timeout)
 
     def get_role_versions(self, role_id, page=None, per_page=None):
         url = self._make_url("/v1/role/{0}/version/".format(role_id))
         payload = {}
         params = self._make_query_params(page=page, per_page=per_page)
 
-        return self._session.get(url, params=params, json=payload)
+        return self._session.get(url, params=params, json=payload,
+                                 timeout=self.timeout)
 
     def get_role_version(self, role_id, version):
         url = self._make_url(
@@ -239,10 +245,10 @@ class V1Client(Client):
         )
         payload = {}
 
-        return self._session.get(url, json=payload)
+        return self._session.get(url, json=payload, timeout=self.timeout)
 
     def get_permissions(self):
         url = self._make_url("/v1/permission/")
         payload = {}
 
-        return self._session.get(url, json=payload)
+        return self._session.get(url, json=payload, timeout=self.timeout)
