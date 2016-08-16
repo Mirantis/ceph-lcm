@@ -11,6 +11,7 @@ from cephlcm.api.views import generic
 from cephlcm.common import exceptions as base_exceptions
 from cephlcm.common import log
 from cephlcm.common.models import execution
+from cephlcm.common.models import execution_step
 from cephlcm.common.models import playbook_configuration
 from cephlcm.common.models import task
 
@@ -152,3 +153,34 @@ class ExecutionView(generic.VersionedCRUDView):
                  item.model_id, tsk._id)
 
         return item
+
+
+class ExecutionStepsView(generic.ModelView):
+
+    NAME = "execution_step"
+    MODEL_NAME = "execution_step"
+
+    decorators = [
+        auth.require_authorization("api", "view_execution"),
+        auth.require_authorization("api", "view_execution_steps"),
+        auth.require_authentication
+    ]
+
+    @classmethod
+    def register_to(cls, application):
+        main_endpoint = generic.make_endpoint(
+            ExecutionView.ENDPOINT,
+            "<{0}:item_id>".format(ExecutionView.PARAMETER_TYPE),
+            "steps"
+        )
+
+        application.add_url_rule(
+            main_endpoint,
+            view_func=cls.as_view(cls.NAME), methods=["GET"]
+        )
+
+    @validators.with_model(execution.ExecutionModel)
+    def get(self, item_id, item):
+        return execution_step.ExecutionStep.list_models(
+            item_id, self.pagination
+        )
