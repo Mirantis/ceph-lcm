@@ -81,6 +81,13 @@ def paginate(method, page, per_page, *args, **kwargs):
     help="Password to access CephLCM."
 )
 @click.option(
+    "--timeout", "-t",
+    envvar="CEPHLCM_TIMEOUT",
+    type=int,
+    default=None,
+    help="Timeout to access API. No timeout by default."
+)
+@click.option(
     "--debug", "-d",
     is_flag=True,
     envvar="CEPHLCM_DEBUG",
@@ -93,7 +100,7 @@ def paginate(method, page, per_page, *args, **kwargs):
     help="How to format output. Currently only JSON is supported."
 )
 @click.pass_context
-def cli(ctx, url, login, password, debug, output_format):
+def cli(ctx, url, login, password, debug, timeout, output_format):
     """cephlcm command line tool.
 
     With this CLI it is possible to access all API endpoints
@@ -107,6 +114,7 @@ def cli(ctx, url, login, password, debug, output_format):
         - CEPHLCM_URL      - this environment variable sets URL to access.
         - CEPHLCM_LOGIN    - this environment variable sets login.
         - CEPHLCM_PASSWORD - this environment variable sets password.
+        - CEPHLCM_TIMEOUT  - this environment variable sets timeout.
     """
 
     ctx.obj = {
@@ -114,8 +122,9 @@ def cli(ctx, url, login, password, debug, output_format):
         "login": login,
         "password": password,
         "debug": debug,
+        "timeout": timeout,
         "format": output_format,
-        "client": Client(url, login, password)
+        "client": Client(url, login, password, timeout=timeout)
     }
     ctx.obj["model_client"] = ModelClient(ctx.obj["client"])
 
