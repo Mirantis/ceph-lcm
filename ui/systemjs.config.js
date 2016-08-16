@@ -1,3 +1,7 @@
+/**
+ * System configuration for Angular 2 samples
+ * Adjust as necessary for your application needs.
+ */
 (function(global) {
 
   // map tells the System loader where to look for things
@@ -7,21 +11,20 @@
     '@angular':                   'node_modules/@angular',
     'angular2-in-memory-web-api': 'node_modules/angular2-in-memory-web-api',
     'rxjs':                       'node_modules/rxjs',
-    'angular2-cookie':            'node_modules/angular2-cookie',
-    'lodash':                     'node_modules/lodash',
+    'lodash':                     'node_modules/lodash/lodash.js',
     'js-data':                    'node_modules/js-data',
-    'js-data-http':               'node_modules/js-data-http'
+    'js-data-http':               'node_modules/js-data-http',
+    'angular2-cookie':            'node_modules/angular2-cookie'
   };
 
   // packages tells the System loader how to load when no filename and/or no extension
   var packages = {
     'app':                        { main: 'main.js',  defaultExtension: 'js' },
-    'angular2-cookie':            { main: 'core.js',  defaultExtension: 'js' },
     'rxjs':                       { defaultExtension: 'js' },
     'angular2-in-memory-web-api': { main: 'index.js', defaultExtension: 'js' },
-    'lodash':                     { main: 'lodash.js', defaultExtension: 'js' },
-    'js-data':                    { main: 'dist/js-data.js', defaultExtension: 'js' },
-    'js-data-http':               { main: 'dist/js-data-http.js', defaultExtension: 'js' }
+    'js-data':                    { main: 'dist/js-data.js' },
+    'js-data-http':               { main: 'dist/js-data-http.js' },
+    'angular2-cookie':            { main: 'core.js' }
   };
 
   var ngPackageNames = [
@@ -35,9 +38,6 @@
     'router',
     'router-deprecated',
     'upgrade',
-    'lodash',
-    'jd-data',
-    'js-data-http'
   ];
 
   // Individual files (~300 requests):

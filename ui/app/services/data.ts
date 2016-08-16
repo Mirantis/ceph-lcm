@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 
-import {Injectable} from '@angular/core';
-import {DataStore, Record, Mapper} from 'js-data';
-import {HttpAdapter} from 'js-data-http';
-import {SessionService} from './session';
+import { Injectable } from '@angular/core';
+import { DataStore, Record, Mapper } from 'js-data';
+import { HttpAdapter } from 'js-data-http';
+import { SessionService } from './session';
 
 type supportedMappers = 'auth' | 'user';
 

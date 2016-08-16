@@ -1,16 +1,20 @@
-import {provideRouter, RouterConfig} from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
 
 import {HomeComponent} from './components/home';
 import {LoginComponent} from './components/login';
 import {DashboardComponent} from './components/dashboard';
-import {PageNotFoundComponent} from './components/404';
-import {LoggedIn} from './services/auth'
+import {PageNotFoundComponent} from './404';
+import {LoggedIn} from './services/auth';
 
-export const routes = [
+const appRoutes: Routes = [
   {path: '', component: HomeComponent, terminal: true},
   {path: 'login', component: LoginComponent},
   {path: 'dashboard', component: DashboardComponent, canActivate: [LoggedIn]},
   {path: '**', component: PageNotFoundComponent}
 ];
 
-export const APP_ROUTES_PROVIDER = provideRouter(routes);
+export const appRoutingProviders: any[] = [
+
+];
+
+export const routing = RouterModule.forRoot(appRoutes);

@@ -22,16 +22,19 @@ export class AuthService {
       .then((token: any) => {
         this.session.saveToken(token);
 
+        this.getLoggedUser();
+
         var url = this.redirectUrl || '/dashboard';
         this.redirectUrl = null;
         this.router.navigate([url]);
-      }, (error) => {
+      }, (error: any) => {
         console.warn(error);
       })
   }
 
   logout(): Promise<any> {
     this.session.removeToken();
+    this.loggedUser = null;
     return this.data.token().destroy(null)
       .then(() => this.router.navigate(['/login']));
   }
@@ -43,8 +46,9 @@ export class AuthService {
   getLoggedUser() {
     if (!this.loggedUser) {
       this.loggedUser = this.data.user().find(this.session.getLoggedUserId())
-        .then((user) => {
+        .then((user: any) => {
           this.loggedUser = user;
+          
           return this.loggedUser;
         });
     }

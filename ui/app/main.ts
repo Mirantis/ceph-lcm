@@ -1,18 +1,5 @@
-import {APP_ROUTES_PROVIDER} from './app.routes';
-import {HTTP_PROVIDERS} from '@angular/http';
-import {bootstrap}    from '@angular/platform-browser-dynamic';
-import {AppComponent} from './components/app';
-import {CookieService} from 'angular2-cookie/core';
-import {SessionService} from './services/session'
-import {AuthService, LoggedIn} from './services/auth'
-import {DataService} from './services/data';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
-bootstrap(AppComponent, [
-  APP_ROUTES_PROVIDER,
-  HTTP_PROVIDERS,
-  CookieService,
-  AuthService,
-  SessionService,
-  LoggedIn,
-  DataService
-]);
+import { AppModule } from './app.module';
+
+platformBrowserDynamic().bootstrapModule(AppModule);
