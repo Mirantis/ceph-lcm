@@ -5,7 +5,7 @@ import { DataStore, Record, Mapper } from 'js-data';
 import { HttpAdapter } from 'js-data-http';
 import { SessionService } from './session';
 
-type supportedMappers = 'auth' | 'user';
+type supportedMappers = 'auth' | 'user' | 'role';
 
 @Injectable()
 export class DataService {
@@ -16,10 +16,12 @@ export class DataService {
   store = new DataStore();
   // FIXME: to be moved to configuration
   adapter = new HttpAdapter({basePath: 'http://private-3509f-cephlcmswaggerapi.apiary-mock.com/v1'});
+  // adapter = new HttpAdapter({basePath: 'http://private-47d2dd-cephlcm.apiary-mock.com/v1'});
   mappers = {};
 
   token(): Mapper {return this.getMapper('auth')}
   user(): Mapper {return this.getMapper('user')}
+  role(): Mapper {return this.getMapper('role')}
 
   private modelsProperties = {
     auth: {

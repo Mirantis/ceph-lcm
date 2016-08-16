@@ -1,12 +1,13 @@
 import { NgModule }      from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule }   from '@angular/forms';
-
+import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent }  from './app.component';
-import { LoginComponent }  from './dashboard/login';
-import { DashboardComponent }  from './dashboard/dashboard';
+import { LoginComponent, DashboardComponent }  from './dashboard/index';
+import { UsersComponent }  from './users/index';
 import { PageNotFoundComponent }  from './404';
+
+import { UsersModule }  from './users/users.module';
 
 import { AuthService, LoggedIn}  from './services/auth';
 import { SessionService }  from './services/session';
@@ -23,17 +24,18 @@ import { appRoutingProviders, routing } from './app.routes';
     PageNotFoundComponent
   ],
   imports: [
-    BrowserModule,
     routing,
-    FormsModule
+    UsersModule,
+    FormsModule,
+    BrowserModule
   ],
   providers: [
+    LoggedIn,
     AuthService,
-    SessionService,
-    CookieService,
     DataService,
-    appRoutingProviders,
-    LoggedIn
+    CookieService,
+    SessionService,
+    appRoutingProviders
   ],
   bootstrap: [ AppComponent ]
 })

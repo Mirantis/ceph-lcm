@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {Router} from '@angular/router';
 import {AuthService}   from '../services/auth';
 
 
@@ -9,10 +8,10 @@ import {AuthService}   from '../services/auth';
   <div class='login' *ngIf='!auth.isLoggedIn()'>
   <form (ngSubmit)='login()' #loginForm='ngForm'>
     <h3>Login</h3>
-    <input type='text' placeholder='E-mail' [(ngModel)]='email' name='email' required>
-    <input type='password' placeholder='Password' [(ngModel)]='password' name='password' required>
+    <input type='text' placeholder='E-mail' [(ngModel)]='email' name='email' class='form-control' required>
+    <input type='password' placeholder='Password' [(ngModel)]='password' name='password' class='form-control' required>
 
-    <button type='submit' [disabled]='!loginForm.form.valid'>Get In</button>
+    <button type='submit' [disabled]='!loginForm.form.valid' class='btn'>Get In</button>
     </form>
   </div>
   <div *ngIf='auth.isLoggedIn()'>
@@ -22,7 +21,7 @@ import {AuthService}   from '../services/auth';
 `
 })
 export class LoginComponent {
-  constructor(public auth: AuthService, private router: Router) {}
+  constructor(public auth: AuthService) {}
 
   email: string;
   password: string;

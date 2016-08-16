@@ -1,18 +1,15 @@
 import { Routes, RouterModule } from '@angular/router';
 
-import {LoginComponent} from './dashboard/login';
-import {DashboardComponent} from './dashboard/dashboard';
+import {dashboardRoutes} from './dashboard/index';
+import {usersRoutes} from './users/index';
 import {PageNotFoundComponent} from './404';
-import {LoggedIn} from './services/auth';
 
 const appRoutes: Routes = [
-  {path: 'login', component: LoginComponent},
-  {path: '', component: DashboardComponent, canActivate: [LoggedIn]},
-  {path: '**', component: PageNotFoundComponent}
+  ...dashboardRoutes,
+  ...usersRoutes,
+  {path: '**', redirectTo: 'dashboard', pathMatch: 'full'}
 ];
 
-export const appRoutingProviders: any[] = [
-
-];
+export const appRoutingProviders: any[] = [];
 
 export const routing = RouterModule.forRoot(appRoutes);

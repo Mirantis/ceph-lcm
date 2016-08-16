@@ -1,15 +1,4 @@
 /* Master Styles */
-h1 {
-  color: #369;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 250%;
-}
-h2,
-h3 {
-  color: #444;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: lighter;
-}
 body {
   margin: 2em;
 }
@@ -17,19 +6,26 @@ a {
   cursor: pointer;
   cursor: hand;
 }
-navigation li {
-  min-width: 80px;
+navigation ul {
+  background-color: #EEE;
+  padding: 10px;
+  margin: 10px 0;
+}
+navigation ul li {
+  min-width: 100px;
   display: inline-block;
 }
-navigation li.right {
+navigation ul li.right {
   float: right;
 }
-navigation li a.active {
+navigation ul li a.active {
   color: black;
+  font-weight: 800;
+  text-decoration: none;
 }
 div.login {
   position: fixed;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.7);
   top: 0;
   left: 0;
   bottom: 0;
@@ -42,15 +38,14 @@ div.login h3 {
 div.login form {
   margin-top: 100px;
   display: inline-block;
-  width: 160px;
   text-align: left;
   border: solid 1px #aaa;
   padding: 15px 20px;
-  box-shadow: 0px 20px 50px #888;
+  box-shadow: 0px 20px 150px #888;
   background-color: #FFF;
 }
 div.login form input {
   width: 160px;
-  clear: left;
+  display: block;
   margin-bottom: 10px;
 }

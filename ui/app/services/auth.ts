@@ -24,7 +24,8 @@ export class AuthService {
 
         this.getLoggedUser();
 
-        var url = this.redirectUrl || '/';
+        var url = this.redirectUrl || '/dashboard';
+        console.log(token);
         this.redirectUrl = null;
         this.router.navigate([url]);
       }, (error: any) => {
