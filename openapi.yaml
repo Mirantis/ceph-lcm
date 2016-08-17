@@ -708,11 +708,7 @@ paths:
               name:
                 $ref: "#/definitions/NonEmptyString"
               permissions:
-                type: object
-                additionalProperties:
-                  type: array
-                  items:
-                    $ref: "#/definitions/NonEmptyString"
+                $ref: "#/definitions/Permission"
       responses:
         200:
           description: Successful response
@@ -1492,7 +1488,7 @@ paths:
             type: object
             required:
               - api
-              - playbooks
+              - playbook
             properties:
               api:
                 type: array
@@ -1734,11 +1730,7 @@ definitions:
           name:
             $ref: "#/definitions/NonEmptyString"
           permissions:
-            type: object
-            additionalProperties:
-              type: array
-              items:
-                $ref: "#/definitions/NonEmptyString"
+            $ref: "#/definitions/Permission"
 
   # A Server model
   Server:
@@ -1877,3 +1869,20 @@ definitions:
             $ref: "#/definitions/NonEmptyString"
           configuration:
             type: object
+
+  # A model for permission set.
+  Permission:
+    type: object
+    additionalProperties: false
+    required:
+      - api
+      - playbook
+    properties:
+      api:
+        type: array
+        items:
+          $ref: "#/definitions/NonEmptyString"
+      playbook:
+        type: array
+        items:
+          $ref: "#/definitions/NonEmptyString"
