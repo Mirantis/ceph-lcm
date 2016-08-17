@@ -2,6 +2,7 @@
 """This module contains special property descriptors."""
 
 
+import enum
 import importlib
 
 
@@ -24,9 +25,8 @@ class ChoicesProperty(Property):
 
     def __set__(self, instance, value):
         choices = self.choices
-        if callable(choices):
+        if callable(choices) and type(choices) is not enum.EnumMeta:
             choices = choices()
-        choices = set(choices)
 
         try:
             if value in choices:

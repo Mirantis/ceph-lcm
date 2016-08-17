@@ -6,9 +6,19 @@ using API. It has to be created after Ansible playbook invocation.
 """
 
 
+import enum
+
 from cephlcm.common import exceptions
 from cephlcm.common.models import generic
 from cephlcm.common.models import properties
+
+
+@enum.unique
+class ServerState(enum.IntEnum):
+    operational = 1
+    off = 2
+    maintenance_no_reconfig = 3
+    maintenance_reconfig = 4
 
 
 class ServerModel(generic.Model):
@@ -23,22 +33,6 @@ class ServerModel(generic.Model):
     MODEL_NAME = "server"
     COLLECTION_NAME = "server"
     DEFAULT_SORT_BY = [("name", generic.SORT_ASC)]
-
-    STATE_OPERATIONAL = "operational"
-    """Server state when everything is up and running."""
-
-    STATE_OFF = "off"
-    """Server state when it is turned off."""
-
-    STATE_MAINTENANCE_NO_RECONFIG = "maintenance_no_reconfig"
-    """Server state when it is in maintenance mode without reconfiguration."""
-
-    STATE_MAINTENANCE_RECONFIG = "maintenance_reconfig"
-    """Server state when it is in maintenance mode with reconfiguration."""
-
-    STATES = set((STATE_OPERATIONAL, STATE_OFF,
-                  STATE_MAINTENANCE_NO_RECONFIG, STATE_MAINTENANCE_RECONFIG))
-    """Possible server states."""
 
     def __init__(self):
         super().__init__()
@@ -57,11 +51,11 @@ class ServerModel(generic.Model):
         "cluster_id"
     )
 
-    state = properties.ChoicesProperty("_state", STATES)
+    state = properties.ChoicesProperty("_state", ServerState)
 
     @classmethod
     def create(cls, name, username, fqdn, ip,
-               facts=None, cluster_id=None, state=STATE_OPERATIONAL,
+               facts=None, cluster_id=None, state=ServerState.operational,
                initiator_id=None):
         model = cls()
         model.name = name
@@ -145,7 +139,7 @@ class ServerModel(generic.Model):
         self.username = structure["username"]
         self.fqdn = structure["fqdn"]
         self.ip = structure["ip"]
-        self.state = structure["state"]
+        self.state = ServerState[structure["state"]]
         self.initiator_id = structure["initiator_id"]
         self.cluster = structure["cluster_id"]
         self.facts = structure["facts"]
@@ -163,7 +157,7 @@ class ServerModel(generic.Model):
             "username": self.username,
             "fqdn": self.fqdn,
             "ip": self.ip,
-            "state": self.state,
+            "state": self.state.name,
             "initiator_id": self.initiator_id,
             "cluster_id": self.cluster_id,
             "facts": self.facts
@@ -177,7 +171,7 @@ class ServerModel(generic.Model):
             "username": self.username,
             "fqdn": self.fqdn,
             "ip": self.ip,
-            "state": self.state,
+            "state": self.state.name,
             "cluster_id": self.cluster_id,
             "facts": facts
         }

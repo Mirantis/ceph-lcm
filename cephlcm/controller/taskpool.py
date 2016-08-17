@@ -42,42 +42,46 @@ class TaskPool:
         stop_event = threading.Event()
 
         def done_callback(result):
-            LOG.debug("Finish execution of task %s", tsk._id)
+            LOG.debug("Finish execution of task %s", tsk)
 
             try:
                 if result.cancelled() or stop_event.is_set():
-                    LOG.info("Cancel task %s", tsk._id)
+                    LOG.info("Cancel task %s", tsk)
                     tsk.cancel()
                 elif result.exception():
                     exc = result.exception()
-                    LOG.info("Fail task %s: %s", tsk._id, exc)
+                    LOG.info("Fail task %s: %s", tsk, exc)
                     tsk.fail(str(exc))
                 else:
-                    LOG.info("Complete task %s", tsk._id)
+                    LOG.info("Complete task %s", tsk)
                     tsk.complete()
             except Exception as exc:
-                LOG.exception("Cannot finish task %s: %s", tsk._id, exc)
+                LOG.exception("Cannot finish task %s: %s", tsk, exc)
 
             with self.data_lock:
-                self.data.pop(tsk._id, None)
-                LOG.debug("Removed finished task %s. Current active tasks %d",
-                          tsk._id, len(self.data))
+                self.data.pop(tsk.id, None)
+                LOG.debug(
+                    "Removed finished task %s. Current active "
+                    "tasks %d", tsk, len(self.data)
+                )
 
         future = self.pool.submit(self.execute, tsk, stop_event)
         future.add_done_callback(done_callback)
 
         with self.data_lock:
             if not self.global_stop_event.is_set():
-                self.data[tsk._id] = TaskState(future, stop_event)
+                self.data[tsk.id] = TaskState(future, stop_event)
             else:
-                LOG.info("Do not submit task %s because global stop is "
-                         "requested.", tsk._id)
+                LOG.info(
+                    "Do not submit task %s because global stop is requested.",
+                    tsk
+                )
 
     def execute(self, tsk, stop_ev):
         # Small hack to prevent execution of callback BEFORE task
         # happen to arrive into self.data. It is possible because
         # submitting task into pool is eager.
-        while tsk._id not in self.data:
+        while tsk.id not in self.data:
             time.sleep(0.1)
 
         plugin = self.get_plugin(tsk)
@@ -87,7 +91,7 @@ class TaskPool:
 
             LOG.info(
                 "Management process for task %s was started. Pid %d",
-                tsk._id, process.pid
+                tsk, process.pid
             )
 
             while not stop_ev.is_set() and process.poll() is None:
@@ -98,7 +102,7 @@ class TaskPool:
             LOG.info(
                 "Management process for task %s with PID %d has "
                 "stopped with exit code %d",
-                tsk._id, process.pid, process.returncode
+                tsk, process.pid, process.returncode
              )
 
             if process.returncode != os.EX_OK:
@@ -141,7 +145,7 @@ class TaskPool:
     def get_plugin(self, tsk):
         plugs = plugins.get_playbook_plugins()
 
-        if tsk.task_type == task.Task.TASK_TYPE_PLAYBOOK:
+        if tsk.task_type == task.TaskType.playbook:
             plugin_name = tsk.data["playbook"]
         else:
             plugin_name = tsk.task_type

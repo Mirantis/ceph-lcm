@@ -6,6 +6,7 @@ import collections
 
 from cephlcm.common import exceptions
 from cephlcm.common.models import generic
+from cephlcm.common import plugins
 
 
 class PermissionSet:
@@ -43,6 +44,10 @@ class PermissionSet:
 
     def make_api_structure(self, *args, **kwargs):
         return {k: sorted(v) for k, v in self.permissions.items()}
+
+
+for plugin in plugins.get_public_playbook_plugins():
+    PermissionSet.add_permission("playbook", plugin)
 
 
 class RoleModel(generic.Model):

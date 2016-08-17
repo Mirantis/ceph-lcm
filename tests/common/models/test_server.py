@@ -19,7 +19,7 @@ def test_set_state_fail(state):
         model.state = state
 
 
-@pytest.mark.parametrize("state", server.ServerModel.STATES)
+@pytest.mark.parametrize("state", server.ServerState)
 def test_set_state_ok(state):
     model = server.ServerModel()
 
@@ -27,7 +27,7 @@ def test_set_state_ok(state):
     assert model.state == state
 
 
-@pytest.mark.parametrize("state", server.ServerModel.STATES)
+@pytest.mark.parametrize("state", server.ServerState)
 @pytest.mark.parametrize("facts", ({}, None, {"a": 1}))
 @pytest.mark.parametrize("cluster_id", (None, str(uuid.uuid4())))
 def test_create(state, facts, cluster_id, pymongo_connection,
@@ -62,7 +62,7 @@ def test_create(state, facts, cluster_id, pymongo_connection,
     assert model.ip == db_model["ip"]
     assert model.facts == db_model["facts"]
     assert model.cluster_id == db_model["cluster_id"]
-    assert model.state == db_model["state"]
+    assert model.state.name == db_model["state"]
     assert model.model_id == db_model["model_id"]
     assert model.time_created == db_model["time_created"]
     assert model.time_deleted == db_model["time_deleted"]
@@ -93,7 +93,7 @@ def test_make_api_structure(facts, expand_facts, configure_model):
             "username": model.username,
             "fqdn": model.fqdn,
             "ip": ip,
-            "state": server.ServerModel.STATE_OPERATIONAL,
+            "state": server.ServerState.operational.name,
             "cluster_id": None,
             "facts": (facts if expand_facts else {})
         }

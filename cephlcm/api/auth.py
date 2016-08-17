@@ -56,19 +56,23 @@ def require_authorization(permission_class, permission_name):
                 LOG.warning("Cannot find authenticated user model")
                 raise exceptions.Forbidden
 
-            has_permission = any(
-                r.has_permission(permission_class, permission_name)
-                for r in user_model.roles
-            )
-            if not has_permission:
-                LOG.warning("User with ID %s has no enough permissions",
-                            user_model.model_id)
-                raise exceptions.Forbidden
+            check_auth_permission(user_model, permission_class,
+                                  permission_name)
 
             return func(*args, **kwargs)
 
         return inner_decorator
     return outer_decorator
+
+
+def check_auth_permission(usr, permission_class, permission_name):
+    has_permission = any(
+        r.has_permission(permission_class, permission_name)
+        for r in usr.roles
+    )
+    if not has_permission:
+        LOG.warning("User with ID %s has no enough permissions", usr.model_id)
+        raise exceptions.Forbidden
 
 
 def authenticate(user_name, password):

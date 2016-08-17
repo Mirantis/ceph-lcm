@@ -109,7 +109,7 @@ def test_post_server(host, client_v1, normal_user, sudo_client_v1,
     found_task = pymongo_connection.db.task.find_one({"data.host": host})
     assert found_task
 
-    assert found_task["task_type"] == task.Task.TASK_TYPE_SERVER_DISCOVERY
+    assert found_task["task_type"] == task.TaskType.server_discovery.name
     assert found_task["time"]["created"] == int(freeze_time.return_value)
     assert found_task["data"]["host"] == host
     assert found_task["data"]["username"] == request["username"]
@@ -133,7 +133,8 @@ def test_update_server(sudo_client_v1, client_v1, normal_user):
     api_model["data"]["facts"] = {
         pytest.faux.gen_alpha(): pytest.faux.gen_alpha()
     }
-    api_model["data"]["state"] = server.ServerModel.STATE_MAINTENANCE_RECONFIG
+    api_model["data"]["state"] \
+        = server.ServerState.maintenance_no_reconfig.name
 
     response = client_v1.put("/v1/server/{0}/".format(srv.model_id),
                              data=api_model)
