@@ -9,23 +9,58 @@ a {
   cursor: hand;
 }
 
-navigation ul {
-  background-color: #EEE;
-  padding: 10px;
-  margin: 10px 0;
+navigation {
+  &.tabs {
+    ul {
+      border-bottom: solid 1px #CCC;
+      padding-bottom: 0;
+      margin-bottom: 20px;
 
-  li {
-    min-width: 100px;
-    display: inline-block;
+      a {
+        border-radius: 5px 5px 0 0;
+        position: relative;
+        top: 1px;
+        margin-right: 6px;
 
-    &.right {
-      float: right;
+        &.active {
+          background-color: #FFF;
+          border-bottom: solid 1px #FFF;
+        }
+      }
     }
+  }
+  ul {
+    padding: 10px;
+    margin: 10px 0;
 
-    a.active {
-      color: black;
-      font-weight: 800;
-      text-decoration: none;
+    li {
+      display: inline-block;
+
+      &.right {
+        float: right;
+      }
+
+      a {
+        display: inline-block;
+        min-width: 150px;
+        padding: 8px;
+        border: solid 1px #CCC;
+        border-radius: 5px;
+        text-align: center;
+        margin-right: 10px;
+        color: #444;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: none;
+        }
+
+        &.active {
+          background-color: #DDD;
+          text-decoration: none;
+        }
+      }
+
     }
   }
 }
@@ -56,6 +91,22 @@ div.login {
       width: 160px;
       display: block;
       margin-bottom: 10px;
+    }
+  }
+}
+
+table.roles {
+  td:first-child {
+    padding-left: 20px;
+    vertical-align: middle;
+  }
+
+  td:nth-child(n+2) {
+    text-align: center;
+    font-size: 150%;
+
+    button {
+      padding: 0;
     }
   }
 }

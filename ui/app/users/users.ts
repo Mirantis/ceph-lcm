@@ -4,6 +4,7 @@ import { DataService } from '../services/data';
 
 @Component({
   template: `
+<h3>Users Management</h3>
 <table class='users table' *ngIf='users.length'>
   <thead>
     <tr>

@@ -6,21 +6,47 @@ a {
   cursor: pointer;
   cursor: hand;
 }
+navigation.tabs ul {
+  border-bottom: solid 1px #CCC;
+  padding-bottom: 0;
+  margin-bottom: 20px;
+}
+navigation.tabs ul a {
+  border-radius: 5px 5px 0 0;
+  position: relative;
+  top: 1px;
+  margin-right: 6px;
+}
+navigation.tabs ul a.active {
+  background-color: #FFF;
+  border-bottom: solid 1px #FFF;
+}
 navigation ul {
-  background-color: #EEE;
   padding: 10px;
   margin: 10px 0;
 }
 navigation ul li {
-  min-width: 100px;
   display: inline-block;
 }
 navigation ul li.right {
   float: right;
 }
+navigation ul li a {
+  display: inline-block;
+  min-width: 150px;
+  padding: 8px;
+  border: solid 1px #CCC;
+  border-radius: 5px;
+  text-align: center;
+  margin-right: 10px;
+  color: #444;
+  text-decoration: none;
+}
+navigation ul li a:hover {
+  text-decoration: none;
+}
 navigation ul li a.active {
-  color: black;
-  font-weight: 800;
+  background-color: #DDD;
   text-decoration: none;
 }
 div.login {
@@ -48,4 +74,15 @@ div.login form input {
   width: 160px;
   display: block;
   margin-bottom: 10px;
+}
+table.roles td:first-child {
+  padding-left: 20px;
+  vertical-align: middle;
+}
+table.roles td:nth-child(n+2) {
+  text-align: center;
+  font-size: 150%;
+}
+table.roles td:nth-child(n+2) button {
+  padding: 0;
 }

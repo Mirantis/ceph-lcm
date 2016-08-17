@@ -6,20 +6,25 @@ import { AuthService } from './services/auth';
 @Component({
   selector: 'app',
   template: `
-<header>
-  <h1>#cephilis</h1>
-  <h2>Go get yours at Mirantis!</h2>
-</header>
+<div class='row'>
+  <div class='col-sm-3'>
+    <header>
+      <h1>#cephilis</h1>
+      <em>Go get yours at Mirantis!</em>
+    </header>
+  </div>
+  <div class='col-sm-9'>
+    <navigation *ngIf='auth.isLoggedIn()'>
+      <ul>
+        <li> <a [routerLink]="['/dashboard']" routerLinkActive='active'>Dashboard</a>
+        <li> <a [routerLink]="['/admin']" routerLinkActive='active'>Admin</a>
 
-<navigation *ngIf='auth.isLoggedIn()'>
-  <ul>
-    <li> <a [routerLink]="['/dashboard']" routerLinkActive='active'>Dashboard</a>
-    <li> <a [routerLink]="['/admin']" routerLinkActive='active'>Admin</a>
-
-    <li class='right'> Logged as {{this.getLoggedUserName()}}
-      <button (click)='auth.logout()' class='btn btn-sm'>Log out</button>
-  </ul>
-</navigation>
+        <li class='right'> Logged as {{this.getLoggedUserName()}}
+          <button (click)='auth.logout()' class='btn btn-sm'>Log out</button>
+      </ul>
+    </navigation>
+  </div>
+</div>
 
 <router-outlet></router-outlet>
 `

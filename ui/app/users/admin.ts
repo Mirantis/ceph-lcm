@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 @Component({
   template: `
-<navigation>
+<navigation class='tabs'>
   <ul>
     <li> <a [routerLink]="['users']" routerLinkActive='active'>Users</a>
     <li> <a [routerLink]="['roles']" routerLinkActive='active'>Roles</a>
