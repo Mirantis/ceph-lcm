@@ -9,6 +9,8 @@ import threading
 
 from cephlcm.common import config
 from cephlcm.common import log
+from cephlcm.common.models import execution
+from cephlcm.common.models import server
 from cephlcm.common.models import task
 from cephlcm.controller import taskpool
 
@@ -76,6 +78,14 @@ def shutdown_callback(message, code):
 
 
 def possible_to_process(tsk):
+    if tsk.task_type == task.TaskType.playbook:
+        servers = get_servers_for_task(tsk.execution_id)
+        try:
+            server.ServerModel.lock_servers(servers)
+        except ValueError:
+            LOG.info("Cannot execute task because servers are locked.")
+            return False
+
     return True
 
 
@@ -85,3 +95,24 @@ def process_task(tsk):
     tsk.start()
 
     TASK_POOL.submit(tsk)
+
+
+def get_servers_for_task(execution_id):
+    execmodel = execution.ExecutionModel.find_by_model_id(execution_id)
+    server_ips = get_server_ips(execmodel.playbook_configuration.configuration)
+    servers = server.ServerModel.find_by_ip(server_ips)
+
+    return servers
+
+
+def get_server_ips(configuration):
+    ips = set()
+
+    configuration.pop("_meta", None)
+    for group in configuration.values():
+        if isinstance(group, dict):
+            ips.update(group.get("hosts", []))
+        else:
+            ips.update(group)
+
+    return list(ips)

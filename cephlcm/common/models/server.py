@@ -7,6 +7,7 @@ using API. It has to be created after Ansible playbook invocation.
 
 
 import enum
+import uuid
 
 from cephlcm.common import exceptions
 from cephlcm.common.models import generic
@@ -45,6 +46,7 @@ class ServerModel(generic.Model):
         self.cluster_id = None
         self._cluster = None
         self.facts = {}
+        self.lock = None
 
     _cluster = properties.ModelProperty(
         "cephlcm.common.models.cluster.ClusterModel",
@@ -66,13 +68,26 @@ class ServerModel(generic.Model):
         model.cluster = cluster_id
         model.state = state
         model.initiator_id = initiator_id
+        model.lock = None
         model.save()
 
         return model
 
     @classmethod
-    def find_by_ip(cls, ipaddr):
-        return cls.collection().find_one({"ip": ipaddr})
+    def find_by_ip(cls, ips):
+        servers = []
+        query = {
+            "ip": {"$in": ips},
+            "time_deleted": 0,
+            "is_latest": True
+        }
+
+        for srv in cls.collection().find(query):
+            model = cls()
+            model.update_from_db_document(srv)
+            servers.append(model)
+
+        return servers
 
     @classmethod
     def cluster_servers(cls, cluster_id):
@@ -89,6 +104,43 @@ class ServerModel(generic.Model):
             servers.append(model)
 
         return servers
+
+    @classmethod
+    def lock_servers(cls, servers):
+        if not servers:
+            raise ValueError("Cannot lock empty list of servers.")
+
+        server_ids = [srv._id for srv in servers]
+        lock = str(uuid.uuid4())
+        result = cls.collection().update_many(
+            {"_id": {"$in": server_ids}, "lock": None},
+            {"$set": {"lock": lock}}
+        )
+        if result.modified_count == len(server_ids):
+            return
+
+        if result.modified_count:
+            cls.collection().update_many(
+                {"_id": {"$in": server_ids}, "lock": lock},
+                {"$set": {"lock": None}}
+            )
+        raise exceptions.CannotLockServers()
+
+    @classmethod
+    def unlock_servers(cls, servers):
+        if not servers:
+            return
+
+        server_ids = [srv._id for srv in servers]
+
+        cls.collection().update_many(
+            {"_id": {"$in": server_ids}, "lock": {"$ne": None}},
+            {"$set": {"lock": None}}
+        )
+
+    @property
+    def locked(self):
+        return self.lock is not None
 
     @property
     def cluster(self):
@@ -147,11 +199,13 @@ class ServerModel(generic.Model):
         self.initiator_id = structure["initiator_id"]
         self.cluster = structure["cluster_id"]
         self.facts = structure["facts"]
+        self.lock = structure["lock"]
 
     def delete(self):
         if self.cluster_id:
-            # TODO(Sergey Arkhipov): Raise proper exception
-            raise Exception
+            raise exceptions.CannotDeleteServerInCluster()
+        if self.lock:
+            raise exceptions.CannotDeleteLockedServer()
 
         super().delete()
 
@@ -164,7 +218,8 @@ class ServerModel(generic.Model):
             "state": self.state.name,
             "initiator_id": self.initiator_id,
             "cluster_id": self.cluster_id,
-            "facts": self.facts
+            "facts": self.facts,
+            "lock": self.lock
         }
 
     def make_api_specific_fields(self, expand_facts=True):

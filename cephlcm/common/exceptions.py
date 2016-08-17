@@ -27,6 +27,10 @@ class CannotDeleteClusterWithServers(CephLCMError):
     """Exception raised on attempt to delete cluster with servers."""
 
 
+class CannotDeleteServerInCluster(CephLCMError):
+    """Exception raised on attempt ot delete server which still in cluster."""
+
+
 class CannotStartTaskError(CephLCMError):
     """Exception raised if it is impossible to start such task."""
 
@@ -49,3 +53,11 @@ class CannotSetExecutorError(CephLCMError):
 
 class InternalDBError(CephLCMError):
     """Exception raised if it is impossible to complete DB request."""
+
+
+class CannotLockServers(CephLCMError, ValueError):
+    """Exception raised if it is impossible to lock all servers."""
+
+
+class CannotDeleteLockedServer(CephLCMError):
+    """Exception raised on attempt to delete server which still locked."""

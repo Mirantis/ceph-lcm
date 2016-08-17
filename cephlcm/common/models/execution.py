@@ -46,7 +46,7 @@ class ExecutionModel(generic.Model):
             return self._playbook_configuration
 
         model = playbook_configuration.PlaybookConfigurationModel
-        model = model.find_by_model_id_version(
+        model = model.find_version(
             self.playbook_configuration_model_id,
             self.playbook_configuration_version
         )
