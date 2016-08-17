@@ -11,10 +11,10 @@ def make_user(login, password):
     email = pytest.faux.gen_email()
     full_name = pytest.faux.gen_alphanumeric()
     initiator_id = pytest.faux.gen_uuid()
-    role_ids = []
+    role_id = None
 
     new_user = user.UserModel.make_user(
-        login, password, email, full_name, role_ids, initiator_id)
+        login, password, email, full_name, role_id, initiator_id)
 
     return new_user
 

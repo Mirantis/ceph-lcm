@@ -112,5 +112,5 @@ def sudo_user(sudo_role):
         "sudo",
         "sudo@example.com",
         "Almighty Sudo",
-        [sudo_role.model_id]
+        sudo_role.model_id
     )

@@ -31,7 +31,7 @@ def valid_post_request():
     return {
         "login": pytest.faux.gen_alpha(),
         "email": pytest.faux.gen_email(),
-        "role_ids": [],
+        "role_id": None,
         "full_name": pytest.faux.gen_alphanumeric()
     }
 
@@ -45,7 +45,7 @@ def test_create_new_user_fail_email(
     request = {
         "full_name": pytest.faux.gen_alphanumeric(),
         "login": pytest.faux.gen_alphanumeric(),
-        "role_ids": []
+        "role_id": None
     }
 
     if user_email is not None:
@@ -63,7 +63,7 @@ def test_create_new_user_fail_login(
     request = {
         "full_name": pytest.faux.gen_alpha(),
         "email": pytest.faux.gen_email(),
-        "role_ids": []
+        "role_id": None
     }
 
     if user_login is not None:
@@ -81,7 +81,7 @@ def test_create_new_user_fail_name(
     request = {
         "login": pytest.faux.gen_alpha(),
         "email": pytest.faux.gen_email(),
-        "role_ids": []
+        "role_id": None
     }
 
     if user_name is not None:
@@ -123,8 +123,8 @@ def test_create_new_user(
     assert data["data"]["email"] == valid_post_request["email"]
     assert data["data"]["full_name"] == valid_post_request["full_name"]
     assert data["data"]["full_name"] == db_user["full_name"]
-    assert data["data"]["role_ids"] == valid_post_request["role_ids"]
-    assert data["data"]["role_ids"] == db_user["role_ids"]
+    assert data["data"]["role_id"] == valid_post_request["role_id"]
+    assert data["data"]["role_id"] == db_user["role_id"]
 
     assert len(email.sendmail.mock_calls) == 1
     to, cc, password = email.sendmail.call_args[0][-1]
@@ -351,7 +351,7 @@ def test_get_pagination_page(query, items, per_page, page, email,
         request = {
             "login": pytest.faux.gen_alpha(),
             "email": pytest.faux.gen_email(),
-            "role_ids": [],
+            "role_id": None,
             "full_name": pytest.faux.gen_alpha()
         }
         sudo_client_v1.post("/v1/user/", data=request)

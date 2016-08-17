@@ -30,16 +30,16 @@ class UserModel(generic.Model):
         self.password_hash = None
         self.email = None
         self.full_name = ""
-        self.roles = []
+        self.role = None
         self._permissions = collections.defaultdict(set)
 
-    roles = properties.ModelListProperty(
+    role = properties.ModelProperty(
         "cephlcm.common.models.role.RoleModel",
-        "role_ids"
+        "role_id"
     )
 
     @classmethod
-    def make_user(cls, login, password, email, full_name, role_ids,
+    def make_user(cls, login, password, email, full_name, role,
                   initiator_id=None):
         """Creates new user model, storing it into database."""
 
@@ -49,7 +49,7 @@ class UserModel(generic.Model):
         model.password_hash = passwords.hash_password(password)
         model.email = email
         model.full_name = full_name
-        model.roles = role_ids
+        model.role = role
         model.initiator = initiator_id
 
         try:
@@ -80,7 +80,7 @@ class UserModel(generic.Model):
     def check_revoke_role(cls, role_id, initiator_id=None):
         items = cls.collection().find(
             {
-                "role_ids": role_id,
+                "role_id": role_id,
                 "is_latest": True,
                 "time_deleted": 0
             }
@@ -133,7 +133,7 @@ class UserModel(generic.Model):
         self.password_hash = structure["password_hash"]
         self.email = structure["email"]
         self.full_name = structure["full_name"]
-        self.roles = structure["role_ids"]
+        self.role = structure["role_id"]
         self._permissions = None
 
     def make_db_document_specific_fields(self):
@@ -143,7 +143,7 @@ class UserModel(generic.Model):
             "password_hash": self.password_hash,
             "email": self.email,
             "initiator_id": self.initiator_id,
-            "role_ids": self.role_ids
+            "role_id": self.role_id
         }
 
     def make_api_specific_fields(self, *args, **kwargs):
@@ -151,5 +151,5 @@ class UserModel(generic.Model):
             "login": self.login,
             "email": self.email,
             "full_name": self.full_name,
-            "role_ids": self.role_ids
+            "role_id": self.role_id
         }
