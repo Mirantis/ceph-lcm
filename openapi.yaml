@@ -560,6 +560,25 @@ paths:
           $ref: "#/responses/Unauthorized"
         403:
           $ref: "#/responses/Forbidden"
+    delete:
+      summary: Delete user
+      description: |
+        Put `User` model in archive.
+      tags:
+        - User
+      security:
+        - token: []
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: "#/definitions/User"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
 
 
   /user/{item-id}/version/:
@@ -762,6 +781,25 @@ paths:
       responses:
         200:
           description: Successful response, updated model
+          schema:
+            $ref: "#/definitions/Role"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+    delete:
+      summary: Delete role
+      description: |
+        Put `Role` model in archive.
+      tags:
+        - Role
+      security:
+        - token: []
+      responses:
+        200:
+          description: Successful response
           schema:
             $ref: "#/definitions/Role"
         400:
@@ -978,6 +1016,25 @@ paths:
           $ref: "#/responses/Unauthorized"
         403:
           $ref: "#/responses/Forbidden"
+    delete:
+      summary: Delete server
+      description: |
+        Put `Server` model in archive.
+      tags:
+        - Server
+      security:
+        - token: []
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: "#/definitions/Server"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
 
   /server/{item-id}/version/:
     parameters:
@@ -1185,6 +1242,25 @@ paths:
           $ref: "#/responses/Unauthorized"
         403:
           $ref: "#/responses/Forbidden"
+    delete:
+      summary: Delete cluster
+      description: |
+        Put `Cluster` model in archive.
+      tags:
+        - Cluster
+      security:
+        - token: []
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: "#/definitions/Cluster"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
 
   /cluster/{item-id}/version/:
     parameters:
@@ -1367,7 +1443,7 @@ paths:
         - token: []
       responses:
         200:
-          description: Successful response, latest user model
+          description: Successful response, latest playbook configuration model
           schema:
             $ref: "#/definitions/PlaybookConfiguration"
         401:
@@ -1393,6 +1469,25 @@ paths:
       responses:
         200:
           description: Successful response, updated model
+          schema:
+            $ref: "#/definitions/PlaybookConfiguration"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+    delete:
+      summary: Delete playbook configuration
+      description: |
+        Put `PlaybookConfiguration` model in archive.
+      tags:
+        - Playbook Configuration
+      security:
+        - token: []
+      responses:
+        200:
+          description: Successful response
           schema:
             $ref: "#/definitions/PlaybookConfiguration"
         400:
