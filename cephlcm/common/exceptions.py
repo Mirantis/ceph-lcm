@@ -5,6 +5,11 @@
 class CephLCMError(Exception):
     """Basic exception for Ceph LCM tool."""
 
+    def __init__(self, message=""):
+        message = message or getattr(self, "description", None) \
+            or self.__class__.__name__
+        super().__init__(message)
+
 
 class CannotUpdateDeletedModel(CephLCMError):
     """Exception which is raised if you are trying to update deleted model."""

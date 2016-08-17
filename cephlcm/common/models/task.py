@@ -374,3 +374,12 @@ class ServerDiscoveryTask(Task):
 
         self.data["host"] = host
         self.data["username"] = user
+
+
+class PlaybookPluginTask(Task):
+
+    def __init__(self, playbook, config_id, initiator_id):
+        super().__init__(self.TASK_TYPE_PLAYBOOK, initiator_id)
+
+        self.data["playbook"] = playbook
+        self.data["playbook_configuration_id"] = config_id

@@ -16,6 +16,7 @@ class PlaybookView(generic.ModelView):
                     "name": "example",
                     "description": "Example playbook",
                     "required_server_list": true
+                    "id": "example"
                 }
             ]
         }
@@ -34,6 +35,7 @@ class PlaybookView(generic.ModelView):
         for plugin in plugins.get_public_playbook_plugins().values():
             plugin_data = {
                 "name": plugin.NAME,
+                "id": plugin.entry_point,
                 "description": plugin.DESCRIPTION,
                 "required_server_list": bool(plugin.REQUIRED_SERVER_LIST)
             }

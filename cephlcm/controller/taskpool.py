@@ -13,6 +13,7 @@ import time
 from cephlcm.common import config
 from cephlcm.common import log
 from cephlcm.common import plugins
+from cephlcm.common.models import task
 
 
 TaskState = collections.namedtuple("TaskState", ["future", "stop_event"])
@@ -115,7 +116,6 @@ class TaskPool:
         LOG.debug("Waiting for all tasks to be cancelled.")
         while True:
             if self.data:
-                LOG.debug("!!! Tasks %d: %s", len(self.data), self.data)
                 time.sleep(0.2)
             else:
                 LOG.debug("All tasks were stopped.")
@@ -140,14 +140,20 @@ class TaskPool:
 
     def get_plugin(self, tsk):
         plugs = plugins.get_playbook_plugins()
-        plug = plugs.get(tsk.task_type)
+
+        if tsk.task_type == task.Task.TASK_TYPE_PLAYBOOK:
+            plugin_name = tsk.data["playbook"]
+        else:
+            plugin_name = tsk.task_type
+
+        plug = plugs.get(plugin_name)
 
         if plug:
             return plug
 
         raise ValueError(
-            "Cannot find suitable plugin for task %s (%s)",
-            tsk._id, tsk.task_type
+            "Cannot find suitable plugin for task {0} {1}".format(
+                tsk._id, tsk.task_type)
          )
 
     def gentle_stop_process(self, process):

@@ -1,0 +1,5 @@
+---
+# Default variables for HelloWorld plugin application role
+
+port_number: 80
+interface: 127.0.0.1

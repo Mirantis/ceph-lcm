@@ -1,0 +1,15 @@
+---
+# Application task for HelloWorld plugin
+
+
+- name: Ensure application is copied
+  become: true
+  copy: src=application.py dest=/opt/helloworld.py owner={{ user }} group={{ group }}
+
+- name: Ensure application config is installed
+  become: true
+  template: src=app.j2 dest=/etc/gunicorn.d/app owner={{ user }} group={{ group }}
+
+- name: Ensure gunicorn is reloaded
+  become: true
+  service: name=gunicorn state=restarted
