@@ -489,7 +489,7 @@ paths:
               - login
               - email
               - full_name
-              - role_ids
+              - role_id
             properties:
               login:
                 $ref: "#/definitions/NonEmptyString"
@@ -497,8 +497,8 @@ paths:
                 $ref: "#/definitions/Email"
               full_name:
                 $ref: "#/definitions/NonEmptyString"
-              role_ids:
-                $ref: "#/definitions/UUID4Array"
+              role_id:
+                $ref: "#/definitions/UUID4"
       responses:
         200:
           description: Successful response
@@ -1687,7 +1687,7 @@ definitions:
           - login
           - email
           - full_name
-          - role_ids
+          - role_id
         properties:
           login:
             $ref: "#/definitions/NonEmptyString"
@@ -1695,8 +1695,8 @@ definitions:
             $ref: "#/definitions/Email"
           full_name:
             $ref: "#/definitions/NonEmptyString"
-          role_ids:
-            $ref: "#/definitions/UUID4Array"
+          role_id:
+            $ref: "#/definitions/UUID4"
 
   # A definition for Role model
   Role:
