@@ -1931,6 +1931,11 @@ definitions:
     multipleOf: 1.0
     minimum: 0
 
+  Timestamp:
+    type: integer
+    minimum: 1471406753
+    maximum: 1514754000
+
   # A definition for UUID4 string
   UUID4:
     type: string
@@ -1990,9 +1995,9 @@ definitions:
       version:
         $ref: "#/definitions/PositiveInteger"
       time_updated:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       time_deleted:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       initiator_id:
         $ref: "#/definitions/UUID4"
       data:
@@ -2003,7 +2008,7 @@ definitions:
           - user_id
         properties:
           expires_at:
-            $ref: "#/definitions/PositiveInteger"
+            $ref: "#/definitions/Timestamp"
           user_id:
             $ref: "#/definitions/UUID4"
 
@@ -2028,9 +2033,9 @@ definitions:
       version:
         $ref: "#/definitions/PositiveInteger"
       time_updated:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       time_deleted:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       initiator_id:
         $ref: "#/definitions/UUID4"
       data:
@@ -2072,9 +2077,9 @@ definitions:
       version:
         $ref: "#/definitions/PositiveInteger"
       time_updated:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       time_deleted:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       initiator_id:
         $ref: "#/definitions/UUID4"
       data:
@@ -2110,9 +2115,9 @@ definitions:
       version:
         $ref: "#/definitions/PositiveInteger"
       time_updated:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       time_deleted:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       initiator_id:
         $ref: "#/definitions/UUID4"
       data:
@@ -2164,9 +2169,9 @@ definitions:
       version:
         $ref: "#/definitions/PositiveInteger"
       time_updated:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       time_deleted:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       initiator_id:
         $ref: "#/definitions/UUID4"
       data:
@@ -2207,9 +2212,9 @@ definitions:
       version:
         $ref: "#/definitions/PositiveInteger"
       time_updated:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       time_deleted:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       initiator_id:
         $ref: "#/definitions/UUID4"
       data:
@@ -2248,9 +2253,9 @@ definitions:
       version:
         $ref: "#/definitions/PositiveInteger"
       time_updated:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       time_deleted:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       initiator_id:
         $ref: "#/definitions/UUID4"
       data:
@@ -2302,9 +2307,9 @@ definitions:
       version:
         $ref: "#/definitions/PositiveInteger"
       time_updated:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       time_deleted:
-        $ref: "#/definitions/PositiveInteger"
+        $ref: "#/definitions/Timestamp"
       initiator_id:
         $ref: "#/definitions/UUID4"
       data:
@@ -2328,9 +2333,9 @@ definitions:
           error_message:
             $ref: "#/definitions/NonEmptyString"
           time_started:
-            $ref: "#/definitions/PositiveInteger"
+            $ref: "#/definitions/Timestamp"
           time_finished:
-            $ref: "#/definitions/PositiveInteger"
+            $ref: "#/definitions/Timestamp"
           result:
             type: string
             enum:
