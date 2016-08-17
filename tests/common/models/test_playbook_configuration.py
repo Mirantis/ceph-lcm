@@ -116,3 +116,31 @@ def test_delete(new_cluster, new_servers, playbook_name, pymongo_connection,
 
     assert pcmodel.version == 2
     assert pcmodel.time_deleted == int(freeze_time.return_value)
+
+
+def test_configuration_with_keys(new_cluster, new_servers, playbook_name,
+                                 pymongo_connection, freeze_time):
+    name = pytest.faux.gen_alpha()
+    pcmodel = playbook_configuration.PlaybookConfigurationModel.create(
+        name=name,
+        playbook=playbook_name,
+        cluster=new_cluster,
+        servers=new_servers,
+        initiator_id=pytest.faux.gen_uuid()
+    )
+    pcmodel.configuration = {
+        "global_vars": {"127.0.0.1": "qqq"},
+        "inventory": {}
+    }
+    pcmodel.save()
+
+    db_model = pymongo_connection.db.playbook_configuration.find_one(
+        {"_id": pcmodel._id})
+    assert db_model
+    assert "qqq" in db_model["configuration"]["global_vars"].values()
+
+    new_pcmodel = playbook_configuration.PlaybookConfigurationModel()
+    new_pcmodel.update_from_db_document(db_model)
+
+    assert new_pcmodel.configuration == pcmodel.configuration
+    assert new_pcmodel.configuration["global_vars"]["127.0.0.1"] == "qqq"

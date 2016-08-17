@@ -34,14 +34,6 @@ class PlaybookConfigurationModel(generic.Model):
         plugins.get_public_playbook_plugins
     )
 
-    @property
-    def configuration(self):
-        return replace_dict_keys(".", "/", self._configuration)
-
-    @configuration.setter
-    def configuration(self, value):
-        self._configuration = replace_dict_keys("/", ".", value)
-
     @classmethod
     def create(cls, name, playbook, cluster, servers, initiator_id=None):
         model = cls()
@@ -65,14 +57,15 @@ class PlaybookConfigurationModel(generic.Model):
 
         self.name = structure["name"]
         self.playbook = structure["playbook"]
-        self.configuration = structure["configuration"]
+        self.configuration = replace_dict_keys(
+            "/", ".", structure["configuration"])
 
     def make_db_document_specific_fields(self):
         return {
             "name": self.name,
             "initiator_id": self.initiator_id,
             "playbook": self.playbook,
-            "configuration": self.configuration
+            "configuration": replace_dict_keys(".", "/", self.configuration)
         }
 
     def make_api_specific_fields(self):
