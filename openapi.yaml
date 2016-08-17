@@ -260,6 +260,8 @@ tags:
   - name: Servers
   - name: Clusters
   - name: Playbook Configuration
+  - name: Execution
+  - name: Execution Step
 
 
 ################################################################################
@@ -1471,6 +1473,266 @@ paths:
 
 
   # ****************************************************************************
+  # Execution endpoint
+  # ****************************************************************************
+  /execution/:
+    get:
+      tags:
+        - Execution
+      security:
+        - token: []
+      summary: Fetch a list of execution
+      description: |
+        This method fetches a list of executions, returning it in a form of
+        pagination.
+
+        ```json
+        {
+          "items": [
+            {Execution model},
+            ...
+          },
+          "page": 1,
+          "per_page": 25,
+          "total": 102
+        }
+        ```
+        User may use his own pagination settings using query filters.
+      parameters:
+        - $ref: "#/parameters/pagination-page"
+        - $ref: "#/parameters/pagination-per-page"
+        - $ref: "#/parameters/pagination-filter"
+        - $ref: "#/parameters/pagination-sort-by"
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required:
+              - items
+              - page
+              - per_page
+              - total
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/definitions/Execution"
+              page:
+                $ref: "#/definitions/PositiveInteger"
+              per_page:
+                $ref: "#/definitions/PositiveInteger"
+              total:
+                $ref: "#/definitions/PositiveInteger"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+    post:
+      summary: Create new execution
+      tags:
+        - Execution
+      security:
+        - token: []
+      description: |
+        This method creates new `Execution` model in CephLCM.
+      parameters:
+        - name: Execution data. Mostly playbook configuration.
+          in: body
+          required: true
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - playbook_configuration
+            properties:
+              playbook_configuration:
+                type: object
+                additionalProperties: false
+                required:
+                  - id
+                  - version
+                properties:
+                  id:
+                    $ref: "#/definitions/UUID4"
+                  version:
+                    $ref: "#/definitions/PositiveInteger"
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: "#/definitions/Execution"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+
+  /execution/{item-id}/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+    get:
+      summary: Get execution
+      description: |
+        Get latest version of certain `Execution` model.
+      tags:
+        - Execution
+      security:
+        - token: []
+      responses:
+        200:
+          description: Successful response, latest execution model.
+          schema:
+            $ref: "#/definitions/Execution"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+    delete:
+      summary: Cancel execution
+      description: |
+        Cancel execution.
+      tags:
+        - Execution
+      security:
+        - token: []
+      responses:
+        200:
+          description: Successful response, updated model
+          schema:
+            $ref: "#/definitions/Execution"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+
+  /execution/{item-id}/version/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+    get:
+      summary: Get versions of Execution model
+      description: |
+        Returns a list of `Execution` model versions.
+      tags:
+        - Execution
+      security:
+        - token: []
+      parameters:
+        - $ref: "#/parameters/pagination-page"
+        - $ref: "#/parameters/pagination-per-page"
+        - $ref: "#/parameters/pagination-filter"
+        - $ref: "#/parameters/pagination-sort-by"
+      responses:
+        200:
+          description: Sucessful response
+          schema:
+            type: object
+            required:
+              - items
+              - page
+              - per_page
+              - total
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/definitions/Execution"
+              page:
+                $ref: "#/definitions/PositiveInteger"
+              per_page:
+                $ref: "#/definitions/PositiveInteger"
+              total:
+                $ref: "#/definitions/PositiveInteger"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /execution/{item-id}/steps/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+      - $ref: "#/parameters/pagination-page"
+      - $ref: "#/parameters/pagination-per-page"
+      - $ref: "#/parameters/pagination-filter"
+      - $ref: "#/parameters/pagination-sort-by"
+    get:
+      summary: Get execution steps for certain execution
+      description: |
+        Returns a list of `ExecutionStep` models
+      tags:
+        - Execution
+        - Execution Step
+      security:
+        - token: []
+      parameters:
+        - $ref: "#/parameters/pagination-page"
+        - $ref: "#/parameters/pagination-per-page"
+        - $ref: "#/parameters/pagination-filter"
+        - $ref: "#/parameters/pagination-sort-by"
+      responses:
+        200:
+          description: Sucessful response
+          schema:
+            type: object
+            required:
+              - items
+              - page
+              - per_page
+              - total
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/definitions/ExecutionStep"
+              page:
+                $ref: "#/definitions/PositiveInteger"
+              per_page:
+                $ref: "#/definitions/PositiveInteger"
+              total:
+                $ref: "#/definitions/PositiveInteger"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /execution/{item-id}/version/{version-number}/:
+    parameters:
+      - $ref: "#/parameters/item-id"
+      - $ref: "#/parameters/version-number"
+    get:
+      summary: Get version of execution model.
+      description: |
+        Get a certain version of `Execution` model.
+      tags:
+        - Execution
+      security:
+        - token: []
+      responses:
+        200:
+          description: Sucessful response
+          schema:
+            $ref: "#/definitions/Execution"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+
+
+  # ****************************************************************************
   # Permissions endpoint
   # ****************************************************************************
   /permissions/:
@@ -1667,7 +1929,7 @@ definitions:
         $ref: "#/definitions/UUID4"
       model:
         enum:
-          - token
+          - user
       version:
         $ref: "#/definitions/PositiveInteger"
       time_updated:
@@ -1711,7 +1973,7 @@ definitions:
         $ref: "#/definitions/UUID4"
       model:
         enum:
-          - token
+          - role
       version:
         $ref: "#/definitions/PositiveInteger"
       time_updated:
@@ -1749,7 +2011,7 @@ definitions:
         $ref: "#/definitions/UUID4"
       model:
         enum:
-          - token
+          - server
       version:
         $ref: "#/definitions/PositiveInteger"
       time_updated:
@@ -1803,7 +2065,7 @@ definitions:
         $ref: "#/definitions/UUID4"
       model:
         enum:
-          - token
+          - cluster
       version:
         $ref: "#/definitions/PositiveInteger"
       time_updated:
@@ -1846,7 +2108,7 @@ definitions:
         $ref: "#/definitions/UUID4"
       model:
         enum:
-          - token
+          - playbook_configuration
       version:
         $ref: "#/definitions/PositiveInteger"
       time_updated:
@@ -1869,6 +2131,119 @@ definitions:
             $ref: "#/definitions/NonEmptyString"
           configuration:
             type: object
+
+  # A Playbook configuration model
+  Execution:
+    type: object
+    additionalProperties: false
+    required:
+      - id
+      - data
+      - model
+      - time_deleted
+      - time_updated
+      - initiator_id
+      - version
+    properties:
+      id:
+        $ref: "#/definitions/UUID4"
+      model:
+        enum:
+          - execution
+      version:
+        $ref: "#/definitions/PositiveInteger"
+      time_updated:
+        $ref: "#/definitions/PositiveInteger"
+      time_deleted:
+        $ref: "#/definitions/PositiveInteger"
+      initiator_id:
+        $ref: "#/definitions/UUID4"
+      data:
+        type: object
+        additionalProperties: false
+        required:
+          - playbook_configuration
+          - state
+        properties:
+          playbook_configuration:
+            type: object
+            additionalProperties: false
+            required:
+              - id
+              - version
+            properties:
+              id:
+                $ref: "#/definitions/UUID4"
+              version:
+                $ref: "#/definitions/PositiveInteger"
+          state:
+            type: string
+            enum:
+              - created
+              - started
+              - completed
+              - canceling
+              - canceled
+              - failed
+
+  # A Playbook configuration model
+  ExecutionStep:
+    type: object
+    additionalProperties: false
+    required:
+      - id
+      - data
+      - model
+      - time_deleted
+      - time_updated
+      - initiator_id
+      - version
+    properties:
+      id:
+        $ref: "#/definitions/UUID4"
+      model:
+        enum:
+          - execution_step
+      version:
+        $ref: "#/definitions/PositiveInteger"
+      time_updated:
+        $ref: "#/definitions/PositiveInteger"
+      time_deleted:
+        $ref: "#/definitions/PositiveInteger"
+      initiator_id:
+        $ref: "#/definitions/UUID4"
+      data:
+        type: object
+        additionalProperties: false
+        required:
+          - execution_id
+          - role
+          - name
+          - error_message
+          - time_started
+          - time_finished
+          - result
+        properties:
+          execution_id:
+            $ref: "#/definitions/UUID4"
+          role:
+            $ref: "#/definitions/NonEmptyString"
+          name:
+            $ref: "#/definitions/NonEmptyString"
+          error_message:
+            $ref: "#/definitions/NonEmptyString"
+          time_started:
+            $ref: "#/definitions/PositiveInteger"
+          time_finished:
+            $ref: "#/definitions/PositiveInteger"
+          result:
+            type: string
+            enum:
+              - unknown
+              - ok
+              - error
+              - skipped
+              - unreachable
 
   # A model for permission set.
   Permission:
