@@ -259,6 +259,8 @@ def test_plugin_finish(action, state, new_pcmodel, new_execution):
     new_task.create()
     new_task.start()
 
+    assert all(srv.lock is not None for srv in new_pcmodel.servers)
+
     new_execution = execution.ExecutionModel.find_by_model_id(
         new_execution.model_id)
     assert new_execution.state == execution.ExecutionState.started
@@ -267,3 +269,5 @@ def test_plugin_finish(action, state, new_pcmodel, new_execution):
     new_execution = execution.ExecutionModel.find_by_model_id(
         new_execution.model_id)
     assert new_execution.state == state
+
+    assert all(srv.lock is None for srv in new_pcmodel.servers)

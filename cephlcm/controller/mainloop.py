@@ -99,20 +99,7 @@ def process_task(tsk):
 
 def get_servers_for_task(execution_id):
     execmodel = execution.ExecutionModel.find_by_model_id(execution_id)
-    server_ips = get_server_ips(execmodel.playbook_configuration.configuration)
-    servers = server.ServerModel.find_by_ip(server_ips)
+    if not execmodel:
+        return []
 
-    return servers
-
-
-def get_server_ips(configuration):
-    ips = set()
-
-    configuration.pop("_meta", None)
-    for group in configuration.values():
-        if isinstance(group, dict):
-            ips.update(group.get("hosts", []))
-        else:
-            ips.update(group)
-
-    return list(ips)
+    return execmodel.servers
