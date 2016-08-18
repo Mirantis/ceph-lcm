@@ -8,6 +8,7 @@ import pytest
 
 from cephlcm.common.models import cluster
 from cephlcm.common.models import execution
+from cephlcm.common.models import execution_step
 from cephlcm.common.models import playbook_configuration
 from cephlcm.common.models import role
 from cephlcm.common.models import server
@@ -93,6 +94,20 @@ def mock_task_class(monkeypatch):
     monkeypatch.setattr(task, "PlaybookPluginTask", mocked)
 
     return mocked
+
+
+def create_execution_step(execution_id, srv, state):
+    db_model = {
+        "execution_id": execution_id,
+        "role": pytest.faux.gen_alpha(),
+        "name": pytest.faux.gen_alpha(),
+        "result": state.value,
+        "error_message": "",
+        "server_id": srv.model_id,
+        "time_started": pytest.faux.gen_integer(1, 100),
+        "time_finished": pytest.faux.gen_integer(101)
+    }
+    execution_step.ExecutionStep.collection().insert_one(db_model)
 
 
 def test_post_access(sudo_client, client_v1, sudo_user, freeze_time,
@@ -242,3 +257,22 @@ def test_get(sudo_client, clean_execution_collection, valid_post_request):
 
     resp = sudo_client.get("/v1/execution/{0}/version/1/".format(model_id))
     assert resp.status_code == 200
+
+
+@pytest.mark.parametrize("state", execution_step.ExecutionStepState)
+def test_get_execution_steps(state, sudo_client, new_server,
+                             valid_post_request):
+    resp = sudo_client.post("/v1/execution/", data=valid_post_request)
+    model_id = resp.json["id"]
+
+    for _ in range(5):
+        create_execution_step(model_id, new_server, state)
+
+    resp = sudo_client.get("/v1/execution/{0}/steps/".format(model_id))
+    assert resp.status_code == 200
+    assert resp.json["total"] == 5
+    assert len(resp.json["items"]) == 5
+    assert all((item["data"]["execution_id"] == model_id)
+               for item in resp.json["items"])
+    assert all((item["data"]["result"] == state.name)
+               for item in resp.json["items"])

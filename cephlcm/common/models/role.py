@@ -5,8 +5,8 @@
 import collections
 
 from cephlcm.common import exceptions
-from cephlcm.common.models import generic
 from cephlcm.common import plugins
+from cephlcm.common.models import generic
 
 
 class PermissionSet:

@@ -71,6 +71,10 @@ class ServerModel(generic.Model):
         return model
 
     @classmethod
+    def find_by_ip(cls, ipaddr):
+        return cls.collection().find_one({"ip": ipaddr})
+
+    @classmethod
     def cluster_servers(cls, cluster_id):
         query = {
             "cluster_id": cluster_id,

@@ -24,6 +24,7 @@ BLUEPRINT = flask.Blueprint(BLUEPRINT_NAME, __name__)
 
 auth.AuthView.register_to(BLUEPRINT)
 cluster.ClusterView.register_to(BLUEPRINT)
+execution.ExecutionStepsView.register_to(BLUEPRINT)
 execution.ExecutionView.register_to(BLUEPRINT)
 permission.PermissionView.register_to(BLUEPRINT)
 playbook_configuration.PlaybookConfigurationView.register_to(BLUEPRINT)

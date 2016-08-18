@@ -102,7 +102,6 @@ class ControllerConfig(Config):
 
 def with_parsed_configs(func):
     @functools.wraps(func)
-    @functools.lru_cache(maxsize=32)
     def decorator(*args, **kwargs):
         if not _PARSED_CACHE:
             _PARSED_CACHE.update(collect_config(CONFIG_FILES))
@@ -151,7 +150,7 @@ def collect_config(filenames):
     return config
 
 
-@functools.lru_cache(maxsize=2)
+@functools.lru_cache(2)
 @with_parsed_configs
 def make_config(raw_config):
     """Makes Api specific config."""
@@ -159,7 +158,7 @@ def make_config(raw_config):
     return Config(raw_config)
 
 
-@functools.lru_cache(maxsize=2)
+@functools.lru_cache(2)
 @with_parsed_configs
 def make_api_config(raw_config):
     """Makes Api specific config."""
@@ -167,7 +166,7 @@ def make_api_config(raw_config):
     return ApiConfig(raw_config)
 
 
-@functools.lru_cache(maxsize=2)
+@functools.lru_cache(2)
 @with_parsed_configs
 def make_controller_config(raw_config):
     """Makes controller specific config."""

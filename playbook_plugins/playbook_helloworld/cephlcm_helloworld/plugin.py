@@ -24,7 +24,7 @@ class HelloWorld(playbook_plugin.Playbook):
 
     def make_playbook_configuration(self, servers):
         inventory = {
-            "servers": [srv.fqdn for srv in servers]
+            "servers": [srv.ip for srv in servers]
         }
 
         host_vars = {}
@@ -34,6 +34,6 @@ class HelloWorld(playbook_plugin.Playbook):
 
         for srv in servers:
             inventory.setdefault(
-                "_meta", {"hostvars": {}})["hostvars"][srv.fqdn] = host_vars
+                "_meta", {"hostvars": {}})["hostvars"][srv.ip] = host_vars
 
         return {}, inventory
