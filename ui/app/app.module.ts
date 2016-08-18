@@ -14,6 +14,8 @@ import { SessionService }  from './services/session';
 import { CookieService }  from 'angular2-cookie/core';
 import { DataService }  from './services/data';
 
+import { Modal }  from './bootstrap';
+
 import { appRoutingProviders, routing } from './app.routes';
 
 @NgModule({
@@ -35,7 +37,8 @@ import { appRoutingProviders, routing } from './app.routes';
     DataService,
     CookieService,
     SessionService,
-    appRoutingProviders
+    appRoutingProviders,
+    Modal
   ],
   bootstrap: [ AppComponent ]
 })

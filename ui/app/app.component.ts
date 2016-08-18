@@ -7,19 +7,23 @@ import { AuthService } from './services/auth';
   selector: 'app',
   template: `
 <div class='row'>
-  <div class='col-sm-3'>
+  <div class='col-sm-2'>
     <header>
       <h1>#cephilis</h1>
-      <em>Go get yours at Mirantis!</em>
+      <em>Get yours at Mirantis!</em>
     </header>
   </div>
-  <div class='col-sm-9'>
+  <div class='col-sm-10'>
     <navigation *ngIf='auth.isLoggedIn()'>
       <ul>
-        <li> <a [routerLink]="['/dashboard']" routerLinkActive='active'>Dashboard</a>
-        <li> <a [routerLink]="['/admin']" routerLinkActive='active'>Admin</a>
+        <li> <a [routerLink]="['/clusters']" routerLinkActive='active'>Clusters</a>
+        <li> <a [routerLink]="['/configurations']" routerLinkActive='active'>Configurations</a>
+        <li> <a [routerLink]="['/playbooks']" routerLinkActive='active'>Playbooks</a>
+        <li> <a [routerLink]="['/servers']" routerLinkActive='active'>Servers</a>
+        <li> <a [routerLink]="['/executions']" routerLinkActive='active'>Executions</a>
+        <li> <a [routerLink]="['/admin']" routerLinkActive='active'>Users Management</a>
 
-        <li class='right'> Logged as {{this.getLoggedUserName()}}
+        <li class='pull-right'>{{this.getLoggedUserName()}}
           <button (click)='auth.logout()' class='btn btn-sm'>Log out</button>
       </ul>
     </navigation>

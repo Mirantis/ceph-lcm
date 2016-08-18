@@ -4,14 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { AdminComponent, UsersComponent, RolesComponent } from './index';
-import { Keys } from '../pipes';
+import { Key, Keys } from '../pipes';
 
 @NgModule({
   declarations: [
     AdminComponent,
     UsersComponent,
     RolesComponent,
-    Keys
+    Keys, Key
   ],
   imports: [
     BrowserModule,
