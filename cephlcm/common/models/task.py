@@ -17,6 +17,7 @@ from cephlcm.common import log
 from cephlcm.common import timeutils
 from cephlcm.common.models import generic
 from cephlcm.common.models import properties
+from cephlcm.common.models import server
 
 
 TASK_TEMPLATE = {
@@ -400,34 +401,43 @@ class PlaybookPluginTask(Task):
         self.data["playbook"] = playbook
         self.data["playbook_configuration_id"] = config_id
 
-    def set_execution_state(self, new_state):
-        execution_model = self.get_execution()
+    def set_execution_state(self, execution_model, new_state):
         execution_model.state = new_state
         execution_model.save()
+
+    def unlock_servers(self, execution_model):
+        server.ServerModel.unlock_servers(execution_model.servers)
 
     def start(self):
         from cephlcm.common.models import execution
 
         super().start()
-        self.set_execution_state(execution.ExecutionState.started)
+        exmodel = self.get_execution()
+        self.set_execution_state(exmodel, execution.ExecutionState.started)
 
     def cancel(self):
         from cephlcm.common.models import execution
 
         super().cancel()
-        self.set_execution_state(execution.ExecutionState.canceled)
+        exmodel = self.get_execution()
+        self.set_execution_state(exmodel, execution.ExecutionState.canceled)
+        self.unlock_servers(exmodel)
 
     def complete(self):
         from cephlcm.common.models import execution
 
         super().complete()
-        self.set_execution_state(execution.ExecutionState.completed)
+        exmodel = self.get_execution()
+        self.set_execution_state(exmodel, execution.ExecutionState.completed)
+        self.unlock_servers(exmodel)
 
     def fail(self, error_message="Internal error"):
         from cephlcm.common.models import execution
 
         super().fail(error_message)
-        self.set_execution_state(execution.ExecutionState.failed)
+        exmodel = self.get_execution()
+        self.set_execution_state(exmodel, execution.ExecutionState.failed)
+        self.unlock_servers(exmodel)
 
 
 class CancelPlaybookPluginTask(Task):

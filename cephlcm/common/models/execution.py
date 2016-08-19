@@ -9,8 +9,8 @@ configuration to execute and creates task for execution.
 import enum
 
 from cephlcm.common.models import generic
-from cephlcm.common.models import properties
 from cephlcm.common.models import playbook_configuration
+from cephlcm.common.models import properties
 
 
 @enum.unique
@@ -46,13 +46,20 @@ class ExecutionModel(generic.Model):
             return self._playbook_configuration
 
         model = playbook_configuration.PlaybookConfigurationModel
-        model = model.find_by_model_id_version(
+        model = model.find_version(
             self.playbook_configuration_model_id,
             self.playbook_configuration_version
         )
         self._playbook_configuration = model
 
         return model
+
+    @property
+    def servers(self):
+        if not self.playbook_configuration:
+            return []
+
+        return self.playbook_configuration.servers
 
     @playbook_configuration.setter
     def playbook_configuration(self, value):

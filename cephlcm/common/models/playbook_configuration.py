@@ -10,9 +10,12 @@ is no need in explicit enumeration).
 """
 
 
+import copy
+
 from cephlcm.common import plugins
 from cephlcm.common.models import generic
 from cephlcm.common.models import properties
+from cephlcm.common.models import server
 
 
 class PlaybookConfigurationModel(generic.Model):
@@ -44,6 +47,20 @@ class PlaybookConfigurationModel(generic.Model):
         model.save()
 
         return model
+
+    @property
+    def servers(self):
+        ips = set()
+        config = copy.deepcopy(self.configuration)
+
+        config.pop("_meta", None)
+        for group in config.values():
+            if isinstance(group, dict):
+                ips.update(group.get("hosts", []))
+            else:
+                ips.update(group)
+
+        return server.ServerModel.find_by_ip(list(ips))
 
     def make_configuration(self, cluster, servers):
         plug = plugins.get_public_playbook_plugins()
