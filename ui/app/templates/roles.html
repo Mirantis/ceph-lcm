@@ -1,44 +1,7 @@
 <button (click)="editRole()" class="btn btn-success pull-right">Create Role</button>
 
-<modal [title]="newRole.id ? 'Edit Role' : 'New Role'">
-  <div class="modal-body">
-    <form #newRoleForm="ngForm">
-      <div class="form-group">
-        <label for="roleName">Role Name</label>
-        <input
-          type="text"
-          class="form-control"
-          name="roleName"
-          id="roleName"
-          placeholder="Role Name"
-          [(ngModel)]="newRole.data.name"
-          required>
-      </div>
-      <div *ngFor="let group of permissions|keys">
-        <h5>{{group}}</h5>
-        <div class="checkbox" *ngFor="let permission of permissions|key:group">
-          <label>
-            <input
-              type="checkbox"
-              [name]="group"
-              [value]="permission"
-              [checked]="getGroupPermission(group, permission)"
-              (click)="toggleGroupPermission(group, permission)"> {{permission}}
-          </label>
-        </div>
-      </div>
-     </form>
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-default" (click)="modal.close()">Cancel</button>
-    <button
-      class="btn btn-success"
-      (click)="save()"
-      [disabled]="!newRoleForm.form.valid">Save changes</button>
-  </div>
-</modal>
-
 <h3>Roles Permissions</h3>
+
 <table class="roles table" *ngIf="roles.length">
   <thead>
     <tr>
@@ -58,3 +21,41 @@
     [permissions]="permissions">
   </tbody>
 </table>
+
+<modal [title]="newRole.id ? 'Edit Role' : 'New Role'">
+  <div class="modal-body">
+    <form #newRoleForm="ngForm">
+      <div class="form-group">
+        <label for="role_name">Name</label>
+        <input
+          type="text"
+          class="form-control"
+          name="role_name"
+          id="role_name"
+          placeholder="Role Name"
+          [(ngModel)]="newRole.data.name"
+          required>
+      </div>
+      <div *ngFor="let group of permissions|keys">
+        <h5>{{group}}</h5>
+        <div class="checkbox" *ngFor="let permission of permissions|key:group">
+          <label>
+            <input
+              type="checkbox"
+              [name]="group"
+              [value]="permission"
+              [checked]="getGroupPermission(group, permission)"
+              (click)="toggleGroupPermission(group, permission)"> {{permission}}
+          </label>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-default" (click)="modal.close()">Cancel</button>
+    <button
+      class="btn btn-success"
+      (click)="save()"
+      [disabled]="!newRoleForm.form.valid">Save changes</button>
+  </div>
+</modal>
