@@ -2,12 +2,12 @@ import { NgModule }      from '@angular/core';
 import { FormsModule }   from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { AppComponent }  from './app.component';
+import { AppComponent }  from './app';
 import { LoginComponent, DashboardComponent }  from './dashboard/index';
-import { UsersComponent }  from './users/index';
+import { UsersComponent }  from './admin/index';
 import { PageNotFoundComponent }  from './404';
 
-import { UsersModule }  from './users/users.module';
+import { UsersModule }  from './admin/admin.module';
 
 import { AuthService, LoggedIn}  from './services/auth';
 import { SessionService }  from './services/session';

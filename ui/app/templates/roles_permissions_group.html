@@ -1,0 +1,15 @@
+<tr>
+  <th>{{group}}</th>
+  <th [colSpan]='roles.length'></th>
+</tr>
+<tr *ngFor='let grouppee of getPermissions()'>
+  <td>{{grouppee}}</td>
+  <td *ngFor='let role of roles'>
+    <button class='btn btn-link btn-lg'>
+      <span
+        class="glyphicon"
+        [ngClass]="getRolePermission(grouppee, role) ? 'glyphicon-ok text-success' : 'glyphicon-remove text-danger'"
+        aria-hidden="true"></span>
+    </button>
+  </td>
+</tr>

@@ -1,9 +1,3 @@
-import { Component } from '@angular/core';
-
-import { DataService } from '../services/data';
-
-@Component({
-  template: `
 <h3>Users Management</h3>
 <table class='users table' *ngIf='users.length'>
   <thead>
@@ -21,15 +15,3 @@ import { DataService } from '../services/data';
     </tr>
   </tbody>
 </table>
-  `
-})
-export class UsersComponent {
-  users: any[] = [];
-  constructor(private data: DataService) {
-    this.data.user().findAll({})
-      .then((users: any) => this.users = users.items);
-  }
-
-  edit(userId: string) {
-  }
-}

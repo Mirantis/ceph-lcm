@@ -1,8 +1,3 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-
-@Component({
-  template: `
 <navigation class='tabs'>
   <ul>
     <li> <a [routerLink]="['users']" routerLinkActive='active'>Users</a>
@@ -11,8 +6,3 @@ import { Router } from '@angular/router';
 </navigation>
 
 <router-outlet></router-outlet>
-`
-})
-export class AdminComponent {
-
-};
