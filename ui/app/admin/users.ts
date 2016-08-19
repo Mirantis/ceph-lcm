@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { Modal } from '../bootstrap';
 import { DataService } from '../services/data';
 
+import * as _ from 'lodash';
+
 @Component({
   templateUrl: './app/templates/users.html',
   directives: [Modal]
