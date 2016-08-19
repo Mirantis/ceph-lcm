@@ -28,7 +28,7 @@ def valid_request(sudo_role):
 
 
 def add_permission_to_user(client, user_model, permissions):
-    role_data = user_model.roles[0].make_api_structure()
+    role_data = user_model.role.make_api_structure()
     role_data["data"]["permissions"] = permissions
     response = client.put(
         "/v1/role/{0}/".format(role_data["id"]), data=role_data
@@ -40,7 +40,7 @@ def add_permission_to_user(client, user_model, permissions):
 def normal_user_with_role(normal_user, sudo_user):
     new_role = role.RoleModel.make_role(pytest.faux.gen_alphanumeric(), [],
                                         sudo_user.model_id)
-    normal_user.role_ids = [new_role.model_id]
+    normal_user.role_id = new_role.model_id
     normal_user.save()
 
     return normal_user
@@ -232,7 +232,7 @@ def test_add_role_to_user_view_user(
     )
     assert response.status_code == 403
 
-    normal_user_with_role.role_ids.append(sudo_role.model_id)
+    normal_user_with_role.role_id = sudo_role.model_id
     normal_user_with_role.save()
 
     response = client_v1.get("/v1/role/")
@@ -271,7 +271,7 @@ def test_add_permission_to_create_user(client_v1, sudo_client_v1, sudo_role,
 def test_add_permission_to_edit_user(client_v1, sudo_client_v1, sudo_role,
                                      normal_user_with_role, valid_request):
     client_v1.login(normal_user_with_role.login, "qwerty")
-    role_data = normal_user_with_role.roles[0].make_api_structure()
+    role_data = normal_user_with_role.role.make_api_structure()
     role_data["data"]["permissions"] = {"api": ["edit_role"]}
 
     response = client_v1.put(
@@ -319,7 +319,7 @@ def test_add_permission_to_delete_user(client_v1, sudo_client_v1, sudo_role,
 
 
 def test_delete_role_with_active_user(sudo_client_v1, normal_user_with_role):
-    role_data = normal_user_with_role.roles[0].make_api_structure()
+    role_data = normal_user_with_role.role.make_api_structure()
 
     response = sudo_client_v1.delete("/v1/role/{0}/".format(role_data["id"]))
     assert response.status_code == 400

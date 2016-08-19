@@ -10,16 +10,16 @@ from cephlcm.common.models import token
 from cephlcm.common.models import user
 
 
-def make_user(role_ids=None, initiator_id=None):
+def make_user(role_id=None, initiator_id=None):
     login = pytest.faux.gen_alpha()
     password = pytest.faux.gen_alphanumeric()
     email = pytest.faux.gen_email()
     full_name = pytest.faux.gen_alphanumeric()
     initiator_id = initiator_id or pytest.faux.gen_uuid()
-    role_ids = role_ids or []
+    role_id = role_id or None
 
     new_user = user.UserModel.make_user(
-        login, password, email, full_name, role_ids, initiator_id)
+        login, password, email, full_name, role_id, initiator_id)
 
     return new_user
 
@@ -29,10 +29,10 @@ def test_create_new_user(configure_model, pymongo_connection, freeze_time):
     password = pytest.faux.gen_alphanumeric()
     email = pytest.faux.gen_email()
     full_name = pytest.faux.gen_alphanumeric()
-    role_ids = []
+    role_id = pytest.faux.gen_uuid()
 
     new_user = user.UserModel.make_user(
-        login, password, email, full_name, role_ids)
+        login, password, email, full_name, role_id)
     db_user = pymongo_connection.db.user.find_one({"_id": new_user._id})
 
     assert db_user
@@ -40,7 +40,7 @@ def test_create_new_user(configure_model, pymongo_connection, freeze_time):
     assert new_user.email == db_user["email"]
     assert new_user.password_hash == db_user["password_hash"]
     assert new_user.full_name == db_user["full_name"]
-    assert new_user.role_ids == db_user["role_ids"]
+    assert new_user.role_id == db_user["role_id"]
     assert new_user.model_id == db_user["model_id"]
     assert new_user.initiator_id == db_user["initiator_id"]
     assert new_user.version == db_user["version"]
@@ -137,7 +137,7 @@ def test_api_response(configure_model, freeze_time):
         "time_deleted": new_user.time_deleted,
         "initiator_id": new_user.initiator_id,
         "data": {
-            "role_ids": [],
+            "role_id": None,
             "full_name": new_user.full_name,
             "login": new_user.login,
             "email": new_user.email

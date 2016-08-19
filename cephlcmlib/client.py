@@ -190,21 +190,13 @@ class V1Client(Client):
 
         return self._session.get(url, json=payload, timeout=self.timeout)
 
-    def create_user(self, login, email, full_name="", roles=None):
-        role_ids = []
-
-        for role in (roles or []):
-            if isinstance(role, dict):
-                role_ids.append(role["id"])
-            else:
-                role_ids.append(role)
-
+    def create_user(self, login, email, full_name="", role_id=None):
         url = self._make_url("/v1/user/")
         payload = {
             "login": login,
             "email": email,
             "full_name": full_name,
-            "role_ids": role_ids
+            "role_id": role_id
         }
 
         return self._session.post(url, json=payload, timeout=self.timeout)

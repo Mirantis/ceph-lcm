@@ -17,7 +17,12 @@ DATA_SCHEMA = {
     "login": {"$ref": "#/definitions/non_empty_string"},
     "email": {"$ref": "#/definitions/email"},
     "full_name": {"$ref": "#/definitions/non_empty_string"},
-    "role_ids": {"$ref": "#/definitions/uuid4_array"}
+    "role_id": {
+        "oneOf": [
+            {"$ref": "#/definitions/uuid4"},
+            {"type": "null"}
+        ]
+    }
 }
 """Schema for the payload."""
 
@@ -112,7 +117,7 @@ class UserView(generic.VersionedCRUDView):
                 new_password,
                 self.request_json["email"],
                 self.request_json["full_name"],
-                self.request_json["role_ids"],
+                self.request_json["role_id"],
                 initiator_id=self.initiator_id
             )
         except base_exceptions.UniqueConstraintViolationError as exc:

@@ -66,10 +66,8 @@ def require_authorization(permission_class, permission_name):
 
 
 def check_auth_permission(usr, permission_class, permission_name):
-    has_permission = any(
-        r.has_permission(permission_class, permission_name)
-        for r in usr.roles
-    )
+    has_permission = usr.role and \
+        usr.role.has_permission(permission_class, permission_name)
     if not has_permission:
         LOG.warning("User with ID %s has no enough permissions", usr.model_id)
         raise exceptions.Forbidden

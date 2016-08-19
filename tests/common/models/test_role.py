@@ -155,16 +155,15 @@ class TestRoleModel(object):
             role_name, {"api": ["view_user", "create_user"]}
         )
         user_model = user.UserModel.make_user(
-            user_name, "", user_email, "qqq qqq", [role_model.model_id]
+            user_name, "", user_email, "qqq qqq", role_model.model_id
         )
 
-        assert len(user_model.roles) == 1
-        assert user_model.roles[0]._id == role_model._id
+        assert user_model.role._id == role_model._id
 
         with pytest.raises(exceptions.CannotDeleteRoleWithActiveUsers):
             role_model.delete()
 
-        user_model.role_ids = []
+        user_model.role_id = None
         user_model.save()
 
         role_model.delete()
