@@ -10,7 +10,7 @@ import { Component, Input } from '@angular/core';
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <ng-content select=".modal-title"></ng-content>
+        <h4>{{title}}</h4>
       </div>
       <ng-content select=".modal-body"></ng-content>
       <ng-content select=".modal-footer"></ng-content>
@@ -21,6 +21,7 @@ import { Component, Input } from '@angular/core';
 })
 export class Modal {
   @Input() id: string = 'modal';
+  @Input() title: string = '';
 
   show(id: string = 'modal') {
     $('#' + id).modal('show');

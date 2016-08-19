@@ -40,9 +40,8 @@ export class PermissionsGroup {
 
 @Component({
   template: `
-<button (click)="createRole()" class="btn btn-success pull-right">Create Role</button>
-<modal>
-  <h4 class="modal-title">New Role</h4>
+<button (click)="editRole()" class="btn btn-success pull-right">Create Role</button>
+<modal [title]="newRole.id ? 'Edit Role' : 'New Role'">
   <div class="modal-body">
     <form #newRoleForm="ngForm">
       <div class="form-group">
@@ -53,7 +52,7 @@ export class PermissionsGroup {
           name="roleName"
           id="roleName"
           placeholder="Role Name"
-          [(ngModel)]="newRole.name"
+          [(ngModel)]="newRole.data.name"
           required>
       </div>
       <div *ngFor="let group of permissions|keys">
@@ -85,7 +84,12 @@ export class PermissionsGroup {
   <thead>
     <tr>
       <th></th>
-      <th *ngFor="let role of roles">{{role.data.name}}</th>
+      <th *ngFor="let role of roles">
+        {{role.data.name}}
+        <button class="btn btn-link" (click)="editRole(role)">
+          <span class="glyphicon glyphicon-pencil"></span>
+        </button>
+      </th>
     </tr>
   </thead>
   <tbody PermissionsGroup
@@ -101,7 +105,7 @@ export class PermissionsGroup {
 export class RolesComponent {
   roles: any[] = [];
   permissions: Object = {};
-  newRole: any = {permissions: {}};
+  newRole: any = {data: {permissions: {}}};
 
   constructor(private data: DataService, private modal: Modal) {
     this.data.role().findAll({})
@@ -110,27 +114,27 @@ export class RolesComponent {
       .then((permissions: Object) => this.permissions = permissions);
   }
 
-  createRole() {
-    this.newRole = {permissions: {}};
+  editRole(role: any = null) {
+    this.newRole = _.isNull(role) ? {data: {permissions: {}}} : role;
     this.modal.show();
   }
 
   getGroupPermission(group: string, permission: string): boolean {
-    return _.includes(_.get(this.newRole.permissions, group, []), permission);
+    return _.includes(_.get(this.newRole.data.permissions, group, []), permission);
   }
 
   toggleGroupPermission(group: string, permission: string) {
-    var groupPermissions = _.get(this.newRole.permissions, group, []);
+    var groupPermissions = _.get(this.newRole.data.permissions, group, []);
     if (this.getGroupPermission(group, permission)) {
       _.pull(groupPermissions, permission);
       if (_.isEmpty(groupPermissions)) {
-        delete this.newRole.permissions[group];
+        delete this.newRole.data.permissions[group];
         return;
       }
     } else {
       groupPermissions.push(permission);
     }
-    this.newRole.permissions[group] = groupPermissions;
+    this.newRole.data.permissions[group] = groupPermissions;
   }
 
   save() {

@@ -34,6 +34,10 @@ export class DataService {
       full_name: {type: 'string'},
       time_updated: {type: 'number'},
       email: {type: 'string'}
+    },
+    role: {
+      name: {type: 'string'},
+      permissions: {type: 'object'},
     }
   };
 
