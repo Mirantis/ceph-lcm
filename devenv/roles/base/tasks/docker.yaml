@@ -10,6 +10,8 @@
 - name: Install kernel extras
   become: true
   shell: apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual
+  tags:
+    - skip_ansible_lint
 
 - name: Install docker key
   become: true
@@ -22,10 +24,12 @@
 - name: Install docker-engine
   become: true
   apt: name=docker-engine={{ docker_version }} state=present update_cache=yes
+  register: docker_engine_installed
 
 - name: Pin docker-engine
   become: true
   command: apt-mark hold docker-engine
+  when: docker_engine_installed.changed
 
 - name: Add docker group
   become: true
