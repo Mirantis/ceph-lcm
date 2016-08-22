@@ -30,8 +30,13 @@ export class RolesComponent {
   roles: any[] = [];
   permissions: Object = {};
   newRole: any = {data: {permissions: {}}};
+  error: any;
 
   constructor(private data: DataService, private modal: Modal) {
+    this.fetchData();
+  }
+
+  fetchData() {
     this.data.role().findAll({})
       .then((roles: any) => this.roles = roles.items);
     this.data.permissions().findAll({})
@@ -62,7 +67,23 @@ export class RolesComponent {
   }
 
   save() {
-    this.modal.close();
+    this.error = null;
+    var savePromise: Promise<any>;
+    if (this.newRole.id) {
+      // Update role
+      savePromise = this.data.role().update(this.newRole.id, this.newRole);
+    } else {
+      // Create new role
+      savePromise = this.data.role().create(this.newRole);
+    }
+    return savePromise
+      .then(
+        () => {
+          this.modal.close();
+          this.fetchData();
+        },
+        (error) => {this.error = error}
+      );
   }
 };
 

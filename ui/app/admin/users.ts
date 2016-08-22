@@ -30,13 +30,14 @@ export class UsersComponent {
     this.modal.show();
   }
 
-  save(userModal: Modal) {
+  save() {
     this.error = null;
     var savePromise: Promise<any>;
     if (this.newUser.id) {
-      // Update record
+      // Update user
       savePromise = this.data.user().update(this.newUser.id, this.newUser);
     } else {
+      // Create new user
       savePromise = this.data.user().create(this.newUser);
     }
     return savePromise

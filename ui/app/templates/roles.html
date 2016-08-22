@@ -22,8 +22,11 @@
   </tbody>
 </table>
 
-<modal [title]="newRole.id ? 'Edit Role' : 'New Role'">
+<modal [title]="newRole.id ? 'Edit Role' : 'Create New Role'">
   <div class="modal-body">
+    <div class="alert alert-danger" role="alert" *ngIf="error">
+      {{error}}
+    </div>
     <form #newRoleForm="ngForm">
       <div class="form-group">
         <label for="role_name">Name</label>
