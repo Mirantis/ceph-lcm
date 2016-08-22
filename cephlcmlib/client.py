@@ -38,6 +38,23 @@ def json_response(func):
     return decorator
 
 
+def inject_timeout(func):
+    """Injects timeout parameter into request.
+
+    On client initiation, default timeout is set. This timeout will be
+    injected into any request if no explicit parameter is set.
+    """
+
+    @six.wraps(func)
+    def decorator(self, *args, **kwargs):
+        if "timeout" not in kwargs:
+            kwargs["timeout"] = self._timeout
+
+        return func(self, *args, **kwargs)
+
+    return decorator
+
+
 def wrap_errors(func):
     """Catches and logs all errors.
 
@@ -71,13 +88,16 @@ def client_metaclass(name, bases, attrs):
     new_attrs = {}
     for key, value in six.iteritems(attrs):
         if not key.startswith("_") and inspect.isfunction(value):
-            value = wrap_errors(json_response(value))
+            value = json_response(value)
+            value = wrap_errors(value)
+            value = inject_timeout(value)
         new_attrs[key] = value
 
     return type(name, bases, new_attrs)
 
 
 @six.add_metaclass(abc.ABCMeta)
+@six.python_2_unicode_compatible
 class Client(object):
     """A base client model.
 
@@ -105,7 +125,7 @@ class Client(object):
         self._login = login
         self._password = password
         self._session = requests.Session()
-        self.timeout = timeout or socket.getdefaulttimeout() or None
+        self._timeout = timeout or socket.getdefaulttimeout() or None
 
         if self.AUTH_CLASS:
             self._session.auth = self.AUTH_CLASS(self)
@@ -134,63 +154,74 @@ class Client(object):
     def login(self):
         raise NotImplementedError()
 
+    def __str__(self):
+        return "CephLCMAPI: url={0!r}, login={1!r}, password={2!r}".format(
+            self._url, self._login, "*" * len(self._password)
+        )
+
+    def __repr__(self):
+        return "<{0}(url={1!r}, login={2!r}, password={3!r})>".format(
+            self.__class__.__name__,
+            self._url,
+            self._login,
+            "*" * len(self._password)
+        )
+
 
 @six.add_metaclass(client_metaclass)
 class V1Client(Client):
 
     AUTH_CLASS = auth.V1Auth
 
-    def login(self):
+    def login(self, **kwargs):
         url = self._make_url(self.AUTH_CLASS.AUTH_URL)
         payload = {
             "username": self._login,
             "password": self._password
         }
 
-        return self._session.post(url, json=payload)
+        return self._session.post(url, json=payload, **kwargs)
 
-    def logout(self):
+    def logout(self, **kwargs):
         url = self._make_url(self.AUTH_CLASS.AUTH_URL)
         payload = {}
 
         try:
-            return self._session.delete(url, json=payload)
+            return self._session.delete(url, json=payload, **kwargs)
         except Exception:
             return {}
         finally:
             self._session.auth.revoke_token()
 
-    def get_users(self, page=None, per_page=None):
+    def get_users(self, page=None, per_page=None, **kwargs):
         url = self._make_url("/v1/user/")
         payload = {}
         params = self._make_query_params(page=page, per_page=per_page)
 
-        return self._session.get(url, params=params, json=payload,
-                                 timeout=self.timeout)
+        return self._session.get(url, params=params, json=payload, **kwargs)
 
-    def get_user(self, user_id):
+    def get_user(self, user_id, **kwargs):
         url = self._make_url("/v1/user/{0}/".format(user_id))
         payload = {}
 
-        return self._session.get(url, json=payload, timeout=self.timeout)
+        return self._session.get(url, json=payload, **kwargs)
 
-    def get_user_versions(self, user_id, page=None, per_page=None):
+    def get_user_versions(self, user_id, page=None, per_page=None, **kwargs):
         url = self._make_url("/v1/user/{0}/version/".format(user_id))
         payload = {}
         params = self._make_query_params(page=page, per_page=per_page)
 
-        return self._session.get(url, params=params, json=payload,
-                                 timeout=self.timeout)
+        return self._session.get(url, params=params, json=payload, **kwargs)
 
-    def get_user_version(self, user_id, version):
+    def get_user_version(self, user_id, version, **kwargs):
         url = self._make_url(
             "/v1/user/{0}/version/{1}".format(user_id, version)
         )
         payload = {}
 
-        return self._session.get(url, json=payload, timeout=self.timeout)
+        return self._session.get(url, json=payload, **kwargs)
 
-    def create_user(self, login, email, full_name="", role_id=None):
+    def create_user(self, login, email, full_name="", role_id=None, **kwargs):
         url = self._make_url("/v1/user/")
         payload = {
             "login": login,
@@ -199,23 +230,19 @@ class V1Client(Client):
             "role_id": role_id
         }
 
-        return self._session.post(url, json=payload, timeout=self.timeout)
+        return self._session.post(url, json=payload, **kwargs)
 
-    def update_user(self, model_data):
-        if hasattr(model_data, "to_json"):
-            model_data = model_data.to_json()
-
+    def update_user(self, model_data, **kwargs):
         url = self._make_url("/v1/user/{0}/".format(model_data["id"]))
 
-        return self._session.put(url, json=model_data, timeout=self.timeout)
+        return self._session.put(url, json=model_data, **kwargs)
 
-    def get_roles(self, page=None, per_page=None):
+    def get_roles(self, page=None, per_page=None, **kwargs):
         url = self._make_url("/v1/role")
         payload = {}
         params = self._make_query_params(page=page, per_page=per_page)
 
-        return self._session.get(url, params=params, json=payload,
-                                 timeout=self.timeout)
+        return self._session.get(url, params=params, json=payload, **kwargs)
 
     def get_role(self, role_id):
         url = self._make_url("/v1/role/{0}/".format(role_id))
@@ -223,24 +250,23 @@ class V1Client(Client):
 
         return self._session.get(url, json=payload, timeout=self.timeout)
 
-    def get_role_versions(self, role_id, page=None, per_page=None):
+    def get_role_versions(self, role_id, page=None, per_page=None, **kwargs):
         url = self._make_url("/v1/role/{0}/version/".format(role_id))
         payload = {}
         params = self._make_query_params(page=page, per_page=per_page)
 
-        return self._session.get(url, params=params, json=payload,
-                                 timeout=self.timeout)
+        return self._session.get(url, params=params, json=payload, **kwargs)
 
-    def get_role_version(self, role_id, version):
+    def get_role_version(self, role_id, version, **kwargs):
         url = self._make_url(
             "/v1/role/{0}/version/{1}".format(role_id, version)
         )
         payload = {}
 
-        return self._session.get(url, json=payload, timeout=self.timeout)
+        return self._session.get(url, json=payload, **kwargs)
 
-    def get_permissions(self):
+    def get_permissions(self, **kwargs):
         url = self._make_url("/v1/permission/")
         payload = {}
 
-        return self._session.get(url, json=payload, timeout=self.timeout)
+        return self._session.get(url, json=payload, **kwargs)

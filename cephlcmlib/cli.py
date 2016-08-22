@@ -6,7 +6,6 @@ import click
 import six
 
 from cephlcmlib import Client
-from cephlcmlib import ModelClient
 
 try:
     import simplejson as json
@@ -24,8 +23,7 @@ def with_client(func):
     @six.wraps(func)
     @click.pass_context
     def decorator(ctx, *args, **kwargs):
-        return func(ctx, ctx.obj["client"], ctx.obj["model_client"],
-                    *args, **kwargs)
+        return func(ctx, ctx.obj["client"], *args, **kwargs)
 
     return decorator
 
@@ -126,7 +124,6 @@ def cli(ctx, url, login, password, debug, timeout, output_format):
         "format": output_format,
         "client": Client(url, login, password, timeout=timeout)
     }
-    ctx.obj["model_client"] = ModelClient(ctx.obj["client"])
 
 
 @cli.command()
