@@ -12,8 +12,13 @@ export class UsersComponent {
   users: any[] = [];
   roles: any[] = [];
   newUser: any = {data: {}};
+  error: any;
 
   constructor(private data: DataService, private modal: Modal) {
+    this.fetchData();
+  }
+
+  fetchData() {
     this.data.user().findAll({})
       .then((users: any) => this.users = users.items);
     this.data.role().findAll({})
@@ -23,5 +28,24 @@ export class UsersComponent {
   editUser(user: any = null) {
     this.newUser = _.isNull(user) ? {data: {}} : user;
     this.modal.show();
+  }
+
+  save(userModal: Modal) {
+    this.error = null;
+    var savePromise: Promise<any>;
+    if (this.newUser.id) {
+      // Update record
+      savePromise = this.data.user().update(this.newUser.id, this.newUser);
+    } else {
+      savePromise = this.data.user().create(this.newUser);
+    }
+    return savePromise
+      .then(
+        () => {
+          this.modal.close();
+          this.fetchData();
+        },
+        (error) => {this.error = error}
+      );
   }
 }
