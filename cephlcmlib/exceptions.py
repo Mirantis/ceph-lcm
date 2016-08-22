@@ -41,5 +41,9 @@ class CephLCMAPIError(CephLCMError):
     def description(self):
         return self.response["message"]
 
+    @property
+    def json(self):
+        return self.response
+
     def __str__(self):
         return "{0}[{1}]: {2}".format(self.error, self.code, self.description)

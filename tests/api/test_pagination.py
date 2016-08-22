@@ -122,7 +122,7 @@ def test_sort_by_ok():
 
 
 @pytest.mark.parametrize("value", (
-    "1", "y", "Y", "yes", "YES"
+    "1", "y", "Y", "yes", "YES", "true"
 ))
 def test_query_all_true(value):
     params = {"all": value}
@@ -132,7 +132,7 @@ def test_query_all_true(value):
 
 
 @pytest.mark.parametrize("value", (
-    "0", "n", "no", "NO",
+    "0", "n", "no", "NO", "false"
     "", [], {}, 0
 ))
 def test_query_all_false(value):

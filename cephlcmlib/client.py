@@ -21,6 +21,17 @@ LOG = logging.getLogger(__name__)
 """Logger."""
 
 
+def make_query_params(**request_params):
+    """Makes query string parameters for request."""
+
+    params = {}
+    for key, value in six.iteritems(request_params):
+        if value is not None:
+            params[key] = value
+
+    return params
+
+
 def json_response(func):
     """Parses requests' response and return unpacked JSON.
 
@@ -47,10 +58,28 @@ def inject_timeout(func):
 
     @six.wraps(func)
     def decorator(self, *args, **kwargs):
-        if "timeout" not in kwargs:
-            kwargs["timeout"] = self._timeout
-
+        kwargs.setdefault("timeout", self._timeout)
         return func(self, *args, **kwargs)
+
+    return decorator
+
+
+def inject_pagination_params(func):
+    """Injects pagination params into function."""
+
+    @six.wraps(func)
+    def decorator(*args, **kwargs):
+        params = make_query_params(
+            page=kwargs.pop("page"),
+            per_page=kwargs.pop("per_page"),
+            all=kwargs.pop("all_items")
+        )
+        if "all" in params:
+            params["all"] = bool(params["all"])
+
+        kwargs["query_params"] = params
+
+        return func(*args, **kwargs)
 
     return decorator
 
@@ -114,7 +143,6 @@ class Client(object):
         """Prepares base url to be used further."""
 
         url = url.strip().rstrip("/")
-
         if not url.startswith("http"):
             url = "http://{0}".format(url)
 
@@ -139,16 +167,6 @@ class Client(object):
             url += "/"
 
         return url
-
-    def _make_query_params(self, **request_params):
-        """Makes query string parameters for request."""
-
-        params = {}
-        for key, value in six.iteritems(request_params):
-            if value is not None:
-                params[key] = value
-
-        return params
 
     @abc.abstractmethod
     def login(self):
@@ -184,42 +202,189 @@ class V1Client(Client):
 
     def logout(self, **kwargs):
         url = self._make_url(self.AUTH_CLASS.AUTH_URL)
-        payload = {}
 
         try:
-            return self._session.delete(url, json=payload, **kwargs)
+            return self._session.delete(url, json={}, **kwargs)
         except Exception:
             return {}
         finally:
             self._session.auth.revoke_token()
 
-    def get_users(self, page=None, per_page=None, **kwargs):
-        url = self._make_url("/v1/user/")
-        payload = {}
-        params = self._make_query_params(page=page, per_page=per_page)
+    @inject_pagination_params
+    def get_clusters(self, query_params, **kwargs):
+        url = self._make_url("/v1/cluster/")
+        return self._session.get(url, params=query_params, **kwargs)
 
-        return self._session.get(url, params=params, json=payload, **kwargs)
+    def get_cluster(self, cluster_id, **kwargs):
+        url = self._make_url("/v1/cluster/{0}/".format(cluster_id))
+        return self._session.get(url, **kwargs)
+
+    @inject_pagination_params
+    def get_cluster_versions(self, cluster_id, query_params, **kwargs):
+        url = self._make_url("/v1/cluster/{0}/version/".format(cluster_id))
+        return self._session.get(url, params=query_params, **kwargs)
+
+    def get_cluster_version(self, cluster_id, version, **kwargs):
+        url = self._make_url(
+            "/v1/cluster/{0}/version/{1}/".format(cluster_id, version))
+        return self._session.get(url, **kwargs)
+
+    def create_cluster(self, name, **kwargs):
+        url = self._make_url("/v1/cluster/")
+        payload = {
+            "name": name,
+            "configuration": {}
+        }
+
+        return self._session.post(url, json=payload, **kwargs)
+
+    def update_cluster(self, model_data, **kwargs):
+        url = self._make_url("/v1/cluster/{0}/".format(model_data["id"]))
+        return self._session.put(url, json=model_data, **kwargs)
+
+    def delete_cluster(self, cluster_id, **kwargs):
+        url = self._make_url("/v1/cluster/{0}/".format(cluster_id))
+        return self._session.delete(url, **kwargs)
+
+    @inject_pagination_params
+    def get_executions(self, query_params, **kwargs):
+        url = self._make_url("/v1/execution/")
+        return self._session.get(url, params=query_params, **kwargs)
+
+    def get_execution(self, execution_id, **kwargs):
+        url = self._make_url("/v1/execution/{0}/".format(execution_id))
+        return self._session.get(url, **kwargs)
+
+    @inject_pagination_params
+    def get_execution_versions(self, execution_id, query_params, **kwargs):
+        url = self._make_url("/v1/execution/{0}/version/".format(execution_id))
+        return self._session.get(url, params=query_params, **kwargs)
+
+    def get_execution_version(self, execution_id, version, **kwargs):
+        url = self._make_url(
+            "/v1/execution/{0}/version/{1}/".format(execution_id, version))
+        return self._session.get(url, **kwargs)
+
+    def create_execution(self, playbook_configuration_id,
+                         playbook_configuration_version, **kwargs):
+        url = self._make_url("/v1/execution/")
+        payload = {
+            "playbook_configuration": {
+                "id": playbook_configuration_id,
+                "version": playbook_configuration_version
+            }
+        }
+
+        return self._session.post(url, json=payload, **kwargs)
+
+    def cancel_execution(self, execution_id, **kwargs):
+        url = self._make_url("/v1/execution/")
+        return self._session.delete(url, **kwargs)
+
+    @inject_pagination_params
+    def get_playbook_configurations(self, query_params, **kwargs):
+        url = self._make_url("/v1/playbook_configuration/")
+        return self._session.get(url, params=query_params, **kwargs)
+
+    def get_playbook_configuration(self, playbook_configuration_id, **kwargs):
+        url = self._make_url(
+            "/v1/playbook_configuration/{0}/".format(playbook_configuration_id)
+        )
+        return self._session.get(url, **kwargs)
+
+    def get_playbook_configuration_versions(self, playbook_configuration_id,
+                                            query_params, **kwargs):
+        url = self._make_url(
+            "/v1/playbook_configuration/{0}/version/".format(
+                playbook_configuration_id))
+        return self._session.get(url, params=query_params, **kwargs)
+
+    def get_playbook_configuration_version(self, playbook_configuration_id,
+                                           version, **kwargs):
+        url = self._make_url(
+            "/v1/playbook_configuration/{0}/version/{1}/".format(
+                playbook_configuration_id, version))
+        return self._session.get(url, **kwargs)
+
+    def create_playbook_configuration(self, name, cluster_id, playbook,
+                                      server_ids, **kwargs):
+        url = self._make_url("/v1/playbook_configuration/")
+        payload = {
+            "name": name,
+            "cluster_id": cluster_id,
+            "playbook": playbook,
+            "server_ids": list(set(server_ids))
+        }
+
+        return self._session.post(url, json=payload, **kwargs)
+
+    def update_playbook_configuration(self, model_data, **kwargs):
+        url = self._make_url(
+            "/v1/playbook_configuration/{0}/".format(model_data["id"]))
+        return self._session.put(url, json=model_data, **kwargs)
+
+    def delete_playbook_confuiguration(self, playbook_configuration_id,
+                                       **kwargs):
+        url = self._make_url(
+            "/v1/playbook_configuration/{0}/".format(playbook_configuration_id)
+        )
+        return self._session.delete(url, **kwargs)
+
+    @inject_pagination_params
+    def get_servers(self, query_params, **kwargs):
+        url = self._make_url("/v1/server/")
+        return self._session.get(url, params=query_params, **kwargs)
+
+    def get_server(self, server_id, **kwargs):
+        url = self._make_url("/v1/server/{0}/".format(server_id))
+        return self._session.get(url, **kwargs)
+
+    @inject_pagination_params
+    def get_server_versions(self, server_id, query_params, **kwargs):
+        url = self._make_url("/v1/server/{0}/version/".format(server_id))
+        return self._session.get(url, params=query_params, **kwargs)
+
+    def get_server_version(self, server_id, version, **kwargs):
+        url = self._make_url(
+            "/v1/server/{0}/version/{1}/".format(server_id, version))
+        return self._session.get(url, **kwargs)
+
+    def create_server(self, server_id, host, username, **kwargs):
+        url = self._make_url("/v1/server/")
+        payload = {
+            "id": server_id,
+            "host": host,
+            "username": username
+        }
+
+        return self._session.post(url, json=payload, **kwargs)
+
+    def put_server(self, model_data, **kwargs):
+        url = self._make_url("/v1/server/{0}/".format(model_data["id"]))
+        return self._session.put(url, json=model_data, **kwargs)
+
+    def delete_server(self, server_id, **kwargs):
+        url = self._make_url("/v1/server/{0}/".format(server_id))
+        return self._session.delete(url, **kwargs)
+
+    @inject_pagination_params
+    def get_users(self, query_params, **kwargs):
+        url = self._make_url("/v1/user/")
+        return self._session.get(url, params=query_params, **kwargs)
 
     def get_user(self, user_id, **kwargs):
         url = self._make_url("/v1/user/{0}/".format(user_id))
-        payload = {}
+        return self._session.get(url, **kwargs)
 
-        return self._session.get(url, json=payload, **kwargs)
-
-    def get_user_versions(self, user_id, page=None, per_page=None, **kwargs):
+    @inject_pagination_params
+    def get_user_versions(self, user_id, query_params, **kwargs):
         url = self._make_url("/v1/user/{0}/version/".format(user_id))
-        payload = {}
-        params = self._make_query_params(page=page, per_page=per_page)
-
-        return self._session.get(url, params=params, json=payload, **kwargs)
+        return self._session.get(url, params=query_params, **kwargs)
 
     def get_user_version(self, user_id, version, **kwargs):
         url = self._make_url(
-            "/v1/user/{0}/version/{1}".format(user_id, version)
-        )
-        payload = {}
-
-        return self._session.get(url, json=payload, **kwargs)
+            "/v1/user/{0}/version/{1}/".format(user_id, version))
+        return self._session.get(url, **kwargs)
 
     def create_user(self, login, email, full_name="", role_id=None, **kwargs):
         url = self._make_url("/v1/user/")
@@ -234,39 +399,31 @@ class V1Client(Client):
 
     def update_user(self, model_data, **kwargs):
         url = self._make_url("/v1/user/{0}/".format(model_data["id"]))
-
         return self._session.put(url, json=model_data, **kwargs)
 
-    def get_roles(self, page=None, per_page=None, **kwargs):
-        url = self._make_url("/v1/role")
-        payload = {}
-        params = self._make_query_params(page=page, per_page=per_page)
+    @inject_pagination_params
+    def get_roles(self, query_params, **kwargs):
+        url = self._make_url("/v1/role/")
+        return self._session.get(url, params=query_params, **kwargs)
 
-        return self._session.get(url, params=params, json=payload, **kwargs)
-
-    def get_role(self, role_id):
+    def get_role(self, role_id, **kwargs):
         url = self._make_url("/v1/role/{0}/".format(role_id))
-        payload = {}
+        return self._session.get(url, **kwargs)
 
-        return self._session.get(url, json=payload, timeout=self.timeout)
-
-    def get_role_versions(self, role_id, page=None, per_page=None, **kwargs):
+    @inject_pagination_params
+    def get_role_versions(self, role_id, query_params, **kwargs):
         url = self._make_url("/v1/role/{0}/version/".format(role_id))
-        payload = {}
-        params = self._make_query_params(page=page, per_page=per_page)
-
-        return self._session.get(url, params=params, json=payload, **kwargs)
+        return self._session.get(url, params=query_params, **kwargs)
 
     def get_role_version(self, role_id, version, **kwargs):
         url = self._make_url(
-            "/v1/role/{0}/version/{1}".format(role_id, version)
-        )
-        payload = {}
-
-        return self._session.get(url, json=payload, **kwargs)
+            "/v1/role/{0}/version/{1}/".format(role_id, version))
+        return self._session.get(url, **kwargs)
 
     def get_permissions(self, **kwargs):
         url = self._make_url("/v1/permission/")
-        payload = {}
+        return self._session.get(url, **kwargs)
 
-        return self._session.get(url, json=payload, **kwargs)
+    def get_playbooks(self, **kwargs):
+        url = self._make_url("/v1/playbook/")
+        return self._session.get(url, **kwargs)
