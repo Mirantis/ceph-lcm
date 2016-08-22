@@ -24,7 +24,7 @@ export class PermissionsGroup {
 
 @Component({
   templateUrl: './app/templates/roles.html',
-  directives: [PermissionsGroup, Modal]
+  directives: [PermissionsGroup]
 })
 export class RolesComponent {
   roles: any[] = [];
@@ -34,13 +34,14 @@ export class RolesComponent {
 
   constructor(private data: DataService, private modal: Modal) {
     this.fetchData();
+    // Permissions are not going to change
+    this.data.permissions().findAll({})
+      .then((permissions: Object) => this.permissions = permissions);
   }
 
   fetchData() {
     this.data.role().findAll({})
       .then((roles: any) => this.roles = roles.items);
-    this.data.permissions().findAll({})
-      .then((permissions: Object) => this.permissions = permissions);
   }
 
   editRole(role: any = null) {

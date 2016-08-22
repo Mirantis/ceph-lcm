@@ -34,6 +34,7 @@ navigation ul li {
 navigation ul li a {
   display: inline-block;
   min-width: 150px;
+  height: 36px;
   padding: 8px;
   border: solid 1px #CCC;
   border-radius: 5px;
@@ -48,6 +49,10 @@ navigation ul li a:hover {
 navigation ul li a.active {
   background-color: #DDD;
   text-decoration: none;
+}
+navigation ul li a.logoff {
+  min-width: 36px;
+  font-size: 12pt;
 }
 div.login {
   position: fixed;
@@ -85,4 +90,7 @@ table.roles td:nth-child(n+2) {
 }
 table.roles td:nth-child(n+2) button {
   padding: 0;
+}
+table.clusters td:last-child {
+  width: 1%;
 }

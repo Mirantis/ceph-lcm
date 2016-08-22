@@ -5,7 +5,7 @@ import { DataStore, Record, Mapper } from 'js-data';
 import { HttpAdapter } from 'js-data-http';
 import { SessionService } from './session';
 
-type supportedMappers = 'auth' | 'user' | 'role' | 'permissions';
+type supportedMappers = 'auth' | 'user' | 'role' | 'permissions' | 'cluster';
 
 @Injectable()
 export class DataService {
@@ -23,11 +23,17 @@ export class DataService {
   user(): Mapper {return this.getMapper('user')}
   role(): Mapper {return this.getMapper('role')}
   permissions(): Mapper {return this.getMapper('permissions')}
+  cluster(): Mapper {return this.getMapper('cluster')}
 
   private modelsProperties = {
     auth: {
      user_id: {type: 'string'},
      expires_at: {type: 'number'}
+    },
+    cluster: {
+      name: {type: 'string'},
+      execution_id: {type: 'string'},
+      configuration: {type: 'object'}
     },
     user: {
       login: {type: 'string'},

@@ -43,6 +43,7 @@ navigation {
       a {
         display: inline-block;
         min-width: 150px;
+        height: 36px;
         padding: 8px;
         border: solid 1px #CCC;
         border-radius: 5px;
@@ -58,6 +59,11 @@ navigation {
         &.active {
           background-color: #DDD;
           text-decoration: none;
+        }
+
+        &.logoff {
+          min-width: 36px;
+          font-size: 12pt;
         }
       }
 
@@ -108,5 +114,11 @@ table.roles {
     button {
       padding: 0;
     }
+  }
+}
+
+table.clusters {
+  td:last-child {
+    width: 1%;
   }
 }

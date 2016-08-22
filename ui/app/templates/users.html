@@ -1,20 +1,20 @@
 <button (click)="editUser()" class="btn btn-success pull-right">Create User</button>
 
 <h3>Users Management</h3>
-<table class='users table' *ngIf='users.length'>
+<table class="users table" *ngIf="users.length">
   <thead>
     <tr>
       <th>Login</th>
       <th>Full Name</th>
-      <th width='1%'>Actions</th>
+      <th width="1%">Actions</th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor='let user of users'>
+    <tr *ngFor="let user of users">
       <td>{{user.data.login}}</td>
       <td>{{user.data.full_name}}</td>
       <td>
-        <button (click)='editUser(user)' class='btn btn-sm btn-success'>Edit</button>
+        <button (click)="editUser(user)" class="btn btn-sm btn-success">Edit</button>
       </td>
     </tr>
   </tbody>

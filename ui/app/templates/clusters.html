@@ -1,0 +1,50 @@
+<button (click)="editCluster()" class="btn btn-success pull-right">Create Cluster</button>
+
+<h3>Clusters</h3>
+
+<div *ngIf="!clusters.length" class="no-clusters">
+  You don't have any clusters yet. Please create.
+</div>
+
+<table class="clusters table" *ngIf="clusters.length">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Nodes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let cluster of clusters">
+      <td>{{cluster.data.name}}</td>
+      <td><span class="text-danger">2</span> / 10</td>
+    </tr>
+  </tbody>
+</table>
+
+<modal [title]="newCluster.id ? 'Edit Cluster' : 'Create New Cluster'">
+  <div class="modal-body">
+    <div class="alert alert-danger" role="alert" *ngIf="error">
+      {{error}}
+    </div>
+    <form #newClusterForm="ngForm">
+      <div class="form-group">
+        <label for="cluster_name">Cluster Name</label>
+        <input
+          type="text"
+          class="form-control"
+          name="cluster_name"
+          id="cluster_name"
+          placeholder="Name"
+          [(ngModel)]="newCluster.data.name"
+          required>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-default" (click)="modal.close()">Cancel</button>
+    <button
+      class="btn btn-success"
+      (click)="save()"
+      [disabled]="!newClusterForm.form.valid">Save changes</button>
+  </div>
+</modal>

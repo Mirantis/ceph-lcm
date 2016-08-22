@@ -7,7 +7,8 @@ import { LoginComponent, DashboardComponent }  from './dashboard/index';
 import { UsersComponent }  from './admin/index';
 import { PageNotFoundComponent }  from './404';
 
-import { UsersModule }  from './admin/admin.module';
+import { AdminModule }  from './admin/admin.module';
+import { ClustersModule }  from './clusters/clusters.module';
 
 import { AuthService, LoggedIn}  from './services/auth';
 import { SessionService }  from './services/session';
@@ -27,7 +28,8 @@ import { appRoutingProviders, routing } from './app.routes';
   ],
   imports: [
     routing,
-    UsersModule,
+    AdminModule,
+    ClustersModule,
     FormsModule,
     BrowserModule
   ],

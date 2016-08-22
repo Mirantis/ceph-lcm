@@ -3,15 +3,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { AdminComponent, UsersComponent, RolesComponent } from './index';
-import { Key, Keys } from '../pipes';
+import { ClustersComponent } from './index';
 
 @NgModule({
   declarations: [
-    AdminComponent,
-    UsersComponent,
-    RolesComponent,
-    Keys, Key
+    ClustersComponent
   ],
   imports: [
     BrowserModule,
@@ -19,9 +15,7 @@ import { Key, Keys } from '../pipes';
     FormsModule
   ],
   exports: [
-    AdminComponent,
-    UsersComponent,
-    RolesComponent
+    ClustersComponent
   ]
 })
-export class AdminModule { }
+export class ClustersModule { }
