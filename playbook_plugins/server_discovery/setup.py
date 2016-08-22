@@ -13,16 +13,18 @@ setuptools.setup(
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
-    py_modules=["cephlcm_server_discovery"],
+    packages=setuptools.find_packages(),
     entry_points={
         "cephlcm.playbooks": [
-            "server_discovery = cephlcm_server_discovery:ServerDiscovery"
+            "server_discovery = cephlcm_server_discovery.plugin:ServerDiscovery"  # NOQA
         ]
     },
-    include_package_data=False,
+    python_requires=">= 3.4",
+    include_package_data=True,
     package_data={
         "cephlcm_server_discovery": [
             "config.toml",
         ]
-    }
+    },
+    zip_safe=False
 )
