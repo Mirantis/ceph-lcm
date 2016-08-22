@@ -7,6 +7,11 @@ import cephlcm.api.wsgi as app
 
 
 def patch(app):
+    """This patch installs sudo user/role for CephLCM.
+
+    Consider it as a mandatory fixture for frontend development.
+    """
+
     from cephlcm.common.models import role
     from cephlcm.common.models import user
 
