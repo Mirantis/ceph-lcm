@@ -157,19 +157,12 @@ class Model(Base, metaclass=abc.ABCMeta):
     @classmethod
     def list_paginated(cls, query, pagination,
                        filter_fields=None, sort_by=None):
-        cursor = cls.list_raw(query, filter_fields, sort_by)
-        total = cursor.count()
-
-        page_items_before = pagination["per_page"] * (pagination["page"] - 1)
-        if page_items_before:
-            cursor = cursor.skip(page_items_before)
-        cursor = cursor.limit(pagination["per_page"])
-
-        paginated_result = wrappers.PaginationResult(
-            cls, cursor, pagination, total
+        result = cls.list_raw(query, filter_fields, sort_by)
+        result = wrappers.PaginationResult(
+            cls, result, pagination
         )
 
-        return paginated_result
+        return result
 
     @classmethod
     def list_models(cls, pagination):

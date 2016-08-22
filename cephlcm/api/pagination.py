@@ -64,7 +64,7 @@ FILTER_SCHEMA = {
         ]
     }
 }
-"""Pagination schema."""
+"""Filter pagination schema."""
 
 SORT_BY_SCHEMA = {
     "type": "object",
