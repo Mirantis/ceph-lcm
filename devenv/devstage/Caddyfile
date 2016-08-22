@@ -1,0 +1,4 @@
+0.0.0.0:80
+cors
+gzip
+proxy / api:8080

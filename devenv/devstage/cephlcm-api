@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+
+import cherrypy.wsgiserver as wsgiserver
+import cephlcm.api.wsgi as app
+
+
+def patch(app):
+    """This patch installs sudo user/role for CephLCM.
+
+    Consider it as a mandatory fixture for frontend development.
+    """
+
+    from cephlcm.common.models import role
+    from cephlcm.common.models import user
+
+    with app.app_context():
+        if user.UserModel.find_by_login("sudo"):
+            return
+
+        role_model = role.RoleModel.make_role(
+            "Sudo",
+            {k: sorted(v)
+             for k, v in role.PermissionSet.KNOWN_PERMISSIONS.items()}
+        )
+        user.UserModel.make_user(
+            "sudo",
+            "password",
+            "sudo@example.com",
+            "Sudo User",
+            role_model.model_id
+        )
+
+
+dispatcher = wsgiserver.WSGIPathInfoDispatcher({"/": app.application})
+server = wsgiserver.CherryPyWSGIServer(("0.0.0.0", 8080), dispatcher)
+
+
+try:
+    patch(app.application)
+    server.start()
+except KeyboardInterrupt:
+    server.stop()

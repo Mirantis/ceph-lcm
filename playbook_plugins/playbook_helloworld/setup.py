@@ -20,6 +20,7 @@ setuptools.setup(
         ]
     },
     python_requires=">= 3.4",
+    include_package_data=True,
     package_data={
         "cephlcm_hello_world": [
             "config.toml",
