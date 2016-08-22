@@ -20,7 +20,8 @@ def test_defaults():
         "page": 1,
         "per_page": CONF.API_PAGINATION_PER_PAGE,
         "filter": {},
-        "sort_by": []
+        "sort_by": [],
+        "all": False
     }
 
 
@@ -118,3 +119,24 @@ def test_sort_by_ok():
     result = pagination.make_pagination(params)
 
     assert sorted(result["sort_by"]) == [("a", 1), ("b", -1), ("c", 1)]
+
+
+@pytest.mark.parametrize("value", (
+    "1", "y", "Y", "yes", "YES"
+))
+def test_query_all_true(value):
+    params = {"all": value}
+    result = pagination.make_pagination(params)
+
+    assert result["all"]
+
+
+@pytest.mark.parametrize("value", (
+    "0", "n", "no", "NO",
+    "", [], {}, 0
+))
+def test_query_all_false(value):
+    params = {"all": value}
+    result = pagination.make_pagination(params)
+
+    assert not result["all"]
