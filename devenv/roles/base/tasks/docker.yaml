@@ -1,0 +1,49 @@
+---
+# Docker tasks for CephLCM
+
+
+- name: Install prerequisites
+  become: true
+  apt: name={{ item }} state=present
+  with_items: "{{ docker_prerequisites }}"
+
+- name: Install kernel extras
+  become: true
+  shell: apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual
+
+- name: Install docker key
+  become: true
+  apt_key: keyserver={{ docker_keyserver }} state=present id={{ docker_key }}
+
+- name: Add docker repository
+  become: true
+  apt_repository: repo={{ docker_repo }} state=present
+
+- name: Install docker-engine
+  become: true
+  apt: name=docker-engine={{ docker_version }} state=present update_cache=yes
+
+- name: Pin docker-engine
+  become: true
+  command: apt-mark hold docker-engine
+
+- name: Add docker group
+  become: true
+  group: name=group state=present
+
+- name: Add current user to the docker group
+  become: true
+  user: name={{ ansible_user }} groups=docker append=yes
+
+- name: Enable DNS for docker
+  become: true
+  lineinfile: dest=/etc/default/docker
+              regexp="^DOCKER_OPTS="
+              insertafter="^#DOCKER_OPTS="
+              line='DOCKER_OPTS="--dns 8.8.8.8 --dns 8.8.4.4"'
+
+- name: Install docker-compose
+  become: true
+  pip: name=docker-compose
+       version={{ docker_compose_version }}
+       state=present

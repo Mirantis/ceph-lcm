@@ -62,3 +62,7 @@ unwanted_apt_packages:
 
 ssh_known_hosts:
   - github.com
+
+docker_prerequisites:
+    - apt-transport-https
+    - ca-certificates
