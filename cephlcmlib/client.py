@@ -282,6 +282,11 @@ class V1Client(Client):
         return self._session.delete(url, **kwargs)
 
     @inject_pagination_params
+    def get_execution_steps(self, execution_id, query_params, **kwargs):
+        url = self._make_url("/v1/execution/{0}/steps/".format(execution_id))
+        return self._session.get(url, params=query_params, **kwargs)
+
+    @inject_pagination_params
     def get_playbook_configurations(self, query_params, **kwargs):
         url = self._make_url("/v1/playbook_configuration/")
         return self._session.get(url, params=query_params, **kwargs)
@@ -400,6 +405,10 @@ class V1Client(Client):
     def update_user(self, model_data, **kwargs):
         url = self._make_url("/v1/user/{0}/".format(model_data["id"]))
         return self._session.put(url, json=model_data, **kwargs)
+
+    def delete_user(self, user_id, **kwargs):
+        url = self._make_url("/v1/user/{0}/".format(user_id))
+        return self._session.delete(url, **kwargs)
 
     @inject_pagination_params
     def get_roles(self, query_params, **kwargs):

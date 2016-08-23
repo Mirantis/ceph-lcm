@@ -153,6 +153,16 @@ def configure_logging(debug):
         requests_log.setLevel(logging.CRITICAL)
 
 
+def update_model(item_id, fetch_item, update_item, model, **kwargs):
+    if not model:
+        model = fetch_item(item_id)
+        for key, value in six.iteritems(kwargs):
+            if value:
+                model["data"][key] = value
+
+    return update_item(model)
+
+
 @click.group(context_settings=CONTEXT_SETTINGS)
 @click.option(
     "--url", "-u",
@@ -192,12 +202,12 @@ def configure_logging(debug):
 def cli(ctx, url, login, password, debug, timeout, output_format):
     """cephlcm command line tool.
 
-    With this CLI it is possible to access all API endpoints
-    of CephLCM. To do so, you have to provide some common
-    configuration settings: URL, login and password to access.
+    With this CLI it is possible to access all API endpoints of CephLCM.
+    To do so, you have to provide some common configuration settings:
+    URL, login and password to access.
 
-    These settings are possible to setup using commandline
-    parameter, but if you want, you can set environment variables:
+    These settings are possible to setup using commandline parameter,
+    but if you want, you can set environment variables:
 
     \b
         - CEPHLCM_URL      - this environment variable sets URL to access.
@@ -224,11 +234,7 @@ def cli(ctx, url, login, password, debug, timeout, output_format):
 @with_pagination
 @with_client
 def get_users(client, query_params):
-    """Requests the list of users.
-
-    By default, it returns all users. Sometimes, it might be
-    slow so you can use pagination settings.
-    """
+    """Requests the list of users."""
 
     return client.get_users(**query_params)
 
@@ -251,11 +257,7 @@ def get_user(user_id, client):
 @with_pagination
 @with_client
 def get_user_versions(user_id, client, query_params):
-    """Requests a list of versions on user with certain ID.
-
-    By default, it returns all users. Sometimes, it might be
-    slow so you can use pagination settings.
-    """
+    """Requests a list of versions on user with certain ID."""
 
     return client.get_user_versions(str(user_id), **query_params)
 
@@ -292,16 +294,78 @@ def create_user(login, email, full_name, role_id, client):
 
 
 @cli.command()
+@click.argument("user-id")
+@click.option(
+    "--login",
+    default=None,
+    help="New user login."
+)
+@click.option(
+    "--email",
+    default=None,
+    help="New user email."
+)
+@click.option(
+    "--full-name",
+    default=None,
+    help="New user full name."
+)
+@click.option(
+    "--role-id",
+    default=None,
+    help="New role ID for the user."
+)
+@click.option(
+    "--model",
+    default=None,
+    help=(
+        "Full model data. If this parameter is set, other options "
+        "won't be used. This parameter is JSON dump of the model."
+    )
+)
+@catch_errors
+@format_output
+@with_client
+def update_user(user_id, login, email, full_name, role_id, model, client):
+    """Update user data.
+
+    The logic is following: if 'model' parameter is set (full JSON dump
+    of the model) is set, all other options will be ignored. Otherwise
+    only certain parameters will be updated.
+    """
+
+    return update_model(
+        user_id,
+        client.get_user,
+        client.update_user,
+        model,
+        email=email, login=login, full_name=full_name, role_id=role_id
+    )
+
+
+@cli.command()
+@click.argument("user-id")
+@catch_errors
+@format_output
+@with_client
+def delete_user(user_id, client):
+    """Deletes user from CephLCM.
+
+    Please be notices that *actually* there is no deletion in common
+    sense. CephLCM archives user. It won't be active after but still all
+    history will be accessible.
+    """
+
+    return client.delete_user(user_id)
+
+
+@cli.command()
 @catch_errors
 @format_output
 @with_pagination
 @with_client
 def get_roles(client, query_params):
-    """Requests the list of roles.
-
-    By default, it returns all users. Sometimes, it might be
-    slow so you can use pagination settings.
-    """
+    """Requests the list of roles."""
 
     return client.get_roles(**query_params)
 
