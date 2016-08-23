@@ -97,6 +97,8 @@ password_length = 10
 bcrypt_rounds = 4
 
     [common.email]
+    # Do we have email sending configured or not.
+    enabled = false
     # Default email in FROM field
     from = "noreply@mirantis.com"
     # Default SMTP host

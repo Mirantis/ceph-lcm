@@ -2,10 +2,19 @@
 """This module contains a definitions for cephlcm CLI."""
 
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
+import logging
+import os
+import sys
+
 import click
 import six
+import six.moves
 
 import cephlcmlib
+import cephlcmlib.exceptions
 
 try:
     import simplejson as json
@@ -15,6 +24,25 @@ except ImportError:
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 """Context settings for the Click."""
+
+
+def catch_errors(func):
+    """Decorator which catches all errors and tries to print them."""
+
+    @six.wraps(func)
+    def decorator(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+        except cephlcmlib.exceptions.CephLCMAPIError as exc:
+            format_output_json(exc.json, sys.stderr)
+        except cephlcmlib.exceptions.CephLCMError as exc:
+            sys.stderr.write("{0}\n".format(exc))
+        else:
+            sys.exit(os.EX_OK)
+
+        sys.exit(os.EX_SOFTWARE)
+
+    return decorator
 
 
 def with_client(func):
@@ -100,9 +128,29 @@ def with_pagination(func):
     return decorator
 
 
-def format_output_json(response):
-    dump = json.dumps(response, indent=4, sort_keys=True)
-    click.echo(dump)
+def format_output_json(response, stream=sys.stdout):
+    json.dump(response, stream, indent=4, sort_keys=True)
+    stream.write("\n")
+
+
+def configure_logging(debug):
+    requests_log = logging.getLogger("requests.packages.urllib3")
+    requests_log.propagate = True
+    logging.basicConfig(
+        format=(
+            "%(asctime)s [%(levelname)5s] (%(filename)20s:%(lineno)-4d):"
+            " %(message)s"
+        )
+    )
+
+    if debug:
+        six.moves.http_client.HTTPConnection.debuglevel = 1
+        logging.getLogger().setLevel(logging.DEBUG)
+        requests_log.setLevel(logging.DEBUG)
+    else:
+        six.moves.http_client.HTTPConnection.debuglevel = 0
+        logging.getLogger().setLevel(logging.CRITICAL)
+        requests_log.setLevel(logging.CRITICAL)
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
@@ -167,9 +215,11 @@ def cli(ctx, url, login, password, debug, timeout, output_format):
         "format": output_format,
         "client": cephlcmlib.Client(url, login, password, timeout=timeout)
     }
+    configure_logging(debug)
 
 
 @cli.command()
+@catch_errors
 @format_output
 @with_pagination
 @with_client
@@ -185,6 +235,7 @@ def get_users(client, query_params):
 
 @cli.command()
 @click.argument("user_id", type=click.UUID)
+@catch_errors
 @format_output
 @with_client
 def get_user(user_id, client):
@@ -195,6 +246,7 @@ def get_user(user_id, client):
 
 @cli.command()
 @click.argument("user_id", type=click.UUID)
+@catch_errors
 @format_output
 @with_pagination
 @with_client
@@ -211,6 +263,7 @@ def get_user_versions(user_id, client, query_params):
 @cli.command()
 @click.argument("user_id", type=click.UUID)
 @click.argument("version", type=int)
+@catch_errors
 @format_output
 @with_client
 def get_user_version(user_id, version, client, query_params):
@@ -220,6 +273,26 @@ def get_user_version(user_id, version, client, query_params):
 
 
 @cli.command()
+@click.argument("login")
+@click.argument("email")
+@click.argument("full-name", required=False, default="")
+@click.argument("role-id", required=False, default=None)
+@catch_errors
+@format_output
+@with_client
+def create_user(login, email, full_name, role_id, client):
+    """Creates new user in CephLCM.
+
+    Please enter valid email. User will receive email with his initial
+    password on this address. Also, password reset links will be sent to
+    this email.
+    """
+
+    return client.create_user(login, email, full_name, role_id)
+
+
+@cli.command()
+@catch_errors
 @format_output
 @with_pagination
 @with_client
@@ -235,6 +308,7 @@ def get_roles(client, query_params):
 
 @cli.command()
 @click.argument("role_id", type=click.UUID)
+@catch_errors
 @format_output
 @with_client
 def get_role(role_id, client):
@@ -245,6 +319,7 @@ def get_role(role_id, client):
 
 @cli.command()
 @click.argument("role_id", type=click.UUID)
+@catch_errors
 @format_output
 @with_pagination
 @with_client
@@ -257,6 +332,7 @@ def get_role_versions(role_id, client, query_params):
 @cli.command()
 @click.argument("role_id", type=click.UUID)
 @click.argument("version", type=int)
+@catch_errors
 @format_output
 @with_client
 def get_role_version(role_id, version, client):
@@ -266,9 +342,20 @@ def get_role_version(role_id, version, client):
 
 
 @cli.command()
+@catch_errors
 @format_output
 @with_client
 def get_permissions(client):
     """Request a list of permissions avaialable in API."""
 
     return client.get_permissions()
+
+
+@cli.command()
+@catch_errors
+@format_output
+@with_client
+def get_playbooks(client):
+    """Request a list of playbooks avaialable in API."""
+
+    return client.get_playbooks()
