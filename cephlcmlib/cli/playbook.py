@@ -21,4 +21,4 @@ def playbook():
 def get_all(client):
     """Request a list of permissions avaialable in API."""
 
-    return client.get_playbook()
+    return client.get_playbooks()

@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 import logging
 
 import click
+import click.types
 import six
 
 import cephlcmlib
@@ -22,17 +23,23 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 """Context settings for the Click."""
 
 
-class CSVParamType(click.ParamType):
+class CSVParamType(click.types.ParamType):
     name = "csv-like list"
+
+    def __init__(self, value_type=click.STRING):
+        super(CSVParamType, self).__init__()
+        self.value_type = value_type
 
     def convert(self, value, param, ctx):
         if not value:
             return []
 
         try:
-            return [chunk.strip() for chunk in value.split(",")]
+            values = [chunk.strip() for chunk in value.split(",")]
         except Exception:
             self.fail("{0} is not a valid csv-like list".format(value))
+
+        return [self.value_type.convert(value, param, ctx) for value in values]
 
 
 class UniqueCSVParamType(CSVParamType):
@@ -42,6 +49,23 @@ class UniqueCSVParamType(CSVParamType):
         result = sorted(set(result))
 
         return result
+
+
+class JSONParamType(click.types.StringParamType):
+
+    def convert(self, value, param, ctx):
+        if not value:
+            return None
+
+        try:
+            return json.loads(
+                super(JSONParamType, self).convert(value, param, ctx))
+        except Exception as exc:
+            self.fail("{0} is not valid JSON string.".format(value))
+
+
+JSON = JSONParamType()
+"""JSON parameter for CLI."""
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
@@ -165,8 +189,10 @@ def update_model(item_id, fetch_item, update_item, model, **kwargs):
 
 
 def cli_group(func):
+    name = func.__name__.replace("_", "-")
     func = click.group()(func)
-    cli.add_command(func)
+
+    cli.add_command(func, name=name)
 
     return func
 
@@ -174,6 +200,7 @@ def cli_group(func):
 import cephlcmlib.cli.cluster  # NOQA
 import cephlcmlib.cli.execution  # NOQA
 import cephlcmlib.cli.permission  # NOQA
+import cephlcmlib.cli.playbook_configuration  # NOQA
 import cephlcmlib.cli.playbook  # NOQA
 import cephlcmlib.cli.role  # NOQA
 import cephlcmlib.cli.server  # NOQA

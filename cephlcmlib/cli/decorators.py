@@ -10,8 +10,13 @@ import os
 import click
 import six
 
-import cephlcmlib.cli
-import cephlcmlib.exceptions
+from cephlcmlib import cli
+from cephlcmlib import exceptions
+
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
 
 def catch_errors(func):
@@ -22,9 +27,9 @@ def catch_errors(func):
     def decorator(ctx, *args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except cephlcmlib.exceptions.CephLCMAPIError as exc:
-            cephlcmlib.cli.format_output_json(ctx, exc.json, True)
-        except cephlcmlib.exceptions.CephLCMError as exc:
+        except exceptions.CephLCMAPIError as exc:
+            cli.format_output_json(ctx, exc.json, True)
+        except exceptions.CephLCMError as exc:
             click.echo(six.text_type(exc), err=True)
         finally:
             ctx.close()
@@ -57,7 +62,7 @@ def format_output(func):
             return
 
         if ctx.obj["format"] == "json":
-            cephlcmlib.cli.format_output_json(ctx, response)
+            cli.format_output_json(ctx, response)
 
     return decorator
 
@@ -115,3 +120,54 @@ def with_pagination(func):
         return response
 
     return decorator
+
+
+def model_edit(item_id, fetch_method_name, parse_json=True):
+    """Adds '--edit-model' and 'model' flags.
+
+    If '--edit-model' is set, user text editor will be launched. If no
+    changes will be done, execution will be stopped. Edited text will be
+    passed into decorated function as 'model' parameter.
+
+    If 'model' is set, it will be considered as model itself.
+
+    If 'parse_json' is True, text will be considered as JSON and parsed
+    for you.
+    """
+
+    def outer_decorator(func):
+        @six.wraps(func)
+        @click.option(
+            "--edit-model",
+            is_flag=True,
+            help="Fetch model and launch editor to fix stuff."
+        )
+        @click.option(
+            "--model",
+            default=None,
+            type=cli.JSON,
+            help=(
+                "Full model data. If this parameter is set, other options "
+                "won't be used. This parameter is JSON dump of the model."
+            )
+        )
+        @with_client
+        def inner_decorator(client, edit_model, model, *args, **kwargs):
+            if not model:
+                if edit_model:
+                    fetch_function = getattr(client, fetch_method_name)
+                    model = fetch_function(kwargs[item_id])
+                    model = json.dumps(model, indent=4, sort_keys=True)
+                    model = click.edit(model)
+                    if not model:
+                        return
+
+            if model and parse_json and not isinstance(model, dict):
+                model = json.loads(model)
+
+            kwargs["model"] = model
+
+            return func(*args, **kwargs)
+
+        return inner_decorator
+    return outer_decorator
