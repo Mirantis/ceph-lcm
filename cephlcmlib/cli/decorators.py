@@ -13,11 +13,6 @@ import six
 from cephlcmlib import cli
 from cephlcmlib import exceptions
 
-try:
-    import simplejson as json
-except ImportError:
-    import json
-
 
 def catch_errors(func):
     """Decorator which catches all errors and tries to print them."""
@@ -157,13 +152,15 @@ def model_edit(item_id, fetch_method_name, parse_json=True):
                 if edit_model:
                     fetch_function = getattr(client, fetch_method_name)
                     model = fetch_function(kwargs[item_id])
-                    model = json.dumps(model, indent=4, sort_keys=True)
+                    model = cli.json_dumps(model)
                     model = click.edit(model)
                     if not model:
                         return
 
             if model and parse_json and not isinstance(model, dict):
-                model = json.loads(model)
+                if isinstance(model, bytes):
+                    model = model.decode("utf-8")
+                model = cli.json_loads(model)
 
             kwargs["model"] = model
 
@@ -171,3 +168,21 @@ def model_edit(item_id, fetch_method_name, parse_json=True):
 
         return inner_decorator
     return outer_decorator
+
+
+def command(command_class, paginate=False):
+    """Decorator to group generic parameters used everywhere."""
+
+    def decorator(func):
+        func = with_client(func)
+        if paginate:
+            func = with_pagination(func)
+        func = format_output(func)
+        func = catch_errors(func)
+
+        name = func.__name__.replace("_", "-")
+        func = command_class.command(name=name)(func)
+
+        return func
+
+    return decorator

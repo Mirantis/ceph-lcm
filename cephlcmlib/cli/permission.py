@@ -14,10 +14,7 @@ def permission():
     """Permission subcommands."""
 
 
-@permission.command(name="get-all")
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
+@decorators.command(permission)
 def get_all(client):
     """Request a list of permissions avaialable in API."""
 

@@ -58,7 +58,7 @@ class JSONParamType(click.types.StringParamType):
             return None
 
         try:
-            return json.loads(
+            return json_loads(
                 super(JSONParamType, self).convert(value, param, ctx))
         except Exception as exc:
             self.fail("{0} is not valid JSON string.".format(value))
@@ -166,7 +166,7 @@ def configure_logging(debug):
 
 
 def format_output_json(ctx, response, error=False):
-    response = json.dumps(response, indent=4, sort_keys=True)
+    response = json_dumps(response)
 
     if error:
         click.echo(response, err=True)
@@ -177,9 +177,7 @@ def format_output_json(ctx, response, error=False):
 
 
 def update_model(item_id, fetch_item, update_item, model, **kwargs):
-    if model:
-        model = json.loads(model)
-    else:
+    if not model:
         model = fetch_item(str(item_id))
         for key, value in six.iteritems(kwargs):
             if value:
@@ -195,6 +193,17 @@ def cli_group(func):
     cli.add_command(func, name=name)
 
     return func
+
+
+def json_loads(data):
+    if isinstance(data, bytes):
+        data = data.decode("utf-8")
+
+    return json.loads(data)
+
+
+def json_dumps(data):
+    return json.dumps(data, indent=4, sort_keys=True)
 
 
 import cephlcmlib.cli.cluster  # NOQA

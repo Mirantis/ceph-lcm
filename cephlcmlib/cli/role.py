@@ -16,53 +16,39 @@ def role():
     """Role subcommands."""
 
 
-@role.command(name="get-all")
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_pagination
-@decorators.with_client
+@decorators.command(role, True)
 def get_all(client, query_params):
     """Requests the list of roles."""
 
     return client.get_roles(**query_params)
 
 
-@role.command(name="get")
+@decorators.command(role)
 @click.argument("role-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def get(role_id, client):
     """Request a role with certain ID."""
 
     return client.get_role(str(role_id))
 
 
-@role.command(name="get-version-all")
+@decorators.command(role, True)
 @click.argument("role-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_pagination
-@decorators.with_client
 def get_version_all(role_id, client, query_params):
     """Requests a list of versions for the role with certain ID."""
 
     return client.get_role_versions(str(role_id), **query_params)
 
 
-@role.command(name="get-version")
+@decorators.command(role)
 @click.argument("role-id", type=click.UUID)
 @click.argument("version", type=int)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def get_version(role_id, version, client):
     """Requests a list of certain version of role with ID."""
 
     return client.get_role_version(str(role_id), version)
 
 
-@role.command()
+@decorators.command(role)
 @click.argument("name")
 @click.option(
     "--api-permissions",
@@ -76,9 +62,6 @@ def get_version(role_id, version, client):
     default="",
     help="Comma-separated list of playbook permissions."
 )
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def create(name, api_permissions, playbook_permissions, client):
     """Create new role in CephLCM."""
 
@@ -89,7 +72,7 @@ def create(name, api_permissions, playbook_permissions, client):
     return client.create_role(name, permissions)
 
 
-@role.command()
+@decorators.command(role)
 @click.argument("role-id", type=click.UUID)
 @click.option(
     "--name",
@@ -108,17 +91,7 @@ def create(name, api_permissions, playbook_permissions, client):
     default="",
     help="Comma-separated list of playbook permissions."
 )
-@click.option(
-    "--model",
-    default=None,
-    help=(
-        "Full model data. If this parameter is set, other options "
-        "won't be used. This parameter is JSON dump of the model."
-    )
-)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
+@decorators.model_edit("role_id", "get_role")
 def update(role_id, name, api_permissions, playbook_permissions, model,
            client):
     """Update role."""
@@ -139,11 +112,8 @@ def update(role_id, name, api_permissions, playbook_permissions, model,
     )
 
 
-@role.command()
+@decorators.command(role)
 @click.argument("role-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def delete(role_id, client):
     """Deletes role from CephLCM.
 
@@ -155,13 +125,10 @@ def delete(role_id, client):
     return client.delete_role(role_id)
 
 
-@role.command(name="add-permission")
+@decorators.command(role)
 @click.argument("role-id", type=click.UUID)
 @click.argument("permission_type", type=click.Choice(["api", "playbook"]))
 @click.argument("permission", required=True, nargs=-1)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def add_permission(role_id, permission_type, permission, client):
     """Add new permissions to the role."""
 
@@ -174,13 +141,10 @@ def add_permission(role_id, permission_type, permission, client):
     return client.update_role(role_model)
 
 
-@role.command(name="remove-permission")
+@decorators.command(role)
 @click.argument("role-id", type=click.UUID)
 @click.argument("permission_type", type=click.Choice(["api", "playbook"]))
 @click.argument("permission", nargs=-1)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def remove_permission(role_id, permission_type, permission, client):
     """Remove permissions from role.
 

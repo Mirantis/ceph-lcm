@@ -16,60 +16,39 @@ def user():
     """User subcommands."""
 
 
-@user.command(name="get-all")
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_pagination
-@decorators.with_client
+@decorators.command(user, True)
 def get_all(client, query_params):
     """Requests the list of users."""
 
     return client.get_users(**query_params)
 
 
-@user.command()
+@decorators.command(user)
 @click.argument("user-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def get(user_id, client):
     """Requests information on certain user."""
 
     return client.get_user(str(user_id))
 
 
-@user.command(name="get-version-all")
+@decorators.command(user, True)
 @click.argument("user-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_pagination
-@decorators.with_client
 def get_version_all(user_id, client, query_params):
     """Requests a list of versions on user with certain ID."""
 
     return client.get_user_versions(str(user_id), **query_params)
 
 
-@user.command(name="get-version")
+@decorators.command(user)
 @click.argument("user-id", type=click.UUID)
 @click.argument("version", type=int)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def get_version(user_id, version, client):
     """Requests a certain version of certain user."""
 
     return client.get_user_version(str(user_id), version)
 
 
-@user.command()
-@click.argument("login")
-@click.argument("email")
-@click.argument("full-name", required=False, default="")
-@click.argument("role-id", required=False, default=None)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
+@decorators.command(user)
 def create(login, email, full_name, role_id, client):
     """Creates new user in CephLCM.
 
@@ -81,7 +60,7 @@ def create(login, email, full_name, role_id, client):
     return client.create_user(login, email, full_name, role_id)
 
 
-@user.command()
+@decorators.command(user)
 @click.argument("user-id", type=click.UUID)
 @click.option(
     "--login",
@@ -103,17 +82,7 @@ def create(login, email, full_name, role_id, client):
     default=None,
     help="New role ID for the user."
 )
-@click.option(
-    "--model",
-    default=None,
-    help=(
-        "Full model data. If this parameter is set, other options "
-        "won't be used. This parameter is JSON dump of the model."
-    )
-)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
+@decorators.model_edit("user_id", "get_user")
 def update(user_id, login, email, full_name, role_id, model, client):
     """Update user data.
 
@@ -131,11 +100,8 @@ def update(user_id, login, email, full_name, role_id, model, client):
     )
 
 
-@user.command()
+@decorators.command(user)
 @click.argument("user-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def delete(user_id, client):
     """Deletes user from CephLCM.
 

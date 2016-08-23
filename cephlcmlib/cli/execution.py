@@ -16,58 +16,41 @@ def execution():
     """Execution subcommands."""
 
 
-@execution.command(name="get-all")
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_pagination
-@decorators.with_client
+@decorators.command(execution, True)
 def get_all(client, query_params):
     """Requests the list of executions."""
 
     return client.get_executions(**query_params)
 
 
-@execution.command(name="get")
+@decorators.command(execution)
 @click.argument("execution-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def get(execution_id, client):
     """Request a execution with certain ID."""
 
     return client.get_execution(str(execution_id))
 
 
-@execution.command(name="get-version-all")
+@decorators.command(execution, True)
 @click.argument("execution-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_pagination
-@decorators.with_client
 def get_version_all(execution_id, client, query_params):
     """Requests a list of versions for the execution with certain ID."""
 
     return client.get_execution_versions(str(execution_id), **query_params)
 
 
-@execution.command(name="get-version")
+@decorators.command(execution)
 @click.argument("execution-id", type=click.UUID)
 @click.argument("version", type=int)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def get_version(execution_id, version, client):
     """Requests a list of certain version of execution with ID."""
 
     return client.get_execution_version(str(execution_id), version)
 
 
-@execution.command()
+@decorators.command(execution)
 @click.argument("playbook-configuration-id", type=click.UUID)
 @click.argument("playbook-configuration-version", type=int)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def create(playbook_configuration_id, playbook_configuration_version, client):
     """Create execution."""
 
@@ -75,11 +58,8 @@ def create(playbook_configuration_id, playbook_configuration_version, client):
                                    playbook_configuration_version)
 
 
-@execution.command()
+@decorators.command(execution)
 @click.argument("execution-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def cancel(execution_id, client):
     """Cancel execution in CephLCM.
 
@@ -89,12 +69,8 @@ def cancel(execution_id, client):
     return client.cancel_execution(execution_id)
 
 
-@execution.command()
+@decorators.command(execution, True)
 @click.argument("execution-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_pagination
-@decorators.with_client
 def steps(execution_id, query_params, client):
     """Get execution steps for a certain execution."""
 

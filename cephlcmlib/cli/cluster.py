@@ -16,81 +16,54 @@ def cluster():
     """Cluster subcommands."""
 
 
-@cluster.command(name="get-all")
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_pagination
-@decorators.with_client
+@decorators.command(cluster, True)
 def get_all(client, query_params):
     """Requests the list of clusters."""
 
     return client.get_clusters(**query_params)
 
 
-@cluster.command()
+@decorators.command(cluster)
 @click.argument("cluster-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def get(cluster_id, client):
     """Requests information on certain cluster."""
 
     return client.get_cluster(str(cluster_id))
 
 
-@cluster.command(name="get-version-all")
+@decorators.command(cluster, True)
 @click.argument("cluster-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_pagination
-@decorators.with_client
 def get_version_all(cluster_id, client, query_params):
     """Requests a list of versions on cluster with certain ID."""
 
     return client.get_cluster_versions(str(cluster_id), **query_params)
 
 
-@cluster.command(name="get-version")
+@decorators.command(cluster)
 @click.argument("cluster-id", type=click.UUID)
 @click.argument("version", type=int)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def get_version(cluster_id, version, client):
     """Requests a certain version of certain cluster."""
 
     return client.get_cluster_version(str(cluster_id), version)
 
 
-@cluster.command()
+@decorators.command(cluster)
 @click.argument("name")
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def create(name, client):
     """Creates new cluster in CephLCM."""
 
     return client.create_cluster(name)
 
 
-@cluster.command()
+@decorators.command(cluster)
 @click.argument("cluster-id", type=click.UUID)
 @click.option(
     "--name",
     default=None,
     help="New cluster name."
 )
-@click.option(
-    "--model",
-    default=None,
-    help=(
-        "Full model data. If this parameter is set, other options "
-        "won't be used. This parameter is JSON dump of the model."
-    )
-)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
+@decorators.model_edit("cluster_id", "get_cluster")
 def update(cluster_id, name, model, client):
     """Update cluster data."""
 
@@ -103,11 +76,8 @@ def update(cluster_id, name, model, client):
     )
 
 
-@cluster.command()
+@decorators.command(cluster)
 @click.argument("cluster-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def delete(cluster_id, client):
     """Deletes cluster from CephLCM.
 

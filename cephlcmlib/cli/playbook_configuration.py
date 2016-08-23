@@ -17,34 +17,23 @@ def playbook_configuration():
     """Playbook configuration subcommands."""
 
 
-@playbook_configuration.command(name="get-all")
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_pagination
-@decorators.with_client
+@decorators.command(playbook_configuration, True)
 def get_all(client, query_params):
     """Requests the list of playbook configurations."""
 
     return client.get_playbook_configurations(**query_params)
 
 
-@playbook_configuration.command(name="get")
+@decorators.command(playbook_configuration)
 @click.argument("playbook-configuration-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def get(playbook_configuration_id, client):
     """Request a playbook configuration with certain ID."""
 
     return client.get_playbook_configuration(str(playbook_configuration_id))
 
 
-@playbook_configuration.command(name="get-version-all")
+@decorators.command(playbook_configuration, True)
 @click.argument("playbook-configuration-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_pagination
-@decorators.with_client
 def get_version_all(playbook_configuration_id, client, query_params):
     """Requests a list of versions for the playbook configurations with
     certain ID."""
@@ -53,12 +42,9 @@ def get_version_all(playbook_configuration_id, client, query_params):
         str(playbook_configuration_id), **query_params)
 
 
-@playbook_configuration.command(name="get-version")
+@decorators.command(playbook_configuration)
 @click.argument("playbook-configuration-id", type=click.UUID)
 @click.argument("version", type=int)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def get_version(playbook_configuration_id, version, client):
     """Requests a list of certain version of playbook configuration with ID."""
 
@@ -66,14 +52,11 @@ def get_version(playbook_configuration_id, version, client):
         str(playbook_configuration_id), version)
 
 
-@playbook_configuration.command()
+@decorators.command(playbook_configuration)
 @click.argument("name")
 @click.argument("playbook")
 @click.argument("cluster-id", type=click.UUID)
 @click.argument("server-ids", type=click.UUID, nargs=-1)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def create(name, playbook, cluster_id, server_ids, client):
     """Create new playbook configuration."""
 
@@ -85,11 +68,9 @@ def create(name, playbook, cluster_id, server_ids, client):
     )
 
 
-@playbook_configuration.command()
+@decorators.command(playbook_configuration)
+@click.argument("name")
 @click.argument("playbook_configuration-id", type=click.UUID)
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def delete(playbook_configuration_id, client):
     """Deletes playbook configuration in CephLCM
 
@@ -101,7 +82,7 @@ def delete(playbook_configuration_id, client):
     return client.delete_playbook_configuration(playbook_configuration_id)
 
 
-@playbook_configuration.command()
+@decorators.command(playbook_configuration)
 @click.argument("playbook-configuration-id", type=click.UUID)
 @click.option(
     "--name",
@@ -130,15 +111,12 @@ def delete(playbook_configuration_id, client):
     "--inventory-patch",
     default=None,
     type=cli.JSON,
-    help="JSON patch dump of global vars. Please check RFC6902 for details."
+    help="JSON patch dump of inventory. Please check RFC6902 for details."
 )
 @decorators.model_edit(
     "playbook_configuration_id",
     "get_playbook_configuration"
 )
-@decorators.catch_errors
-@decorators.format_output
-@decorators.with_client
 def update(playbook_configuration_id, global_vars, global_vars_patch,
            inventory, inventory_patch, name, model, client, **kwargs):
     """Updates playbook configuration.
