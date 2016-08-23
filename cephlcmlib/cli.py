@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 
 import logging
 import os
-import sys
 
 import click
 import six
@@ -30,17 +29,18 @@ def catch_errors(func):
     """Decorator which catches all errors and tries to print them."""
 
     @six.wraps(func)
-    def decorator(*args, **kwargs):
+    @click.pass_context
+    def decorator(ctx, *args, **kwargs):
         try:
-            func(*args, **kwargs)
+            return func(*args, **kwargs)
         except cephlcmlib.exceptions.CephLCMAPIError as exc:
-            format_output_json(exc.json, sys.stderr)
+            format_output_json(ctx, exc.json, True)
         except cephlcmlib.exceptions.CephLCMError as exc:
-            sys.stderr.write("{0}\n".format(exc))
-        else:
-            sys.exit(os.EX_OK)
+            click.echo(six.text_type(exc), err=True)
+        finally:
+            ctx.close()
 
-        sys.exit(os.EX_SOFTWARE)
+        ctx.exit(os.EX_SOFTWARE)
 
     return decorator
 
@@ -68,7 +68,7 @@ def format_output(func):
             return
 
         if ctx.obj["format"] == "json":
-            format_output_json(response)
+            format_output_json(ctx, response)
 
     return decorator
 
@@ -128,9 +128,15 @@ def with_pagination(func):
     return decorator
 
 
-def format_output_json(response, stream=sys.stdout):
-    json.dump(response, stream, indent=4, sort_keys=True)
-    stream.write("\n")
+def format_output_json(ctx, response, error=False):
+    response = json.dumps(response, indent=4, sort_keys=True)
+
+    if error:
+        click.echo(response, err=True)
+    elif ctx.obj["no_pager"]:
+        click.echo(response)
+    else:
+        click.echo_via_pager(response)
 
 
 def configure_logging(debug):
@@ -154,13 +160,37 @@ def configure_logging(debug):
 
 
 def update_model(item_id, fetch_item, update_item, model, **kwargs):
-    if not model:
-        model = fetch_item(item_id)
+    if model:
+        model = json.loads(model)
+    else:
+        model = fetch_item(str(item_id))
         for key, value in six.iteritems(kwargs):
             if value:
                 model["data"][key] = value
 
     return update_item(model)
+
+
+class CSVParamType(click.ParamType):
+    name = "csv-like list"
+
+    def convert(self, value, param, ctx):
+        if not value:
+            return []
+
+        try:
+            return [chunk.strip() for chunk in value.split(",")]
+        except Exception as exc:
+            self.fail("{0} is not a valid csv-like list".format(value))
+
+
+class UniqueCSVParamType(CSVParamType):
+
+    def convert(self, value, param, ctx):
+        result = super(UniqueCSVParamType, self).convert(value, param, ctx)
+        result = sorted(set(result))
+
+        return result
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
@@ -193,13 +223,19 @@ def update_model(item_id, fetch_item, update_item, model, **kwargs):
     help="Run in debug mode."
 )
 @click.option(
+    "--no-pager",
+    is_flag=True,
+    envvar="CEPHLCM_NO_PAGER",
+    help="Do not use pager for output."
+)
+@click.option(
     "--output-format", "-f",
     default="json",
     type=click.Choice(["json"]),
     help="How to format output. Currently only JSON is supported."
 )
 @click.pass_context
-def cli(ctx, url, login, password, debug, timeout, output_format):
+def cli(ctx, url, login, password, debug, timeout, no_pager, output_format):
     """cephlcm command line tool.
 
     With this CLI it is possible to access all API endpoints of CephLCM.
@@ -214,6 +250,8 @@ def cli(ctx, url, login, password, debug, timeout, output_format):
         - CEPHLCM_LOGIN    - this environment variable sets login.
         - CEPHLCM_PASSWORD - this environment variable sets password.
         - CEPHLCM_TIMEOUT  - this environment variable sets timeout.
+        - CEPHLCM_DEBUG    - this environment variable sets debug mode.
+        - CEPHLCM_NO_PAGER - this environment variable removes pager support.
     """
 
     ctx.obj = {
@@ -223,9 +261,12 @@ def cli(ctx, url, login, password, debug, timeout, output_format):
         "debug": debug,
         "timeout": timeout,
         "format": output_format,
+        "no_pager": no_pager,
         "client": cephlcmlib.Client(url, login, password, timeout=timeout)
     }
     configure_logging(debug)
+
+    ctx.call_on_close(ctx.obj["client"].logout)
 
 
 @cli.command()
@@ -233,42 +274,42 @@ def cli(ctx, url, login, password, debug, timeout, output_format):
 @format_output
 @with_pagination
 @with_client
-def get_users(client, query_params):
+def user_get_all(client, query_params):
     """Requests the list of users."""
 
     return client.get_users(**query_params)
 
 
 @cli.command()
-@click.argument("user_id", type=click.UUID)
+@click.argument("user-id", type=click.UUID)
 @catch_errors
 @format_output
 @with_client
-def get_user(user_id, client):
+def user_get(user_id, client):
     """Requests information on certain user."""
 
     return client.get_user(str(user_id))
 
 
 @cli.command()
-@click.argument("user_id", type=click.UUID)
+@click.argument("user-id", type=click.UUID)
 @catch_errors
 @format_output
 @with_pagination
 @with_client
-def get_user_versions(user_id, client, query_params):
+def user_get_version_all(user_id, client, query_params):
     """Requests a list of versions on user with certain ID."""
 
     return client.get_user_versions(str(user_id), **query_params)
 
 
 @cli.command()
-@click.argument("user_id", type=click.UUID)
+@click.argument("user-id", type=click.UUID)
 @click.argument("version", type=int)
 @catch_errors
 @format_output
 @with_client
-def get_user_version(user_id, version, client, query_params):
+def user_get_version(user_id, version, client, query_params):
     """Requests a certain version of certain user."""
 
     return client.get_user_version(str(user_id), version)
@@ -282,7 +323,7 @@ def get_user_version(user_id, version, client, query_params):
 @catch_errors
 @format_output
 @with_client
-def create_user(login, email, full_name, role_id, client):
+def user_create(login, email, full_name, role_id, client):
     """Creates new user in CephLCM.
 
     Please enter valid email. User will receive email with his initial
@@ -294,7 +335,7 @@ def create_user(login, email, full_name, role_id, client):
 
 
 @cli.command()
-@click.argument("user-id")
+@click.argument("user-id", type=click.UUID)
 @click.option(
     "--login",
     default=None,
@@ -326,7 +367,7 @@ def create_user(login, email, full_name, role_id, client):
 @catch_errors
 @format_output
 @with_client
-def update_user(user_id, login, email, full_name, role_id, model, client):
+def user_update(user_id, login, email, full_name, role_id, model, client):
     """Update user data.
 
     The logic is following: if 'model' parameter is set (full JSON dump
@@ -344,11 +385,11 @@ def update_user(user_id, login, email, full_name, role_id, model, client):
 
 
 @cli.command()
-@click.argument("user-id")
+@click.argument("user-id", type=click.UUID)
 @catch_errors
 @format_output
 @with_client
-def delete_user(user_id, client):
+def user_delete(user_id, client):
     """Deletes user from CephLCM.
 
     Please be notices that *actually* there is no deletion in common
@@ -364,52 +405,177 @@ def delete_user(user_id, client):
 @format_output
 @with_pagination
 @with_client
-def get_roles(client, query_params):
+def role_get_all(client, query_params):
     """Requests the list of roles."""
 
     return client.get_roles(**query_params)
 
 
 @cli.command()
-@click.argument("role_id", type=click.UUID)
+@click.argument("role-id", type=click.UUID)
 @catch_errors
 @format_output
 @with_client
-def get_role(role_id, client):
+def role_get(role_id, client):
     """Request a role with certain ID."""
 
     return client.get_role(str(role_id))
 
 
 @cli.command()
-@click.argument("role_id", type=click.UUID)
+@click.argument("role-id", type=click.UUID)
 @catch_errors
 @format_output
 @with_pagination
 @with_client
-def get_role_versions(role_id, client, query_params):
+def role_get_version_all(role_id, client, query_params):
     """Requests a list of versions for the role with certain ID."""
 
     return client.get_role_versions(str(role_id), **query_params)
 
 
 @cli.command()
-@click.argument("role_id", type=click.UUID)
+@click.argument("role-id", type=click.UUID)
 @click.argument("version", type=int)
 @catch_errors
 @format_output
 @with_client
-def get_role_version(role_id, version, client):
+def role_get_version(role_id, version, client):
     """Requests a list of certain version of role with ID."""
 
     return client.get_role_version(str(role_id), version)
 
 
 @cli.command()
+@click.argument("name")
+@click.option(
+    "--api-permissions",
+    type=UniqueCSVParamType(),
+    default="",
+    help="Comma-separated list of API permissions."
+)
+@click.option(
+    "--playbook-permissions",
+    type=UniqueCSVParamType(),
+    default="",
+    help="Comma-separated list of playbook permissions."
+)
 @catch_errors
 @format_output
 @with_client
-def get_permissions(client):
+def role_create(name, api_permissions, playbook_permissions, client):
+    """Create new role in CephLCM."""
+
+    permissions = {
+        "api": api_permissions,
+        "playbook": playbook_permissions
+    }
+    return client.create_role(name, permissions)
+
+
+@cli.command()
+@click.argument("role-id", type=click.UUID)
+@click.option(
+    "--name",
+    default=None,
+    help="New role name."
+)
+@click.option(
+    "--api-permissions",
+    type=UniqueCSVParamType(),
+    default="",
+    help="Comma-separated list of API permissions."
+)
+@click.option(
+    "--playbook-permissions",
+    type=UniqueCSVParamType(),
+    default="",
+    help="Comma-separated list of playbook permissions."
+)
+@click.option(
+    "--model",
+    default=None,
+    help=(
+        "Full model data. If this parameter is set, other options "
+        "won't be used. This parameter is JSON dump of the model."
+    )
+)
+@catch_errors
+@format_output
+@with_client
+def role_update(role_id, name, api_permissions, playbook_permissions, model,
+                client):
+    """Update role."""
+
+    permissions = None
+    if api_permissions or playbook_permissions:
+        permissions = {
+            "api": api_permissions,
+            "playbook": playbook_permissions
+        }
+
+    return update_model(
+        role_id,
+        client.get_role,
+        client.update_role,
+        model,
+        name=name, permissions=permissions
+    )
+
+
+@cli.command()
+@click.argument("role-id", type=click.UUID)
+@click.argument("permission_type", type=click.Choice(["api", "playbook"]))
+@click.argument("permission", required=True, nargs=-1)
+@catch_errors
+@format_output
+@with_client
+def role_add_permission(role_id, permission_type, permission, client):
+    """Add new permissions to the role."""
+
+    role_model = client.get_role(role_id)
+    permissions = role_model["data"]["permissions"][permission_type]
+    permissions += permission
+    permissions = sorted(set(permissions))
+    role_model["data"]["permissions"][permission_type] = permissions
+
+    return client.update_role(role_model)
+
+
+@cli.command()
+@click.argument("role-id", type=click.UUID)
+@click.argument("permission_type", type=click.Choice(["api", "playbook"]))
+@click.argument("permission", nargs=-1)
+@catch_errors
+@format_output
+@with_client
+def role_remove_permission(role_id, permission_type, permission, client):
+    """Remove permissions from role.
+
+    Empty list means that all permissions should be removed.
+    """
+
+    role_model = client.get_role(role_id)
+    permissions = role_model["data"]["permissions"][permission_type]
+    permissions = set(permissions)
+
+    to_remove = set(permission)
+    if to_remove:
+        permissions -= to_remove
+    else:
+        permissions = []
+
+    permissions = sorted(permissions)
+    role_model["data"]["permissions"][permission_type] = permissions
+
+    return client.update_role(role_model)
+
+
+@cli.command()
+@catch_errors
+@format_output
+@with_client
+def permission_get_all(client):
     """Request a list of permissions avaialable in API."""
 
     return client.get_permissions()
@@ -419,7 +585,7 @@ def get_permissions(client):
 @catch_errors
 @format_output
 @with_client
-def get_playbooks(client):
+def playbook_get_all(client):
     """Request a list of playbooks avaialable in API."""
 
     return client.get_playbooks()

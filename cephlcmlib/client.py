@@ -204,7 +204,7 @@ class V1Client(Client):
         url = self._make_url(self.AUTH_CLASS.AUTH_URL)
 
         try:
-            return self._session.delete(url, json={}, **kwargs)
+            return self._session.delete(url, **kwargs)
         except Exception:
             return {}
         finally:
