@@ -236,8 +236,7 @@ class V1Client(Client):
     def create_cluster(self, name, **kwargs):
         url = self._make_url("/v1/cluster/")
         payload = {
-            "name": name,
-            "configuration": {}
+            "name": name
         }
 
         return self._session.post(url, json=payload, **kwargs)

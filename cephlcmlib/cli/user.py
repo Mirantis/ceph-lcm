@@ -56,7 +56,7 @@ def get_version_all(user_id, client, query_params):
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_client
-def get_version(user_id, version, client, query_params):
+def get_version(user_id, version, client):
     """Requests a certain version of certain user."""
 
     return client.get_user_version(str(user_id), version)

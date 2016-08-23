@@ -171,7 +171,8 @@ def cli_group(func):
     return func
 
 
-import cephlcmlib.cli.user  # NOQA
-import cephlcmlib.cli.role  # NOQA
+import cephlcmlib.cli.cluster  # NOQA
 import cephlcmlib.cli.permission  # NOQA
 import cephlcmlib.cli.playbook  # NOQA
+import cephlcmlib.cli.role  # NOQA
+import cephlcmlib.cli.user  # NOQA

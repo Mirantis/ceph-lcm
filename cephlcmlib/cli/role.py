@@ -139,6 +139,22 @@ def update(role_id, name, api_permissions, playbook_permissions, model,
     )
 
 
+@role.command()
+@click.argument("role-id", type=click.UUID)
+@decorators.catch_errors
+@decorators.format_output
+@decorators.with_client
+def delete(role_id, client):
+    """Deletes role from CephLCM.
+
+    Please be notices that *actually* there is no deletion in common
+    sense. CephLCM archives user. It won't be active after but still all
+    history will be accessible.
+    """
+
+    return client.delete_role(role_id)
+
+
 @role.command(name="add-permission")
 @click.argument("role-id", type=click.UUID)
 @click.argument("permission_type", type=click.Choice(["api", "playbook"]))
