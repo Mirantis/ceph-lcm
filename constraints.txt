@@ -31,7 +31,7 @@ mongomock==3.5.0
 pep8-naming==0.4.1
 pycodestyle==2.0.0
 pymongo==3.3.0
-pytest==3.0.0
+pytest==3.0.1
 pytest-cov==2.3.1
 pytest-fauxfactory==1.0
 pytest-flask==0.10.0

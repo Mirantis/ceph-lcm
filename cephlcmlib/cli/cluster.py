@@ -24,41 +24,41 @@ def get_all(client, query_params):
     return client.get_clusters(**query_params)
 
 
-@decorators.command(cluster)
 @click.argument("cluster-id", type=click.UUID)
+@decorators.command(cluster)
 def get(cluster_id, client):
     """Requests information on certain cluster."""
 
     return client.get_cluster(str(cluster_id))
 
 
-@decorators.command(cluster, True)
 @click.argument("cluster-id", type=click.UUID)
+@decorators.command(cluster, True)
 def get_version_all(cluster_id, client, query_params):
     """Requests a list of versions on cluster with certain ID."""
 
     return client.get_cluster_versions(str(cluster_id), **query_params)
 
 
-@decorators.command(cluster)
-@click.argument("cluster-id", type=click.UUID)
 @click.argument("version", type=int)
+@click.argument("cluster-id", type=click.UUID)
+@decorators.command(cluster)
 def get_version(cluster_id, version, client):
     """Requests a certain version of certain cluster."""
 
     return client.get_cluster_version(str(cluster_id), version)
 
 
-@decorators.command(cluster)
 @click.argument("name")
+@decorators.command(cluster)
 def create(name, client):
     """Creates new cluster in CephLCM."""
 
     return client.create_cluster(name)
 
 
-@decorators.command(cluster)
 @click.argument("cluster-id", type=click.UUID)
+@decorators.command(cluster)
 @click.option(
     "--name",
     default=None,
@@ -77,8 +77,8 @@ def update(cluster_id, name, model, client):
     )
 
 
-@decorators.command(cluster)
 @click.argument("cluster-id", type=click.UUID)
+@decorators.command(cluster)
 def delete(cluster_id, client):
     """Deletes cluster from CephLCM.
 

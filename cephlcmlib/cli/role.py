@@ -25,33 +25,33 @@ def get_all(client, query_params):
     return client.get_roles(**query_params)
 
 
-@decorators.command(role)
 @click.argument("role-id", type=click.UUID)
+@decorators.command(role)
 def get(role_id, client):
     """Request a role with certain ID."""
 
     return client.get_role(str(role_id))
 
 
-@decorators.command(role, True)
 @click.argument("role-id", type=click.UUID)
+@decorators.command(role, True)
 def get_version_all(role_id, client, query_params):
     """Requests a list of versions for the role with certain ID."""
 
     return client.get_role_versions(str(role_id), **query_params)
 
 
-@decorators.command(role)
-@click.argument("role-id", type=click.UUID)
 @click.argument("version", type=int)
+@click.argument("role-id", type=click.UUID)
+@decorators.command(role)
 def get_version(role_id, version, client):
     """Requests a list of certain version of role with ID."""
 
     return client.get_role_version(str(role_id), version)
 
 
-@decorators.command(role)
 @click.argument("name")
+@decorators.command(role)
 @click.option(
     "--api-permissions",
     type=param_types.UCSV,
@@ -74,8 +74,8 @@ def create(name, api_permissions, playbook_permissions, client):
     return client.create_role(name, permissions)
 
 
-@decorators.command(role)
 @click.argument("role-id", type=click.UUID)
+@decorators.command(role)
 @click.option(
     "--name",
     default=None,
@@ -114,8 +114,8 @@ def update(role_id, name, api_permissions, playbook_permissions, model,
     )
 
 
-@decorators.command(role)
 @click.argument("role-id", type=click.UUID)
+@decorators.command(role)
 def delete(role_id, client):
     """Deletes role from CephLCM.
 
@@ -127,10 +127,10 @@ def delete(role_id, client):
     return client.delete_role(role_id)
 
 
-@decorators.command(role)
-@click.argument("role-id", type=click.UUID)
-@click.argument("permission_type", type=click.Choice(["api", "playbook"]))
 @click.argument("permission", required=True, nargs=-1)
+@click.argument("permission-type", type=click.Choice(["api", "playbook"]))
+@click.argument("role-id", type=click.UUID)
+@decorators.command(role)
 def add_permission(role_id, permission_type, permission, client):
     """Add new permissions to the role."""
 
@@ -143,10 +143,10 @@ def add_permission(role_id, permission_type, permission, client):
     return client.update_role(role_model)
 
 
-@decorators.command(role)
-@click.argument("role-id", type=click.UUID)
-@click.argument("permission_type", type=click.Choice(["api", "playbook"]))
 @click.argument("permission", nargs=-1)
+@click.argument("permission-type", type=click.Choice(["api", "playbook"]))
+@click.argument("role-id", type=click.UUID)
+@decorators.command(role)
 def remove_permission(role_id, permission_type, permission, client):
     """Remove permissions from role.
 

@@ -176,7 +176,7 @@ def model_edit(item_id, fetch_method_name, parse_json=True):
     def outer_decorator(func):
         @six.wraps(func)
         @click.option(
-            "--edit-model",
+            "--model-editor",
             is_flag=True,
             help="Fetch model and launch editor to fix stuff."
         )
@@ -189,16 +189,26 @@ def model_edit(item_id, fetch_method_name, parse_json=True):
                 "won't be used. This parameter is JSON dump of the model."
             )
         )
-        @with_client
-        def inner_decorator(client, edit_model, model, *args, **kwargs):
+        @click.option(
+            "--model-stdin",
+            is_flag=True,
+            help="Slurp model from stdin."
+        )
+        @click.pass_context
+        def inner_decorator(ctx, model_stdin, model_editor, model,
+                            *args, **kwargs):
             if not model:
-                if edit_model:
-                    fetch_function = getattr(client, fetch_method_name)
+                if model_stdin:
+                    stream = click.get_text_stream("stdin")
+                    model = "".join(stream)
+                elif model_editor:
+                    fetch_function = getattr(ctx.obj["client"],
+                                             fetch_method_name)
                     model = fetch_function(kwargs[item_id])
                     model = utils.json_dumps(model)
                     model = click.edit(model)
-                    if not model:
-                        return
+                if not model:
+                    return
 
             if model and parse_json and not isinstance(model, dict):
                 if isinstance(model, bytes):

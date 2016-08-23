@@ -25,16 +25,16 @@ def get_all(client, query_params):
     return client.get_playbook_configurations(**query_params)
 
 
-@decorators.command(playbook_configuration)
 @click.argument("playbook-configuration-id", type=click.UUID)
+@decorators.command(playbook_configuration)
 def get(playbook_configuration_id, client):
     """Request a playbook configuration with certain ID."""
 
     return client.get_playbook_configuration(str(playbook_configuration_id))
 
 
-@decorators.command(playbook_configuration, True)
 @click.argument("playbook-configuration-id", type=click.UUID)
+@decorators.command(playbook_configuration, True)
 def get_version_all(playbook_configuration_id, client, query_params):
     """Requests a list of versions for the playbook configurations with
     certain ID."""
@@ -43,9 +43,9 @@ def get_version_all(playbook_configuration_id, client, query_params):
         str(playbook_configuration_id), **query_params)
 
 
-@decorators.command(playbook_configuration)
-@click.argument("playbook-configuration-id", type=click.UUID)
 @click.argument("version", type=int)
+@click.argument("playbook-configuration-id", type=click.UUID)
+@decorators.command(playbook_configuration)
 def get_version(playbook_configuration_id, version, client):
     """Requests a list of certain version of playbook configuration with ID."""
 
@@ -53,11 +53,11 @@ def get_version(playbook_configuration_id, version, client):
         str(playbook_configuration_id), version)
 
 
-@decorators.command(playbook_configuration)
-@click.argument("name")
-@click.argument("playbook")
-@click.argument("cluster-id", type=click.UUID)
 @click.argument("server-ids", type=click.UUID, nargs=-1)
+@click.argument("cluster-id", type=click.UUID)
+@click.argument("playbook")
+@click.argument("name")
+@decorators.command(playbook_configuration)
 def create(name, playbook, cluster_id, server_ids, client):
     """Create new playbook configuration."""
 
@@ -69,9 +69,9 @@ def create(name, playbook, cluster_id, server_ids, client):
     )
 
 
-@decorators.command(playbook_configuration)
-@click.argument("name")
 @click.argument("playbook_configuration-id", type=click.UUID)
+@click.argument("name")
+@decorators.command(playbook_configuration)
 def delete(playbook_configuration_id, client):
     """Deletes playbook configuration in CephLCM
 
@@ -83,8 +83,8 @@ def delete(playbook_configuration_id, client):
     return client.delete_playbook_configuration(playbook_configuration_id)
 
 
-@decorators.command(playbook_configuration)
 @click.argument("playbook-configuration-id", type=click.UUID)
+@decorators.command(playbook_configuration)
 @click.option(
     "--name",
     default=None,

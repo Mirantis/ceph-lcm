@@ -23,34 +23,34 @@ def get_all(client, query_params):
     return client.get_executions(**query_params)
 
 
-@decorators.command(execution)
 @click.argument("execution-id", type=click.UUID)
+@decorators.command(execution)
 def get(execution_id, client):
     """Request a execution with certain ID."""
 
     return client.get_execution(str(execution_id))
 
 
-@decorators.command(execution, True)
 @click.argument("execution-id", type=click.UUID)
+@decorators.command(execution, True)
 def get_version_all(execution_id, client, query_params):
     """Requests a list of versions for the execution with certain ID."""
 
     return client.get_execution_versions(str(execution_id), **query_params)
 
 
-@decorators.command(execution)
-@click.argument("execution-id", type=click.UUID)
 @click.argument("version", type=int)
+@click.argument("execution-id", type=click.UUID)
+@decorators.command(execution)
 def get_version(execution_id, version, client):
     """Requests a list of certain version of execution with ID."""
 
     return client.get_execution_version(str(execution_id), version)
 
 
-@decorators.command(execution)
-@click.argument("playbook-configuration-id", type=click.UUID)
 @click.argument("playbook-configuration-version", type=int)
+@click.argument("playbook-configuration-id", type=click.UUID)
+@decorators.command(execution)
 def create(playbook_configuration_id, playbook_configuration_version, client):
     """Create execution."""
 
@@ -58,8 +58,8 @@ def create(playbook_configuration_id, playbook_configuration_version, client):
                                    playbook_configuration_version)
 
 
-@decorators.command(execution)
 @click.argument("execution-id", type=click.UUID)
+@decorators.command(execution)
 def cancel(execution_id, client):
     """Cancel execution in CephLCM.
 
@@ -69,8 +69,8 @@ def cancel(execution_id, client):
     return client.cancel_execution(execution_id)
 
 
-@decorators.command(execution, True)
 @click.argument("execution-id", type=click.UUID)
+@decorators.command(execution, True)
 def steps(execution_id, query_params, client):
     """Get execution steps for a certain execution."""
 

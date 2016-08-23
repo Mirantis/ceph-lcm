@@ -24,33 +24,33 @@ def get_all(client, query_params):
     return client.get_servers(**query_params)
 
 
-@decorators.command(server)
 @click.argument("server-id", type=click.UUID)
+@decorators.command(server)
 def get(server_id, client):
     """Request a server with certain ID."""
 
     return client.get_server(str(server_id))
 
 
-@decorators.command(server, True)
 @click.argument("server-id", type=click.UUID)
+@decorators.command(server, True)
 def get_version_all(server_id, client, query_params):
     """Requests a list of versions for the servers with certain ID."""
 
     return client.get_server_versions(str(server_id), **query_params)
 
 
-@decorators.command(server)
-@click.argument("server-id", type=click.UUID)
 @click.argument("version", type=int)
+@click.argument("server-id", type=click.UUID)
+@decorators.command(server)
 def get_version(server_id, version, client):
     """Requests a list of certain version of server with ID."""
 
     return client.get_server_version(str(server_id), version)
 
 
-@decorators.command(server)
 @click.argument("server-id", type=click.UUID)
+@decorators.command(server)
 @click.option(
     "--name",
     default=None,
@@ -69,8 +69,8 @@ def update(server_id, name, model, client):
     )
 
 
-@decorators.command(server)
 @click.argument("server-id", type=click.UUID)
+@decorators.command(server)
 def delete(server_id, client):
     """Deletes server from CephLCM.
 
