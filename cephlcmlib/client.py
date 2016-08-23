@@ -429,6 +429,23 @@ class V1Client(Client):
             "/v1/role/{0}/version/{1}/".format(role_id, version))
         return self._session.get(url, **kwargs)
 
+    def create_role(self, name, permissions, **kwargs):
+        url = self._make_url("/v1/role/")
+        payload = {
+            "name": name,
+            "permissions": permissions
+        }
+
+        return self._session.post(url, json=payload, **kwargs)
+
+    def update_role(self, model_data, **kwargs):
+        url = self._make_url("/v1/role/{0}/".format(model_data["id"]))
+        return self._session.put(url, json=model_data, **kwargs)
+
+    def delete_role(self, role_id, **kwargs):
+        url = self._make_url("/v1/role/{0}/".format(role_id))
+        return self._session.delete(url, **kwargs)
+
     def get_permissions(self, **kwargs):
         url = self._make_url("/v1/permission/")
         return self._session.get(url, **kwargs)
