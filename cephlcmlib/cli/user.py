@@ -9,6 +9,7 @@ import click
 
 from cephlcmlib import cli
 from cephlcmlib.cli import decorators
+from cephlcmlib.cli import utils
 
 
 @cli.cli_group
@@ -91,7 +92,7 @@ def update(user_id, login, email, full_name, role_id, model, client):
     only certain parameters will be updated.
     """
 
-    return cli.update_model(
+    return utils.update_model(
         user_id,
         client.get_user,
         client.update_user,

@@ -1,0 +1,61 @@
+# -*- coding: utf-8 -*-
+"""Custom parameter types used in CephLCM CLI."""
+
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
+import click.types
+
+from cephlcmlib.cli import utils
+
+
+class CSVParamType(click.types.ParamType):
+    name = "csv-like list"
+
+    def __init__(self, value_type=click.STRING):
+        super(CSVParamType, self).__init__()
+        self.value_type = value_type
+
+    def convert(self, value, param, ctx):
+        if not value:
+            return []
+
+        try:
+            values = [chunk.strip() for chunk in value.split(",")]
+        except Exception:
+            self.fail("{0} is not a valid csv-like list".format(value))
+
+        return [self.value_type.convert(value, param, ctx) for value in values]
+
+
+class UniqueCSVParamType(CSVParamType):
+
+    def convert(self, value, param, ctx):
+        result = super(UniqueCSVParamType, self).convert(value, param, ctx)
+        result = sorted(set(result))
+
+        return result
+
+
+class JSONParamType(click.types.StringParamType):
+
+    def convert(self, value, param, ctx):
+        if not value:
+            return None
+
+        try:
+            return utils.json_loads(
+                super(JSONParamType, self).convert(value, param, ctx))
+        except Exception as exc:
+            self.fail("{0} is not valid JSON string.".format(value))
+
+
+CSV = CSVParamType()
+"""CSV parameter type for CLI."""
+
+UCSV = UniqueCSVParamType()
+"""Unique CSV parameter type for CLI."""
+
+JSON = JSONParamType()
+"""JSON parameter for CLI."""

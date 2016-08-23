@@ -5,67 +5,14 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import logging
-
 import click
-import click.types
-import six
 
 import cephlcmlib
-
-try:
-    import simplejson as json
-except ImportError:
-    import json
+from cephlcmlib.cli import utils
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 """Context settings for the Click."""
-
-
-class CSVParamType(click.types.ParamType):
-    name = "csv-like list"
-
-    def __init__(self, value_type=click.STRING):
-        super(CSVParamType, self).__init__()
-        self.value_type = value_type
-
-    def convert(self, value, param, ctx):
-        if not value:
-            return []
-
-        try:
-            values = [chunk.strip() for chunk in value.split(",")]
-        except Exception:
-            self.fail("{0} is not a valid csv-like list".format(value))
-
-        return [self.value_type.convert(value, param, ctx) for value in values]
-
-
-class UniqueCSVParamType(CSVParamType):
-
-    def convert(self, value, param, ctx):
-        result = super(UniqueCSVParamType, self).convert(value, param, ctx)
-        result = sorted(set(result))
-
-        return result
-
-
-class JSONParamType(click.types.StringParamType):
-
-    def convert(self, value, param, ctx):
-        if not value:
-            return None
-
-        try:
-            return json_loads(
-                super(JSONParamType, self).convert(value, param, ctx))
-        except Exception as exc:
-            self.fail("{0} is not valid JSON string.".format(value))
-
-
-JSON = JSONParamType()
-"""JSON parameter for CLI."""
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
@@ -139,71 +86,18 @@ def cli(ctx, url, login, password, debug, timeout, no_pager, output_format):
         "no_pager": no_pager,
         "client": cephlcmlib.Client(url, login, password, timeout=timeout)
     }
-    configure_logging(debug)
+    utils.configure_logging(debug)
 
     ctx.call_on_close(ctx.obj["client"].logout)
 
 
-def configure_logging(debug):
-    requests_log = logging.getLogger("requests.packages.urllib3")
-    requests_log.propagate = True
-
-    logging.basicConfig(
-        format=(
-            "%(asctime)s [%(levelname)5s] (%(filename)20s:%(lineno)-4d):"
-            " %(message)s"
-        )
-    )
-
-    if debug:
-        six.moves.http_client.HTTPConnection.debuglevel = 1
-        logging.getLogger().setLevel(logging.DEBUG)
-        requests_log.setLevel(logging.DEBUG)
-    else:
-        six.moves.http_client.HTTPConnection.debuglevel = 0
-        logging.getLogger().setLevel(logging.CRITICAL)
-        requests_log.setLevel(logging.CRITICAL)
-
-
-def format_output_json(ctx, response, error=False):
-    response = json_dumps(response)
-
-    if error:
-        click.echo(response, err=True)
-    elif ctx.obj["no_pager"]:
-        click.echo(response)
-    else:
-        click.echo_via_pager(response)
-
-
-def update_model(item_id, fetch_item, update_item, model, **kwargs):
-    if not model:
-        model = fetch_item(str(item_id))
-        for key, value in six.iteritems(kwargs):
-            if value:
-                model["data"][key] = value
-
-    return update_item(model)
-
-
 def cli_group(func):
-    name = func.__name__.replace("_", "-")
+    name = utils.parameter_name(func.__name__)
     func = click.group()(func)
 
     cli.add_command(func, name=name)
 
     return func
-
-
-def json_loads(data):
-    if isinstance(data, bytes):
-        data = data.decode("utf-8")
-
-    return json.loads(data)
-
-
-def json_dumps(data):
-    return json.dumps(data, indent=4, sort_keys=True)
 
 
 import cephlcmlib.cli.cluster  # NOQA

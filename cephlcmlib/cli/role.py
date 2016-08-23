@@ -9,6 +9,8 @@ import click
 
 from cephlcmlib import cli
 from cephlcmlib.cli import decorators
+from cephlcmlib.cli import param_types
+from cephlcmlib.cli import utils
 
 
 @cli.cli_group
@@ -52,13 +54,13 @@ def get_version(role_id, version, client):
 @click.argument("name")
 @click.option(
     "--api-permissions",
-    type=cli.UniqueCSVParamType(),
+    type=param_types.UCSV,
     default="",
     help="Comma-separated list of API permissions."
 )
 @click.option(
     "--playbook-permissions",
-    type=cli.UniqueCSVParamType(),
+    type=param_types.UCSV,
     default="",
     help="Comma-separated list of playbook permissions."
 )
@@ -81,13 +83,13 @@ def create(name, api_permissions, playbook_permissions, client):
 )
 @click.option(
     "--api-permissions",
-    type=cli.UniqueCSVParamType(),
+    type=param_types.UCSV,
     default="",
     help="Comma-separated list of API permissions."
 )
 @click.option(
     "--playbook-permissions",
-    type=cli.UniqueCSVParamType(),
+    type=param_types.UCSV,
     default="",
     help="Comma-separated list of playbook permissions."
 )
@@ -103,7 +105,7 @@ def update(role_id, name, api_permissions, playbook_permissions, model,
             "playbook": playbook_permissions
         }
 
-    return cli.update_model(
+    return utils.update_model(
         role_id,
         client.get_role,
         client.update_role,

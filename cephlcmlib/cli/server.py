@@ -9,6 +9,7 @@ import click
 
 from cephlcmlib import cli
 from cephlcmlib.cli import decorators
+from cephlcmlib.cli import utils
 
 
 @cli.cli_group
@@ -59,7 +60,7 @@ def get_version(server_id, version, client):
 def update(server_id, name, model, client):
     """Update server."""
 
-    return cli.update_model(
+    return utils.update_model(
         server_id,
         client.get_server,
         client.update_server,

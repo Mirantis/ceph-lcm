@@ -10,6 +10,7 @@ import jsonpatch
 
 from cephlcmlib import cli
 from cephlcmlib.cli import decorators
+from cephlcmlib.cli import param_types
 
 
 @cli.cli_group
@@ -92,25 +93,25 @@ def delete(playbook_configuration_id, client):
 @click.option(
     "--global-vars",
     default=None,
-    type=cli.JSON,
+    type=param_types.JSON,
     help="JSON dump of global vars"
 )
 @click.option(
     "--global-vars-patch",
     default=None,
-    type=cli.JSON,
+    type=param_types.JSON,
     help="JSON patch dump of global vars. Please check RFC6902 for details."
 )
 @click.option(
     "--inventory",
     default=None,
-    type=cli.JSON,
+    type=param_types.JSON,
     help="JSON dump of inventory."
 )
 @click.option(
     "--inventory-patch",
     default=None,
-    type=cli.JSON,
+    type=param_types.JSON,
     help="JSON patch dump of inventory. Please check RFC6902 for details."
 )
 @decorators.model_edit(

@@ -10,8 +10,9 @@ import os
 import click
 import six
 
-from cephlcmlib import cli
 from cephlcmlib import exceptions
+from cephlcmlib.cli import utils
+from cephlcmlib.cli import param_types
 
 
 def catch_errors(func):
@@ -23,7 +24,7 @@ def catch_errors(func):
         try:
             return func(*args, **kwargs)
         except exceptions.CephLCMAPIError as exc:
-            cli.format_output_json(ctx, exc.json, True)
+            utils.format_output_json(ctx, exc.json, True)
         except exceptions.CephLCMError as exc:
             click.echo(six.text_type(exc), err=True)
         finally:
@@ -57,7 +58,7 @@ def format_output(func):
             return
 
         if ctx.obj["format"] == "json":
-            cli.format_output_json(ctx, response)
+            utils.format_output_json(ctx, response)
 
     return decorator
 
@@ -88,6 +89,23 @@ def with_pagination(func):
         )
     )
     @click.option(
+        "--list", "-l",
+        type=click.Choice(["active", "archived", "all"]),
+        default="active",
+        help="List only certain class of elements. 'active' is default."
+    )
+    @click.option(
+        "--sort-by", "-s",
+        default="",
+        help=(
+            "Comma-separated list of fieldnames for sorting. To define "
+            "direction, please put '-' or '+' before name ('+' explicitly "
+            "means). For example: 'time_deleted,-name,+version' means "
+            "that sorting will be done by tuple (time_deleted ASC, "
+            "name DESC, version ASC)"
+        )
+    )
+    @click.option(
         "--no-envelope", "-n",
         is_flag=True,
         help=(
@@ -101,17 +119,29 @@ def with_pagination(func):
         page = kwargs.pop("page", None)
         per_page = kwargs.pop("per_page", None)
         no_envelope = kwargs.pop("no_envelope", None)
+        list_elements = kwargs.pop("list", "active")
 
         all_items = all_items or not (page or per_page)
         no_envelope = all_items or no_envelope
 
         if all_items:
-            query_params = {"all_items": "true"}
+            query_params = {"all_items": True}
         else:
             query_params = {
                 "page": page,
                 "per_page": per_page
             }
+
+        query_params["filter"] = {}
+        if list_elements == "all":
+            query_params["filter"]["time_deleted"] = {
+                "ne": "unreal_value"
+            }
+        elif list_elements == "archived":
+            query_params["filter"]["time_deleted"] = {
+                "ne": 0
+            }
+
         kwargs["query_params"] = query_params
 
         response = func(*args, **kwargs)
@@ -146,7 +176,7 @@ def model_edit(item_id, fetch_method_name, parse_json=True):
         @click.option(
             "--model",
             default=None,
-            type=cli.JSON,
+            type=param_types.JSON,
             help=(
                 "Full model data. If this parameter is set, other options "
                 "won't be used. This parameter is JSON dump of the model."
@@ -158,7 +188,7 @@ def model_edit(item_id, fetch_method_name, parse_json=True):
                 if edit_model:
                     fetch_function = getattr(client, fetch_method_name)
                     model = fetch_function(kwargs[item_id])
-                    model = cli.json_dumps(model)
+                    model = utils.json_dumps(model)
                     model = click.edit(model)
                     if not model:
                         return
@@ -166,7 +196,7 @@ def model_edit(item_id, fetch_method_name, parse_json=True):
             if model and parse_json and not isinstance(model, dict):
                 if isinstance(model, bytes):
                     model = model.decode("utf-8")
-                model = cli.json_loads(model)
+                model = utils.json_loads(model)
 
             kwargs["model"] = model
 
@@ -186,7 +216,7 @@ def command(command_class, paginate=False):
         func = format_output(func)
         func = catch_errors(func)
 
-        name = func.__name__.replace("_", "-")
+        name = utils.parameter_name(func.__name__)
         func = command_class.command(name=name)(func)
 
         return func

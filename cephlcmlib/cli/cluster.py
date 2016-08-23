@@ -9,6 +9,7 @@ import click
 
 from cephlcmlib import cli
 from cephlcmlib.cli import decorators
+from cephlcmlib.cli import utils
 
 
 @cli.cli_group
@@ -67,7 +68,7 @@ def create(name, client):
 def update(cluster_id, name, model, client):
     """Update cluster data."""
 
-    return cli.update_model(
+    return utils.update_model(
         cluster_id,
         client.get_cluster,
         client.update_cluster,

@@ -16,9 +16,20 @@ import six
 from cephlcmlib import auth
 from cephlcmlib import exceptions
 
+try:
+    import simplejson as json
+except ImportError:
+    import json
+
 
 LOG = logging.getLogger(__name__)
 """Logger."""
+
+
+def json_dumps(data):
+    """Makes compact JSON dumps."""
+
+    return json.dumps(data, separators=(",", ":"))
 
 
 def make_query_params(**request_params):
@@ -75,10 +86,17 @@ def inject_pagination_params(func):
         params = make_query_params(
             page=kwargs.pop("page", None),
             per_page=kwargs.pop("per_page", None),
-            all=kwargs.pop("all_items", None)
+            all=kwargs.pop("all_items", None),
+            filter=kwargs.pop("filter", None),
+            sort_by=kwargs.pop("sort_by", None)
         )
+
         if "all" in params:
-            params["all"] = bool(params["all"])
+            params["all"] = str(int(bool(params["all"])))
+        if "filter" in params:
+            params["filter"] = json_dumps(params["filter"])
+        if "sort_by" in params:
+            params["sort_by"] = json_dumps(params["sort_by"])
 
         kwargs["query_params"] = params
 
