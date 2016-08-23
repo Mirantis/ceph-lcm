@@ -172,6 +172,7 @@ def cli_group(func):
 
 
 import cephlcmlib.cli.cluster  # NOQA
+import cephlcmlib.cli.execution  # NOQA
 import cephlcmlib.cli.permission  # NOQA
 import cephlcmlib.cli.playbook  # NOQA
 import cephlcmlib.cli.role  # NOQA
