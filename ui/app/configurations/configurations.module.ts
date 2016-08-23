@@ -3,12 +3,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { ConfigurationsComponent } from './index';
+import { ConfigurationsComponent, WizardComponent } from './index';
 import { SharedModule } from '../shared.module';
 
 @NgModule({
   declarations: [
-    ConfigurationsComponent
+    ConfigurationsComponent,
+    WizardComponent
   ],
   imports: [
     BrowserModule,
@@ -17,7 +18,8 @@ import { SharedModule } from '../shared.module';
     SharedModule
   ],
   exports: [
-    ConfigurationsComponent
+    ConfigurationsComponent,
+    WizardComponent
   ]
 })
 export class ConfigurationsModule { }

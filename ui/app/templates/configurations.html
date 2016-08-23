@@ -25,30 +25,6 @@
   </tbody>
 </table>
 
-<modal [title]="newConfiguration.id ? 'Edit Configuration' : 'Create New Configuration'">
-  <div class="modal-body">
-    <div class="alert alert-danger" role="alert" *ngIf="error">
-      {{error}}
-    </div>
-    <form #newConfigurationForm="ngForm">
-      <div class="form-group">
-        <label for="configuration_name">Configuration Name</label>
-        <input
-          type="text"
-          class="form-control"
-          name="configuration_name"
-          id="configuration_name"
-          placeholder="Name"
-          [(ngModel)]="newConfiguration.data.name"
-          required>
-      </div>
-    </form>
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-default" (click)="modal.close()">Cancel</button>
-    <button
-      class="btn btn-success"
-      (click)="save()"
-      [disabled]="!newConfigurationForm.form.valid">Save changes</button>
-  </div>
+<modal [title]="'Create New Playbook Configuration (Step ' + wizard.step + ' of 3)'">
+  <wizard (step)="step" [playbooks]="playbooks"></wizard>
 </modal>

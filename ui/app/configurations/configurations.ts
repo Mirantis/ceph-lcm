@@ -1,15 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Modal } from '../bootstrap';
 import { DataService } from '../services/data';
+
+import { WizardComponent } from './wizard';
 
 import * as _ from 'lodash';
 
 @Component({
   templateUrl: './app/templates/configurations.html',
-  directives: [Modal]
+  directives: [Modal, WizardComponent]
 })
 export class ConfigurationsComponent {
+  @ViewChild(WizardComponent) wizard: WizardComponent;
   configurations: any[] = [];
+  playbooks: any[] = [];
   newConfiguration: any = {data: {}};
   error: any;
 
@@ -20,6 +24,8 @@ export class ConfigurationsComponent {
   fetchData() {
     this.data.configuration().findAll({})
       .then((configurations: any) => this.configurations = configurations.items);
+    this.data.playbook().findAll({})
+      .then((playbooks: any) => this.playbooks = playbooks.items);
   }
 
   editConfiguration(configuration: any = null) {

@@ -1,0 +1,43 @@
+<div class="modal-body">
+  <div class="alert alert-danger" role="alert" *ngIf="error">
+    {{error}}
+  </div>
+  <form #newClusterForm="ngForm">
+    <div class="form-group">
+      <label for="cluster_name">Cluster Name</label>
+      <input
+        type="text"
+        class="form-control"
+        name="cluster_name"
+        id="cluster_name"
+        placeholder="Name"
+        [(ngModel)]="newConfiguration"
+        required>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-default pull-left" (click)="modal.close()">Cancel</button>
+  <button
+    *ngIf="step > 1"
+    class="btn btn-default"
+    (click)="backward()"
+    [disabled]="!newClusterForm.form.valid"
+  >
+      <span class="glyphicon glyphicon-chevron-left"></span>
+    </button>
+  <button
+    *ngIf="step != 3"
+    class="btn btn-default"
+    (click)="forward()"
+    [disabled]="!newClusterForm.form.valid"
+  >
+      <span class="glyphicon glyphicon-chevron-right"></span>
+    </button>
+  <button
+    *ngIf="step == 3"
+    class="btn btn-success"
+    (click)="forward()"
+    [disabled]="!newClusterForm.form.valid"
+  >Save changes</button>
+</div>
