@@ -5,7 +5,8 @@ import { DataStore, Record, Mapper } from 'js-data';
 import { HttpAdapter } from 'js-data-http';
 import { SessionService } from './session';
 
-type supportedMappers = 'auth' | 'user' | 'role' | 'permissions' | 'cluster';
+type supportedMappers = 'auth' | 'user' | 'role' | 'permissions' | 'cluster' |
+  'playbook_configuration';
 
 @Injectable()
 export class DataService {
@@ -24,6 +25,7 @@ export class DataService {
   role(): Mapper {return this.getMapper('role')}
   permissions(): Mapper {return this.getMapper('permissions')}
   cluster(): Mapper {return this.getMapper('cluster')}
+  configuration(): Mapper {return this.getMapper('playbook_configuration')}
 
   private modelsProperties = {
     auth: {
@@ -33,6 +35,11 @@ export class DataService {
     cluster: {
       name: {type: 'string'},
       execution_id: {type: 'string'},
+      configuration: {type: 'object'}
+    },
+    playbook_configuration: {
+      name: {type: 'string'},
+      playbook: {type: 'string'},
       configuration: {type: 'object'}
     },
     user: {

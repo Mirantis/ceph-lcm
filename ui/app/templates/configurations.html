@@ -1,0 +1,54 @@
+<button (click)="editConfiguration()" class="btn btn-success pull-right">Create configuration</button>
+
+<h3>Playbooks Configurations</h3>
+
+<div *ngIf="!configurations.length" class="no-configurations">
+  You don't have any configurations yet. Please create.
+</div>
+
+<table class="configurations table" *ngIf="configurations.length">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Playbook</th>
+      <th>Created</th>
+      <th>Last Executed</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let configuration of configurations">
+      <td>{{configuration.data.name}}</td>
+      <td>{{configuration.data.playbook}}</td>
+      <td>Never</td>
+      <td>Never</td>
+    </tr>
+  </tbody>
+</table>
+
+<modal [title]="newConfiguration.id ? 'Edit Configuration' : 'Create New Configuration'">
+  <div class="modal-body">
+    <div class="alert alert-danger" role="alert" *ngIf="error">
+      {{error}}
+    </div>
+    <form #newConfigurationForm="ngForm">
+      <div class="form-group">
+        <label for="configuration_name">Configuration Name</label>
+        <input
+          type="text"
+          class="form-control"
+          name="configuration_name"
+          id="configuration_name"
+          placeholder="Name"
+          [(ngModel)]="newConfiguration.data.name"
+          required>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-default" (click)="modal.close()">Cancel</button>
+    <button
+      class="btn btn-success"
+      (click)="save()"
+      [disabled]="!newConfigurationForm.form.valid">Save changes</button>
+  </div>
+</modal>

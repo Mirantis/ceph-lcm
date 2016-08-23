@@ -9,13 +9,12 @@ import { PageNotFoundComponent }  from './404';
 
 import { AdminModule }  from './admin/admin.module';
 import { ClustersModule }  from './clusters/clusters.module';
+import { ConfigurationsModule }  from './configurations/configurations.module';
 
 import { AuthService, LoggedIn}  from './services/auth';
 import { SessionService }  from './services/session';
 import { CookieService }  from 'angular2-cookie/core';
 import { DataService }  from './services/data';
-
-import { Modal }  from './bootstrap';
 
 import { appRoutingProviders, routing } from './app.routes';
 
@@ -30,6 +29,7 @@ import { appRoutingProviders, routing } from './app.routes';
     routing,
     AdminModule,
     ClustersModule,
+    ConfigurationsModule,
     FormsModule,
     BrowserModule
   ],
@@ -39,8 +39,7 @@ import { appRoutingProviders, routing } from './app.routes';
     DataService,
     CookieService,
     SessionService,
-    appRoutingProviders,
-    Modal
+    appRoutingProviders
   ],
   bootstrap: [ AppComponent ]
 })

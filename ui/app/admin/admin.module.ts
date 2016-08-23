@@ -3,20 +3,21 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
+import { SharedModule } from '../shared.module';
+
 import { AdminComponent, UsersComponent, RolesComponent } from './index';
-import { Key, Keys } from '../pipes';
 
 @NgModule({
   declarations: [
     AdminComponent,
     UsersComponent,
-    RolesComponent,
-    Keys, Key
+    RolesComponent
   ],
   imports: [
     BrowserModule,
     RouterModule,
-    FormsModule
+    FormsModule,
+    SharedModule
   ],
   exports: [
     AdminComponent,

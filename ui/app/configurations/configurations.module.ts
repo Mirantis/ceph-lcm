@@ -3,13 +3,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
+import { ConfigurationsComponent } from './index';
 import { SharedModule } from '../shared.module';
-
-import { ClustersComponent } from './index';
 
 @NgModule({
   declarations: [
-    ClustersComponent
+    ConfigurationsComponent
   ],
   imports: [
     BrowserModule,
@@ -18,7 +17,7 @@ import { ClustersComponent } from './index';
     SharedModule
   ],
   exports: [
-    ClustersComponent
+    ConfigurationsComponent
   ]
 })
-export class ClustersModule { }
+export class ConfigurationsModule { }

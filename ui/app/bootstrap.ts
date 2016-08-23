@@ -9,10 +9,10 @@ export class Modal {
   @Input() title: string = '';
 
   show(id: string = 'modal') {
-    $('#' + id).modal('show');
+    $('#' + id)['modal']('show');
   }
 
   close(id: string = 'modal') {
-    $('#' + id).modal('hide');
+    $('#' + id)['modal']('hide');
   }
 }
