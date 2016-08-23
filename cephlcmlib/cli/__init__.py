@@ -164,6 +164,14 @@ def update_model(item_id, fetch_item, update_item, model, **kwargs):
     return update_item(model)
 
 
+def cli_group(func):
+    func = click.group()(func)
+    cli.add_command(func)
+
+    return func
+
+
 import cephlcmlib.cli.user  # NOQA
 import cephlcmlib.cli.role  # NOQA
-import cephlcmlib.cli.misc  # NOQA
+import cephlcmlib.cli.permission  # NOQA
+import cephlcmlib.cli.playbook  # NOQA

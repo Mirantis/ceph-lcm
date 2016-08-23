@@ -41,6 +41,9 @@ def json_response(func):
     @six.wraps(func)
     def decorator(*args, **kwargs):
         response = func(*args, **kwargs)
+
+        if isinstance(response, dict):
+            return response
         if response.ok:
             return response.json()
 
@@ -198,7 +201,8 @@ class V1Client(Client):
             "password": self._password
         }
 
-        return self._session.post(url, json=payload, **kwargs)
+        response = self._session.post(url, json=payload, **kwargs)
+        return response
 
     def logout(self, **kwargs):
         url = self._make_url(self.AUTH_CLASS.AUTH_URL)

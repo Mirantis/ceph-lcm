@@ -11,53 +11,58 @@ from cephlcmlib import cli
 from cephlcmlib.cli import decorators
 
 
-@cli.cli.command()
+@cli.cli_group
+def role():
+    """Role subcommands."""
+
+
+@role.command(name="get-all")
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_pagination
 @decorators.with_client
-def role_get_all(client, query_params):
+def get_all(client, query_params):
     """Requests the list of roles."""
 
     return client.get_roles(**query_params)
 
 
-@cli.cli.command()
+@role.command(name="get")
 @click.argument("role-id", type=click.UUID)
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_client
-def role_get(role_id, client):
+def get(role_id, client):
     """Request a role with certain ID."""
 
     return client.get_role(str(role_id))
 
 
-@cli.cli.command()
+@role.command(name="get-version-all")
 @click.argument("role-id", type=click.UUID)
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_pagination
 @decorators.with_client
-def role_get_version_all(role_id, client, query_params):
+def get_version_all(role_id, client, query_params):
     """Requests a list of versions for the role with certain ID."""
 
     return client.get_role_versions(str(role_id), **query_params)
 
 
-@cli.cli.command()
+@role.command(name="get-version")
 @click.argument("role-id", type=click.UUID)
 @click.argument("version", type=int)
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_client
-def role_get_version(role_id, version, client):
+def get_version(role_id, version, client):
     """Requests a list of certain version of role with ID."""
 
     return client.get_role_version(str(role_id), version)
 
 
-@cli.cli.command()
+@role.command()
 @click.argument("name")
 @click.option(
     "--api-permissions",
@@ -74,7 +79,7 @@ def role_get_version(role_id, version, client):
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_client
-def role_create(name, api_permissions, playbook_permissions, client):
+def create(name, api_permissions, playbook_permissions, client):
     """Create new role in CephLCM."""
 
     permissions = {
@@ -84,7 +89,7 @@ def role_create(name, api_permissions, playbook_permissions, client):
     return client.create_role(name, permissions)
 
 
-@cli.cli.command()
+@role.command()
 @click.argument("role-id", type=click.UUID)
 @click.option(
     "--name",
@@ -114,8 +119,8 @@ def role_create(name, api_permissions, playbook_permissions, client):
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_client
-def role_update(role_id, name, api_permissions, playbook_permissions, model,
-                client):
+def update(role_id, name, api_permissions, playbook_permissions, model,
+           client):
     """Update role."""
 
     permissions = None
@@ -134,14 +139,14 @@ def role_update(role_id, name, api_permissions, playbook_permissions, model,
     )
 
 
-@cli.cli.command()
+@role.command(name="add-permission")
 @click.argument("role-id", type=click.UUID)
 @click.argument("permission_type", type=click.Choice(["api", "playbook"]))
 @click.argument("permission", required=True, nargs=-1)
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_client
-def role_add_permission(role_id, permission_type, permission, client):
+def add_permission(role_id, permission_type, permission, client):
     """Add new permissions to the role."""
 
     role_model = client.get_role(role_id)
@@ -153,14 +158,14 @@ def role_add_permission(role_id, permission_type, permission, client):
     return client.update_role(role_model)
 
 
-@cli.cli.command()
+@role.command(name="remove-permission")
 @click.argument("role-id", type=click.UUID)
 @click.argument("permission_type", type=click.Choice(["api", "playbook"]))
 @click.argument("permission", nargs=-1)
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_client
-def role_remove_permission(role_id, permission_type, permission, client):
+def remove_permission(role_id, permission_type, permission, client):
     """Remove permissions from role.
 
     Empty list means that all permissions should be removed.

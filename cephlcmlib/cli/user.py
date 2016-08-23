@@ -11,53 +11,58 @@ from cephlcmlib import cli
 from cephlcmlib.cli import decorators
 
 
-@cli.cli.command()
+@cli.cli_group
+def user():
+    """User subcommands."""
+
+
+@user.command(name="get-all")
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_pagination
 @decorators.with_client
-def user_get_all(client, query_params):
+def get_all(client, query_params):
     """Requests the list of users."""
 
     return client.get_users(**query_params)
 
 
-@cli.cli.command()
+@user.command()
 @click.argument("user-id", type=click.UUID)
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_client
-def user_get(user_id, client):
+def get(user_id, client):
     """Requests information on certain user."""
 
     return client.get_user(str(user_id))
 
 
-@cli.cli.command()
+@user.command(name="get-version-all")
 @click.argument("user-id", type=click.UUID)
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_pagination
 @decorators.with_client
-def user_get_version_all(user_id, client, query_params):
+def get_version_all(user_id, client, query_params):
     """Requests a list of versions on user with certain ID."""
 
     return client.get_user_versions(str(user_id), **query_params)
 
 
-@cli.cli.command()
+@user.command(name="get-version")
 @click.argument("user-id", type=click.UUID)
 @click.argument("version", type=int)
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_client
-def user_get_version(user_id, version, client, query_params):
+def get_version(user_id, version, client, query_params):
     """Requests a certain version of certain user."""
 
     return client.get_user_version(str(user_id), version)
 
 
-@cli.cli.command()
+@user.command()
 @click.argument("login")
 @click.argument("email")
 @click.argument("full-name", required=False, default="")
@@ -65,7 +70,7 @@ def user_get_version(user_id, version, client, query_params):
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_client
-def user_create(login, email, full_name, role_id, client):
+def create(login, email, full_name, role_id, client):
     """Creates new user in CephLCM.
 
     Please enter valid email. User will receive email with his initial
@@ -76,7 +81,7 @@ def user_create(login, email, full_name, role_id, client):
     return client.create_user(login, email, full_name, role_id)
 
 
-@cli.cli.command()
+@user.command()
 @click.argument("user-id", type=click.UUID)
 @click.option(
     "--login",
@@ -109,7 +114,7 @@ def user_create(login, email, full_name, role_id, client):
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_client
-def user_update(user_id, login, email, full_name, role_id, model, client):
+def update(user_id, login, email, full_name, role_id, model, client):
     """Update user data.
 
     The logic is following: if 'model' parameter is set (full JSON dump
@@ -126,12 +131,12 @@ def user_update(user_id, login, email, full_name, role_id, model, client):
     )
 
 
-@cli.cli.command()
+@user.command()
 @click.argument("user-id", type=click.UUID)
 @decorators.catch_errors
 @decorators.format_output
 @decorators.with_client
-def user_delete(user_id, client):
+def delete(user_id, client):
     """Deletes user from CephLCM.
 
     Please be notices that *actually* there is no deletion in common
