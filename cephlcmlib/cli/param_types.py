@@ -38,6 +38,28 @@ class UniqueCSVParamType(CSVParamType):
         return result
 
 
+class SortByParamType(CSVParamType):
+    name = "sortby csv-like list"
+
+    def convert(self, value, param, ctx):
+        values = super(SortByParamType, self).convert(value, param, ctx)
+        sort_by = {}
+
+        for value in values:
+            direction, name = self.parse_value(value)
+            sort_by[name] = direction
+
+        return sort_by
+
+    def parse_value(self, value):
+        if value.startswith("-"):
+            return -1, value[1:]
+        if value.startswith("+"):
+            return 1, value[1:]
+
+        return 1, value
+
+
 class JSONParamType(click.types.StringParamType):
 
     def convert(self, value, param, ctx):
@@ -56,6 +78,9 @@ CSV = CSVParamType()
 
 UCSV = UniqueCSVParamType()
 """Unique CSV parameter type for CLI."""
+
+SORT_BY = SortByParamType()
+"""SortBy parameter type for CLI."""
 
 JSON = JSONParamType()
 """JSON parameter for CLI."""

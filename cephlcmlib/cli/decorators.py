@@ -97,6 +97,7 @@ def with_pagination(func):
     @click.option(
         "--sort-by", "-s",
         default="",
+        type=param_types.SORT_BY,
         help=(
             "Comma-separated list of fieldnames for sorting. To define "
             "direction, please put '-' or '+' before name ('+' explicitly "
@@ -120,6 +121,7 @@ def with_pagination(func):
         per_page = kwargs.pop("per_page", None)
         no_envelope = kwargs.pop("no_envelope", None)
         list_elements = kwargs.pop("list", "active")
+        sort_by = kwargs.pop("sort_by", {})
 
         all_items = all_items or not (page or per_page)
         no_envelope = all_items or no_envelope
@@ -141,6 +143,11 @@ def with_pagination(func):
             query_params["filter"]["time_deleted"] = {
                 "ne": 0
             }
+        else:
+            del query_params["filter"]
+
+        if sort_by:
+            query_params["sort_by"] = sort_by
 
         kwargs["query_params"] = query_params
 
