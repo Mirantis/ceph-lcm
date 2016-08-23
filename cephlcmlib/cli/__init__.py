@@ -175,4 +175,5 @@ import cephlcmlib.cli.cluster  # NOQA
 import cephlcmlib.cli.permission  # NOQA
 import cephlcmlib.cli.playbook  # NOQA
 import cephlcmlib.cli.role  # NOQA
+import cephlcmlib.cli.server  # NOQA
 import cephlcmlib.cli.user  # NOQA
