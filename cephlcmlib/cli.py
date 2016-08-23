@@ -5,7 +5,7 @@
 import click
 import six
 
-from cephlcmlib import Client
+import cephlcmlib
 
 try:
     import simplejson as json
@@ -23,7 +23,8 @@ def with_client(func):
     @six.wraps(func)
     @click.pass_context
     def decorator(ctx, *args, **kwargs):
-        return func(ctx, ctx.obj["client"], *args, **kwargs)
+        kwargs["client"] = ctx.obj["client"]
+        return func(*args, **kwargs)
 
     return decorator
 
@@ -44,22 +45,64 @@ def format_output(func):
     return decorator
 
 
+def with_pagination(func):
+    """Add pagination-related commandline options."""
+
+    @six.wraps(func)
+    @click.option(
+        "--page", "-p",
+        type=int,
+        default=None,
+        help="Page to request."
+    )
+    @click.option(
+        "--per_page", "-r",
+        type=int,
+        default=None,
+        help="How many items should be displayed per page."
+    )
+    @click.option(
+        "--all",
+        is_flag=True,
+        help=(
+            "Show all items, without pagination. "
+            "Default behavior, 'page' and 'per_page' options disable this "
+            "option."
+        )
+    )
+    @click.option(
+        "--list",
+        is_flag=True,
+        help="Remove pagination envelope, just list items."
+    )
+    @click.pass_context
+    def decorator(ctx, *args, **kwargs):
+        all_items = kwargs.pop("all", None)
+        page = kwargs.pop("page", None)
+        per_page = kwargs.pop("per_page", None)
+        is_list = kwargs.pop("list", None)
+
+        if all_items:
+            query_params = {"all_items": "true"}
+        else:
+            query_params = {
+                "page": page,
+                "per_page": per_page
+            }
+        kwargs["query_params"] = query_params
+
+        response = func(*args, **kwargs)
+        if is_list:
+            response = response["items"]
+
+        return response
+
+    return decorator
+
+
 def format_output_json(response):
     dump = json.dumps(response, indent=4, sort_keys=True)
     click.echo(dump)
-
-
-def paginate(method, page, per_page, *args, **kwargs):
-    kwargs["page"] = page
-    kwargs["per_page"] = per_page
-
-    response = method(*args, **kwargs)
-
-    if not (page or per_page):
-        kwargs["per_page"] = response["total"]
-        response = method(*args, **kwargs)
-
-    return response
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
@@ -122,40 +165,29 @@ def cli(ctx, url, login, password, debug, timeout, output_format):
         "debug": debug,
         "timeout": timeout,
         "format": output_format,
-        "client": Client(url, login, password, timeout=timeout)
+        "client": cephlcmlib.Client(url, login, password, timeout=timeout)
     }
 
 
 @cli.command()
-@click.option(
-    "--page", "-p",
-    type=int,
-    default=None,
-    help="Page of users to request."
-)
-@click.option(
-    "--per_page", "-r",
-    type=int,
-    default=None,
-    help="How many users should be displayed per page."
-)
-@with_client
 @format_output
-def get_users(ctx, client, model_client, page, per_page):
+@with_pagination
+@with_client
+def get_users(client, query_params):
     """Requests the list of users.
 
     By default, it returns all users. Sometimes, it might be
     slow so you can use pagination settings.
     """
 
-    return paginate(client.get_users, page, per_page)
+    return client.get_users(**query_params)
 
 
 @cli.command()
 @click.argument("user_id", type=click.UUID)
-@with_client
 @format_output
-def get_user(ctx, client, model_client, user_id):
+@with_client
+def get_user(user_id, client):
     """Requests information on certain user."""
 
     return client.get_user(str(user_id))
@@ -163,71 +195,49 @@ def get_user(ctx, client, model_client, user_id):
 
 @cli.command()
 @click.argument("user_id", type=click.UUID)
-@click.option(
-    "--page", "-p",
-    type=int,
-    default=None,
-    help="Page of users to request."
-)
-@click.option(
-    "--per_page", "-r",
-    type=int,
-    default=None,
-    help="How many users should be displayed per page."
-)
-@with_client
 @format_output
-def get_user_versions(ctx, client, model_client, user_id, page, per_page):
+@with_pagination
+@with_client
+def get_user_versions(user_id, client, query_params):
     """Requests a list of versions on user with certain ID.
 
     By default, it returns all users. Sometimes, it might be
     slow so you can use pagination settings.
     """
 
-    return paginate(client.get_user_versions, page, per_page, str(user_id))
+    return client.get_user_versions(str(user_id), **query_params)
 
 
 @cli.command()
 @click.argument("user_id", type=click.UUID)
 @click.argument("version", type=int)
-@with_client
 @format_output
-def get_user_version(ctx, client, model_client, user_id, version):
+@with_client
+def get_user_version(user_id, version, client, query_params):
     """Requests a certain version of certain user."""
 
     return client.get_user_version(str(user_id), version)
 
 
 @cli.command()
-@click.option(
-    "--page", "-p",
-    type=int,
-    default=None,
-    help="Page of roles to request."
-)
-@click.option(
-    "--per_page", "-r",
-    type=int,
-    default=None,
-    help="How many roles should be displayed per page."
-)
-@with_client
 @format_output
-def get_roles(ctx, client, model_client, page, per_page):
+@with_pagination
+@with_client
+def get_roles(client, query_params):
     """Requests the list of roles.
 
     By default, it returns all users. Sometimes, it might be
     slow so you can use pagination settings.
     """
 
-    return paginate(client.get_roles, page, per_page)
+    return client.get_roles(**query_params)
 
 
 @cli.command()
 @click.argument("role_id", type=click.UUID)
-@with_client
 @format_output
-def get_role(ctx, client, model_client, role_id):
+@with_client
+def get_role(role_id, client):
     """Request a role with certain ID."""
 
     return client.get_role(str(role_id))
@@ -235,43 +245,30 @@ def get_role(ctx, client, model_client, role_id):
 
 @cli.command()
 @click.argument("role_id", type=click.UUID)
-@click.option(
-    "--page", "-p",
-    type=int,
-    default=None,
-    help="Page of roles to request."
-)
-@click.option(
-    "--per_page", "-r",
-    type=int,
-    default=None,
-    help="How many roles should be displayed per page."
-)
-@with_client
 @format_output
-def get_role_versions(ctx, client, model_client, role_id, page, per_page):
+@with_pagination
+@with_client
+def get_role_versions(role_id, client, query_params):
     """Requests a list of versions for the role with certain ID."""
 
-    return paginate(client.get_role_versions, page, per_page, str(role_id))
-
-    return client.get_role_versions(str(role_id))
+    return client.get_role_versions(str(role_id), **query_params)
 
 
 @cli.command()
 @click.argument("role_id", type=click.UUID)
 @click.argument("version", type=int)
-@with_client
 @format_output
-def get_role_version(ctx, client, model_client, role_id, version):
+@with_client
+def get_role_version(role_id, version, client):
     """Requests a list of certain version of role with ID."""
 
     return client.get_role_version(str(role_id), version)
 
 
 @cli.command()
-@with_client
 @format_output
-def get_permissions(ctx, client, model_client):
+@with_client
+def get_permissions(client):
     """Request a list of permissions avaialable in API."""
 
     return client.get_permissions()

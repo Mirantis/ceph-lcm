@@ -70,9 +70,9 @@ def inject_pagination_params(func):
     @six.wraps(func)
     def decorator(*args, **kwargs):
         params = make_query_params(
-            page=kwargs.pop("page"),
-            per_page=kwargs.pop("per_page"),
-            all=kwargs.pop("all_items")
+            page=kwargs.pop("page", None),
+            per_page=kwargs.pop("per_page", None),
+            all=kwargs.pop("all_items", None)
         )
         if "all" in params:
             params["all"] = bool(params["all"])
@@ -169,7 +169,7 @@ class Client(object):
         return url
 
     @abc.abstractmethod
-    def login(self):
+    def login(self, **kwargs):
         raise NotImplementedError()
 
     def __str__(self):
