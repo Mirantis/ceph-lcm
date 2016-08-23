@@ -79,7 +79,7 @@ def with_pagination(func):
         help="How many items should be displayed per page."
     )
     @click.option(
-        "--all",
+        "--all", "-a",
         is_flag=True,
         help=(
             "Show all items, without pagination. "
@@ -88,16 +88,22 @@ def with_pagination(func):
         )
     )
     @click.option(
-        "--list",
+        "--no-envelope", "-n",
         is_flag=True,
-        help="Remove pagination envelope, just list items."
+        help=(
+            "Remove pagination envelope, just list items. If all items "
+            "requested, this implicitly meant."
+        )
     )
     @click.pass_context
     def decorator(ctx, *args, **kwargs):
         all_items = kwargs.pop("all", None)
         page = kwargs.pop("page", None)
         per_page = kwargs.pop("per_page", None)
-        is_list = kwargs.pop("list", None)
+        no_envelope = kwargs.pop("no_envelope", None)
+
+        all_items = all_items or not (page or per_page)
+        no_envelope = all_items or no_envelope
 
         if all_items:
             query_params = {"all_items": "true"}
@@ -109,7 +115,7 @@ def with_pagination(func):
         kwargs["query_params"] = query_params
 
         response = func(*args, **kwargs)
-        if is_list:
+        if no_envelope:
             response = response["items"]
 
         return response
