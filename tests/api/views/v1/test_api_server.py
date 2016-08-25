@@ -127,9 +127,7 @@ def test_update_server(sudo_client_v1, client_v1, normal_user):
     api_model = response.json
     old_model = copy.deepcopy(api_model)
 
-    for key in api_model["data"]:
-        api_model["data"][key] = pytest.faux.gen_alphanumeric()
-    api_model["data"]["ip"] = pytest.faux.gen_ipaddr()
+    api_model["data"]["name"] = pytest.faux.gen_alphanumeric()
     api_model["data"]["facts"] = {
         pytest.faux.gen_alpha(): pytest.faux.gen_alpha()
     }
@@ -148,9 +146,7 @@ def test_update_server(sudo_client_v1, client_v1, normal_user):
     response = sudo_client_v1.put("/v1/server/{0}/".format(srv.model_id),
                                   data=api_model)
     assert response.status_code == 200
-    assert response.json["data"]["ip"] == api_model["data"]["ip"]
     assert response.json["data"]["name"] == api_model["data"]["name"]
-    assert response.json["data"]["fqdn"] == api_model["data"]["fqdn"]
     assert response.json["data"]["state"] == old_model["data"]["state"]
     assert response.json["data"]["facts"] == old_model["data"]["facts"]
     assert response.json["data"]["cluster_id"] == \

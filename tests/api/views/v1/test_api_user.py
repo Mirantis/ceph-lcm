@@ -342,7 +342,8 @@ def test_2users_update_delete_previous_data(field, email, sudo_client_v1,
     ("?per_page=-5&page=x", 11, 25, 1),
     ("?per_page=-5&page=1", 11, 25, 1),
     ("?per_page=0&page=1", 11, 25, 1),
-    ("?per_page=1&page=0", 1, 1, 1)
+    ("?per_page=1&page=0", 1, 1, 1),
+    ("?all=1", 11, 11, 1)
 ))
 def test_get_pagination_page(query, items, per_page, page, email,
                              clean_user_collection, sudo_client_v1,

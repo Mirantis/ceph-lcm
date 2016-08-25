@@ -91,8 +91,7 @@ class ServerView(generic.VersionedCRUDView):
     @validators.no_updates_on_default_fields
     def put(self, item_id, item):
         item.name = self.request_json["data"]["name"]
-        item.fqdn = self.request_json["data"]["fqdn"]
-        item.ip = self.request_json["data"]["ip"]
+        item.initiator_id = self.initiator_id
 
         try:
             item.save()

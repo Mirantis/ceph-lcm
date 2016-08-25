@@ -1,5 +1,6 @@
 # Requirements for cephlcm.client package
 
-requests[socks]
 click
+jsonpatch
+requests[socks]
 six

@@ -2,6 +2,7 @@
 """This module has functions, related to pagination."""
 
 
+import distutils.util
 import re
 
 import flask.json
@@ -63,7 +64,7 @@ FILTER_SCHEMA = {
         ]
     }
 }
-"""Pagination schema."""
+"""Filter pagination schema."""
 
 SORT_BY_SCHEMA = {
     "type": "object",
@@ -102,7 +103,8 @@ def make_pagination(query_params):
         "per_page": query_per_page(query_params),
         "page": query_page(query_params),
         "filter": query_filter(query_params),
-        "sort_by": query_sort_by(query_params)
+        "sort_by": query_sort_by(query_params),
+        "all": query_all(query_params)
     }
 
 
@@ -173,6 +175,18 @@ def parse_sort_by(params):
     jsonschema.validate(sort_by, SORT_BY_SCHEMA)
 
     return list(sort_by.items())
+
+
+def query_all(params):
+    """Parses all from parameters."""
+
+    if "all" not in params:
+        return False
+
+    try:
+        return distutils.util.strtobool(params["all"])
+    except Exception:
+        return False
 
 
 def convert_to_positive_int(value):

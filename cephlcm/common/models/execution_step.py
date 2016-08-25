@@ -107,24 +107,11 @@ class ExecutionStep(generic.Base):
             sort_by = cls.DEFAULT_SORT_BY
 
         result = cls.collection().find(query, sort=sort_by)
-        result = cls.paginate(result, pagination)
-
-        return result
-
-    @classmethod
-    def paginate(cls, cursor, pagination):
-        total = cursor.count()
-
-        page_items_before = pagination["per_page"] * (pagination["page"] - 1)
-        if page_items_before:
-            cursor = cursor.skip(page_items_before)
-        cursor = cursor.limit(pagination["per_page"])
-
-        paginated_result = wrappers.PaginationResult(
-            cls, cursor, pagination, total
+        result = wrappers.PaginationResult(
+            cls, result, pagination
         )
 
-        return paginated_result
+        return result
 
     @classmethod
     def ensure_index(cls, *args, **kwargs):

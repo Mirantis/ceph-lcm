@@ -10,9 +10,9 @@ import pytest
 
 from cephlcm import api
 from cephlcm.api import config
+from cephlcm.common import emailutils
 from cephlcm.common import log
 from cephlcm.common.models import generic
-
 from cephlcm.common.models import role
 from cephlcm.common.models import user
 
@@ -87,8 +87,9 @@ def smtp(request, monkeypatch):
 
 @pytest.fixture
 def email(smtp, monkeypatch):
+    monkeypatch.setitem(emailutils.CONF.COMMON_EMAIL, "enabled", True)
     monkeypatch.setattr(
-        "cephlcm.common.emailutils.make_message",
+        emailutils, "make_message",
         lambda from_, to, cc, subject, text_body, html_body: (
             to, cc, text_body
         )

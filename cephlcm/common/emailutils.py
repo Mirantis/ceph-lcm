@@ -32,11 +32,19 @@ def send(to, subject, text_body, html_body=None, cc=None, bcc=None,
 
     to, cc, bcc = make_lists(to, cc, bcc)
     message = make_message(from_, to, cc, subject, text_body, html_body)
+    if not CONF.COMMON_EMAIL["enabled"]:
+        LOG.info(
+            "Send email(to=%r, cc=%r, bcc=%r, subject=%r): %s",
+            to, cc, bcc, subject, text_body
+        )
+        return
+
     client = make_client(host, port, login, password)
 
-    LOG.info("Send email to %s, subject is '%s'", to, subject)
+    LOG.info("Send email to %s (CC: %s, BCC: %s), subject is '%s'",
+             to, cc, bcc, subject)
 
-    client.sendmail(from_, to, message)
+    client.sendmail(from_, to + bcc, message)
     client.quit()
 
 

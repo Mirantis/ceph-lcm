@@ -14,28 +14,48 @@ CONF = config.make_config()
 class PaginationResult:
     """PaginationResult wraps a data about a certain page in pagination."""
 
-    def __init__(self, model_class, items, pagination, total):
+    def __init__(self, model_class, items, pagination):
         self.model_class = model_class
         self.items = items
         self.pagination = pagination
-        self.total = total
-
-    def __iter__(self):
-        for item in self.items:
-            model = self.model_class()
-            model.update_from_db_document(item)
-
-            yield model
+        self.total = items.count()
 
     def make_api_structure(self):
         """Makes API structure, converatable to JSON."""
 
+        if self.pagination["all"]:
+            return self.response_all()
+
+        return self.response_paginated()
+
+    def response_all(self):
         return {
-            "items": [item.make_api_structure() for item in self],
+            "total": self.total,
+            "per_page": self.total,
+            "page": 1,
+            "items": list(self.modelize(self.items))
+        }
+
+    def response_paginated(self):
+        items = self.items
+        page_items_before = self.pagination["per_page"] \
+            * (self.pagination["page"] - 1)
+        if page_items_before:
+            items = items.skip(page_items_before)
+        items = items.limit(self.pagination["per_page"])
+
+        return {
+            "items": list(self.modelize(items)),
             "page": self.pagination["page"],
             "per_page": self.pagination["per_page"],
             "total": self.total
         }
+
+    def modelize(self, items):
+        for item in items:
+            model = self.model_class()
+            model.update_from_db_document(item)
+            yield model.make_api_structure()
 
 
 class MongoDBWrapper:
