@@ -81,7 +81,7 @@ class Task(generic.Base):
             return None
 
         if db_document["task_type"] == TaskType.server_discovery.name:
-            model = ServerDiscoveryTask("", "", "")
+            model = ServerDiscoveryTask("", "", "", "")
         elif db_document["task_type"] == TaskType.playbook.name:
             model = PlaybookPluginTask("", "", "")
         elif db_document["task_type"] == TaskType.cancel.name:
@@ -386,9 +386,10 @@ class Task(generic.Base):
 
 class ServerDiscoveryTask(Task):
 
-    def __init__(self, host, user, initiator_id):
+    def __init__(self, _id, host, user, initiator_id):
         super().__init__(TaskType.server_discovery, initiator_id)
 
+        self.data["id"] = _id
         self.data["host"] = host
         self.data["username"] = user
 

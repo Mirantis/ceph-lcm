@@ -19,10 +19,12 @@ CONF = config.make_controller_config()
 
 
 def create_task():
+    server_id = pytest.faux.gen_uuid()
     host = pytest.faux.gen_alphanumeric()
     username = pytest.faux.gen_alpha()
     initiator_id = pytest.faux.gen_uuid()
-    tsk = task.ServerDiscoveryTask(host, username, initiator_id)
+
+    tsk = task.ServerDiscoveryTask(server_id, host, username, initiator_id)
     tsk = tsk.create()
     tsk = tsk.start()
 

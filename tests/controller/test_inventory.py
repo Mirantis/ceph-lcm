@@ -84,11 +84,12 @@ def test_dumps(capsys):
 
 
 def test_main_list(monkeypatch, capsys, mocked_sysexit, mocked_configure):
+    server_id = pytest.faux.gen_uuid()
     host = pytest.faux.gen_alphanumeric()
     username = pytest.faux.gen_alphanumeric()
     initiator_id = pytest.faux.gen_uuid()
 
-    tsk = task.ServerDiscoveryTask(host, username, initiator_id)
+    tsk = task.ServerDiscoveryTask(server_id, host, username, initiator_id)
     tsk = tsk.create()
 
     monkeypatch.setenv(playbook_plugin.ENV_ENTRY_POINT, "server_discovery")
@@ -106,11 +107,12 @@ def test_main_list(monkeypatch, capsys, mocked_sysexit, mocked_configure):
 
 
 def test_main_host_ok(monkeypatch, capsys, mocked_sysexit, mocked_configure):
+    server_id = pytest.faux.gen_uuid()
     host = pytest.faux.gen_alphanumeric()
     username = pytest.faux.gen_alphanumeric()
     initiator_id = pytest.faux.gen_uuid()
 
-    tsk = task.ServerDiscoveryTask(host, username, initiator_id)
+    tsk = task.ServerDiscoveryTask(server_id, host, username, initiator_id)
     tsk = tsk.create()
 
     monkeypatch.setenv(playbook_plugin.ENV_ENTRY_POINT, "server_discovery")
@@ -128,12 +130,13 @@ def test_main_host_ok(monkeypatch, capsys, mocked_sysexit, mocked_configure):
 
 def test_main_host_failed(monkeypatch, capsys, mocked_sysexit,
                           mocked_configure):
+    server_id = pytest.faux.gen_uuid()
     host = pytest.faux.gen_alphanumeric()
     unknown_host = pytest.faux.gen_alphanumeric()
     username = pytest.faux.gen_alphanumeric()
     initiator_id = pytest.faux.gen_uuid()
 
-    tsk = task.ServerDiscoveryTask(host, username, initiator_id)
+    tsk = task.ServerDiscoveryTask(server_id, host, username, initiator_id)
     tsk = tsk.create()
 
     monkeypatch.setenv(playbook_plugin.ENV_ENTRY_POINT, "server_discovery")
