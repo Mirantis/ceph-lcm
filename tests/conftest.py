@@ -183,3 +183,24 @@ def new_pcmodel(public_playbook_name, new_cluster, new_servers):
         servers=new_servers,
         initiator_id=initiator_id
     )
+
+
+@pytest.fixture
+def new_user(new_role, freeze_time):
+    login = pytest.faux.gen_alpha()
+    password = pytest.faux.gen_alphanumeric()
+    email = pytest.faux.gen_email()
+    full_name = pytest.faux.gen_alphanumeric()
+    initiator_id = pytest.faux.gen_uuid()
+
+    return user.UserModel.make_user(
+        login, password, email, full_name, new_role.model_id, initiator_id)
+
+
+@pytest.fixture
+def new_role(configure_model, freeze_time):
+    name = pytest.faux.gen_alpha()
+    initiator_id = pytest.faux.gen_uuid()
+    permissions = {"api": []}
+
+    return role.RoleModel.make_role(name, permissions, initiator_id)

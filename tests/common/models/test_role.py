@@ -126,47 +126,27 @@ class TestRoleModel(object):
         assert role_model.name == role_name
         assert role_model.permissions == {"api": ["view_user"]}
 
-    def test_make_api_structure(self, configure_model, freeze_time):
-        role_name = pytest.faux.gen_alpha()
-        role_model = role.RoleModel.make_role(
-            role_name, {"api": ["view_user", "create_user"]},
-            initiator_id=pytest.faux.gen_uuid()
-        )
-
-        assert role_model.make_api_structure() == {
-            "id": role_model.model_id,
+    def test_make_api_structure(self, new_role, freeze_time):
+        assert new_role.make_api_structure() == {
+            "id": new_role.model_id,
             "model": "role",
             "time_updated": int(freeze_time.return_value),
             "time_deleted": 0,
-            "initiator_id": role_model.initiator_id,
+            "initiator_id": new_role.initiator_id,
             "version": 1,
             "data": {
-                "name": role_model.name,
-                "permissions": {"api": ["create_user", "view_user"]},
+                "name": new_role.name,
+                "permissions": {"api": []},
             }
         }
 
-    def test_user_revoke_role(self, configure_model):
-        role_name = pytest.faux.gen_alpha()
-        user_name = pytest.faux.gen_alpha()
-        user_email = pytest.faux.gen_email()
-
-        role_model = role.RoleModel.make_role(
-            role_name, {"api": ["view_user", "create_user"]}
-        )
-        user_model = user.UserModel.make_user(
-            user_name, "", user_email, "qqq qqq", role_model.model_id
-        )
-
-        assert user_model.role._id == role_model._id
-
+    def test_user_revoke_role(self, new_role, new_user):
         with pytest.raises(exceptions.CannotDeleteRoleWithActiveUsers):
-            role_model.delete()
+            new_role.delete()
 
-        user_model.role_id = None
-        user_model.save()
-
-        role_model.delete()
+        new_user.role_id = None
+        new_user.save()
+        new_role.delete()
 
     def test_find_by_model_ids(self, configure_model):
         role_model1 = role.RoleModel.make_role(

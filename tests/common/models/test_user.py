@@ -10,20 +10,6 @@ from cephlcm.common.models import token
 from cephlcm.common.models import user
 
 
-def make_user(role_id=None, initiator_id=None):
-    login = pytest.faux.gen_alpha()
-    password = pytest.faux.gen_alphanumeric()
-    email = pytest.faux.gen_email()
-    full_name = pytest.faux.gen_alphanumeric()
-    initiator_id = initiator_id or pytest.faux.gen_uuid()
-    role_id = role_id or None
-
-    new_user = user.UserModel.make_user(
-        login, password, email, full_name, role_id, initiator_id)
-
-    return new_user
-
-
 def test_create_new_user(configure_model, pymongo_connection, freeze_time):
     login = pytest.faux.gen_alpha()
     password = pytest.faux.gen_alphanumeric()
@@ -58,16 +44,13 @@ def test_create_new_user(configure_model, pymongo_connection, freeze_time):
     assert passwords.compare_passwords(password, new_user.password_hash)
 
 
-def test_find_by_login_single(configure_model):
-    new_user = make_user()
+def test_find_by_login_single(new_user):
     found_user = user.UserModel.find_by_login(new_user.login)
 
     assert new_user._id == found_user._id
 
 
-def test_find_by_login_latest_only(configure_model):
-    new_user = make_user()
-
+def test_find_by_login_latest_only(new_user):
     changed_value = new_user.full_name
     new_user.full_name = changed_value + "___"
     new_user.save()
@@ -79,16 +62,14 @@ def test_find_by_login_latest_only(configure_model):
     assert new_user.version == 2
 
 
-def test_find_by_login_deleted(configure_model, pymongo_connection):
-    new_user = make_user()
+def test_find_by_login_deleted(new_user, pymongo_connection):
     pymongo_connection.db.user.update_many({}, {"$set": {"time_deleted": 1}})
     found_user = user.UserModel.find_by_login(new_user.login)
 
     assert found_user is None
 
 
-def test_version_progression(configure_model, freeze_time):
-    new_user = make_user()
+def test_version_progression(new_user, freeze_time):
     model_id = new_user.model_id
     assert new_user.version == 1
     assert new_user.time_created == int(freeze_time.return_value)
@@ -125,11 +106,8 @@ def test_version_progression(configure_model, freeze_time):
     assert new_user.model_id == model_id
 
 
-def test_api_response(configure_model, freeze_time):
-    new_user = make_user()
-    api = new_user.make_api_structure()
-
-    assert api == {
+def test_api_response(new_user, freeze_time):
+    assert new_user.make_api_structure() == {
         "id": new_user.model_id,
         "version": new_user.version,
         "model": user.UserModel.MODEL_NAME,
@@ -137,7 +115,7 @@ def test_api_response(configure_model, freeze_time):
         "time_deleted": new_user.time_deleted,
         "initiator_id": new_user.initiator_id,
         "data": {
-            "role_id": None,
+            "role_id": new_user.role_id,
             "full_name": new_user.full_name,
             "login": new_user.login,
             "email": new_user.email
@@ -145,9 +123,7 @@ def test_api_response(configure_model, freeze_time):
     }
 
 
-def test_only_one_latest_user(configure_model, pymongo_connection):
-    new_user = make_user()
-
+def test_only_one_latest_user(new_user, pymongo_connection):
     for _ in range(5):
         new_user.save()
     new_user.delete()
@@ -172,23 +148,26 @@ def test_only_one_latest_user(configure_model, pymongo_connection):
     ) == 0
 
 
-def test_check_initiator_set(configure_model):
-    initial_user = make_user()
-    initial_user.save()
-    derivative_user = make_user(initiator_id=initial_user.model_id)
+def test_check_initiator_set(new_user):
+    new_user.save()
+    derivative_user = user.UserModel.make_user(
+        pytest.faux.gen_alpha(),
+        pytest.faux.gen_alphanumeric(),
+        pytest.faux.gen_email(),
+        pytest.faux.gen_alphanumeric(),
+        None,
+        new_user.model_id
+    )
 
-    assert not initial_user.initiator
-    assert derivative_user.initiator_id == initial_user.model_id
-    assert derivative_user.initiator._id == initial_user._id
+    assert not new_user.initiator
+    assert derivative_user.initiator_id == new_user.model_id
+    assert derivative_user.initiator._id == new_user._id
 
     derivative_user = user.UserModel.find_by_login(derivative_user.login)
-    assert derivative_user.initiator._id == initial_user._id
+    assert derivative_user.initiator._id == new_user._id
 
 
-def test_all_tokens_for_deleted_user_are_revoked(
-        configure_model, pymongo_connection):
-    new_user = make_user()
-
+def test_all_tokens_for_deleted_user_are_revoked(new_user, pymongo_connection):
     for _ in range(5):
         token.TokenModel.create(new_user.model_id)
 
