@@ -23,3 +23,18 @@
   tags:
     # This is to update requirements
     - skip_ansible_lint
+
+- name: Install CephLCM plugins
+  command: bash -ic "pyenv activate {{ venv }} && pip install -e ."
+          chdir=/vagrant/playbook_plugins/{{ item }}
+  with_items:
+    - server_discovery
+    - playbook_helloworld
+  tags:
+    # This is to update requirements
+    - skip_ansible_lint
+
+- name: Ensure that shortcut for PyEnv virtualenv is installed
+  lineinfile: dest=.bashrc
+              line="alias ve='pyenv activate {{ venv }}'"
+              state=present
