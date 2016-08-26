@@ -13,17 +13,6 @@ from cephlcm.common.models import server
 
 
 @pytest.fixture
-def new_pcmodel(public_playbook_name, new_cluster, new_server):
-    return playbook_configuration.PlaybookConfigurationModel.create(
-        name=pytest.faux.gen_alpha(),
-        playbook=public_playbook_name,
-        cluster=new_cluster,
-        servers=[new_server],
-        initiator_id=pytest.faux.gen_uuid()
-    )
-
-
-@pytest.fixture
 def new_execution(new_pcmodel):
     return execution.ExecutionModel.create(new_pcmodel, pytest.faux.gen_uuid())
 

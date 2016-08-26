@@ -14,6 +14,7 @@ from cephlcm.common import emailutils
 from cephlcm.common import log
 from cephlcm.common.models import cluster
 from cephlcm.common.models import generic
+from cephlcm.common.models import playbook_configuration
 from cephlcm.common.models import role
 from cephlcm.common.models import server
 from cephlcm.common.models import user
@@ -168,3 +169,17 @@ def new_cluster(new_servers):
     clstr.save()
 
     return clstr
+
+
+@pytest.fixture
+def new_pcmodel(public_playbook_name, new_cluster, new_servers):
+    name = pytest.faux.gen_alpha()
+    initiator_id = pytest.faux.gen_uuid()
+
+    return playbook_configuration.PlaybookConfigurationModel.create(
+        name=name,
+        playbook=public_playbook_name,
+        cluster=new_cluster,
+        servers=new_servers,
+        initiator_id=initiator_id
+    )

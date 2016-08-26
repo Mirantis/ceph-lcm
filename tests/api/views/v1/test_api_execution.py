@@ -21,17 +21,6 @@ def clean_execution_collection(configure_model, pymongo_connection):
 
 
 @pytest.fixture
-def new_pcmodel(public_playbook_name, new_cluster, new_server):
-    return playbook_configuration.PlaybookConfigurationModel.create(
-        name=pytest.faux.gen_alpha(),
-        playbook=public_playbook_name,
-        cluster=new_cluster,
-        servers=[new_server],
-        initiator_id=pytest.faux.gen_uuid()
-    )
-
-
-@pytest.fixture
 def valid_post_request(new_pcmodel):
     return {
         "playbook_configuration": {
