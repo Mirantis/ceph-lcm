@@ -20,11 +20,6 @@ def clean_tasks(pymongo_connection):
     task.Task.ensure_index()
 
 
-@pytest.fixture
-def new_execution(new_pcmodel):
-    return execution.ExecutionModel.create(new_pcmodel, pytest.faux.gen_uuid())
-
-
 @pytest.mark.parametrize("task_type", (
     [],
     {},

@@ -12,11 +12,6 @@ from cephlcm.common.models import playbook_configuration
 from cephlcm.common.models import server
 
 
-@pytest.fixture
-def new_execution(new_pcmodel):
-    return execution.ExecutionModel.create(new_pcmodel, pytest.faux.gen_uuid())
-
-
 def test_create(new_execution, new_pcmodel, pymongo_connection):
     db_model = pymongo_connection.db.execution.find_one(
         {"_id": new_execution._id}

@@ -13,6 +13,7 @@ from cephlcm.api import config
 from cephlcm.common import emailutils
 from cephlcm.common import log
 from cephlcm.common.models import cluster
+from cephlcm.common.models import execution
 from cephlcm.common.models import generic
 from cephlcm.common.models import playbook_configuration
 from cephlcm.common.models import role
@@ -204,3 +205,8 @@ def new_role(configure_model, freeze_time):
     permissions = {"api": []}
 
     return role.RoleModel.make_role(name, permissions, initiator_id)
+
+
+@pytest.fixture
+def new_execution(new_pcmodel):
+    return execution.ExecutionModel.create(new_pcmodel, pytest.faux.gen_uuid())
