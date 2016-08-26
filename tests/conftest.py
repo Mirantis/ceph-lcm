@@ -12,8 +12,12 @@ from cephlcm import api
 from cephlcm.api import config
 from cephlcm.common import emailutils
 from cephlcm.common import log
+from cephlcm.common.models import cluster
+from cephlcm.common.models import execution
 from cephlcm.common.models import generic
+from cephlcm.common.models import playbook_configuration
 from cephlcm.common.models import role
+from cephlcm.common.models import server
 from cephlcm.common.models import user
 
 
@@ -115,3 +119,94 @@ def sudo_user(sudo_role):
         "Almighty Sudo",
         sudo_role.model_id
     )
+
+
+@pytest.yield_fixture
+def public_playbook_name():
+    name = pytest.faux.gen_alphanumeric()
+    mocked_plugin = mock.MagicMock()
+    mocked_plugin.PUBLIC = True
+
+    patch = mock.patch(
+        "cephlcm.common.plugins.get_playbook_plugins",
+        return_value={name: mocked_plugin}
+    )
+
+    with patch:
+        yield name
+
+
+@pytest.fixture
+def new_servers(configure_model):
+    servers = []
+
+    for _ in range(3):
+        server_id = pytest.faux.gen_uuid()
+        name = pytest.faux.gen_alphanumeric()
+        username = pytest.faux.gen_alpha()
+        fqdn = pytest.faux.gen_alphanumeric()
+        ip = pytest.faux.gen_ipaddr()
+        initiator_id = pytest.faux.gen_uuid()
+        model = server.ServerModel.create(server_id, name, username, fqdn, ip,
+                                          initiator_id=initiator_id)
+        servers.append(model)
+
+    return servers
+
+
+@pytest.fixture
+def new_server(new_servers):
+    return new_servers[0]
+
+
+@pytest.fixture
+def new_cluster(new_servers):
+    name = pytest.faux.gen_alphanumeric()
+    initiator_id = pytest.faux.gen_uuid()
+
+    clstr = cluster.ClusterModel.create(name, initiator_id)
+    clstr.add_servers(new_servers, "rgws")
+    clstr.add_servers(new_servers, "mons")
+    clstr.save()
+
+    return clstr
+
+
+@pytest.fixture
+def new_pcmodel(public_playbook_name, new_cluster, new_servers):
+    name = pytest.faux.gen_alpha()
+    initiator_id = pytest.faux.gen_uuid()
+
+    return playbook_configuration.PlaybookConfigurationModel.create(
+        name=name,
+        playbook=public_playbook_name,
+        cluster=new_cluster,
+        servers=new_servers,
+        initiator_id=initiator_id
+    )
+
+
+@pytest.fixture
+def new_user(new_role, freeze_time):
+    login = pytest.faux.gen_alpha()
+    password = pytest.faux.gen_alphanumeric()
+    email = pytest.faux.gen_email()
+    full_name = pytest.faux.gen_alphanumeric()
+    initiator_id = pytest.faux.gen_uuid()
+
+    return user.UserModel.make_user(
+        login, password, email, full_name, new_role.model_id, initiator_id)
+
+
+@pytest.fixture
+def new_role(configure_model, freeze_time):
+    name = pytest.faux.gen_alpha()
+    initiator_id = pytest.faux.gen_uuid()
+    permissions = {"api": []}
+
+    return role.RoleModel.make_role(name, permissions, initiator_id)
+
+
+@pytest.fixture
+def new_execution(new_pcmodel):
+    return execution.ExecutionModel.create(new_pcmodel, pytest.faux.gen_uuid())

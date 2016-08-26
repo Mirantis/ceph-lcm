@@ -121,10 +121,9 @@ def test_post_server(host, client_v1, normal_user, sudo_client_v1,
     assert servers.count() == 0
 
 
-def test_update_server(sudo_client_v1, client_v1, normal_user):
-    srv = create_server()
-
-    response = sudo_client_v1.get("/v1/server/{0}/".format(srv.model_id))
+def test_update_server(sudo_client_v1, new_server, client_v1, normal_user):
+    response = sudo_client_v1.get(
+        "/v1/server/{0}/".format(new_server.model_id))
     assert response.status_code == 200
 
     api_model = response.json
@@ -137,17 +136,17 @@ def test_update_server(sudo_client_v1, client_v1, normal_user):
     api_model["data"]["state"] \
         = server.ServerState.maintenance_no_reconfig.name
 
-    response = client_v1.put("/v1/server/{0}/".format(srv.model_id),
+    response = client_v1.put("/v1/server/{0}/".format(new_server.model_id),
                              data=api_model)
     assert response.status_code == 401
 
     client_v1.login(normal_user.login, "qwerty")
-    response = client_v1.put("/v1/server/{0}/".format(srv.model_id),
+    response = client_v1.put("/v1/server/{0}/".format(new_server.model_id),
                              data=api_model)
     assert response.status_code == 403
 
-    response = sudo_client_v1.put("/v1/server/{0}/".format(srv.model_id),
-                                  data=api_model)
+    response = sudo_client_v1.put("/v1/server/{0}/".format(
+        new_server.model_id), data=api_model)
     assert response.status_code == 200
     assert response.json["data"]["name"] == api_model["data"]["name"]
     assert response.json["data"]["state"] == old_model["data"]["state"]
@@ -156,26 +155,26 @@ def test_update_server(sudo_client_v1, client_v1, normal_user):
         old_model["data"]["cluster_id"]
 
 
-def test_delete_server(sudo_client_v1, client_v1, normal_user, freeze_time):
-    srv = create_server()
-
-    response = client_v1.delete("/v1/server/{0}/".format(srv.model_id))
+def test_delete_server(sudo_client_v1, client_v1, new_server, normal_user,
+                       freeze_time):
+    response = client_v1.delete("/v1/server/{0}/".format(new_server.model_id))
     assert response.status_code == 401
 
     client_v1.login(normal_user.login, "qwerty")
-    response = client_v1.delete("/v1/server/{0}/".format(srv.model_id))
+    response = client_v1.delete("/v1/server/{0}/".format(new_server.model_id))
     assert response.status_code == 403
 
-    response = sudo_client_v1.delete("/v1/server/{0}/".format(srv.model_id))
+    response = sudo_client_v1.delete("/v1/server/{0}/".format(
+        new_server.model_id))
     assert response.status_code == 200
     assert response.json["time_deleted"] == int(freeze_time.return_value)
 
 
-def test_delete_deleted_server(sudo_client_v1):
-    srv = create_server()
-    srv.delete()
+def test_delete_deleted_server(sudo_client_v1, new_server):
+    new_server.delete()
 
-    response = sudo_client_v1.delete("/v1/server/{0}/".format(srv.model_id))
+    response = sudo_client_v1.delete("/v1/server/{0}/".format(
+        new_server.model_id))
     assert response.status_code == 400
 
 

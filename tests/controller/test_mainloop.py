@@ -4,13 +4,10 @@
 
 import threading
 import time
-import unittest.mock
 
 import pytest
 
-from cephlcm.common.models import cluster
 from cephlcm.common.models import execution
-from cephlcm.common.models import playbook_configuration
 from cephlcm.common.models import server
 from cephlcm.common.models import task
 from cephlcm.controller import mainloop
@@ -25,58 +22,10 @@ def main_thread(configure_model):
 
 
 @pytest.fixture
-def new_server(configure_model):
-    server_id = pytest.faux.gen_uuid()
-    name = pytest.faux.gen_alphanumeric()
-    username = pytest.faux.gen_alpha()
-    fqdn = pytest.faux.gen_alphanumeric()
-    ip = pytest.faux.gen_ipaddr()
-    initiator_id = pytest.faux.gen_uuid()
-
-    return server.ServerModel.create(server_id, name, username, fqdn, ip,
-                                     initiator_id=initiator_id)
-
-
-@pytest.fixture
-def new_cluster(configure_model, new_server):
-    name = pytest.faux.gen_alphanumeric()
-
-    clstr = cluster.ClusterModel.create(name, pytest.faux.gen_uuid())
-    clstr.add_servers([new_server], "rgws")
-    clstr.save()
-
-    return clstr
-
-
-@pytest.yield_fixture
-def playbook_name():
-    name = pytest.faux.gen_alphanumeric()
-    mocked_plugin = unittest.mock.MagicMock()
-    mocked_plugin.PUBLIC = True
-
-    patch = unittest.mock.patch(
-        "cephlcm.common.plugins.get_playbook_plugins",
-        return_value={name: mocked_plugin}
-    )
-
-    with patch:
-        yield name
-
-
-@pytest.fixture
-def new_pcmodel(playbook_name, new_cluster, new_server):
-    new_pcmodel = playbook_configuration.PlaybookConfigurationModel.create(
-        name=pytest.faux.gen_alpha(),
-        playbook=playbook_name,
-        cluster=new_cluster,
-        servers=[new_server],
-        initiator_id=pytest.faux.gen_uuid()
-    )
+def configured_new_pcmodel(new_pcmodel, new_servers):
     new_pcmodel.configuration = {
-        "servers": [new_server.ip],
-        "_meta": {
-            "hostvars": {}
-        }
+        "servers": [srv.ip for srv in new_servers],
+        "_meta": {"hostvars": {}}
     }
     new_pcmodel.save()
 
@@ -84,14 +33,16 @@ def new_pcmodel(playbook_name, new_cluster, new_server):
 
 
 @pytest.fixture
-def new_execution(new_pcmodel):
-    return execution.ExecutionModel.create(new_pcmodel, pytest.faux.gen_uuid())
+def new_execution(configured_new_pcmodel):
+    return execution.ExecutionModel.create(configured_new_pcmodel,
+                                           pytest.faux.gen_uuid())
 
 
 @pytest.fixture
-def new_task(playbook_name, new_pcmodel, new_execution):
+def new_task(public_playbook_name, configured_new_pcmodel, new_execution):
     tsk = task.PlaybookPluginTask(
-        playbook_name, new_pcmodel._id, new_execution.model_id
+        public_playbook_name, configured_new_pcmodel._id,
+        new_execution.model_id
     )
     tsk.create()
 
@@ -192,15 +143,19 @@ def test_process_task_list(
     assert mainloop.SHUTDOWN_EVENT.is_set()
 
 
-def test_possible_to_process_playbook_ok(new_server, new_pcmodel, new_task):
+def test_possible_to_process_playbook_ok(
+    new_servers, configured_new_pcmodel, new_execution, new_task
+):
     assert mainloop.possible_to_process(new_task)
 
-    srv = server.ServerModel.find_by_id(new_server._id)
-    assert srv.lock
+    for srv in new_servers:
+        srv = server.ServerModel.find_by_id(srv._id)
+        assert srv.lock
 
 
-def test_possible_to_process_playbook_fail_locked(new_server,
-                                                  new_pcmodel, new_task):
+def test_possible_to_process_playbook_fail_locked(
+    new_server, configured_new_pcmodel, new_task
+):
     new_server.lock = pytest.faux.gen_uuid()
     new_server.save()
 
@@ -210,13 +165,16 @@ def test_possible_to_process_playbook_fail_locked(new_server,
     assert srv.lock == new_server.lock
 
 
-def test_possible_to_process_playbook_fail_deleted(new_server,
-                                                   new_pcmodel, new_task):
-    new_server.cluster_id = None
-    new_server.save()
-    new_server.delete()
+def test_possible_to_process_playbook_fail_deleted(
+    new_servers, configured_new_pcmodel, new_task
+):
+    for srv in new_servers:
+        srv.cluster_id = None
+        srv.save()
+        srv.delete()
 
     assert not mainloop.possible_to_process(new_task)
 
-    srv = server.ServerModel.find_by_id(new_server._id)
-    assert srv.lock == new_server.lock
+    for srv in new_servers:
+        dbsrv = server.ServerModel.find_by_id(srv._id)
+        assert dbsrv.lock == srv.lock
