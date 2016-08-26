@@ -23,17 +23,6 @@ def clean_pc_collection(mongo_collection):
 
 
 @pytest.fixture
-def new_cluster(new_servers):
-    clstr = cluster.ClusterModel.create(
-        pytest.faux.gen_alphanumeric()
-    )
-    clstr.add_servers(new_servers, "rgws")
-    clstr.save()
-
-    return clstr
-
-
-@pytest.fixture
 def valid_post_request(new_cluster, new_servers, public_playbook_name):
     return {
         "name": pytest.faux.gen_alpha(),

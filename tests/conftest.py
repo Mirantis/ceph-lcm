@@ -12,6 +12,7 @@ from cephlcm import api
 from cephlcm.api import config
 from cephlcm.common import emailutils
 from cephlcm.common import log
+from cephlcm.common.models import cluster
 from cephlcm.common.models import generic
 from cephlcm.common.models import role
 from cephlcm.common.models import server
@@ -154,3 +155,16 @@ def new_servers(configure_model):
 @pytest.fixture
 def new_server(new_servers):
     return new_servers[0]
+
+
+@pytest.fixture
+def new_cluster(new_servers):
+    name = pytest.faux.gen_alphanumeric()
+    initiator_id = pytest.faux.gen_uuid()
+
+    clstr = cluster.ClusterModel.create(name, initiator_id)
+    clstr.add_servers(new_servers, "rgws")
+    clstr.add_servers(new_servers, "mons")
+    clstr.save()
+
+    return clstr

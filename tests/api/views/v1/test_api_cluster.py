@@ -18,26 +18,6 @@ def clean_cluster_collection(configure_model, mongo_collection):
     mongo_collection.remove({})
 
 
-@pytest.fixture
-def new_cluster(configure_model):
-    initiator_id = pytest.faux.gen_uuid()
-    name = pytest.faux.gen_alpha()
-    clstr = cluster.ClusterModel.create(name, initiator_id)
-
-    return clstr
-
-
-@pytest.fixture
-def cluster_servers(new_cluster):
-    servers = [create_server(), create_server()]
-
-    new_cluster.add_servers(servers, "rgws")
-    new_cluster.add_servers(servers, "mons")
-    new_cluster.save()
-
-    return servers
-
-
 def create_server():
     return server.ServerModel.create(
         pytest.faux.gen_uuid(),
@@ -137,7 +117,7 @@ def test_create_cluster_same_name(sudo_client_v1):
 
 
 def test_update_cluster_onlyname(sudo_client_v1, normal_user, client_v1,
-                                 new_cluster, cluster_servers):
+                                 new_cluster):
     api_model = new_cluster.make_api_structure()
     del api_model["data"]["configuration"]["rgws"]
     api_model["data"]["name"] = pytest.faux.gen_alpha()
@@ -180,19 +160,17 @@ def test_delete_cluster_empty(sudo_client_v1, normal_user, client_v1):
     assert response.status_code == 200
 
 
-def test_delete_cluster_with_config(sudo_client_v1, new_cluster,
-                                    cluster_servers):
+def test_delete_cluster_with_config(sudo_client_v1, new_cluster):
     response = sudo_client_v1.delete(
         "/v1/cluster/{0}/".format(new_cluster.model_id))
     assert response.status_code == 400
 
 
-def test_update_server(sudo_client_v1, new_cluster, cluster_servers):
-    srv = cluster_servers[0]
-    srv_model = srv.make_api_structure()
+def test_update_server(sudo_client_v1, new_cluster, new_server):
+    srv_model = new_server.make_api_structure()
 
     srv_model["data"]["name"] = pytest.faux.gen_alpha()
-    resp = sudo_client_v1.put("/v1/server/{0}/".format(srv.model_id),
+    resp = sudo_client_v1.put("/v1/server/{0}/".format(new_server.model_id),
                               data=srv_model)
     assert resp.status_code == 200
 
@@ -202,15 +180,15 @@ def test_update_server(sudo_client_v1, new_cluster, cluster_servers):
 
     for server_set in resp.json["data"]["configuration"].values():
         for conf_srv in server_set:
-            if conf_srv["server_id"] == srv.model_id:
-                assert conf_srv["version"] == srv.version + 1
+            if conf_srv["server_id"] == new_server.model_id:
+                assert conf_srv["version"] == new_server.version + 1
                 break
         else:
             pytest.fail("Cannot find proper server version in config")
 
 
-def test_remove_server_from_role(sudo_client_v1, new_cluster, cluster_servers):
-    new_cluster.remove_servers([cluster_servers[0]], "mons")
+def test_remove_server_from_role(sudo_client_v1, new_cluster, new_servers):
+    new_cluster.remove_servers([new_servers[0]], "mons")
     new_cluster.save()
 
     resp = sudo_client_v1.get("/v1/cluster/{0}/".format(new_cluster.model_id))
@@ -221,5 +199,5 @@ def test_remove_server_from_role(sudo_client_v1, new_cluster, cluster_servers):
     mon_server_ids = {item["server_id"]
                       for item in resp.json["data"]["configuration"]["mons"]}
 
-    assert cluster_servers[0].model_id in rgw_server_ids
-    assert cluster_servers[0].model_id not in mon_server_ids
+    assert new_servers[0].model_id in rgw_server_ids
+    assert new_servers[0].model_id not in mon_server_ids

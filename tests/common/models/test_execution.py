@@ -13,17 +13,6 @@ from cephlcm.common.models import server
 
 
 @pytest.fixture
-def new_cluster(configure_model, new_server):
-    name = pytest.faux.gen_alphanumeric()
-
-    clstr = cluster.ClusterModel.create(name, pytest.faux.gen_uuid())
-    clstr.add_servers([new_server], "rgws")
-    clstr.save()
-
-    return clstr
-
-
-@pytest.fixture
 def new_pcmodel(public_playbook_name, new_cluster, new_server):
     return playbook_configuration.PlaybookConfigurationModel.create(
         name=pytest.faux.gen_alpha(),

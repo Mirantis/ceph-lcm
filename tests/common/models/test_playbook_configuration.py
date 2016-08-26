@@ -11,15 +11,6 @@ from cephlcm.common.models import playbook_configuration
 from cephlcm.common.models import server
 
 
-@pytest.fixture
-def new_cluster(configure_model):
-    clstr = cluster.ClusterModel.create(
-        pytest.faux.gen_alphanumeric()
-    )
-
-    return clstr
-
-
 def test_create(new_cluster, new_servers, public_playbook_name,
                 pymongo_connection, freeze_time):
     name = pytest.faux.gen_alpha()
