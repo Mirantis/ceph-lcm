@@ -16,11 +16,14 @@ DATA_SCHEMA = {
     "configuration": {
         "type": "object",
         "additionalProperties": {
-            "type": "object",
-            "required": ["server_id", "version"],
-            "properties": {
-                "server_id": {"$ref": "#/definitions/uuid4"},
-                "version": {"$ref": "#/definitions/positive_integer"}
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["server_id", "version"],
+                "properties": {
+                    "server_id": {"$ref": "#/definitions/uuid4"},
+                    "version": {"$ref": "#/definitions/positive_integer"}
+                }
             }
         }
     }

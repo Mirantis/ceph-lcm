@@ -2189,7 +2189,18 @@ definitions:
           configuration:
             type: object
             additionalProperties:
-              $ref: "#/definitions/UUID4Array"
+              type: array
+              items:
+                type: object
+                required:
+                  - server_id
+                  - version
+                additionalProperties: false
+                properties:
+                  server_id:
+                    $ref: "#/definitions/UUID4"
+                  version:
+                    $ref: "#/definitions/PositiveInteger"
 
   # A Playbook configuration model
   PlaybookConfiguration:
