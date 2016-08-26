@@ -20,24 +20,6 @@ def new_cluster(configure_model):
     return clstr
 
 
-@pytest.fixture
-def new_servers(configure_model):
-    servers = []
-
-    for _ in range(3):
-        srv = server.ServerModel.create(
-            pytest.faux.gen_uuid(),
-            pytest.faux.gen_alphanumeric(),
-            pytest.faux.gen_alphanumeric(),
-            pytest.faux.gen_alphanumeric(),
-            pytest.faux.gen_ipaddr(),
-            initiator_id=pytest.faux.gen_uuid()
-        )
-        servers.append(srv)
-
-    return servers
-
-
 def test_create(new_cluster, new_servers, public_playbook_name,
                 pymongo_connection, freeze_time):
     name = pytest.faux.gen_alpha()

@@ -34,16 +34,6 @@ def new_cluster(new_servers):
 
 
 @pytest.fixture
-def new_servers(configure_model):
-    servers = []
-
-    for _ in range(3):
-        servers.append(create_server())
-
-    return servers
-
-
-@pytest.fixture
 def valid_post_request(new_cluster, new_servers, public_playbook_name):
     return {
         "name": pytest.faux.gen_alpha(),

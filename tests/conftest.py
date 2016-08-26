@@ -14,6 +14,7 @@ from cephlcm.common import emailutils
 from cephlcm.common import log
 from cephlcm.common.models import generic
 from cephlcm.common.models import role
+from cephlcm.common.models import server
 from cephlcm.common.models import user
 
 
@@ -130,3 +131,26 @@ def public_playbook_name():
 
     with patch:
         yield name
+
+
+@pytest.fixture
+def new_servers(configure_model):
+    servers = []
+
+    for _ in range(3):
+        server_id = pytest.faux.gen_uuid()
+        name = pytest.faux.gen_alphanumeric()
+        username = pytest.faux.gen_alpha()
+        fqdn = pytest.faux.gen_alphanumeric()
+        ip = pytest.faux.gen_ipaddr()
+        initiator_id = pytest.faux.gen_uuid()
+        model = server.ServerModel.create(server_id, name, username, fqdn, ip,
+                                          initiator_id=initiator_id)
+        servers.append(model)
+
+    return servers
+
+
+@pytest.fixture
+def new_server(new_servers):
+    return new_servers[0]
