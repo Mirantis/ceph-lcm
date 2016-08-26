@@ -18,8 +18,10 @@ from cephlcm.common.models import task
 def new_task(configure_model):
     username = pytest.faux.gen_alpha()
     initiator_id = pytest.faux.gen_uuid()
+    server_id = pytest.faux.gen_uuid()
 
-    tsk = task.ServerDiscoveryTask("localhost", username, initiator_id)
+    tsk = task.ServerDiscoveryTask(server_id, "localhost", username,
+                                   initiator_id)
     tsk = tsk.create()
     tsk = tsk.start()
 

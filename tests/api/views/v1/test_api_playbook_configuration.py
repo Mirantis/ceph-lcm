@@ -27,7 +27,7 @@ def new_cluster(new_servers):
     clstr = cluster.ClusterModel.create(
         pytest.faux.gen_alphanumeric()
     )
-    clstr.add_servers("rgws", new_servers)
+    clstr.add_servers(new_servers, "rgws")
     clstr.save()
 
     return clstr
@@ -92,6 +92,7 @@ def pcmodel(new_cluster, new_servers, config, playbook_name):
 
 def create_server():
     return server.ServerModel.create(
+        pytest.faux.gen_uuid(),
         pytest.faux.gen_alphanumeric(),
         pytest.faux.gen_alphanumeric(),
         pytest.faux.gen_alphanumeric(),

@@ -56,20 +56,40 @@ class ServerModel(generic.Model):
     state = properties.ChoicesProperty("_state", ServerState)
 
     @classmethod
-    def create(cls, name, username, fqdn, ip,
-               facts=None, cluster_id=None, state=ServerState.operational,
+    def create(cls, server_id, name, username, fqdn, ip, facts=None,
                initiator_id=None):
-        model = cls()
-        model.name = name
-        model.username = username
-        model.fqdn = fqdn
-        model.ip = ip
-        model.facts = facts or {}
-        model.cluster = cluster_id
-        model.state = state
-        model.initiator_id = initiator_id
-        model.lock = None
-        model.save()
+        model = cls.find_by_model_id(server_id)
+        changed = False
+        facts = facts or {}
+
+        if not model:
+            changed = True
+            model = cls()
+            model.name = name
+            model.state = ServerState.operational
+            model.lock = None
+
+        if model.username != username:
+            model.username = username
+            changed = True
+        if model.fqdn != fqdn:
+            model.fqdn = fqdn
+            changed = True
+        if model.ip != ip:
+            model.ip = ip
+            changed = True
+        if model.facts != facts:
+            model.facts = facts
+            changed = True
+        if model.initiator_id != initiator_id:
+            model.initiator_id = initiator_id
+            changed = True
+
+        if changed:
+            model.save()
+            if model.cluster_id:
+                model.cluster.update_servers([model])
+                model.cluster.save()
 
         return model
 
@@ -88,6 +108,34 @@ class ServerModel(generic.Model):
             servers.append(model)
 
         return servers
+
+    @classmethod
+    def get_model_id_version(cls, server_ids):
+        cursor = cls.collection().find(
+            {"_id": {"$in": list(server_ids)}},
+            ["_id", "model_id", "version"]
+        )
+        return {item["_id"]: item for item in cursor}
+
+    @classmethod
+    def get_model_server_ids(cls, server_ids):
+        """Returns a list of all related server IDs for a set."""
+
+        model_ids = cls.get_model_id_version(server_ids)
+        model_ids = {v["model_id"]: k for k, v in model_ids.items()}
+        cursor = cls.collection().find(
+            {
+                "model_id": {"$in": list(model_ids.keys())},
+                "_id": {"$nin": list(server_ids)}
+            },
+            ["_id", "model_id"]
+        )
+
+        result = {}
+        for item in cursor:
+            result.setdefault(item["model_id"], []).append(item["_id"])
+
+        return result
 
     @classmethod
     def cluster_servers(cls, cluster_id):

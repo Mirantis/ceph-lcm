@@ -26,13 +26,14 @@ def main_thread(configure_model):
 
 @pytest.fixture
 def new_server(configure_model):
+    server_id = pytest.faux.gen_uuid()
     name = pytest.faux.gen_alphanumeric()
     username = pytest.faux.gen_alpha()
     fqdn = pytest.faux.gen_alphanumeric()
     ip = pytest.faux.gen_ipaddr()
     initiator_id = pytest.faux.gen_uuid()
 
-    return server.ServerModel.create(name, username, fqdn, ip,
+    return server.ServerModel.create(server_id, name, username, fqdn, ip,
                                      initiator_id=initiator_id)
 
 
@@ -40,8 +41,9 @@ def new_server(configure_model):
 def new_cluster(configure_model, new_server):
     name = pytest.faux.gen_alphanumeric()
 
-    clstr = cluster.ClusterModel.create(name, {}, None, pytest.faux.gen_uuid())
-    clstr.add_servers("rgws", [new_server])
+    clstr = cluster.ClusterModel.create(name, pytest.faux.gen_uuid())
+    clstr.add_servers([new_server], "rgws")
+    q = clstr.make_api_structure()
     clstr.save()
 
     return clstr

@@ -103,6 +103,7 @@ class ServerDiscovery(playbook_plugin.Ansible):
 
         try:
             server_model = server.ServerModel.create(
+                server_id=task.data["id"],
                 name=facts["ansible_nodename"],
                 fqdn=facts["ansible_nodename"],
                 username=task.data["username"],

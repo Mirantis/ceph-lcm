@@ -28,19 +28,17 @@ def test_set_state_ok(state):
     assert model.state == state
 
 
-@pytest.mark.parametrize("state", server.ServerState)
 @pytest.mark.parametrize("facts", ({}, None, {"a": 1}))
-@pytest.mark.parametrize("cluster_id", (None, str(uuid.uuid4())))
-def test_create(state, facts, cluster_id, pymongo_connection,
-                configure_model, freeze_time):
+def test_create(facts, pymongo_connection, configure_model, freeze_time):
     name = pytest.faux.gen_alphanumeric()
     username = pytest.faux.gen_alphanumeric()
     fqdn = pytest.faux.gen_alphanumeric()
     ip = pytest.faux.gen_ipaddr()
     initiator_id = pytest.faux.gen_uuid()
+    server_id = pytest.faux.gen_uuid()
 
     model = server.ServerModel.create(
-        name, username, fqdn, ip, facts, cluster_id, state, initiator_id
+        server_id, name, username, fqdn, ip, facts, initiator_id
     )
 
     assert model.name == name
@@ -48,8 +46,7 @@ def test_create(state, facts, cluster_id, pymongo_connection,
     assert model.fqdn == fqdn
     assert model.ip == ip
     assert model.facts == (facts or {})
-    assert model.cluster_id == cluster_id
-    assert model.state == state
+    assert model.state == server.ServerState.operational
     assert model.time_created == int(freeze_time.return_value)
     assert model.initiator_id == initiator_id
     assert model.lock is None
@@ -81,9 +78,10 @@ def test_make_api_structure(facts, expand_facts, configure_model):
     fqdn = pytest.faux.gen_alphanumeric()
     ip = pytest.faux.gen_ipaddr()
     initiator_id = pytest.faux.gen_uuid()
+    server_id = pytest.faux.gen_uuid()
 
-    model = server.ServerModel.create(name, username, fqdn, ip, facts,
-                                      initiator_id=initiator_id)
+    model = server.ServerModel.create(server_id, name, username, fqdn, ip,
+                                      facts, initiator_id=initiator_id)
     assert model.make_api_structure(expand_facts=expand_facts) == {
         "id": model.model_id,
         "model": server.ServerModel.MODEL_NAME,
@@ -104,13 +102,14 @@ def test_make_api_structure(facts, expand_facts, configure_model):
 
 
 def test_set_clusterid(configure_model):
+    server_id = pytest.faux.gen_uuid()
     name = pytest.faux.gen_alphanumeric()
     username = pytest.faux.gen_alphanumeric()
     fqdn = pytest.faux.gen_alphanumeric()
     ip = pytest.faux.gen_ipaddr()
     initiator_id = pytest.faux.gen_uuid()
 
-    model = server.ServerModel.create(name, username, fqdn, ip, {},
+    model = server.ServerModel.create(server_id, name, username, fqdn, ip, {},
                                       initiator_id=initiator_id)
     server.ServerModel.lock_servers([model])
 
@@ -135,11 +134,12 @@ def test_delete_if_cluster_id_set(configure_model):
     fqdn = pytest.faux.gen_alphanumeric()
     ip = pytest.faux.gen_ipaddr()
     initiator_id = pytest.faux.gen_uuid()
-    cluster_id = pytest.faux.gen_uuid()
+    server_id = pytest.faux.gen_uuid()
 
-    model = server.ServerModel.create(name, username, fqdn, ip, {},
-                                      initiator_id=initiator_id,
-                                      cluster_id=cluster_id)
+    model = server.ServerModel.create(server_id, name, username, fqdn, ip, {},
+                                      initiator_id=initiator_id)
+    model.cluster = pytest.faux.gen_uuid()
+    model.save()
 
     # TODO(Sergey Arkhipov): Put proper exception here
     with pytest.raises(Exception):
@@ -160,11 +160,10 @@ def test_server_lock_ok(configure_model, pymongo_connection):
         fqdn = pytest.faux.gen_alphanumeric()
         ip = pytest.faux.gen_ipaddr()
         initiator_id = pytest.faux.gen_uuid()
-        cluster_id = pytest.faux.gen_uuid()
+        server_id = pytest.faux.gen_uuid()
 
-        model = server.ServerModel.create(name, username, fqdn, ip, {},
-                                          initiator_id=initiator_id,
-                                          cluster_id=cluster_id)
+        model = server.ServerModel.create(server_id, name, username, fqdn, ip,
+                                          {}, initiator_id=initiator_id)
         servers.append(model)
 
     server.ServerModel.lock_servers(servers)
@@ -194,11 +193,10 @@ def test_server_lock_failed(configure_model, pymongo_connection):
         fqdn = pytest.faux.gen_alphanumeric()
         ip = pytest.faux.gen_ipaddr()
         initiator_id = pytest.faux.gen_uuid()
-        cluster_id = pytest.faux.gen_uuid()
+        server_id = pytest.faux.gen_uuid()
 
-        model = server.ServerModel.create(name, username, fqdn, ip, {},
-                                          initiator_id=initiator_id,
-                                          cluster_id=cluster_id)
+        model = server.ServerModel.create(server_id, name, username, fqdn, ip,
+                                          {}, initiator_id=initiator_id)
         servers.append(model)
 
     servers[-1].lock = pytest.faux.gen_uuid()
@@ -220,16 +218,15 @@ def test_server_unlock(configure_model, pymongo_connection):
     servers = []
 
     for _ in range(5):
+        server_id = pytest.faux.gen_uuid()
         name = pytest.faux.gen_alphanumeric()
         username = pytest.faux.gen_alphanumeric()
         fqdn = pytest.faux.gen_alphanumeric()
         ip = pytest.faux.gen_ipaddr()
         initiator_id = pytest.faux.gen_uuid()
-        cluster_id = pytest.faux.gen_uuid()
 
-        model = server.ServerModel.create(name, username, fqdn, ip, {},
-                                          initiator_id=initiator_id,
-                                          cluster_id=cluster_id)
+        model = server.ServerModel.create(server_id, name, username, fqdn, ip,
+                                          {}, initiator_id=initiator_id)
         servers.append(model)
 
     servers[-1].lock = pytest.faux.gen_uuid()

@@ -30,7 +30,8 @@ SERVER_DISCOVERY_DATA_SCHEMA = {
         {"$ref": "#/definitions/hostname"},
         {"$ref": "#/definitions/ip"}
     ]},
-    "username": {"$ref": "#/definitions/non_empty_string"}
+    "username": {"$ref": "#/definitions/non_empty_string"},
+    "id": {"$ref": "#/definitions/uuid4"}
 }
 """Data schema for the server discovery."""
 
@@ -107,6 +108,10 @@ class ServerView(generic.VersionedCRUDView):
                         "violation)", self.request_json["data"]["name"])
             raise http_exceptions.CannotUpdateModelWithSuchParameters() \
                 from exc
+        else:
+            if item.cluster_id:
+                item.cluster.update_servers([item])
+                item.cluster.save()
 
         LOG.info("Server model %s was update to version %s by %s",
                  item.model_id, item.version, self.initiator_id)
@@ -117,6 +122,7 @@ class ServerView(generic.VersionedCRUDView):
     @validators.require_schema(SERVER_DISCOVERY_SCHEMA)
     def post(self):
         tsk = task.ServerDiscoveryTask(
+            self.request_json["id"],
             self.request_json["host"],
             self.request_json["username"],
             self.request_id  # execution for server discovery is request
@@ -124,9 +130,12 @@ class ServerView(generic.VersionedCRUDView):
         tsk.create()
 
         LOG.info(
-            "Created task %s for server discovery of %s@%s by %s",
-            tsk._id, self.request_json["username"],
-            self.request_json["host"], self.initiator_id
+            "Created task %s for server discovery of %s@%s (id: %s) by %s",
+            tsk._id,
+            self.request_json["username"],
+            self.request_json["host"],
+            self.request_json["id"],
+            self.initiator_id
         )
 
         return {}

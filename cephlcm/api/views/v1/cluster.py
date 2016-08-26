@@ -13,15 +13,16 @@ from cephlcm.common.models import cluster
 
 DATA_SCHEMA = {
     "name": {"$ref": "#/definitions/non_empty_string"},
-    "execution_id": {
-        "oneOf": [
-            {"type": "null"},
-            {"type": "#/definitions/uuid4"}
-        ]
-    },
     "configuration": {
         "type": "object",
-        "additionalProperties": {"$ref": "#/definitions/uuid4_array"}
+        "additionalProperties": {
+            "type": "object",
+            "required": ["server_id", "version"],
+            "properties": {
+                "server_id": {"$ref": "#/definitions/uuid4"},
+                "version": {"$ref": "#/definitions/positive_integer"}
+            }
+        }
     }
 }
 """Data schema for the model."""

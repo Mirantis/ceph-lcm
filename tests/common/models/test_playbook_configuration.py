@@ -26,6 +26,7 @@ def new_servers(configure_model):
 
     for _ in range(3):
         srv = server.ServerModel.create(
+            pytest.faux.gen_uuid(),
             pytest.faux.gen_alphanumeric(),
             pytest.faux.gen_alphanumeric(),
             pytest.faux.gen_alphanumeric(),

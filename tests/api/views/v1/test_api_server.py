@@ -21,12 +21,13 @@ def clean_server_collection(pymongo_connection):
 
 
 def create_server():
+    server_id = pytest.faux.gen_uuid()
     name = pytest.faux.gen_alphanumeric()
     username = pytest.faux.gen_alphanumeric()
     fqdn = pytest.faux.gen_alphanumeric()
     ip = pytest.faux.gen_ipaddr()
 
-    return server.ServerModel.create(name, username, fqdn, ip)
+    return server.ServerModel.create(server_id, name, username, fqdn, ip)
 
 
 def test_api_get_access(sudo_client_v1, client_v1, sudo_user, freeze_time,
@@ -92,6 +93,7 @@ def test_get_server(sudo_client_v1, clean_server_collection, freeze_time):
 def test_post_server(host, client_v1, normal_user, sudo_client_v1,
                      freeze_time, clean_server_collection, pymongo_connection):
     request = {
+        "id": pytest.faux.gen_uuid(),
         "host": host,
         "username": pytest.faux.gen_alpha()
     }
@@ -113,6 +115,7 @@ def test_post_server(host, client_v1, normal_user, sudo_client_v1,
     assert found_task["time"]["created"] == int(freeze_time.return_value)
     assert found_task["data"]["host"] == host
     assert found_task["data"]["username"] == request["username"]
+    assert found_task["data"]["id"] == request["id"]
 
     servers = pymongo_connection.db.server.find({})
     assert servers.count() == 0
