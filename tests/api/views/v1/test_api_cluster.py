@@ -2,8 +2,6 @@
 """Tests for /v1/cluster API endpoint."""
 
 
-import random
-
 import pytest
 
 from cephlcm.common.models import cluster

@@ -2,8 +2,6 @@
 """Tests for cephlcm.common.models.server."""
 
 
-import uuid
-
 import pytest
 
 from cephlcm.common import exceptions

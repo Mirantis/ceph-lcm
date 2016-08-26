@@ -43,7 +43,6 @@ def new_cluster(configure_model, new_server):
 
     clstr = cluster.ClusterModel.create(name, pytest.faux.gen_uuid())
     clstr.add_servers([new_server], "rgws")
-    q = clstr.make_api_structure()
     clstr.save()
 
     return clstr

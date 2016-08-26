@@ -2,8 +2,6 @@
 """Tests for cephlcm.common.models.cluster."""
 
 
-import random
-
 import pytest
 
 from cephlcm.common import exceptions
