@@ -2,18 +2,112 @@
   <div class="alert alert-danger" role="alert" *ngIf="error">
     {{error}}
   </div>
-  <form #newClusterForm="ngForm">
-    <div class="form-group">
-      <label for="cluster_name">Cluster Name</label>
-      <input
-        type="text"
-        class="form-control"
-        name="cluster_name"
-        id="cluster_name"
-        placeholder="Name"
-        [(ngModel)]="newConfiguration"
-        required>
-    </div>
+  <form #newConfigurationForm="ngForm" [ngSwitch]="step">
+
+    <template [ngSwitchCase]="1">
+      <div class="form-group">
+        <label for="configuration_name">Configuration Name</label>
+        <input
+          type="text"
+          class="form-control"
+          name="configuration_name"
+          id="configuration_name"
+          placeholder="Name"
+          [(ngModel)]="newConfiguration.name"
+          required>
+      </div>
+      <div class="form-group">
+        <label for="configuration_cluster">Cluster</label>
+        <select
+          class="form-control"
+          name="configuration_cluster"
+          id="configuration_cluster"
+          placeholder="Cluster"
+          [(ngModel)]="newConfiguration.cluster"
+          required>
+          <option *ngFor="let cluster of clusters" [value]="cluster.id">
+            {{cluster.data.name}}
+          </option>
+        </select>
+      </div>
+    </template>
+
+    <template [ngSwitchCase]="2">
+      <h4>Please select playbook:</h4>
+      <table class="playbooks table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Servers involved</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let playbook of playbooks">
+            <td>
+              <div class="radio">
+                <label>
+                  <input
+                    [(ngModel)]="newConfiguration.playbook"
+                    id="playbook"
+                    name="playbook"
+                    [value]="playbook"
+                    type="radio"
+                    required
+                  >
+                  {{playbook.name}}
+                </label>
+              </div>
+            </td>
+            <td>{{playbook.description}}</td>
+            <td>{{playbook.required_server_list}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
+
+    <template [ngSwitchCase]="3">
+      <h4>Please select servers:</h4>
+      <table class="servers table">
+        <thead>
+          <tr>
+            <th colspan="2">
+              <label>
+                <input
+                  id="select_all"
+                  name="select_all"
+                  (click)="toggleSelectAll(this)"
+                  [checked]="areAllServersSelected()"
+                  type="checkbox"
+                  required
+                >
+                Select All
+              </label>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let server of servers">
+            <td>
+              <div class="checkbox">
+                <label>
+                  <input
+                    type="checkbox"
+                    (change)="toggleServer(server)"
+                    [checked]="isServerSelected(server)"
+                    required
+                  >
+                  {{server.data.name}}
+                </label>
+              </div>
+            </td>
+            <td>
+              <span class="glyphicon glyphicon-info-sign"></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
   </form>
 </div>
 <div class="modal-footer">
@@ -22,22 +116,22 @@
     *ngIf="step > 1"
     class="btn btn-default"
     (click)="backward()"
-    [disabled]="!newClusterForm.form.valid"
+    [disabled]="!newConfigurationForm.form.valid"
   >
-      <span class="glyphicon glyphicon-chevron-left"></span>
+      <span class="glyphicon glyphicon-menu-left"></span>
     </button>
   <button
-    *ngIf="step != 3"
+    *ngIf="!isSaveButtonShown()"
     class="btn btn-default"
     (click)="forward()"
-    [disabled]="!newClusterForm.form.valid"
+    [disabled]="!newConfigurationForm.form.valid"
   >
-      <span class="glyphicon glyphicon-chevron-right"></span>
+      <span class="glyphicon glyphicon-menu-right"></span>
     </button>
   <button
-    *ngIf="step == 3"
+    *ngIf="isSaveButtonShown()"
     class="btn btn-success"
-    (click)="forward()"
-    [disabled]="!newClusterForm.form.valid"
+    (click)="save()"
+    [disabled]="!newConfigurationForm.form.valid || !areSomeServersSelected()"
   >Save changes</button>
 </div>

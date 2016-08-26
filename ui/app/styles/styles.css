@@ -94,7 +94,7 @@ table.roles td:nth-child(n+2) {
 table.roles td:nth-child(n+2) button {
   padding: 0;
 }
-table.clusters td:last-child {
+table.servers td:last-child {
   width: 1%;
 }
 table.configurations th {
@@ -102,5 +102,8 @@ table.configurations th {
 }
 table.configurations td:nth-child(3),
 table.configurations td:last-child {
+  width: 1%;
+}
+table.servers td:last-child {
   width: 1%;
 }

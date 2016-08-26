@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { NgSwitch, NgSwitchCase  } from '@angular/common';
 import { Modal } from '../bootstrap';
 import { DataService } from '../services/data';
 
@@ -8,13 +9,14 @@ import * as _ from 'lodash';
 
 @Component({
   templateUrl: './app/templates/configurations.html',
-  directives: [Modal, WizardComponent]
+  directives: [Modal, WizardComponent, NgSwitch, NgSwitchCase]
 })
 export class ConfigurationsComponent {
   @ViewChild(WizardComponent) wizard: WizardComponent;
   configurations: any[] = [];
+  clusters: any[] = [];
   playbooks: any[] = [];
-  newConfiguration: any = {data: {}};
+  servers: any[] = [];
   error: any;
 
   constructor(private data: DataService, private modal: Modal) {
@@ -24,32 +26,15 @@ export class ConfigurationsComponent {
   fetchData() {
     this.data.configuration().findAll({})
       .then((configurations: any) => this.configurations = configurations.items);
-    this.data.playbook().findAll({})
-      .then((playbooks: any) => this.playbooks = playbooks.items);
   }
 
   editConfiguration(configuration: any = null) {
-    this.newConfiguration = _.isNull(configuration) ? {data: {}} : configuration;
+    this.data.cluster().findAll({})
+      .then((clusters: any) => this.clusters = clusters.items);
+    this.data.playbook().findAll({})
+      .then((playbooks: any) => this.playbooks = playbooks.playbooks);
+    this.data.server().findAll({})
+      .then((servers: any) => this.servers = servers.items);
     this.modal.show();
-  }
-
-  save() {
-    this.error = null;
-    var savePromise: Promise<any>;
-    if (this.newConfiguration.id) {
-      // Update configuration
-      savePromise = this.data.configuration().update(this.newConfiguration.id, this.newConfiguration);
-    } else {
-      // Create new configuration
-      savePromise = this.data.configuration().create(this.newConfiguration);
-    }
-    return savePromise
-      .then(
-        () => {
-          this.modal.close();
-          this.fetchData();
-        },
-        (error) => {this.error = error}
-      );
   }
 }

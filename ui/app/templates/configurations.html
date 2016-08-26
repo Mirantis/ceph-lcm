@@ -25,6 +25,12 @@
   </tbody>
 </table>
 
-<modal [title]="'Create New Playbook Configuration (Step ' + wizard.step + ' of 3)'">
-  <wizard (step)="step" [playbooks]="playbooks"></wizard>
+<modal
+  [title]="'New Playbook Configuration'">
+  <wizard
+    [playbooks]="playbooks"
+    [clusters]="clusters"
+    [servers]="servers"
+    [fetchData]="fetchData"
+  ></wizard>
 </modal>
