@@ -115,3 +115,18 @@ def sudo_user(sudo_role):
         "Almighty Sudo",
         sudo_role.model_id
     )
+
+
+@pytest.yield_fixture
+def public_playbook_name():
+    name = pytest.faux.gen_alphanumeric()
+    mocked_plugin = mock.MagicMock()
+    mocked_plugin.PUBLIC = True
+
+    patch = mock.patch(
+        "cephlcm.common.plugins.get_playbook_plugins",
+        return_value={name: mocked_plugin}
+    )
+
+    with patch:
+        yield name

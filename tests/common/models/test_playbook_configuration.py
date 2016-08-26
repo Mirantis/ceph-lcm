@@ -38,27 +38,12 @@ def new_servers(configure_model):
     return servers
 
 
-@pytest.yield_fixture
-def playbook_name():
-    name = pytest.faux.gen_alphanumeric()
-    mocked_plugin = unittest.mock.MagicMock()
-    mocked_plugin.PUBLIC = True
-
-    patch = unittest.mock.patch(
-        "cephlcm.common.plugins.get_playbook_plugins",
-        return_value={name: mocked_plugin}
-    )
-
-    with patch:
-        yield name
-
-
-def test_create(new_cluster, new_servers, playbook_name, pymongo_connection,
-                freeze_time):
+def test_create(new_cluster, new_servers, public_playbook_name,
+                pymongo_connection, freeze_time):
     name = pytest.faux.gen_alpha()
     pcmodel = playbook_configuration.PlaybookConfigurationModel.create(
         name=name,
-        playbook=playbook_name,
+        playbook=public_playbook_name,
         cluster=new_cluster,
         servers=new_servers,
         initiator_id=pytest.faux.gen_uuid()
@@ -79,18 +64,18 @@ def test_create(new_cluster, new_servers, playbook_name, pymongo_connection,
     assert pcmodel.initiator_id == db_pc["initiator_id"]
 
     assert pcmodel.name == name
-    assert pcmodel.playbook == playbook_name
+    assert pcmodel.playbook == public_playbook_name
     assert pcmodel.version == 1
     assert pcmodel.time_created == int(freeze_time.return_value)
     assert pcmodel.time_deleted == 0
 
 
-def test_update(new_cluster, new_servers, playbook_name, pymongo_connection,
-                freeze_time):
+def test_update(new_cluster, new_servers, public_playbook_name,
+                pymongo_connection, freeze_time):
     name = pytest.faux.gen_alpha()
     pcmodel = playbook_configuration.PlaybookConfigurationModel.create(
         name=name,
-        playbook=playbook_name,
+        playbook=public_playbook_name,
         cluster=new_cluster,
         servers=new_servers,
         initiator_id=pytest.faux.gen_uuid()
@@ -104,11 +89,11 @@ def test_update(new_cluster, new_servers, playbook_name, pymongo_connection,
     assert pcmodel.name != old_name
 
 
-def test_delete(new_cluster, new_servers, playbook_name, pymongo_connection,
-                freeze_time):
+def test_delete(new_cluster, new_servers, public_playbook_name,
+                pymongo_connection, freeze_time):
     pcmodel = playbook_configuration.PlaybookConfigurationModel.create(
         name=pytest.faux.gen_alpha(),
-        playbook=playbook_name,
+        playbook=public_playbook_name,
         cluster=new_cluster,
         servers=new_servers,
         initiator_id=pytest.faux.gen_uuid()
@@ -119,12 +104,13 @@ def test_delete(new_cluster, new_servers, playbook_name, pymongo_connection,
     assert pcmodel.time_deleted == int(freeze_time.return_value)
 
 
-def test_configuration_with_keys(new_cluster, new_servers, playbook_name,
-                                 pymongo_connection, freeze_time):
+def test_configuration_with_keys(new_cluster, new_servers,
+                                 public_playbook_name, pymongo_connection,
+                                 freeze_time):
     name = pytest.faux.gen_alpha()
     pcmodel = playbook_configuration.PlaybookConfigurationModel.create(
         name=name,
-        playbook=playbook_name,
+        playbook=public_playbook_name,
         cluster=new_cluster,
         servers=new_servers,
         initiator_id=pytest.faux.gen_uuid()

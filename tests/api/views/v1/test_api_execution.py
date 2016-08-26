@@ -44,26 +44,11 @@ def new_cluster(configure_model, new_server):
     return clstr
 
 
-@pytest.yield_fixture
-def playbook_name():
-    name = pytest.faux.gen_alphanumeric()
-    mocked_plugin = unittest.mock.MagicMock()
-    mocked_plugin.PUBLIC = True
-
-    patch = unittest.mock.patch(
-        "cephlcm.common.plugins.get_playbook_plugins",
-        return_value={name: mocked_plugin}
-    )
-
-    with patch:
-        yield name
-
-
 @pytest.fixture
-def new_pcmodel(playbook_name, new_cluster, new_server):
+def new_pcmodel(public_playbook_name, new_cluster, new_server):
     return playbook_configuration.PlaybookConfigurationModel.create(
         name=pytest.faux.gen_alpha(),
-        playbook=playbook_name,
+        playbook=public_playbook_name,
         cluster=new_cluster,
         servers=[new_server],
         initiator_id=pytest.faux.gen_uuid()
@@ -81,9 +66,9 @@ def valid_post_request(new_pcmodel):
 
 
 @pytest.fixture
-def sudo_client(sudo_client_v1, playbook_name, sudo_role):
-    role.PermissionSet.add_permission("playbook", playbook_name)
-    sudo_role.add_permissions("playbook", [playbook_name])
+def sudo_client(sudo_client_v1, public_playbook_name, sudo_role):
+    role.PermissionSet.add_permission("playbook", public_playbook_name)
+    sudo_role.add_permissions("playbook", [public_playbook_name])
     sudo_role.save()
 
     return sudo_client_v1

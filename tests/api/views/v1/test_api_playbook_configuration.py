@@ -44,28 +44,13 @@ def new_servers(configure_model):
 
 
 @pytest.fixture
-def valid_post_request(new_cluster, new_servers, playbook_name):
+def valid_post_request(new_cluster, new_servers, public_playbook_name):
     return {
         "name": pytest.faux.gen_alpha(),
-        "playbook": playbook_name,
+        "playbook": public_playbook_name,
         "cluster_id": new_cluster.model_id,
         "server_ids": [srv.model_id for srv in new_servers]
     }
-
-
-@pytest.yield_fixture
-def playbook_name():
-    name = pytest.faux.gen_alphanumeric()
-    mocked_plugin = unittest.mock.MagicMock()
-    mocked_plugin.PUBLIC = True
-
-    patch = unittest.mock.patch(
-        "cephlcm.common.plugins.get_playbook_plugins",
-        return_value={name: mocked_plugin}
-    )
-
-    with patch:
-        yield name
 
 
 @pytest.fixture
@@ -76,10 +61,10 @@ def config():
 
 
 @pytest.fixture
-def pcmodel(new_cluster, new_servers, config, playbook_name):
+def pcmodel(new_cluster, new_servers, config, public_playbook_name):
     model = playbook_configuration.PlaybookConfigurationModel.create(
         name=pytest.faux.gen_alpha(),
-        playbook=playbook_name,
+        playbook=public_playbook_name,
         cluster=new_cluster,
         servers=new_servers,
         initiator_id=pytest.faux.gen_uuid()
@@ -101,9 +86,9 @@ def create_server():
     )
 
 
-def get_playbook_plug(playbook_name):
+def get_playbook_plug(public_playbook_name):
     plug = plugins.get_public_playbook_plugins()
-    plug = plug[playbook_name]
+    plug = plug[public_playbook_name]
 
     return plug
 
@@ -124,7 +109,7 @@ def test_api_get_access(sudo_client_v1, client_v1, normal_user):
 
 def test_get_playbook_configuration(
     sudo_client_v1, clean_pc_collection, new_cluster, new_servers,
-    playbook_name, pcmodel, freeze_time
+    public_playbook_name, pcmodel, freeze_time
 ):
     pcmodel.save()
 

@@ -44,26 +44,11 @@ def new_cluster(configure_model, new_server):
     return clstr
 
 
-@pytest.yield_fixture
-def playbook_name():
-    name = pytest.faux.gen_alphanumeric()
-    mocked_plugin = unittest.mock.MagicMock()
-    mocked_plugin.PUBLIC = True
-
-    patch = unittest.mock.patch(
-        "cephlcm.common.plugins.get_playbook_plugins",
-        return_value={name: mocked_plugin}
-    )
-
-    with patch:
-        yield name
-
-
 @pytest.fixture
-def new_pcmodel(playbook_name, new_cluster, new_server):
+def new_pcmodel(public_playbook_name, new_cluster, new_server):
     return playbook_configuration.PlaybookConfigurationModel.create(
         name=pytest.faux.gen_alpha(),
-        playbook=playbook_name,
+        playbook=public_playbook_name,
         cluster=new_cluster,
         servers=[new_server],
         initiator_id=pytest.faux.gen_uuid()
