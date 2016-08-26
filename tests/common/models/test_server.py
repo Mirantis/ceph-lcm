@@ -70,6 +70,53 @@ def test_create(facts, pymongo_connection, configure_model, freeze_time):
     assert model.lock == db_model["lock"]
 
 
+@pytest.mark.parametrize("parameter", ("name", "initiator_id"))
+def test_create_server_again_nothing_happened(parameter, configure_model):
+    params = {
+        "name": pytest.faux.gen_alphanumeric(),
+        "username": pytest.faux.gen_alphanumeric(),
+        "fqdn": pytest.faux.gen_alphanumeric(),
+        "ip": pytest.faux.gen_ipaddr(),
+        "initiator_id": pytest.faux.gen_uuid(),
+        "server_id": pytest.faux.gen_uuid(),
+        "facts": {},
+        "initiator_id": pytest.faux.gen_uuid()
+    }
+
+    model = server.ServerModel.create(**params)
+    params[parameter] = pytest.faux.gen_uuid()
+    model2 = server.ServerModel.create(**params)
+
+    assert model._id == model2._id
+
+
+@pytest.mark.parametrize("parameter", ("username", "fqdn", "ip", "facts"))
+def test_create_server_again(parameter, configure_model):
+    params = {
+        "name": pytest.faux.gen_alphanumeric(),
+        "username": pytest.faux.gen_alphanumeric(),
+        "fqdn": pytest.faux.gen_alphanumeric(),
+        "ip": pytest.faux.gen_ipaddr(),
+        "initiator_id": pytest.faux.gen_uuid(),
+        "server_id": pytest.faux.gen_uuid(),
+        "facts": {},
+        "initiator_id": pytest.faux.gen_uuid()
+    }
+
+    model = server.ServerModel.create(**params)
+    if parameter == "facts":
+        params["facts"] = {"factname": 1}
+    elif parameter == "ip":
+        params["ip"] = pytest.faux.gen_ipaddr()
+    else:
+        params[parameter] = pytest.faux.gen_alphanumeric()
+    model2 = server.ServerModel.create(**params)
+
+    assert model._id != model2._id
+    assert model.model_id == model2.model_id
+    assert model.version == model2.version - 1
+
+
 @pytest.mark.parametrize("facts", ({}, {"a": 1}))
 @pytest.mark.parametrize("expand_facts", (True, False))
 def test_make_api_structure(facts, expand_facts, configure_model):

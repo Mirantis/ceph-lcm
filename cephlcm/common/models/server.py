@@ -65,7 +65,9 @@ class ServerModel(generic.Model):
         if not model:
             changed = True
             model = cls()
+            model.model_id = server_id
             model.name = name
+            model.initiator_id = initiator_id
             model.state = ServerState.operational
             model.lock = None
 
@@ -80,9 +82,6 @@ class ServerModel(generic.Model):
             changed = True
         if model.facts != facts:
             model.facts = facts
-            changed = True
-        if model.initiator_id != initiator_id:
-            model.initiator_id = initiator_id
             changed = True
 
         if changed:
@@ -124,10 +123,7 @@ class ServerModel(generic.Model):
         model_ids = cls.get_model_id_version(server_ids)
         model_ids = {v["model_id"]: k for k, v in model_ids.items()}
         cursor = cls.collection().find(
-            {
-                "model_id": {"$in": list(model_ids.keys())},
-                "_id": {"$nin": list(server_ids)}
-            },
+            {"model_id": {"$in": list(model_ids.keys())}},
             ["_id", "model_id"]
         )
 
