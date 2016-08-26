@@ -5,7 +5,6 @@
 import pytest
 
 from cephlcm.common.models import cluster
-from cephlcm.common.models import server
 
 
 @pytest.fixture
@@ -16,17 +15,6 @@ def mongo_collection(pymongo_connection):
 @pytest.fixture
 def clean_cluster_collection(configure_model, mongo_collection):
     mongo_collection.remove({})
-
-
-def create_server():
-    return server.ServerModel.create(
-        pytest.faux.gen_uuid(),
-        pytest.faux.gen_alpha(),
-        pytest.faux.gen_alphanumeric(),
-        pytest.faux.gen_alpha(),
-        pytest.faux.gen_ipaddr(),
-        initiator_id=pytest.faux.gen_uuid()
-    )
 
 
 def test_api_get_access(sudo_client_v1, client_v1, sudo_user, freeze_time,

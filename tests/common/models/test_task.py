@@ -2,16 +2,11 @@
 """Test for cephlcm.common.models.task."""
 
 
-import unittest.mock
-
 import pytest
 
 from cephlcm.common import exceptions
 from cephlcm.common.models import task
-from cephlcm.common.models import server
-from cephlcm.common.models import cluster
 from cephlcm.common.models import execution
-from cephlcm.common.models import playbook_configuration
 
 
 @pytest.fixture

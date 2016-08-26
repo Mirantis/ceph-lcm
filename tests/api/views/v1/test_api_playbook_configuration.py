@@ -2,12 +2,9 @@
 """Tests for view for /v1/playbook_configuration API endpoint."""
 
 
-import unittest.mock
-
 import pytest
 
 from cephlcm.common import plugins
-from cephlcm.common.models import cluster
 from cephlcm.common.models import server
 from cephlcm.common.models import playbook_configuration
 

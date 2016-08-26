@@ -2,13 +2,9 @@
 """Tests for cephlcm.common.models.playbook_configuration."""
 
 
-import unittest.mock
-
 import pytest
 
-from cephlcm.common.models import cluster
 from cephlcm.common.models import playbook_configuration
-from cephlcm.common.models import server
 
 
 def test_create(new_cluster, new_servers, public_playbook_name,

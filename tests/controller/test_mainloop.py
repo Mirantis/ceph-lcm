@@ -7,9 +7,7 @@ import time
 
 import pytest
 
-from cephlcm.common.models import cluster
 from cephlcm.common.models import execution
-from cephlcm.common.models import playbook_configuration
 from cephlcm.common.models import server
 from cephlcm.common.models import task
 from cephlcm.controller import mainloop

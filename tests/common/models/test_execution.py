@@ -2,14 +2,9 @@
 """Tests for cephlcm.common.models.execution."""
 
 
-import unittest.mock
-
 import pytest
 
-from cephlcm.common.models import cluster
 from cephlcm.common.models import execution
-from cephlcm.common.models import playbook_configuration
-from cephlcm.common.models import server
 
 
 def test_create(new_execution, new_pcmodel, pymongo_connection):

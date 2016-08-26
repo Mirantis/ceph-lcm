@@ -8,7 +8,6 @@ import pytest
 
 from cephlcm.common import exceptions
 from cephlcm.common.models import role
-from cephlcm.common.models import user
 
 
 @pytest.fixture
