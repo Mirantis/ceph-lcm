@@ -37,7 +37,10 @@ def have_mocked(request, *mock_args, **mock_kwargs):
 
 @pytest.fixture
 def no_sleep(monkeypatch):
-    monkeypatch.setattr("time.sleep", lambda arg: arg)
+    mocked = mock.MagicMock()
+    monkeypatch.setattr("time.sleep", mocked)
+
+    return mocked
 
 
 @pytest.fixture
