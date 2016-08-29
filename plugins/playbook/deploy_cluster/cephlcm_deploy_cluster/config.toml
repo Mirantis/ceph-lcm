@@ -1,0 +1,17 @@
+install_source = "stable"
+pool_default_size = 2
+rest_api = true
+
+[journal]
+collocation = true
+size = 100
+
+[os.kernel]
+pid_max = 4194303
+
+[os.fs]
+file-max = 26234859
+
+[networks]
+public = "10.1.0.0/24"
+cluster = "10.1.0.0/24"

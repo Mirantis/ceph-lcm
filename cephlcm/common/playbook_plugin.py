@@ -114,6 +114,7 @@ class Base(metaclass=abc.ABCMeta):
                  subprocess.list2cmdline(commandline), self.entry_point)
         LOG.debug("Commandline: \"%s\"",
                   self.make_copypaste_commandline(commandline, env))
+        raise Exception
 
         all_env = copy.deepcopy(os.environ)
         all_env.update(env)
@@ -242,8 +243,8 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
         return config
 
-    def build_playbook_configuration(self, servers):
-        extra, inventory = self.make_playbook_configuration(servers)
+    def build_playbook_configuration(self, cluster, servers):
+        extra, inventory = self.make_playbook_configuration(cluster, servers)
 
         return {
             "global_vars": extra,

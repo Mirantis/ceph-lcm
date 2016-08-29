@@ -70,7 +70,6 @@ def create(name, playbook, cluster_id, server_ids, client):
 
 
 @click.argument("playbook_configuration-id", type=click.UUID)
-@click.argument("name")
 @decorators.command(playbook_configuration)
 def delete(playbook_configuration_id, client):
     """Deletes playbook configuration in CephLCM

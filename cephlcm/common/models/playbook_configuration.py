@@ -65,7 +65,7 @@ class PlaybookConfigurationModel(generic.Model):
     def make_configuration(self, cluster, servers):
         plug = plugins.get_public_playbook_plugins()
         plug = plug[self.playbook]
-        configuration = plug.build_playbook_configuration(servers)
+        configuration = plug.build_playbook_configuration(cluster, servers)
 
         return configuration
 
@@ -74,15 +74,14 @@ class PlaybookConfigurationModel(generic.Model):
 
         self.name = structure["name"]
         self.playbook = structure["playbook"]
-        self.configuration = replace_dict_keys(
-            "/", ".", structure["configuration"])
+        self.configuration = generic.dot_unescape(structure["configuration"])
 
     def make_db_document_specific_fields(self):
         return {
             "name": self.name,
             "initiator_id": self.initiator_id,
             "playbook": self.playbook,
-            "configuration": replace_dict_keys(".", "/", self.configuration)
+            "configuration": generic.dot_escape(self.configuration)
         }
 
     def make_api_specific_fields(self):
@@ -91,20 +90,3 @@ class PlaybookConfigurationModel(generic.Model):
             "playbook": self.playbook,
             "configuration": self.configuration
         }
-
-
-def replace_dict_keys(src, dst, obj):
-    """Mongo does not allow dots in keys."""
-
-    if isinstance(obj, dict):
-        newdict = {}
-        for key, value in obj.items():
-            if isinstance(key, str):
-                key = key.replace(src, dst)
-            newdict[key] = replace_dict_keys(src, dst, value)
-        return newdict
-
-    elif isinstance(obj, (list, tuple, set)):
-        return obj.__class__(replace_dict_keys(src, dst, item) for item in obj)
-
-    return obj
