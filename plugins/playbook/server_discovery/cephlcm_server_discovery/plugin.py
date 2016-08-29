@@ -16,6 +16,7 @@ except ImportError:
 
 from cephlcm.common import log
 from cephlcm.common import playbook_plugin
+from cephlcm.common import retryutils
 from cephlcm.common.models import server
 
 
@@ -100,9 +101,10 @@ class ServerDiscovery(playbook_plugin.Ansible):
     def create_server(self, task, json_result):
         facts = json_result["ansible_facts"]
         ip_addr = self.get_host_ip(task)
+        create_method = retryutils.mongo_retry()(server.ServerModel.create)
 
         try:
-            server_model = server.ServerModel.create(
+            server_model = create_method(
                 server_id=task.data["id"],
                 name=facts["ansible_nodename"],
                 fqdn=facts["ansible_nodename"],

@@ -81,6 +81,9 @@ ENV_DB_NAME = "CEPHLCM_DB_NAME"
 LOG = logging.getLogger("ansible logger")
 """Logger."""
 
+TIMEOUT = 3 * 1000
+"""Default timeout for MongoDB operations."""
+
 
 class CallbackModule(callback.CallbackBase):
 
@@ -98,7 +101,10 @@ class CallbackModule(callback.CallbackBase):
         self.db_client = pymongo.MongoClient(
             host=os.environ[ENV_DB_HOST],
             port=int(os.environ[ENV_DB_PORT]),
-            connect=False
+            connect=False,
+            socketTimeoutMS=TIMEOUT,
+            connectTimeoutMS=TIMEOUT,
+            waitQueueTimeoutMS=TIMEOUT
         )
         self.db = self.db_client[os.environ[ENV_DB_NAME]]
         self.step_collection = self.db[STEP_COLLECTION_NAME]
