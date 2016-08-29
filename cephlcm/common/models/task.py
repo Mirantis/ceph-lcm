@@ -14,6 +14,7 @@ import pymongo.errors
 from cephlcm.common import config
 from cephlcm.common import exceptions
 from cephlcm.common import log
+from cephlcm.common import retryutils
 from cephlcm.common import timeutils
 from cephlcm.common.models import generic
 from cephlcm.common.models import properties
@@ -170,7 +171,10 @@ class Task(generic.Base):
         setfields["update_marker"] = self.new_update_marker()
         setfields["time.updated"] = timeutils.current_unix_timestamp()
 
-        return self.collection().find_one_and_update(
+        method = self.collection().find_one_and_update
+        method = retryutils.mongo_retry()(method)
+
+        return method(
             query, {"$set": setfields},
             return_document=pymongo.ReturnDocument.AFTER
         )
@@ -231,12 +235,15 @@ class Task(generic.Base):
         state["update_marker"] = self.new_update_marker()
 
         collection = self.collection()
+        insert_method = retryutils.mongo_retry()(collection.insert_one)
+        find_method = retryutils.mongo_retry()(collection.find_one)
+
         try:
-            document = collection.insert_one(state)
+            document = insert_method(state)
         except pymongo.errors.DuplicateKeyError as exc:
             raise exceptions.UniqueConstraintViolationError from exc
 
-        document = collection.find_one({"_id": document.inserted_id})
+        document = find_method({"_id": document.inserted_id})
         self.set_state(document)
 
         return self
@@ -368,9 +375,11 @@ class Task(generic.Base):
         collection = cls.collection()
         stop_condition = stop_condition or threading.Event()
 
+        find_method = retryutils.mongo_retry()(collection.find)
+
         try:
             while not stop_condition.is_set():
-                for document in collection.find(query, sort=sortby):
+                for document in find_method(query, sort=sortby):
                     if stop_condition.is_set():
                         raise StopIteration
                     yield cls.make_task(document)
@@ -404,7 +413,8 @@ class PlaybookPluginTask(Task):
 
     def set_execution_state(self, execution_model, new_state):
         execution_model.state = new_state
-        execution_model.save()
+        save_method = retryutils.mongo_retry()(execution_model.save)
+        save_method()
 
     def unlock_servers(self, execution_model):
         server.ServerModel.unlock_servers(execution_model.servers)

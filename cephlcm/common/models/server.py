@@ -10,6 +10,7 @@ import enum
 import uuid
 
 from cephlcm.common import exceptions
+from cephlcm.common import retryutils
 from cephlcm.common.models import generic
 from cephlcm.common.models import properties
 
@@ -156,7 +157,8 @@ class ServerModel(generic.Model):
 
         server_ids = [srv._id for srv in servers]
         lock = str(uuid.uuid4())
-        result = cls.collection().update_many(
+        update_method = retryutils.mongo_retry()(cls.collection().update_many)
+        result = update_method(
             {"_id": {"$in": server_ids}, "lock": None},
             {"$set": {"lock": lock}}
         )
@@ -164,7 +166,7 @@ class ServerModel(generic.Model):
             return
 
         if result.modified_count:
-            cls.collection().update_many(
+            update_method(
                 {"_id": {"$in": server_ids}, "lock": lock},
                 {"$set": {"lock": None}}
             )
@@ -176,8 +178,9 @@ class ServerModel(generic.Model):
             return
 
         server_ids = [srv._id for srv in servers]
+        update_method = retryutils.mongo_retry()(cls.collection().update_many)
 
-        cls.collection().update_many(
+        update_method(
             {"_id": {"$in": server_ids}, "lock": {"$ne": None}},
             {"$set": {"lock": None}}
         )
