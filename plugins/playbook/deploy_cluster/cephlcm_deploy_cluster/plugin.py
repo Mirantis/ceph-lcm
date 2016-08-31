@@ -2,17 +2,17 @@
 """Playbook plugin to deploy Ceph cluster."""
 
 
-import base64
-import os
 import os.path
 import posixpath
-import struct
-import time
+import shutil
+import tempfile
 
 import netaddr
 
 from cephlcm.common import log
 from cephlcm.common import playbook_plugin
+
+from . import monitor_secret
 
 
 DESCRIPTION = """\
@@ -36,6 +36,17 @@ class DeployCluster(playbook_plugin.Playbook):
 
     PLAYBOOK_FILENAME = os.path.join("playbooks", "site.yml")
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fetchdir = None
+
+    def on_pre_execute(self, task):
+        self.tempdir = tempfile.mkdtemp()
+
+    def on_post_execute(self, task, exc_value, exc_type, exc_tb):
+        shutil.rmtree(self.fetchdir)
+
     def make_playbook_configuration(self, cluster, servers):
         if cluster.configuration.state or cluster.server_list:
             # TODO(Sergey Arkhipov): Raise proper exception here
@@ -45,7 +56,41 @@ class DeployCluster(playbook_plugin.Playbook):
         global_vars = self.make_global_vars(cluster, servers)
         inventory = self.make_inventory(cluster, servers)
 
+        if not monitor_secret.MonitorSecret.find_one(cluster.model_id):
+            monitor_secret.MonitorSecret.upsert(
+                cluster.model_id,
+                monitor_secret.generate_monitor_secret()
+            )
+
         return global_vars, inventory
+
+    def get_dynamic_inventory(self):
+        # we need to inject monitor_secret here to avoid
+        # showing it in interface
+        if not self.playbook_config:
+            # TODO(Sergey Arkhipov): Raise proper exception here
+            raise Exception
+
+        configuration = self.playbook_config.configuration
+        inventory = configuration["inventory"]
+        secret = monitor_secret.MonitorSecret.find_one(
+            configuration["global_vars"]["fsid"]
+        )
+        if not secret:
+            # TODO(Sergey Arkhipov): Raise proper exception here
+            raise Exception
+
+        all_hosts = set()
+        for name, group_vars in inventory.items():
+            if name == "_meta":
+                continue
+            all_hosts.update(group_vars)
+
+        for hostname in all_hosts:
+            dct = inventory["_meta"]["hostvars"].setdefault(hostname, {})
+            dct["monitor_secret"] = secret.value
+
+        return inventory
 
     def make_global_vars(self, cluster, servers):
         result = {
@@ -74,7 +119,6 @@ class DeployCluster(playbook_plugin.Playbook):
     def make_inventory(self, cluster, servers):
         groups = self.get_inventory_groups(servers)
         inventory = {"_meta": {"hostvars": {}}}
-        secret = self.generate_monitor_secret()
 
         for name, group_servers in groups.items():
             inventory[name] = [srv.ip for srv in group_servers]
@@ -83,7 +127,6 @@ class DeployCluster(playbook_plugin.Playbook):
             hostvars["monitor_interface"] = self.get_ifname(srv)
             hostvars["devices"] = self.get_devices(srv)
             hostvars["ansible_user"] = srv.username
-            hostvars["monitor_secret"] = secret
 
         return inventory
 
@@ -136,10 +179,3 @@ class DeployCluster(playbook_plugin.Playbook):
                 devices.append(posixpath.join("/", "dev", name))
 
         return devices
-
-    def generate_monitor_secret(self):
-        key = os.urandom(16)
-        header = struct.pack("<hiih", 1, int(time.time()), 0, len(key))
-        secret = base64.b64encode(header + key)
-
-        return secret
