@@ -12,6 +12,7 @@ import netaddr
 from cephlcm.common import log
 from cephlcm.common import playbook_plugin
 
+from . import exceptions
 from . import monitor_secret
 
 
@@ -49,9 +50,7 @@ class DeployCluster(playbook_plugin.Playbook):
 
     def make_playbook_configuration(self, cluster, servers):
         if cluster.configuration.state or cluster.server_list:
-            # TODO(Sergey Arkhipov): Raise proper exception here
-            # We deploy only empty cluster without configuration.
-            raise Exception
+            raise exceptions.EmptyServerList(cluster.model_id)
 
         global_vars = self.make_global_vars(cluster, servers)
         inventory = self.make_inventory(cluster, servers)
@@ -74,8 +73,7 @@ class DeployCluster(playbook_plugin.Playbook):
         # we need to inject monitor_secret here to avoid
         # showing it in interface
         if not self.playbook_config:
-            # TODO(Sergey Arkhipov): Raise proper exception here
-            raise Exception
+            raise exceptions.UnknownPlaybookConfiguration()
 
         configuration = self.playbook_config.configuration
         inventory = configuration["inventory"]
@@ -83,8 +81,8 @@ class DeployCluster(playbook_plugin.Playbook):
             configuration["global_vars"]["fsid"]
         )
         if not secret:
-            # TODO(Sergey Arkhipov): Raise proper exception here
-            raise Exception
+            raise exceptions.SecretWasNotFound(
+                configuration["global_vars"]["fsid"])
 
         all_hosts = set()
         for name, group_vars in inventory.items():

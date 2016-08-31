@@ -178,11 +178,9 @@ class Ansible(Base, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def compose_command(self, task):
         if not self.ANSIBLE_CMD:
-            # TODO(Sergey Arkhipov): Proper exception class
-            raise Exception
+            raise RuntimeError("'ansible' cannot be found in PATH")
         if not self.MODULE:
-            # TODO(Sergey Arkhipov): Proper exception class
-            raise Exception
+            raise RuntimeError("No module is defined for execution")
 
         cmdline = [self.ANSIBLE_CMD]
         cmdline.extend(["--inventory-file", DYNAMIC_INVENTORY_PATH])
@@ -223,8 +221,7 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
     def compose_command(self, task):
         if not self.ANSIBLE_CMD:
-            # TODO(Sergey Arkhipov): Raise proper exception
-            raise Exception
+            raise RuntimeError("'ansible-playbook' cannot be found in PATH")
 
         cmdline = [self.ANSIBLE_CMD]
         cmdline.extend(["--inventory-file", DYNAMIC_INVENTORY_PATH])

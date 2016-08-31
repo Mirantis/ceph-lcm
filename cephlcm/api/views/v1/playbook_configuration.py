@@ -172,11 +172,14 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
                 )
             servers = server.ServerModel.find_by_model_id(*suggested_servers)
             if len(servers) != len(set(suggested_servers)):
-                # TODO(Sergey Arkhipov): Raise proper exception here
-                raise Exception
-            if any(srv.time_deleted for srv in servers):
-                # TODO(Sergey Arkhipov): Raise proper exception here
-                raise Exception
+                raise ValueError(
+                    "All suggested servers were not found. "
+                    "Suggested servers were {0}".format(suggested_servers))
+            deleted_servers = [srv for srv in servers if srv.time_deleted]
+            if deleted_servers:
+                raise ValueError(
+                    "Some servers were deleted: {0}".format(
+                        ", ".join(srv.model_id for srv in deleted_servers)))
             return servers
 
         return cluster_model.server_list
