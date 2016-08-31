@@ -68,3 +68,4 @@ devenv/galaxy
 devenv/*.retry
 prof/
 test-results.xml
+*.vdi
