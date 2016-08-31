@@ -2,7 +2,12 @@
 """Playbook plugin to deploy Ceph cluster."""
 
 
+import base64
+import os
+import os.path
 import posixpath
+import struct
+import time
 
 import netaddr
 
@@ -29,6 +34,8 @@ class DeployCluster(playbook_plugin.Playbook):
     PUBLIC = True
     REQUIRED_SERVER_LIST = True
 
+    PLAYBOOK_FILENAME = os.path.join("playbooks", "site.yml")
+
     def make_playbook_configuration(self, cluster, servers):
         if cluster.configuration.state or cluster.server_list:
             # TODO(Sergey Arkhipov): Raise proper exception here
@@ -42,26 +49,32 @@ class DeployCluster(playbook_plugin.Playbook):
 
     def make_global_vars(self, cluster, servers):
         result = {
-            "ceph_{0}".format(self.config["install_source"]): True,
+            "ceph_{0}".format(self.config["install"]["source"]): True,
             "journal_collocation": self.config["journal"]["collocation"],
             "journal_size": self.config["journal"]["size"],
             "cluster_network": self.config["networks"]["cluster"],
             "public_network": self.config["networks"]["public"],
-            "os_tuning_params": {}
+            "os_tuning_params": [],
+            "fsid": cluster.model_id,
+            "cluster": cluster.model_id
         }
-        if not self.config.get("fsid"):
-            result["generate_fsid"] = True
+        if self.config["install"]["source"] == "stable":
+            result["ceph_stable_release"] = self.config["install"]["release"]
 
         for family, values in self.config["os"].items():
             for param, value in values.items():
-                key = ".".join([family, param])
-                result["os_tuning_params"][key] = value
+                parameter = {
+                    "name": ".".join([family, param]),
+                    "value": value
+                }
+                result["os_tuning_params"].append(parameter)
 
         return result
 
     def make_inventory(self, cluster, servers):
         groups = self.get_inventory_groups(servers)
         inventory = {"_meta": {"hostvars": {}}}
+        secret = self.generate_monitor_secret()
 
         for name, group_servers in groups.items():
             inventory[name] = [srv.ip for srv in group_servers]
@@ -69,6 +82,8 @@ class DeployCluster(playbook_plugin.Playbook):
             hostvars = inventory["_meta"]["hostvars"].setdefault(srv.ip, {})
             hostvars["monitor_interface"] = self.get_ifname(srv)
             hostvars["devices"] = self.get_devices(srv)
+            hostvars["ansible_user"] = srv.username
+            hostvars["monitor_secret"] = secret
 
         return inventory
 
@@ -111,7 +126,20 @@ class DeployCluster(playbook_plugin.Playbook):
                          srv.model_id)
 
     def get_devices(self, srv):
-        devices = sorted(srv.facts["ansible_devices"].keys())
-        devices = [posixpath.join("/", "dev", dev) for dev in devices]
+        mounts = {mount["device"] for mount in srv.facts["ansible_mounts"]}
+        mounts = {posixpath.basename(mount) for mount in mounts}
+
+        devices = []
+        for name, data in srv.facts["ansible_devices"].items():
+            partitions = set(data["partitions"])
+            if not partitions or not (partitions & mounts):
+                devices.append(posixpath.join("/", "dev", name))
 
         return devices
+
+    def generate_monitor_secret(self):
+        key = os.urandom(16)
+        header = struct.pack("<hiih", 1, int(time.time()), 0, len(key))
+        secret = base64.b64encode(header + key)
+
+        return secret

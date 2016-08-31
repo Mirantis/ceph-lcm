@@ -53,27 +53,39 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  config.vm.define "mon", autostart: false do |mon|
-    mon.vm.box = "ubuntu/trusty64"
-    mon.vm.hostname = "ceph-mon"
-    mon.vm.network "private_network", ip: "10.1.0.10"
+  ["mon", "osd0", "osd1", "osd2"].each_with_index do |host, idx|
+    config.vm.define "#{host}", autostart: false do |client|
+      client.vm.box = "ubuntu/trusty64"
+      client.vm.hostname = "ceph-#{host}"
+      client.vm.network "private_network", ip: "10.1.0.1#{idx}"
 
-    mon.vm.provider "virtualbox" do |vb|
-      vb.gui = false
-      vb.memory = 1024
-      vb.cpus = 2
-    end
-  end
+      # http://foo-o-rama.com/vagrant--stdin-is-not-a-tty--fix.html
+      client.vm.provision "fix-no-tty", type: "shell" do |s|
+        s.privileged = false
+        s.inline = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
+      end
+      client.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/me.pub"
+      client.vm.provision "shell", inline: "cat ~vagrant/.ssh/me.pub >> ~vagrant/.ssh/authorized_keys"
 
-  config.vm.define "osd", autostart: false do |osd|
-    osd.vm.box = "ubuntu/trusty64"
-    osd.vm.hostname = "ceph-osd"
-    osd.vm.network "private_network", ip: "10.1.0.11"
+      client.vm.provider "virtualbox" do |vb|
+        vb.gui = false
+        vb.memory = 512
+        vb.cpus = 2
 
-    osd.vm.provider "virtualbox" do |vb|
-      vb.gui = false
-      vb.memory = 1024
-      vb.cpus = 2
+        (0..1).each do |d|
+            disk_name = "#{host}-#{idx}-#{d}"
+            vb.customize ["createhd",
+                          "--filename", disk_name,
+                          "--size", "11000"] unless File.exist?("#{disk_name}.vdi")
+            vb.customize ["storageattach", :id,
+                          '--storagectl', "SATAController",
+                          "--port", 3 + d,
+                          "--device", 0,
+                          "--type", "hdd",
+                          "--medium", "#{disk_name}.vdi"]
+        end
+
+      end
     end
   end
 end

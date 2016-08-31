@@ -146,24 +146,25 @@ class CallbackModule(callback.CallbackBase):
 
         playbook = self.playbook.name
         name = result_object._task.name or result_object._task.get_name()
-        time_started = self.task_starts[result_object._task._uuid]
         time_finished = int(time.time())
+        time_started = self.task_starts.get(
+            result_object._task._uuid, time_finished)
         server_id = self.get_server_by_host(result_object._host.get_name())
 
         role = result_object._task._role or ""
         if role:
             role = role.get_name()
 
-        error_message = ""
+        error = {}
         if result_state == EXECUTION_STEP_STATE_ERROR:
-            error_message = self._dump_results(result_object)
+            error = result_object._result
 
         self.create(
             playbook,
             role,
             name,
             result_state,
-            error_message,
+            error,
             server_id,
             time_started,
             time_finished)
@@ -187,7 +188,7 @@ class CallbackModule(callback.CallbackBase):
 
         return self.server_ids[hostname]
 
-    def create(self, playbook, role, name, result, error_message, server_id,
+    def create(self, playbook, role, name, result, error, server_id,
                time_started, time_finished):
         """Creates execution step information in MongoDB."""
 
@@ -198,7 +199,7 @@ class CallbackModule(callback.CallbackBase):
         document["role"] = role
         document["name"] = name
         document["result"] = result
-        document["error_message"] = error_message
+        document["error"] = error
         document["server_id"] = server_id
         document["time_started"] = time_started
         document["time_finished"] = time_finished

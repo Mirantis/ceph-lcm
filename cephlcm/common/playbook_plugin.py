@@ -187,7 +187,8 @@ class Ansible(Base, metaclass=abc.ABCMeta):
 
         extra = self.get_extra_vars(task)
         if extra:
-            cmdline.extend(["--extra-vars", json.dumps(extra)])
+            extra = json.dumps(extra, separators=(",", ":"))
+            cmdline.extend(["--extra-vars", extra])
 
         return cmdline
 
@@ -227,7 +228,8 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
         extra = self.get_extra_vars(task)
         if extra:
-            cmdline.extend(["--extra-vars", json.dumps(extra)])
+            extra = json.dumps(extra, separators=(",", ":"))
+            cmdline.extend(["--extra-vars", extra])
 
         cmdline.append(self.get_filename(self.PLAYBOOK_FILENAME))
 

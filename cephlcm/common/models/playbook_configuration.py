@@ -51,7 +51,7 @@ class PlaybookConfigurationModel(generic.Model):
     @property
     def servers(self):
         ips = set()
-        config = copy.deepcopy(self.configuration)
+        config = copy.deepcopy(self.configuration.get("inventory", {}))
 
         config.pop("_meta", None)
         for group in config.values():

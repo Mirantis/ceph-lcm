@@ -1,6 +1,9 @@
-install_source = "stable"
 pool_default_size = 2
 rest_api = true
+
+[install]
+source = "stable"
+release = "jewel"
 
 [journal]
 collocation = true

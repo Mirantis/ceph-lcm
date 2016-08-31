@@ -73,11 +73,10 @@ class RoleView(generic.VersionedCRUDView):
     @validators.require_schema(MODEL_SCHEMA)
     @validators.no_updates_on_default_fields
     def put(self, item_id, item):
-        for key, value in self.request_json["data"].items():
-            setattr(item, key, value)
-        item.initiator_id = self.initiator_id
-
         try:
+            for key, value in self.request_json["data"].items():
+                setattr(item, key, value)
+            item.initiator_id = self.initiator_id
             item.save()
         except base_exceptions.CannotUpdateDeletedModel as exc:
             LOG.warning(
