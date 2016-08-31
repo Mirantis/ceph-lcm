@@ -25,10 +25,10 @@ def test_playbook_list(sudo_client_v1):
     assert response.status_code == 200
     for plugin in list_of_plugins:
         for data in response.json["playbooks"]:
-            if plugin.NAME == data["name"]:
+            if plugin.name == data["name"]:
                 assert plugin.DESCRIPTION == data["description"]
                 assert plugin.REQUIRED_SERVER_LIST == \
                     data["required_server_list"]
                 break
         else:
-            pytest.fail("Cannot find plugin {0}".format(plugin.NAME))
+            pytest.fail("Cannot find plugin {0}".format(plugin.name))

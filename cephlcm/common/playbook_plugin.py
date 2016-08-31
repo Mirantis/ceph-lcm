@@ -69,19 +69,19 @@ class Base(metaclass=abc.ABCMeta):
         return self.get_task(self.env_task_id)
 
     def __init__(self, entry_point, module_name):
-        self.NAME = self.NAME or entry_point
-        self.PLAYBOOK_FILENAME = self.PLAYBOOK_FILENAME or "playbook.yaml"
-        self.CONFIG_FILENAME = self.CONFIG_FILENAME or "config.toml"
+        self.name = self.NAME or entry_point
+        self.playbook_filename = self.PLAYBOOK_FILENAME or "playbook.yaml"
+        self.config_filename = self.CONFIG_FILENAME or "config.toml"
 
         self.module_name = module_name
         self.entry_point = entry_point
-        self.config = self.load_config(self.CONFIG_FILENAME)
+        self.config = self.load_config(self.config_filename)
 
     def get_filename(self, filename):
         return pkg_resources.resource_filename(self.module_name, filename)
 
     def load_config(self, config):
-        return toml.load(self.get_filename(config or self.CONFIG_FILENAME))
+        return toml.load(self.get_filename(config or self.config_filename))
 
     @functools.lru_cache()
     def get_task(self, task_id):
@@ -231,7 +231,7 @@ class Playbook(Base, metaclass=abc.ABCMeta):
             extra = json.dumps(extra, separators=(",", ":"))
             cmdline.extend(["--extra-vars", extra])
 
-        cmdline.append(self.get_filename(self.PLAYBOOK_FILENAME))
+        cmdline.append(self.get_filename(self.playbook_filename))
 
         return cmdline
 

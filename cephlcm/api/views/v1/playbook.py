@@ -34,7 +34,7 @@ class PlaybookView(generic.ModelView):
 
         for plugin in plugins.get_public_playbook_plugins().values():
             plugin_data = {
-                "name": plugin.NAME,
+                "name": plugin.name,
                 "id": plugin.entry_point,
                 "description": plugin.DESCRIPTION,
                 "required_server_list": bool(plugin.REQUIRED_SERVER_LIST)
