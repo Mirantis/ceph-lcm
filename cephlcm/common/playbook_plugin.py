@@ -103,23 +103,26 @@ class Base(metaclass=abc.ABCMeta):
 
     @contextlib.contextmanager
     def execute(self, task):
-        LOG.info("Execute pre-run step for %s", self.entry_point)
-        self.on_pre_execute(task)
-        LOG.info("Finish execution of pre-run step for %s", self.entry_point)
-
-        commandline = self.compose_command(task)
-        env = self.get_environment_variables(task)
-
-        LOG.info("Execute %s for %s",
-                 subprocess.list2cmdline(commandline), self.entry_point)
-        LOG.debug("Commandline: \"%s\"",
-                  self.make_copypaste_commandline(commandline, env))
-
-        all_env = copy.deepcopy(os.environ)
-        all_env.update(env)
         process = None
+
         try:
+            LOG.info("Execute pre-run step for %s", self.entry_point)
+            self.on_pre_execute(task)
+            LOG.info("Finish execution of pre-run step for %s",
+                     self.entry_point)
+
+            commandline = self.compose_command(task)
+            env = self.get_environment_variables(task)
+
+            LOG.info("Execute %s for %s",
+                     subprocess.list2cmdline(commandline), self.entry_point)
+            LOG.debug("Commandline: \"%s\"",
+                      self.make_copypaste_commandline(commandline, env))
+
+            all_env = copy.deepcopy(os.environ)
+            all_env.update(env)
             process = self.run(commandline, all_env)
+
             yield process
         finally:
             if process:
@@ -129,6 +132,7 @@ class Base(metaclass=abc.ABCMeta):
                 if self.PROCESS_STDERR is subprocess.PIPE:
                     LOG.debug("STDERR of %d: %s",
                               process.pid, process.stderr.read())
+
             LOG.info("Execute post-run step for %s", self.entry_point)
             self.on_post_execute(task, *sys.exc_info())
             LOG.info("Finish execution of post-run step for %s",
@@ -174,11 +178,9 @@ class Ansible(Base, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def compose_command(self, task):
         if not self.ANSIBLE_CMD:
-            # TODO(Sergey Arkhipov): Proper exception class
-            raise Exception
+            raise RuntimeError("'ansible' cannot be found in PATH")
         if not self.MODULE:
-            # TODO(Sergey Arkhipov): Proper exception class
-            raise Exception
+            raise RuntimeError("No module is defined for execution")
 
         cmdline = [self.ANSIBLE_CMD]
         cmdline.extend(["--inventory-file", DYNAMIC_INVENTORY_PATH])
@@ -186,7 +188,8 @@ class Ansible(Base, metaclass=abc.ABCMeta):
 
         extra = self.get_extra_vars(task)
         if extra:
-            cmdline.extend(["--extra-vars", json.dumps(extra)])
+            extra = json.dumps(extra, separators=(",", ":"))
+            cmdline.extend(["--extra-vars", extra])
 
         return cmdline
 
@@ -218,15 +221,15 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
     def compose_command(self, task):
         if not self.ANSIBLE_CMD:
-            # TODO(Sergey Arkhipov): Raise proper exception
-            raise Exception
+            raise RuntimeError("'ansible-playbook' cannot be found in PATH")
 
         cmdline = [self.ANSIBLE_CMD]
         cmdline.extend(["--inventory-file", DYNAMIC_INVENTORY_PATH])
 
         extra = self.get_extra_vars(task)
         if extra:
-            cmdline.extend(["--extra-vars", json.dumps(extra)])
+            extra = json.dumps(extra, separators=(",", ":"))
+            cmdline.extend(["--extra-vars", extra])
 
         cmdline.append(self.get_filename(self.PLAYBOOK_FILENAME))
 
@@ -242,8 +245,8 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
         return config
 
-    def build_playbook_configuration(self, servers):
-        extra, inventory = self.make_playbook_configuration(servers)
+    def build_playbook_configuration(self, cluster, servers):
+        extra, inventory = self.make_playbook_configuration(cluster, servers)
 
         return {
             "global_vars": extra,

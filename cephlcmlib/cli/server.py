@@ -50,7 +50,7 @@ def get_version(server_id, version, client):
 
 
 @click.argument("username")
-@click.argument("host")
+@click.argument("hostname")
 @click.argument("server-id")
 @decorators.command(server)
 def create(server_id, hostname, username, client):

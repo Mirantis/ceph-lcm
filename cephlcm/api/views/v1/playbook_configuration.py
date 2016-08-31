@@ -10,6 +10,7 @@ from cephlcm.common import exceptions as base_exceptions
 from cephlcm.common import log
 from cephlcm.common import plugins
 from cephlcm.common.models import cluster
+from cephlcm.common.models import server
 from cephlcm.common.models import playbook_configuration
 
 
@@ -125,7 +126,7 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
             pcmodel = playbook_configuration.PlaybookConfigurationModel.create(
                 name=self.request_json["name"],
                 playbook=self.request_json["playbook"],
-                cluster=self.request_json["cluster_id"],
+                cluster=cluster_model,
                 servers=servers_for_playbook,
                 initiator_id=self.initiator_id
             )
@@ -169,7 +170,17 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
                 raise http_exceptions.ServerListIsRequiredForPlaybookError(
                     playbook_name
                 )
-            return suggested_servers
+            servers = server.ServerModel.find_by_model_id(*suggested_servers)
+            if len(servers) != len(set(suggested_servers)):
+                raise ValueError(
+                    "All suggested servers were not found. "
+                    "Suggested servers were {0}".format(suggested_servers))
+            deleted_servers = [srv for srv in servers if srv.time_deleted]
+            if deleted_servers:
+                raise ValueError(
+                    "Some servers were deleted: {0}".format(
+                        ", ".join(srv.model_id for srv in deleted_servers)))
+            return servers
 
         return cluster_model.server_list
 

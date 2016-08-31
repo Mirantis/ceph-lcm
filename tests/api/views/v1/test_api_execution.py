@@ -50,7 +50,7 @@ def create_execution_step(execution_id, srv, state):
         "role": pytest.faux.gen_alpha(),
         "name": pytest.faux.gen_alpha(),
         "result": state.value,
-        "error_message": "",
+        "error": {},
         "server_id": srv.model_id,
         "time_started": pytest.faux.gen_integer(1, 100),
         "time_finished": pytest.faux.gen_integer(101)

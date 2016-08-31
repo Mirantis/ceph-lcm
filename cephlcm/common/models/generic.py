@@ -29,6 +29,7 @@ information as well.
 
 import abc
 import copy
+import functools
 import uuid
 
 import bson.objectid
@@ -69,6 +70,9 @@ Basically, it is JSON boilerplate.
 
 SORT_ASC = pymongo.ASCENDING
 SORT_DESC = pymongo.DESCENDING
+
+DOT_ESCAPE = "❤"
+"""Heart is the new dot."""
 
 LOG = log.getLogger(__name__)
 """Logger."""
@@ -111,21 +115,27 @@ class Model(Base, metaclass=abc.ABCMeta):
     DEFAULT_SORT_BY = [("id", SORT_ASC)]
 
     @classmethod
-    def find_by_model_id(cls, item_id):
+    def find_by_model_id(cls, *item_id):
         """Returns a latest not deleted model version for the model."""
 
         if not item_id:
             return None
 
-        query = {"model_id": item_id, "is_latest": True}
-        document = cls.collection().find_one(query)
-        if not document:
+        query = {"model_id": {"$in": item_id}, "is_latest": True}
+        documents = cls.collection().find(query)
+        if not documents.count():
             return None
 
-        model = cls()
-        model.update_from_db_document(document)
+        models = []
+        for document in documents:
+            model = cls()
+            model.update_from_db_document(document)
+            models.append(model)
 
-        return model
+        if len(item_id) == 1:
+            return models[0]
+
+        return models
 
     @classmethod
     def find_by_id(cls, item_id):
@@ -365,3 +375,22 @@ def ensure_indexes(root=Base):
     for mdl in root.__subclasses__():
         mdl.ensure_index()
         ensure_indexes(mdl)
+
+
+def dict_escape(from_, to_, data):
+    if hasattr(data, "items"):  # dict
+        new_dict = {}
+        for key, value in data.items():
+            if isinstance(key, str) and from_ in key:
+                key = key.replace(from_, to_)
+            new_dict[key] = dict_escape(from_, to_, value)
+        return new_dict
+
+    if isinstance(data, (list, tuple, set)):
+        return data.__class__(dict_escape(from_, to_, item) for item in data)
+
+    return data
+
+
+dot_escape = functools.partial(dict_escape, ".", DOT_ESCAPE)
+dot_unescape = functools.partial(dict_escape, DOT_ESCAPE, ".")

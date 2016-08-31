@@ -37,6 +37,7 @@ def exit_on_error(func):
         try:
             return func(*args, **kwargs)
         except Exception as exc:
+            LOG.exception("Cannot create dynamic inventory: %s", exc)
             sys.exit(str(exc))
 
     return decorator

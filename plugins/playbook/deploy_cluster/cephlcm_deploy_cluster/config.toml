@@ -1,0 +1,17 @@
+rest_api = true
+max_open_files = 131072
+copy_admin_key = false
+
+[install]
+source = "stable"
+release = "jewel"
+
+[journal]
+collocation = true
+size = 100
+
+[os.kernel]
+pid_max = 4194303
+
+[os.fs]
+file-max = 26234859

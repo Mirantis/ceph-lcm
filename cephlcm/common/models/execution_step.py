@@ -35,8 +35,8 @@ class ExecutionStep(generic.Base):
     MODEL_NAME = execution_step.COLLECTION_NAME
     COLLECTION_NAME = execution_step.COLLECTION_NAME
     DEFAULT_SORT_BY = [
-        ("time_started", generic.SORT_DESC),
-        ("time_finished", generic.SORT_DESC)
+        ("time_finished", generic.SORT_DESC),
+        ("time_started", generic.SORT_DESC)
     ]
 
     def __init__(self):
@@ -45,7 +45,7 @@ class ExecutionStep(generic.Base):
         self.role = ""
         self.name = ""
         self.result = ExecutionStepState.unknown
-        self.error_message = ""
+        self.error = {}
         self.server_id = ""
         self.time_started = 0
         self.time_finished = 0
@@ -60,7 +60,7 @@ class ExecutionStep(generic.Base):
         self.role = value["role"]
         self.name = value["name"]
         self.result = ExecutionStepState(value["result"])
-        self.error_message = value["error_message"]
+        self.error = value["error"]
         self.server_id = value["server_id"]
         self.time_started = value["time_started"]
         self.time_finished = value["time_finished"]
@@ -77,7 +77,8 @@ class ExecutionStep(generic.Base):
                 "execution_id": self.execution_id,
                 "role": self.role,
                 "name": self.name,
-                "error_message": self.error_message,
+                "error": self.error,
+                "server_id": self.server_id,
                 "time_started": self.time_started,
                 "time_finished": self.time_finished,
                 "result": self.result.name
@@ -119,8 +120,8 @@ class ExecutionStep(generic.Base):
         collection.create_index(
             [
                 ("execution_id", generic.SORT_ASC),
-                ("time_started", generic.SORT_DESC),
-                ("time_finished", generic.SORT_DESC)
+                ("time_finished", generic.SORT_DESC),
+                ("time_started", generic.SORT_DESC)
             ],
             name="index_for_listing"
         )

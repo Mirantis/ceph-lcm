@@ -106,8 +106,8 @@ class TaskPool:
              )
 
             if process.returncode != os.EX_OK:
-                # TODO(Sergey Arkhipov): Raise proper exception here
-                raise Exception
+                raise ChildProcessError(
+                    "Process exit with code {0}".format(process.returncode))
 
     def stop(self):
         self.global_stop_event.set()

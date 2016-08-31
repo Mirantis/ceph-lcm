@@ -24,8 +24,11 @@ def main_thread(configure_model):
 @pytest.fixture
 def configured_new_pcmodel(new_pcmodel, new_servers):
     new_pcmodel.configuration = {
-        "servers": [srv.ip for srv in new_servers],
-        "_meta": {"hostvars": {}}
+        "global_vars": {},
+        "inventory": {
+            "servers": [srv.ip for srv in new_servers],
+            "_meta": {"hostvars": {}}
+        }
     }
     new_pcmodel.save()
 

@@ -54,7 +54,7 @@ def get_version(execution_id, version, client):
 def create(playbook_configuration_id, playbook_configuration_version, client):
     """Create execution."""
 
-    return client.create_execution(playbook_configuration_id,
+    return client.create_execution(str(playbook_configuration_id),
                                    playbook_configuration_version)
 
 
@@ -74,4 +74,4 @@ def cancel(execution_id, client):
 def steps(execution_id, query_params, client):
     """Get execution steps for a certain execution."""
 
-    return client.get_execution_steps(execution_id, query_params)
+    return client.get_execution_steps(execution_id, **query_params)

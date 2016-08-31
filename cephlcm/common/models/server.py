@@ -245,7 +245,7 @@ class ServerModel(generic.Model):
         self.state = ServerState[structure["state"]]
         self.initiator_id = structure["initiator_id"]
         self.cluster = structure["cluster_id"]
-        self.facts = structure["facts"]
+        self.facts = generic.dot_unescape(structure["facts"])
         self.lock = structure["lock"]
 
     def delete(self):
@@ -265,7 +265,7 @@ class ServerModel(generic.Model):
             "state": self.state.name,
             "initiator_id": self.initiator_id,
             "cluster_id": self.cluster_id,
-            "facts": self.facts,
+            "facts": generic.dot_escape(self.facts),
             "lock": self.lock
         }
 

@@ -349,8 +349,8 @@ class V1Client(Client):
             "/v1/playbook_configuration/{0}/".format(model_data["id"]))
         return self._session.put(url, json=model_data, **kwargs)
 
-    def delete_playbook_confuiguration(self, playbook_configuration_id,
-                                       **kwargs):
+    def delete_playbook_configuration(self, playbook_configuration_id,
+                                      **kwargs):
         url = self._make_url(
             "/v1/playbook_configuration/{0}/".format(playbook_configuration_id)
         )

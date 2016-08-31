@@ -53,8 +53,7 @@ class ServerDiscovery(playbook_plugin.Ansible):
 
     def get_dynamic_inventory(self):
         if not self.task:
-            # TODO(Sergey Arkhipov): Raise proper exception here
-            raise Exception
+            raise RuntimeError("No task is defined for inventory.")
 
         return {
             "new": {
@@ -89,8 +88,9 @@ class ServerDiscovery(playbook_plugin.Ansible):
             filenames = [os.path.join(self.tempdir, name)
                          for name in os.listdir(self.tempdir)]
             if len(filenames) != 1:
-                # TODO(Sergey Arkhipov): Put proper exception here
-                raise Exception
+                raise RuntimeError(
+                    "One file has to be present in temporary directory. "
+                    "Found: {0!r}".format(filenames))
             filename = filenames[0]
 
             with open(filename, "r") as filefp:
