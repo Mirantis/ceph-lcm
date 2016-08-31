@@ -35,7 +35,7 @@ class DeployCluster(playbook_plugin.Playbook):
     PUBLIC = True
     REQUIRED_SERVER_LIST = True
 
-    PLAYBOOK_FILENAME = os.path.join("playbooks", "site.yml")
+    PLAYBOOK_FILENAME = os.path.join("playbooks", "site.yml.sample")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
