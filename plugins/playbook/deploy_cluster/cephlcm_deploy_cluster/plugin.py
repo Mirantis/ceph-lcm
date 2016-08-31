@@ -97,14 +97,18 @@ class DeployCluster(playbook_plugin.Playbook):
             "ceph_{0}".format(self.config["install"]["source"]): True,
             "journal_collocation": self.config["journal"]["collocation"],
             "journal_size": self.config["journal"]["size"],
-            "cluster_network": self.config["networks"]["cluster"],
-            "public_network": self.config["networks"]["public"],
             "os_tuning_params": [],
             "fsid": cluster.model_id,
-            "cluster": cluster.model_id
+            "cluster": cluster.model_id,
+            "fetch_directory": self.fetchdir,
+            "max_open_files": self.config["max_open_files"],
+            "copy_admin_key": self.config["copy_admin_key"]
         }
         if self.config["install"]["source"] == "stable":
             result["ceph_stable_release"] = self.config["install"]["release"]
+
+        result["public_network"] = str(get_public_network(servers))
+        result["cluster_network"] = str(get_cluster_network(servers))
 
         for family, values in self.config["os"].items():
             for param, value in values.items():
@@ -124,7 +128,7 @@ class DeployCluster(playbook_plugin.Playbook):
             inventory[name] = [srv.ip for srv in group_servers]
         for srv in servers:
             hostvars = inventory["_meta"]["hostvars"].setdefault(srv.ip, {})
-            hostvars["monitor_interface"] = self.get_ifname(srv)
+            hostvars["monitor_interface"] = self.get_ifname(servers, srv)
             hostvars["devices"] = self.get_devices(srv)
             hostvars["ansible_user"] = srv.username
 
@@ -149,21 +153,14 @@ class DeployCluster(playbook_plugin.Playbook):
 
         return result
 
-    def get_ifname(self, srv):
-        cluster_network = netaddr.IPNetwork(self.config["networks"]["cluster"])
+    def get_ifname(self, servers, srv):
+        cluster_network = get_cluster_network(servers)
 
         for name in srv.facts["ansible_interfaces"]:
             interface = srv.facts["ansible_{0}".format(name)]
-            addr = interface.get("ipv4", {}).get("address")
-            if not addr:
-                continue
-            try:
-                addr = netaddr.IPAddress(addr)
-            except Exception as exc:
-                LOG.warning("Cannot convert %s to ip address: %s", addr, exc)
-            else:
-                if addr in cluster_network:
-                    return interface["device"]
+            addr = interface["ipv4"]["address"]
+            if addr in cluster_network:
+                return interface["device"]
 
         raise ValueError("Cannot find suitable interface for server %s",
                          srv.model_id)
@@ -179,3 +176,63 @@ class DeployCluster(playbook_plugin.Playbook):
                 devices.append(posixpath.join("/", "dev", name))
 
         return devices
+
+
+def get_public_network(servers):
+    networks = [get_networks(srv)[srv.ip] for srv in servers]
+    if not networks:
+        raise ValueError(
+            "List of servers should contain at lease 1 element.")
+    if len(networks) == 1:
+        return networks[0]
+
+    return netaddr.spanning_cidr(networks)
+
+
+def get_cluster_network(servers):
+    networks = {}
+
+    for srv in servers:
+        networks[srv.ip] = get_networks(srv)
+        networks[srv.ip].pop(srv.ip, None)
+
+    first_network = networks.pop(servers[0].ip)
+    if not first_network:
+        return get_public_network(servers)
+
+    _, first_network = first_network.popitem()
+    other_similar_networks = []
+
+    for other_networks in networks.values():
+        for ip_addr, other_network in other_networks.items():
+            if ip_addr in first_network:
+                other_similar_networks.append(other_network)
+                break
+        else:
+            return get_public_network(servers)
+
+    other_similar_networks.append(first_network)
+    if len(other_similar_networks) == 1:
+        return first_network
+
+    return netaddr.spanning_cidr(other_similar_networks)
+
+
+def get_networks(srv):
+    networks = {}
+
+    for ifname in srv.facts["ansible_interfaces"]:
+        interface = srv.facts.get("ansible_{0}".format(ifname))
+
+        if not interface:
+            continue
+        if not interface["active"] or interface["type"] == "loopback":
+            continue
+
+        network = "{0}/{1}".format(
+            interface["ipv4"]["network"],
+            interface["ipv4"]["netmask"]
+        )
+        networks[interface["ipv4"]["address"]] = netaddr.IPNetwork(network)
+
+    return networks
