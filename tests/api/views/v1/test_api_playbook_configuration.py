@@ -100,6 +100,7 @@ def test_get_playbook_configuration(
     assert response_model["id"] == pcmodel.model_id
     assert response_model["time_updated"] == int(freeze_time.return_value)
     assert response_model["time_deleted"] == 0
+    assert response_model["data"]["cluster_id"] == new_cluster.model_id
     assert response_model["version"] == 3
 
     response = sudo_client_v1.get(

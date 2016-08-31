@@ -45,12 +45,27 @@ class DeployCluster(playbook_plugin.Playbook):
     def on_pre_execute(self, task):
         self.fetchdir = tempfile.mkdtemp()
 
+        playbook_config = self.get_playbook_configuration(task)
+        config = playbook_config.configuration["inventory"]
+        cluster = playbook_config.cluster
+        servers = playbook_config.servers
+        servers = {srv.ip: srv for srv in servers}
+
+        for name, group_vars in config.items():
+            if name == "_meta" or not group_vars:
+                continue
+            group_servers = [servers[ip] for ip in group_vars]
+            cluster.add_servers(group_servers, name)
+
+        if cluster.configuration.changed:
+            cluster.save()
+
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
         shutil.rmtree(self.fetchdir)
 
     def make_playbook_configuration(self, cluster, servers):
         if cluster.configuration.state or cluster.server_list:
-            raise exceptions.EmptyServerList(cluster.model_id)
+            raise exceptions.NotEmptyServerList(cluster.model_id)
 
         global_vars = self.make_global_vars(cluster, servers)
         inventory = self.make_inventory(cluster, servers)

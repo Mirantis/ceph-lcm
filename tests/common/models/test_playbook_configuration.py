@@ -31,12 +31,14 @@ def test_create(new_cluster, new_servers, public_playbook_name,
     assert pcmodel.time_created == db_pc["time_created"]
     assert pcmodel.time_deleted == db_pc["time_deleted"]
     assert pcmodel.initiator_id == db_pc["initiator_id"]
+    assert pcmodel.cluster_id == db_pc["cluster_id"]
 
     assert pcmodel.name == name
     assert pcmodel.playbook == public_playbook_name
     assert pcmodel.version == 1
     assert pcmodel.time_created == int(freeze_time.return_value)
     assert pcmodel.time_deleted == 0
+    assert pcmodel.cluster_id == new_cluster.model_id
 
 
 def test_update(new_cluster, new_servers, public_playbook_name,

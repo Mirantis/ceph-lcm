@@ -30,6 +30,7 @@ class PlaybookConfigurationModel(generic.Model):
 
         self.name = None
         self._playbook = None
+        self.cluster = None
         self.configuration = {}
 
     playbook = properties.ChoicesProperty(
@@ -37,11 +38,17 @@ class PlaybookConfigurationModel(generic.Model):
         plugins.get_public_playbook_plugins
     )
 
+    cluster = properties.ModelProperty(
+        "cephlcm.common.models.cluster.ClusterModel",
+        "cluster_id"
+    )
+
     @classmethod
     def create(cls, name, playbook, cluster, servers, initiator_id=None):
         model = cls()
         model.name = name
         model.playbook = playbook
+        model.cluster = cluster
         model.configuration = model.make_configuration(cluster, servers)
         model.initiator_id = initiator_id
         model.save()
@@ -75,12 +82,14 @@ class PlaybookConfigurationModel(generic.Model):
         self.name = structure["name"]
         self.playbook = structure["playbook"]
         self.configuration = generic.dot_unescape(structure["configuration"])
+        self.cluster = structure["cluster_id"]
 
     def make_db_document_specific_fields(self):
         return {
             "name": self.name,
             "initiator_id": self.initiator_id,
             "playbook": self.playbook,
+            "cluster_id": self.cluster_id,
             "configuration": generic.dot_escape(self.configuration)
         }
 
@@ -88,5 +97,6 @@ class PlaybookConfigurationModel(generic.Model):
         return {
             "name": self.name,
             "playbook": self.playbook,
+            "cluster_id": self.cluster_id,
             "configuration": self.configuration
         }

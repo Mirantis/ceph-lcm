@@ -50,7 +50,7 @@ class TaskPool:
                     tsk.cancel()
                 elif result.exception():
                     exc = result.exception()
-                    LOG.info("Fail task %s: %s", tsk, exc)
+                    LOG.exception("Fail task %s: %s", tsk, exc)
                     tsk.fail(str(exc))
                 else:
                     LOG.info("Complete task %s", tsk)

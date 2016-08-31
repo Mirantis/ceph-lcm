@@ -41,6 +41,7 @@ def test_create(pymongo_connection, configure_model, freeze_time):
     assert clstr.time_deleted == db_clstr["time_deleted"]
     assert clstr.initiator_id == db_clstr["initiator_id"]
     assert clstr.name == db_clstr["name"]
+    assert clstr.name == db_clstr["name"]
 
     assert clstr.time_created == int(freeze_time.return_value)
     assert clstr.time_deleted == 0

@@ -17,6 +17,7 @@ from cephlcm.common.models import playbook_configuration
 DATA_SCHEMA = {
     "name": {"$ref": "#/definitions/non_empty_string"},
     "playbook": {"$ref": "#/definitions/non_empty_string"},
+    "cluster_id": {"$ref": "#/definitions/uuid4"},
     "configuration": {"type": "object"}
 }
 """Data schema for the model."""

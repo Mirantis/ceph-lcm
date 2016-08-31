@@ -27,9 +27,8 @@ class UnknownPlaybookConfiguration(ClusterDeployError):
         )
 
 
-class EmptyServerList(ClusterDeployError):
-    """Exception raised if no servers to use."""
+class NotEmptyServerList(ClusterDeployError):
+    """Exception raised if cluster is not empty."""
 
     def __init__(self, cluster_id):
-        super().__init__(
-            "There is no servers for cluster {0}".format(cluster_id))
+        super().__init__("Cluster {0} already has servers".format(cluster_id))
