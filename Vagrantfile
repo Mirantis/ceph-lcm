@@ -9,25 +9,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box_check_update = false
   config.ssh.forward_agent   = true
 
-  if Vagrant.has_plugin?("vagrant-cachier")
-    config.cache.scope = :box
-
-    config.cache.enable :apt
-    config.cache.enable :apt_lists
-    config.cache.enable :bower
-    config.cache.enable :npm
-    config.cache.enable :generic, {
-      "pip" => { :cache_dir => ".cache/pip" },
-      "ccache" => { :cache_dir => ".ccache"  }
-    }
-    config.cache.synced_folder_opts = {
-      type: :nfs, mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
-    }
-  else
-    print "vagrant-cachier plugin has not been found."
-    print "You can install it by `vagrant plugin install vagrant-cachier`"
-  end
-
   config.vm.define "default", primary: true do |devbox|
     devbox.vm.box = "ubuntu/xenial64"
     devbox.vm.hostname = "cephlcm"
@@ -38,6 +19,24 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.gui = false
       vb.memory = 3092
       vb.cpus = 2
+    end
+
+    if Vagrant.has_plugin?("vagrant-cachier")
+      devbox.cache.scope = :box
+      devbox.cache.enable :apt
+      devbox.cache.enable :apt_lists
+      devbox.cache.enable :bower
+      devbox.cache.enable :npm
+      devbox.cache.enable :generic, {
+        "pip" => { :cache_dir => ".cache/pip" },
+        "ccache" => { :cache_dir => ".ccache"  }
+      }
+      devbox.cache.synced_folder_opts = {
+        type: :nfs, mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
+      }
+    else
+      print "vagrant-cachier plugin has not been found."
+      print "You can install it by `vagrant plugin install vagrant-cachier`"
     end
 
     if Vagrant.has_plugin?("vagrant-host-shell")

@@ -103,24 +103,26 @@ class Base(metaclass=abc.ABCMeta):
 
     @contextlib.contextmanager
     def execute(self, task):
-        LOG.info("Execute pre-run step for %s", self.entry_point)
-        self.on_pre_execute(task)
-        LOG.info("Finish execution of pre-run step for %s", self.entry_point)
-
-        commandline = self.compose_command(task)
-        env = self.get_environment_variables(task)
-
-        LOG.info("Execute %s for %s",
-                 subprocess.list2cmdline(commandline), self.entry_point)
-        LOG.debug("Commandline: \"%s\"",
-                  self.make_copypaste_commandline(commandline, env))
-        raise Exception
-
-        all_env = copy.deepcopy(os.environ)
-        all_env.update(env)
         process = None
+
         try:
+            LOG.info("Execute pre-run step for %s", self.entry_point)
+            self.on_pre_execute(task)
+            LOG.info("Finish execution of pre-run step for %s",
+                     self.entry_point)
+
+            commandline = self.compose_command(task)
+            env = self.get_environment_variables(task)
+
+            LOG.info("Execute %s for %s",
+                     subprocess.list2cmdline(commandline), self.entry_point)
+            LOG.debug("Commandline: \"%s\"",
+                      self.make_copypaste_commandline(commandline, env))
+
+            all_env = copy.deepcopy(os.environ)
+            all_env.update(env)
             process = self.run(commandline, all_env)
+
             yield process
         finally:
             if process:
@@ -130,6 +132,7 @@ class Base(metaclass=abc.ABCMeta):
                 if self.PROCESS_STDERR is subprocess.PIPE:
                     LOG.debug("STDERR of %d: %s",
                               process.pid, process.stderr.read())
+
             LOG.info("Execute post-run step for %s", self.entry_point)
             self.on_post_execute(task, *sys.exc_info())
             LOG.info("Finish execution of post-run step for %s",

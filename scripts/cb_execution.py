@@ -26,7 +26,7 @@ STEP_TEMPLATE = {
     "role": "",
     "name": "",
     "result": "",
-    "error_message": "",
+    "error": {},
     "server_id": None,
     "time_started": 0,
     "time_finished": 0
@@ -181,7 +181,7 @@ class CallbackModule(callback.CallbackBase):
             return self.server_ids[hostname]
 
         result = self.server_collection.find_one(
-            {"ip": hostname},
+            {"ip": hostname, "time_deleted": 0, "is_latest": True},
             ["model_id"]
         )
         self.server_ids[hostname] = result["model_id"] if result else None

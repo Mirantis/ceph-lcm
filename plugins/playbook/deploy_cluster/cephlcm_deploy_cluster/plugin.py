@@ -42,7 +42,7 @@ class DeployCluster(playbook_plugin.Playbook):
         self.fetchdir = None
 
     def on_pre_execute(self, task):
-        self.tempdir = tempfile.mkdtemp()
+        self.fetchdir = tempfile.mkdtemp()
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
         shutil.rmtree(self.fetchdir)
@@ -63,6 +63,12 @@ class DeployCluster(playbook_plugin.Playbook):
             )
 
         return global_vars, inventory
+
+    def get_extra_vars(self, task):
+        config = super().get_extra_vars(task)
+        config["fetch_directory"] = self.fetchdir
+
+        return config
 
     def get_dynamic_inventory(self):
         # we need to inject monitor_secret here to avoid
@@ -99,8 +105,7 @@ class DeployCluster(playbook_plugin.Playbook):
             "journal_size": self.config["journal"]["size"],
             "os_tuning_params": [],
             "fsid": cluster.model_id,
-            "cluster": cluster.model_id,
-            "fetch_directory": self.fetchdir,
+            "cluster": cluster.name,
             "max_open_files": self.config["max_open_files"],
             "copy_admin_key": self.config["copy_admin_key"]
         }
@@ -154,12 +159,12 @@ class DeployCluster(playbook_plugin.Playbook):
         return result
 
     def get_ifname(self, servers, srv):
-        cluster_network = get_cluster_network(servers)
+        public_network = get_public_network(servers)
 
         for name in srv.facts["ansible_interfaces"]:
             interface = srv.facts["ansible_{0}".format(name)]
             addr = interface["ipv4"]["address"]
-            if addr in cluster_network:
+            if addr in public_network:
                 return interface["device"]
 
         raise ValueError("Cannot find suitable interface for server %s",

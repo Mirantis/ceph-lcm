@@ -74,4 +74,4 @@ def cancel(execution_id, client):
 def steps(execution_id, query_params, client):
     """Get execution steps for a certain execution."""
 
-    return client.get_execution_steps(execution_id, query_params)
+    return client.get_execution_steps(execution_id, **query_params)
