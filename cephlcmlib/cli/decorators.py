@@ -207,7 +207,7 @@ def model_edit(item_id, fetch_method_name, parse_json=True):
                     model = fetch_function(kwargs[item_id])
                     model = utils.json_dumps(model)
                     model = click.edit(model)
-                if not model:
+                if (model_stdin or model_editor) and not model:
                     return
 
             if model and parse_json and not isinstance(model, dict):

@@ -126,7 +126,9 @@ class DeployCluster(playbook_plugin.Playbook):
             result["ceph_stable_release"] = self.config["install"]["release"]
 
         result["public_network"] = str(get_public_network(servers))
-        result["cluster_network"] = str(get_cluster_network(servers))
+        # FIXME(Sergey Arkhipov): For some reason, Ceph cannot converge
+        # if I set another network.
+        result["cluster_network"] = result["public_network"]
 
         for family, values in self.config["os"].items():
             for param, value in values.items():
