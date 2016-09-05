@@ -1,0 +1,22 @@
+<h3>Playbooks</h3>
+
+<div *ngIf="!playbooks.length" class="no-playbooks">
+  You don't have any playbooks.
+</div>
+
+<table class="playbooks table" *ngIf="playbooks.length">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Servers selection required</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let playbook of playbooks">
+      <td>{{playbook.name}}</td>
+      <td>{{playbook.description|trim_by:100}}</td>
+      <td>{{playbook.required_server_list}}</td>
+    </tr>
+  </tbody>
+</table>

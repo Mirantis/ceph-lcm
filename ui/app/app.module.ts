@@ -10,6 +10,7 @@ import { PageNotFoundComponent }  from './404';
 import { AdminModule }  from './admin/admin.module';
 import { ClustersModule }  from './clusters/clusters.module';
 import { ConfigurationsModule }  from './configurations/configurations.module';
+import { PlaybooksModule }  from './playbooks/playbooks.module';
 
 import { AuthService, LoggedIn}  from './services/auth';
 import { SessionService }  from './services/session';
@@ -30,6 +31,7 @@ import { appRoutingProviders, routing } from './app.routes';
     AdminModule,
     ClustersModule,
     ConfigurationsModule,
+    PlaybooksModule,
     FormsModule,
     BrowserModule
   ],

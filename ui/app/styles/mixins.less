@@ -1,0 +1,80 @@
+// MIXINS
+
+.navigation-animation(@color) {
+  transform: translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  backface-visibility: hidden;
+  position: relative;
+  overflow: hidden;
+  &:before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: 50%;
+    right: 50%;
+    bottom: -4px;
+    background: @color;
+    height: 4px;
+    transition-property: left, right;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out;
+  }
+  &:hover {
+    text-decoration: none;
+    color: @text - 30%;
+    &:before {
+      left: 0;
+      right: 0;
+    }
+  }
+  &:focus {
+    text-decoration: none;
+    &:before {
+      left: 0;
+      right: 0;
+    }
+  }
+}
+
+.button-animation(@color) {
+  display: inline-block;
+  vertical-align: middle;
+  transform: translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  backface-visibility: hidden;
+  position: relative;
+  background: @color;
+  transition-property: color;
+  transition-duration: 0.2s;
+  &:before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: @color - 30%;
+    transform: scale(0);
+    transition-property: transform;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out;
+    border-radius: 4px;
+  }
+  &:hover {
+    background-color: @color;
+    &:before {
+      transform: scale(1);
+    }
+  }
+  &:focus {
+    &:before {
+      transform: scale(1);
+    }
+  }
+  &:active {
+    &:before {
+      transform: scale(1);
+    }
+  }
+}

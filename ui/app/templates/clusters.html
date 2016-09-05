@@ -1,25 +1,102 @@
-<button (click)="editCluster()" class="btn btn-success pull-right">Create Cluster</button>
-
-<h3>Clusters</h3>
+<div class="page-title">
+  <div class="row">
+    <div class="col-xs-9"><h1>Clusters</h1></div>
+    <div class="col-xs-3 main-button">
+      <button type="button" class="btn btn-primary" (click)="editCluster()">Create New Cluster</button>
+    </div>
+  </div>
+</div>
 
 <div *ngIf="!clusters.length" class="no-clusters">
   You don't have any clusters yet. Please create.
 </div>
 
-<table class="clusters table" *ngIf="clusters.length">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Nodes</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let cluster of clusters">
-      <td>{{cluster.data.name}}</td>
-      <td><span class="text-danger">2</span> / 10</td>
-    </tr>
-  </tbody>
-</table>
+<!-- Filters -->
+
+<div class="filters">
+  <div class="row">
+
+    <div class="col-xs-2">
+      <div class="form-group">
+        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Search by Name">
+      </div>
+    </div>
+
+    <div class="col-xs-5"></div>
+
+    <div class="col-xs-5">
+
+      <div class="row">
+
+        <div class="col-xs-6">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="control-label">Group by:</label>
+              <select class="form-control">
+                <option>Playbook</option>
+                <option>Price</option>
+                <option>Money</option>
+                <option>Sex</option>
+                <option>Drugs</option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+        <div class="col-xs-6">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="control-label">Sort by:</label>
+              <select class="form-control">
+                <option>Creation Date</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Filters -->
+
+
+<div class="row">
+  <div class="col-xs-12">
+
+    <div class="table-help">
+      <div class="col-xs-10">Cluster Name</div>
+      <div class="col-xs-1">Error</div>
+      <div class="col-xs-1">Servers</div>
+    </div>
+
+    <div class="box" *ngFor="let cluster of clusters">
+      <div class="col-xs-10 name">
+        <a (click)="editCluster(cluster)">{{cluster.data.name}}<i class="glyphicon edit-icon"></i></a>
+      </div>
+      <div class="col-xs-1 parameter"><span class="text-danger">55</span></div>
+      <div class="col-xs-1 parameter">99900</div>
+    </div>
+
+<!--     <div class="box">
+      <div class="col-xs-10 name">
+        <div class="form-group">
+          <input type="name" class="form-control" placeholder="Cluster Name 2">
+        </div>
+      </div>
+      <div class="col-xs-1 parameter"><span class="text-danger">55</span></div>
+      <div class="col-xs-1 parameter">99900</div>
+    </div>
+ -->
+  </div>
+</div>
+
 
 <modal [title]="newCluster.id ? 'Edit Cluster' : 'Create New Cluster'">
   <div class="modal-body">
@@ -43,7 +120,7 @@
   <div class="modal-footer">
     <button class="btn btn-default" (click)="modal.close()">Cancel</button>
     <button
-      class="btn btn-success"
+      class="btn btn-primary"
       (click)="save()"
       [disabled]="!newClusterForm.form.valid">Save changes</button>
   </div>

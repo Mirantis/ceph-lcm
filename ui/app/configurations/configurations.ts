@@ -17,6 +17,8 @@ export class ConfigurationsComponent {
   clusters: any[] = [];
   playbooks: any[] = [];
   servers: any[] = [];
+  shownConfigurationId: string = null;
+  configurationVersions: Object = {};
   error: any;
 
   constructor(private data: DataService, private modal: Modal) {
@@ -36,5 +38,10 @@ export class ConfigurationsComponent {
     this.data.server().findAll({})
       .then((servers: any) => this.servers = servers.items);
     this.modal.show();
+  }
+
+  showVersions(configuration: any) {
+    this.shownConfigurationId = this.shownConfigurationId === configuration.id ?
+      null : configuration.id;
   }
 }

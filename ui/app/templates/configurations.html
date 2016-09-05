@@ -1,29 +1,137 @@
-<button (click)="editConfiguration()" class="btn btn-success pull-right">Create configuration</button>
-
-<h3>Playbooks Configurations</h3>
+<div class="page-title">
+  <div class="row">
+    <div class="col-xs-9"><h1>Configurations</h1></div>
+    <div class="col-xs-3 main-button">
+      <button type="button" class="btn btn-primary" (click)="editConfiguration()">Create New Configuration
+      </button>
+    </div>
+  </div>
+</div>
 
 <div *ngIf="!configurations.length" class="no-configurations">
   You don't have any configurations yet. Please create.
 </div>
 
-<table class="configurations table" *ngIf="configurations.length">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Playbook</th>
-      <th>Created</th>
-      <th>Last Executed</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let configuration of configurations">
-      <td>{{configuration.data.name}}</td>
-      <td>{{configuration.data.playbook}}</td>
-      <td>Never</td>
-      <td>Never</td>
-    </tr>
-  </tbody>
-</table>
+<!-- Filters -->
+
+<div class="filters">
+  <div class="row">
+
+    <div class="col-xs-2">
+      <div class="form-group">
+        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Search by Name">
+      </div>
+    </div>
+
+    <div class="col-xs-5"></div>
+
+    <div class="col-xs-5">
+
+      <div class="row">
+
+        <div class="col-xs-6">
+          <form class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label">Group by:</label>
+                <select class="form-control">
+                  <option>Playbook</option>
+                  <option>Price</option>
+                  <option>Money</option>
+                  <option>Sex</option>
+                  <option>Drugs</option>
+                </select>
+            </div>
+          </form>
+        </div>
+
+        <div class="col-xs-6">
+          <form class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label">Sort by:</label>
+                <select class="form-control">
+                  <option>Date Creation</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                </select>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Filters -->
+
+
+<div class="configurations row" *ngIf="configurations.length">
+  <div class="col-xs-12">
+
+    <div class="table-help">
+      <div class="col-xs-3">Configuration Name</div>
+      <div class="col-xs-3">Playbook</div>
+      <div class="col-xs-6">Created</div>
+    </div>
+
+    <div
+      class="box"
+      [ngClass]="{open: configuration.id === shownConfigurationId}"
+      *ngFor="let configuration of configurations"
+    >
+      <div class="col-xs-3 name">{{configuration.data.name}}</div>
+      <div class="col-xs-3 parameter">{{configuration.data.playbook}}</div>
+      <div class="col-xs-5 parameter">08/08/2016&nbsp;&nbsp;&nbsp;14:19:49</div>
+      <div class="col-xs-1 action">
+        <div class="box-close">
+          <a (click)="showVersions(configuration)">
+            <i
+              class="glyphicon"
+              [ngClass]="configuration.id === shownConfigurationId ? 'triangle-down-icon' : 'triangle-right-icon'"
+            ></i>
+          </a>
+        </div>
+      </div>
+      <div class="bowels" *ngIf="configuration.id === shownConfigurationId">
+
+        <div class="col-xs-12"><h3>Versions</h3></div>
+
+        <div class="col-xs-12"><div class="line"></div></div>
+
+        <div class="col-xs-3 name">Version 3</div>
+        <div class="col-xs-3 parameter">Playbook 1</div>
+        <div class="col-xs-3 parameter">08/08/2016&nbsp;&nbsp;&nbsp;14:19:49</div>
+        <div class="col-xs-1 parameter"><button type="button" class="btn btn-primary btn-xs">History</button></div>
+        <div class="col-xs-1 parameter"><button type="button" class="btn btn-primary btn-xs">Clone</button></div>
+        <div class="col-xs-1 parameter"><button type="button" class="btn btn-success btn-xs">Execute</button></div>
+
+        <div class="col-xs-12"><div class="line"></div></div>
+
+        <div class="col-xs-3 name">Version 2</div>
+        <div class="col-xs-3 parameter">Playbook 2</div>
+        <div class="col-xs-3 parameter">08/08/2016&nbsp;&nbsp;&nbsp;14:19:49</div>
+        <div class="col-xs-1 parameter"><button type="button" class="btn btn-primary btn-xs">History</button></div>
+        <div class="col-xs-1 parameter"><button type="button" class="btn btn-primary btn-xs">Clone</button></div>
+        <div class="col-xs-1 parameter"><button type="button" class="btn btn-success btn-xs">Execute</button></div>
+
+        <div class="col-xs-12"><div class="line"></div></div>
+
+        <div class="col-xs-3 name">Version 3</div>
+        <div class="col-xs-3 parameter">Playbook 4</div>
+        <div class="col-xs-3 parameter">08/08/2016&nbsp;&nbsp;&nbsp;14:19:49</div>
+        <div class="col-xs-1 parameter"><button type="button" class="btn btn-primary btn-xs">History</button></div>
+        <div class="col-xs-1 parameter"><button type="button" class="btn btn-primary btn-xs">Clone</button></div>
+        <div class="col-xs-1 parameter"><button type="button" class="btn btn-success btn-xs">Execute</button></div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
 
 <modal
   [title]="'New Playbook Configuration'">

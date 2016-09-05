@@ -6,7 +6,8 @@ import { HttpAdapter } from 'js-data-http';
 import { SessionService } from './session';
 
 type supportedMappers = 'auth' | 'user' | 'role' | 'permissions' | 'cluster' |
-  'playbook' | 'playbook_configuration' | 'server';
+  'playbook' | 'playbook_configuration' | 'server' |
+  'playbook_configuration_version';
 
 @Injectable()
 export class DataService {
@@ -27,6 +28,7 @@ export class DataService {
   cluster(): Mapper {return this.getMapper('cluster')}
   playbook(): Mapper {return this.getMapper('playbook')}
   configuration(): Mapper {return this.getMapper('playbook_configuration')}
+  configurationVersion(): Mapper {return this.getMapper('playbook_configuration_version')}
   server(): Mapper {return this.getMapper('server')}
 
   private modelsProperties = {
@@ -46,6 +48,11 @@ export class DataService {
       id: {type: 'string'}
     },
     playbook_configuration: {
+      name: {type: 'string'},
+      playbook: {type: 'string'},
+      configuration: {type: 'object'}
+    },
+    playbook_configuration_version: {
       name: {type: 'string'},
       playbook: {type: 'string'},
       configuration: {type: 'object'}

@@ -1,34 +1,40 @@
-<div class="row">
-  <div class="col-sm-2">
-    <header>
-      <h1>#cephilis</h1>
-      <em>Get yours at Mirantis!</em>
-    </header>
-  </div>
-  <div class="col-sm-10">
-    <navigation *ngIf="auth.isLoggedIn()">
-      <ul class="pull-right">
-        <li> <a [routerLink]="['/clusters']" routerLinkActive="active">Clusters</a>
-        <li> <a [routerLink]="['/configurations']" routerLinkActive="active">
-          Configurations
-        </a>
-        <li> <a [routerLink]="['/playbooks']" routerLinkActive="active">Playbooks</a>
-        <li> <a [routerLink]="['/servers']" routerLinkActive="active">Servers</a>
-        <li> <a [routerLink]="['/executions']" routerLinkActive="active">
-          Executions
-        </a>
-        <li> <a [routerLink]="['/admin']" routerLinkActive="active">
-          Users Management
-        </a>
+<div class="container">
 
-        <li>
-          <a (click)="auth.logout()" class="logoff">
-            <span class="glyphicon glyphicon-off"></span>
-          </a>
-      </ul>
-    </navigation>
+  <div class="header">
+    <div class="header-background"></div>
+    <div class="main">
+      <div class="row">
+        <div class="col-xs-2"><a [routerLink]="['/clusters']" class="logo"></a></div>
+        <ul class="col-xs-8 navigation">
+          <li class="menu-item">
+            <a [routerLink]="['/clusters']" routerLinkActive="active">Clusters</a>
+          </li>
+          <li class="menu-item">
+            <a [routerLink]="['/configurations']" routerLinkActive="active">Configurations</a>
+          </li>
+          <li class="menu-item">
+            <a [routerLink]="['/playbooks']" routerLinkActive="active">Playbooks</a>
+          </li>
+          <li class="menu-item">
+            <a [routerLink]="['/servers']" routerLinkActive="active">Servers</a>
+          </li>
+          <li class="menu-item">
+            <a [routerLink]="['/executions']" routerLinkActive="active">Executions</a>
+          </li>
+          <li class="menu-item">
+            <a [routerLink]="['/admin']" routerLinkActive="active">Users Management</a>
+          </li>
+        </ul>
+        <div class="col-xs-2">
+          <div class="current-user">
+            <a href="#"><i class="glyphicon user-icon"></i> Database Manager</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <router-outlet></router-outlet>
   </div>
 </div>
-<hr>
-
-<router-outlet></router-outlet>

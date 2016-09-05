@@ -18,11 +18,11 @@ var SharedModule = (function () {
         core_1.NgModule({
             declarations: [
                 bootstrap_1.Modal,
-                pipes_1.Keys, pipes_1.Key
+                pipes_1.Keys, pipes_1.Key, pipes_1.TrimBy
             ],
             exports: [
                 bootstrap_1.Modal,
-                pipes_1.Keys, pipes_1.Key
+                pipes_1.Keys, pipes_1.Key, pipes_1.TrimBy
             ],
             providers: [
                 bootstrap_1.Modal

@@ -14,3 +14,11 @@ export class Keys implements PipeTransform {
     return _.keys(value);
   }
 }
+
+@Pipe({name: 'trim_by'})
+export class TrimBy implements PipeTransform {
+  transform(value: string, by: number): string {
+    if (value.length <= by) return value;
+    return value.substr(0, by) + '...';
+  }
+}

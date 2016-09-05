@@ -130,7 +130,7 @@
     </button>
   <button
     *ngIf="isSaveButtonShown()"
-    class="btn btn-success"
+    class="btn btn-primary"
     (click)="save()"
     [disabled]="!newConfigurationForm.form.valid || !areSomeServersSelected()"
   >Save changes</button>

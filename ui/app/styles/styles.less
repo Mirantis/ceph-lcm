@@ -1,20 +1,8 @@
-/* Master Styles */
-
-body {
-  margin: 2em;
-}
+@import "main.less";
 
 a {
   cursor: pointer;
   cursor: hand;
-}
-
-.btn span {
-  font-size: 15pt;
-}
-
-.pull-right {
-  float: right;
 }
 
 navigation {
@@ -29,48 +17,13 @@ navigation {
         position: relative;
         top: 1px;
         margin-right: 6px;
+        background-color: @background - #111;
 
         &.active {
-          background-color: #FFF;
-          border-bottom: solid 1px #FFF;
+          background-color: @background;
+          border-bottom: solid 1px @background;
         }
       }
-    }
-  }
-  ul {
-    padding: 10px;
-    margin: 10px 0;
-
-    li {
-      display: inline-block;
-
-      a {
-        display: inline-block;
-        min-width: 150px;
-        height: 36px;
-        padding: 8px;
-        border: solid 1px #CCC;
-        border-radius: 5px;
-        text-align: center;
-        margin-right: 10px;
-        color: #444;
-        text-decoration: none;
-
-        &:hover {
-          text-decoration: none;
-        }
-
-        &.active {
-          background-color: #DDD;
-          text-decoration: none;
-        }
-
-        &.logoff {
-          min-width: 36px;
-          font-size: 12pt;
-        }
-      }
-
     }
   }
 }
@@ -105,40 +58,28 @@ div.login {
   }
 }
 
-table.roles {
-  td:first-child {
-    padding-left: 20px;
-    vertical-align: middle;
+table.servers {
+  td:last-child {
+    width: 1%;
   }
+}
 
-  td:nth-child(n+2) {
-    text-align: center;
-    font-size: 150%;
-
-    button {
-      padding: 0;
+.configurations {
+  .box {
+    .glyphicon {
+      top: 8px;
+      right: 0px;
+    }
+    &.open {
+      .glyphicon {
+        top: 10px;
+        right: 0px;
+      }
     }
   }
 }
 
-table.servers {
-  td:last-child {
-    width: 1%;
-  }
-}
-
-table.configurations {
-  th {
-    white-space: nowrap;
-  }
-
-  td:nth-child(3),
-  td:last-child {
-    width: 1%;
-  }
-}
-
-table.servers {
+table.playbooks {
   td:last-child {
     width: 1%;
   }

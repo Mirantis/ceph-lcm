@@ -1,0 +1,78 @@
+@import "settings.less";
+@import "mixins.less";
+
+// BUTTONS
+
+.btn-default, .btn-primary, .btn-success, .btn-info, .btn-warning, .btn-danger {
+  border: none;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: 8px 20px;
+}
+
+.btn-default {
+  background-color: @white;
+  border: 1px solid @base;
+  padding: 7px 20px;
+  .button-animation(@white);
+  &.btn-xs{
+    font-size: 10px;
+    padding: 4px 10px;
+  }
+}
+
+.btn-primary {
+  background-color: @base;
+  .button-animation(@base);
+  &.btn-xs{
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+.btn-success {
+  background-color: @green;
+  .button-animation(@green);
+  &.btn-xs{
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+.btn-info {
+  background-color: @blue;
+  .button-animation(@blue);
+  &.btn-xs{
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+.btn-warning {
+  background-color: @orange;
+  .button-animation(@orange);
+  &.btn-xs{
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+.btn-danger {
+  background-color: @shrimp;
+  .button-animation(@shrimp);
+  &.btn-xs{
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    -webkit-font-smoothing: antialiased;
+  }
+}
