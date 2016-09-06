@@ -44,4 +44,15 @@ export class ConfigurationsComponent {
     this.shownConfigurationId = this.shownConfigurationId === configuration.id ?
       null : configuration.id;
   }
+
+  getConfigurationVersions(configuration: any) {
+    if (!this.configurationVersions[configuration.id]) {
+      this.data.configuration().getVersions(configuration.id)
+        .then((versions: any) => {
+          this.configurationVersions[configuration.id] = versions.items;
+        });
+      this.configurationVersions[configuration.id] = [];
+    }
+    return this.configurationVersions[configuration.id];
+  }
 }

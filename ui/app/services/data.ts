@@ -16,6 +16,7 @@ export class DataService {
   }
 
   store = new DataStore();
+
   // FIXME: to be moved to configuration
   adapter = new HttpAdapter({basePath: 'http://private-3509f-cephlcmswaggerapi.apiary-mock.com/v1'});
   // adapter = new HttpAdapter({basePath: 'http://private-47d2dd-cephlcm.apiary-mock.com/v1'});
@@ -28,7 +29,6 @@ export class DataService {
   cluster(): Mapper {return this.getMapper('cluster')}
   playbook(): Mapper {return this.getMapper('playbook')}
   configuration(): Mapper {return this.getMapper('playbook_configuration')}
-  configurationVersion(): Mapper {return this.getMapper('playbook_configuration_version')}
   server(): Mapper {return this.getMapper('server')}
 
   private modelsProperties = {
@@ -48,11 +48,6 @@ export class DataService {
       id: {type: 'string'}
     },
     playbook_configuration: {
-      name: {type: 'string'},
-      playbook: {type: 'string'},
-      configuration: {type: 'object'}
-    },
-    playbook_configuration_version: {
       name: {type: 'string'},
       playbook: {type: 'string'},
       configuration: {type: 'object'}
@@ -77,6 +72,10 @@ export class DataService {
     }
   };
 
+  private isModelVersionated = {
+    playbook_configuration: true
+  };
+
   private getMapper(name: supportedMappers): Mapper {
     let mapper: Mapper;
     if (this.mappers.hasOwnProperty(name)) {
@@ -84,31 +83,41 @@ export class DataService {
       mapper = this.mappers[name];
     } else {
       // lazily create one
-      mapper = this.store.defineMapper(name, {
-        endpoint: name,
-        schema: _.extend(
-          {
-            properties: {
-              id: {
-                 oneOf: [
-                   {type: 'string', indexed: true},
-                   {type: 'number', indexed: true}
-                 ]
+      mapper = this.store.defineMapper(
+        name,
+        {
+          endpoint: name,
+          schema: _.extend(
+            {
+              properties: {
+                id: {
+                   oneOf: [
+                     {type: 'string', indexed: true},
+                     {type: 'number', indexed: true}
+                   ]
+                },
+                model: {type: 'string'},
+                version: {type: 'number'},
+                time_updated: {type: 'number'},
+                is_deleted: {type: 'boolean'},
+                data: {'$ref': '#/definitions/model_data'}
               },
-              model: {type: 'string'},
-              version: {type: 'number'},
-              time_updated: {type: 'number'},
-              is_deleted: {type: 'boolean'},
-              data: {'$ref': '#/definitions/model_data'}
-            },
-            definitions: {
-              model_data: {
-                type: 'object',
-                properties: this.modelsProperties[name]
+              definitions: {
+                model_data: {
+                  type: 'object',
+                  properties: this.modelsProperties[name]
+                }
               }
             }
-          })
-      });
+          ),
+          getVersions: function(id: string) {
+            return this.find(id, {suffix: '/version'});
+          },
+          getVersion: function(id: string, versionId: string§) {
+            return this.find(id, {suffix: '/version/' + versionId});
+          }
+        }
+      );
       this.mappers[name] = mapper;
     }
     // set authorization header

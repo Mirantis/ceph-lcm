@@ -783,11 +783,10 @@ table.servers td:last-child {
 }
 .configurations .box .glyphicon {
   top: 8px;
-  right: 0px;
+  left: 10px;
 }
 .configurations .box.open .glyphicon {
   top: 10px;
-  right: 0px;
 }
 table.playbooks td:last-child {
   width: 1%;
