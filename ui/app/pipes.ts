@@ -22,3 +22,20 @@ export class TrimBy implements PipeTransform {
     return value.substr(0, by) + '...';
   }
 }
+
+function two(value: number): string {
+  return ('0' + value).substr(-2);
+}
+
+@Pipe({name: 'date_time'})
+export class DateTime implements PipeTransform {
+  transform(value: number): string {
+    var date = new Date(value);
+    return two(date.getDate()) + '/' +
+      two(1 + date.getMonth()) + '/' +
+      date.getFullYear() + ' ' +
+      two(date.getHours()) + ':' +
+      two(date.getMinutes()) + ':' +
+      two(date.getSeconds());
+  }
+}
