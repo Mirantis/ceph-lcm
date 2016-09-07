@@ -1,0 +1,169 @@
+<div class="page-title">
+  <div class="row">
+    <div class="col-xs-12"><h1>Servers</h1></div>
+  </div>
+</div>
+
+<!-- Filters -->
+
+<div class="filters">
+  <div class="row">
+
+    <div class="col-xs-2">
+      <div class="form-group">
+        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Search by Name">
+      </div>
+    </div>
+
+    <div class="col-xs-5"></div>
+
+    <div class="col-xs-5">
+
+      <div class="row">
+
+        <div class="col-xs-6">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="control-label">Group by:</label>
+              <select class="form-control">
+                <option>Playbook</option>
+                <option>Price</option>
+                <option>Money</option>
+                <option>Sex</option>
+                <option>Drugs</option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+        <div class="col-xs-6">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="control-label">Sort by:</label>
+              <select class="form-control">
+                <option>Creation Date</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Filters -->
+
+<div class="row" *ngIf="servers && servers.length">
+  <div class="col-xs-12">
+
+    <div class="table-help">
+      <div class="col-xs-8">Server Name</div>
+      <div class="col-xs-4">Status</div>
+    </div>
+
+    <div
+      class="box"
+      [ngClass]="{open: server.id === shownServerId}"
+      *ngFor="let server of servers"
+    >
+      <div class="col-xs-8 name">{{server.data.name}}</div>
+      <div class="col-xs-3 parameter">{{server.data.state}}</div>
+      <div class="col-xs-1 action">
+        <div class="box-close">
+          <a (click)="showVersions(server)">
+            <i
+              class="glyphicon"
+              [ngClass]="server.id === shownServerId ? 'triangle-down-icon' : 'triangle-right-icon'"
+            ></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="bowels">
+        <div class="col-xs-12"><h3>Server Configuration Details</h3></div>
+
+        <!-- Column 1 -->
+        <div class="col-xs-6 server-details">
+
+          <div class="server-details-item">
+            <div class="name">CPU</div>
+            <div class="parameter">Intel Xeon E7-8870 2.10 GHz</div>
+          </div>
+
+          <div class="server-details-item">
+            <div class="name">RAM</div>
+            <div class="parameter">128 GB</div>
+          </div>
+
+          <div class="server-details-item">
+            <div class="name">HDD1</div>
+            <div class="parameter">128 GB</div>
+          </div>
+
+          <div class="server-details-item">
+            <div class="name">HDD2</div>
+            <div class="parameter">128 GB</div>
+          </div>
+
+          <div class="server-details-item">
+            <div class="name">SSD1</div>
+            <div class="parameter">128 GB</div>
+          </div>
+
+          <div class="server-details-item">
+            <div class="name">SSD1</div>
+            <div class="parameter">128 GB</div>
+          </div>
+
+        </div>
+
+        <!-- Column 2 -->
+        <div class="col-xs-6 server-details">
+
+          <div class="server-details-item">
+            <div class="name">CPU</div>
+            <div class="parameter">Intel Xeon E7-8870 2.10 GHz</div>
+          </div>
+
+          <div class="server-details-item">
+            <div class="name">RAM</div>
+            <div class="parameter">128 GB</div>
+          </div>
+
+          <div class="server-details-item">
+            <div class="name">HDD1</div>
+            <div class="parameter">128 GB</div>
+          </div>
+
+          <div class="server-details-item">
+            <div class="name">HDD2</div>
+            <div class="parameter">128 GB</div>
+          </div>
+
+          <div class="server-details-item">
+            <div class="name">SSD1</div>
+            <div class="parameter">128 GB</div>
+          </div>
+
+          <div class="server-details-item">
+            <div class="name">SSD1</div>
+            <div class="parameter">128 GB</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<loader *ngIf="!servers"></loader>
+
+<div *ngIf="servers && !servers.length" class="no-servers">
+  You don't have any servers.
+</div>

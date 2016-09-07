@@ -584,17 +584,25 @@ label {
 .box.open .bowels {
   display: block;
 }
+.box.open .glyphicon {
+  top: 10px;
+}
+.box .glyphicon {
+  top: 8px;
+  left: 10px;
+}
 .box > div {
   display: block;
-  height: 48px;
   padding: 9px 0px 9px 15px;
   overflow: hidden;
   line-height: 30px;
 }
 .box > div.icon {
+  height: 48px;
   padding: 15px 0 0 30px;
 }
 .box > div.name {
+  height: 48px;
   font-weight: 600;
 }
 .box > div.name input {
@@ -603,6 +611,7 @@ label {
   margin-left: -8px;
 }
 .box > div.parameter {
+  height: 48px;
   font-weight: 400;
   color: #747a81;
 }
@@ -613,6 +622,7 @@ label {
   width: 70px;
 }
 .box > div.action {
+  height: 48px;
   font-weight: 400;
   color: #747a81;
   text-align: center;
@@ -846,15 +856,5 @@ div.login form input {
   margin-bottom: 10px;
 }
 table.servers td:last-child {
-  width: 1%;
-}
-.configurations .box .glyphicon {
-  top: 8px;
-  left: 10px;
-}
-.configurations .box.open .glyphicon {
-  top: 10px;
-}
-table.playbooks td:last-child {
   width: 1%;
 }

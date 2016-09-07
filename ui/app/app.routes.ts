@@ -4,6 +4,7 @@ import {dashboardRoutes} from './dashboard/index';
 import {clustersRoutes} from './clusters/index';
 import {configurationsRoutes} from './configurations/index';
 import {playbooksRoutes} from './playbooks/index';
+import {serversRoutes} from './servers/index';
 import {usersRoutes} from './admin/index';
 
 import {PageNotFoundComponent} from './404';
@@ -13,6 +14,7 @@ const appRoutes: Routes = [
   ...clustersRoutes,
   ...configurationsRoutes,
   ...playbooksRoutes,
+  ...serversRoutes,
   ...usersRoutes,
   {path: '**', redirectTo: 'dashboard', pathMatch: 'full'}
 ];
