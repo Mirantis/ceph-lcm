@@ -9,6 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
+var platform_browser_1 = require('@angular/platform-browser');
 var bootstrap_1 = require('./bootstrap');
 var pipes_1 = require('./pipes');
 var SharedModule = (function () {
@@ -16,6 +17,9 @@ var SharedModule = (function () {
     }
     SharedModule = __decorate([
         core_1.NgModule({
+            imports: [
+                platform_browser_1.BrowserModule
+            ],
             declarations: [
                 bootstrap_1.Modal,
                 pipes_1.Keys, pipes_1.Key, pipes_1.TrimBy, pipes_1.DateTime

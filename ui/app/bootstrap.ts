@@ -7,6 +7,7 @@ import { Component, Input } from '@angular/core';
 export class Modal {
   @Input() id: string = 'modal';
   @Input() title: string = '';
+  @Input() isLarge: boolean = false;
 
   show(id: string = 'modal') {
     $('#' + id)['modal']('show');

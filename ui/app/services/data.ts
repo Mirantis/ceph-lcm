@@ -9,6 +9,13 @@ type supportedMappers = 'auth' | 'user' | 'role' | 'permissions' | 'cluster' |
   'playbook' | 'playbook_configuration' | 'server' |
   'playbook_configuration_version';
 
+declare module 'js-data' {
+  interface Mapper {
+    getVersion(): any;
+    getVersions(versionId: string): any;
+  }
+}
+
 @Injectable()
 export class DataService {
   constructor(private session: SessionService) {
@@ -113,7 +120,7 @@ export class DataService {
           getVersions: function(id: string) {
             return this.find(id, {suffix: '/version'});
           },
-          getVersion: function(id: string, versionId: string§) {
+          getVersion: function(id: string, versionId: string) {
             return this.find(id, {suffix: '/version/' + versionId});
           }
         }

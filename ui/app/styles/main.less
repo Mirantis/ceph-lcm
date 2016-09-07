@@ -156,6 +156,12 @@ a {
   }
 }
 
+label {
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
 .filters {
   display: block;
   height: 56px;
@@ -170,9 +176,6 @@ a {
   label {
     display: inline-block;
     width: 38%;
-    font-size: 12px;
-    font-weight: 400;
-    text-transform: uppercase;
     margin-top: 3px;
     margin-right: 5px;
     text-align: right;
@@ -327,6 +330,56 @@ a {
   }
 }
 
+.grid {
+  .grid-line {
+    display: block;
+    height: 40px;
+    background-color: @white;
+    border: 1px solid @background - 50%;
+    border-width: 1px 0 0 0;
+    overflow: hidden;
+
+    &.table-help {
+      border-width: 0;
+      margin-bottom: 0;
+    }
+
+    & > div {
+      display: block;
+      height: 38px;
+      padding: 4px 0px 4px 15px;
+      overflow: hidden;
+      line-height: 30px;
+      input[type=radio], input[type=checkbox] {
+        margin: 8px 4px 0 0;
+        float: right;
+      }
+      input[type=checkbox] {
+        margin: 9px 2px 0 0;
+      }
+    }
+
+    .icon {
+      padding-top: 10px;
+    }
+
+    .name {
+      font-weight: 600;
+    }
+
+    .parameter {
+      font-weight: 400;
+      color: @text + 30%;
+      button {
+        line-height: 16px;
+        margin: -1px 0px 0px 0px;
+        display: inline-block;
+        width: 70px;
+      }
+    }
+  }
+}
+
 
 // MODAL WINDOW
 .modal-content {
@@ -345,6 +398,15 @@ a {
   }
   .close {
     margin-top: 2px;
+  }
+}
+.modal-body {
+  h1 {
+    font-family: @source-sans;
+    font-size: 20px;
+    font-weight: 500;
+    text-transform: uppercase;
+    margin: 7px 0px 14px;
   }
 }
 .modal-footer {

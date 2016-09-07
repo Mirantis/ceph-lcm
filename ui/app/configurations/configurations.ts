@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NgSwitch, NgSwitchCase  } from '@angular/common';
+import { NgSwitch, NgSwitchCase } from '@angular/common';
 import { Modal } from '../bootstrap';
 import { DataService } from '../services/data';
 

@@ -520,6 +520,11 @@ a:hover > .glyphicon {
   text-align: right;
   margin: 2px 0;
 }
+label {
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
 .filters {
   display: block;
   height: 56px;
@@ -535,9 +540,6 @@ a:hover > .glyphicon {
 .filters label {
   display: inline-block;
   width: 38%;
-  font-size: 12px;
-  font-weight: 400;
-  text-transform: uppercase;
   margin-top: 3px;
   margin-right: 5px;
   text-align: right;
@@ -683,6 +685,49 @@ a:hover > .glyphicon {
 .box .bowels .server-details .server-details-item:last-child {
   border-bottom: 1px solid #c0c4c6;
 }
+.grid .grid-line {
+  display: block;
+  height: 40px;
+  background-color: #ffffff;
+  border: 1px solid #acb0b2;
+  border-width: 1px 0 0 0;
+  overflow: hidden;
+}
+.grid .grid-line.table-help {
+  border-width: 0;
+  margin-bottom: 0;
+}
+.grid .grid-line > div {
+  display: block;
+  height: 38px;
+  padding: 4px 0px 4px 15px;
+  overflow: hidden;
+  line-height: 30px;
+}
+.grid .grid-line > div input[type=radio],
+.grid .grid-line > div input[type=checkbox] {
+  margin: 8px 4px 0 0;
+  float: right;
+}
+.grid .grid-line > div input[type=checkbox] {
+  margin: 9px 2px 0 0;
+}
+.grid .grid-line .icon {
+  padding-top: 10px;
+}
+.grid .grid-line .name {
+  font-weight: 600;
+}
+.grid .grid-line .parameter {
+  font-weight: 400;
+  color: #747a81;
+}
+.grid .grid-line .parameter button {
+  line-height: 16px;
+  margin: -1px 0px 0px 0px;
+  display: inline-block;
+  width: 70px;
+}
 .modal-content {
   border-radius: 0;
 }
@@ -700,6 +745,13 @@ a:hover > .glyphicon {
 }
 .modal-header .close {
   margin-top: 2px;
+}
+.modal-body h1 {
+  font-family: 'Source Sans Pro', 'Open Sans', helvetica, arial, tahoma, verdana, sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin: 7px 0px 14px;
 }
 .modal-footer {
   border: 0;

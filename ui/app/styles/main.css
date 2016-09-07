@@ -701,6 +701,13 @@ a:hover > .glyphicon {
 .modal-header .close {
   margin-top: 2px;
 }
+.modal-body h1 {
+  font-family: 'Source Sans Pro', 'Open Sans', helvetica, arial, tahoma, verdana, sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin: 7px 0px;
+}
 .modal-footer {
   border: 0;
 }
