@@ -9,7 +9,7 @@ import * as _ from 'lodash';
   directives: [Modal]
 })
 export class ClustersComponent {
-  clusters: any[] = [];
+  clusters: any[] = null;
   newCluster: any = {data: {}};
   error: any;
 

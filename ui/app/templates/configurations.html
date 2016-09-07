@@ -8,10 +8,6 @@
   </div>
 </div>
 
-<div *ngIf="!configurations.length" class="no-configurations">
-  You don't have any configurations yet. Please create.
-</div>
-
 <!-- Filters -->
 
 <div class="filters">
@@ -68,9 +64,8 @@
 <!-- Filters -->
 
 
-<div class="configurations row" *ngIf="configurations.length">
+<div class="configurations row" *ngIf="configurations && configurations.length">
   <div class="col-xs-12">
-
     <div class="table-help">
       <div class="col-xs-3">Configuration Name</div>
       <div class="col-xs-3">Playbook</div>
@@ -96,9 +91,7 @@
         </div>
       </div>
       <div class="bowels" *ngIf="configuration.id === shownConfigurationId">
-
         <div class="col-xs-12"><h3>Versions</h3></div>
-
         <div *ngFor="let version of getConfigurationVersions(configuration)">
 
           <div class="col-xs-12"><div class="line"></div></div>
@@ -108,16 +101,25 @@
           </div>
           <div class="col-xs-3 parameter">{{version.data.playbook}}</div>
           <div class="col-xs-3 parameter">{{version.time_updated|date_time}}</div>
-          <div class="col-xs-1 parameter"><button type="button" class="btn btn-primary btn-xs">History</button></div>
-          <div class="col-xs-1 parameter"><button type="button" class="btn btn-primary btn-xs">Clone</button></div>
-          <div class="col-xs-1 parameter"><button type="button" class="btn btn-success btn-xs">Execute</button></div>
+          <div class="col-xs-1 parameter">
+            <button type="button" class="btn btn-primary btn-xs">History</button>
+          </div>
+          <div class="col-xs-1 parameter">
+            <button type="button" class="btn btn-primary btn-xs">Clone</button>
+          </div>
+          <div class="col-xs-1 parameter">
+            <button type="button" class="btn btn-success btn-xs">Execute</button>
+          </div>
         </div>
-
       </div>
     </div>
-
   </div>
+</div>
 
+<loader *ngIf="!configurations"></loader>
+
+<div *ngIf="configurations && !configurations.length" class="no-configurations">
+  You don't have any configurations yet. Please create.
 </div>
 
 <modal

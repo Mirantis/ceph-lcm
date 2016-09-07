@@ -6,8 +6,7 @@ import { HttpAdapter } from 'js-data-http';
 import { SessionService } from './session';
 
 type supportedMappers = 'auth' | 'user' | 'role' | 'permissions' | 'cluster' |
-  'playbook' | 'playbook_configuration' | 'server' |
-  'playbook_configuration_version';
+  'playbook' | 'playbook_configuration' | 'server';
 
 declare module 'js-data' {
   interface Mapper {

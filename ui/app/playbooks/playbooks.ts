@@ -7,7 +7,7 @@ import * as _ from 'lodash';
   templateUrl: './app/templates/playbooks.html',
 })
 export class PlaybooksComponent {
-  playbooks: any[] = [];
+  playbooks: any[] = null;
 
   constructor(private data: DataService) {
     this.fetchData();

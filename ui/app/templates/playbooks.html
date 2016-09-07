@@ -1,22 +1,29 @@
-<h3>Playbooks</h3>
+<div class="page-title">
+  <div class="row">
+    <div class="col-xs-12"><h1>Playbooks</h1></div>
+  </div>
+</div>
 
-<div *ngIf="!playbooks.length" class="no-playbooks">
+<loader *ngIf="!playbooks"></loader>
+
+<div *ngIf="playbooks && !playbooks.length" class="no-playbooks">
   You don't have any playbooks.
 </div>
 
-<table class="playbooks table" *ngIf="playbooks.length">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Description</th>
-      <th>Servers selection required</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let playbook of playbooks">
-      <td>{{playbook.name}}</td>
-      <td>{{playbook.description|trim_by:100}}</td>
-      <td>{{playbook.required_server_list}}</td>
-    </tr>
-  </tbody>
-</table>
+<div class="playbooks row" *ngIf="playbooks && playbooks.length">
+  <div class="col-xs-12">
+
+    <div class="table-help">
+      <div class="col-xs-3">Name</div>
+      <div class="col-xs-7">Description</div>
+      <div class="col-xs-2">Servers Required</div>
+    </div>
+
+    <div class="box" *ngFor="let playbook of playbooks">
+      <div class="col-xs-3 name">{{playbook.name}}</div>
+      <div class="col-xs-7 parameter">{{playbook.description}}</div>
+      <div class="col-xs-2 icon">
+        <span *ngIf="playbook.required_server_list" class="glyphicon glyphicon-ok text-success"></span>
+      </div>
+  </div>
+</div>

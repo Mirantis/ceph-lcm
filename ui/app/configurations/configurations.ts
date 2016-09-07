@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 })
 export class ConfigurationsComponent {
   @ViewChild(WizardComponent) wizard: WizardComponent;
-  configurations: any[] = [];
+  configurations: any[] = null;
   clusters: any[] = [];
   playbooks: any[] = [];
   servers: any[] = [];

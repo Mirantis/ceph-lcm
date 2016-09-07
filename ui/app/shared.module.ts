@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { Modal } from './bootstrap';
+import { Modal, Loader } from './bootstrap';
 import { Key, Keys, TrimBy, DateTime } from './pipes';
 
 @NgModule({
@@ -9,15 +9,15 @@ import { Key, Keys, TrimBy, DateTime } from './pipes';
     BrowserModule
   ],
   declarations: [
-    Modal,
+    Modal, Loader,
     Keys, Key, TrimBy, DateTime
   ],
   exports: [
-    Modal,
+    Modal, Loader,
     Keys, Key, TrimBy, DateTime
   ],
   providers: [
-    Modal
+    Modal, Loader
   ]
 })
 export class SharedModule { }

@@ -7,10 +7,6 @@
   </div>
 </div>
 
-<div *ngIf="!clusters.length" class="no-clusters">
-  You don't have any clusters yet. Please create.
-</div>
-
 <!-- Filters -->
 
 <div class="filters">
@@ -66,8 +62,7 @@
 
 <!-- Filters -->
 
-
-<div class="row">
+<div class="row" *ngIf="clusters && clusters.length">
   <div class="col-xs-12">
 
     <div class="table-help">
@@ -78,23 +73,21 @@
 
     <div class="box" *ngFor="let cluster of clusters">
       <div class="col-xs-10 name">
-        <a (click)="editCluster(cluster)">{{cluster.data.name}}<i class="glyphicon edit-icon"></i></a>
+        {{cluster.data.name}}
+        <a (click)="editCluster(cluster)">
+          <i class="glyphicon edit-icon"></i>
+        </a>
       </div>
       <div class="col-xs-1 parameter"><span class="text-danger">55</span></div>
       <div class="col-xs-1 parameter">99900</div>
     </div>
-
-<!--     <div class="box">
-      <div class="col-xs-10 name">
-        <div class="form-group">
-          <input type="name" class="form-control" placeholder="Cluster Name 2">
-        </div>
-      </div>
-      <div class="col-xs-1 parameter"><span class="text-danger">55</span></div>
-      <div class="col-xs-1 parameter">99900</div>
-    </div>
- -->
   </div>
+</div>
+
+<loader *ngIf="!clusters"></loader>
+
+<div *ngIf="clusters && !clusters.length" class="no-clusters">
+  You don't have any clusters yet. Please create.
 </div>
 
 

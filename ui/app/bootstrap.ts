@@ -16,4 +16,10 @@ export class Modal {
   close(id: string = 'modal') {
     $('#' + id)['modal']('hide');
   }
-}
+};
+
+@Component({
+  selector: 'loader',
+  templateUrl: './app/templates/loader.html'
+})
+export class Loader {};
