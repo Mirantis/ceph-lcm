@@ -1,8 +1,14 @@
-<navigation class='tabs'>
-  <ul>
-    <li> <a [routerLink]="['users']" routerLinkActive='active'>Users</a>
-    <li> <a [routerLink]="['roles']" routerLinkActive='active'>Roles</a>
-  </ul>
-</navigation>
+<div class="header">
+  <div class="row">
+    <ul class="col-xs-12 navigation">
+      <li class="menu-item">
+        <a [routerLink]="['users']" routerLinkActive="active">Users</a>
+      </li>
+      <li class="menu-item">
+        <a [routerLink]="['roles']" routerLinkActive="active">Roles</a>
+      </li>
+    </ul>
+  </div>
+</div>
 
 <router-outlet></router-outlet>

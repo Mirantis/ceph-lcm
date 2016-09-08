@@ -12,6 +12,7 @@ import { ClustersModule }  from './clusters/clusters.module';
 import { ConfigurationsModule }  from './configurations/configurations.module';
 import { PlaybooksModule }  from './playbooks/playbooks.module';
 import { ServersModule }  from './servers/servers.module';
+import { ExecutionsModule }  from './executions/executions.module';
 
 import { AuthService, LoggedIn}  from './services/auth';
 import { SessionService }  from './services/session';
@@ -34,6 +35,7 @@ import { appRoutingProviders, routing } from './app.routes';
     ConfigurationsModule,
     PlaybooksModule,
     ServersModule,
+    ExecutionsModule,
     FormsModule,
     BrowserModule
   ],

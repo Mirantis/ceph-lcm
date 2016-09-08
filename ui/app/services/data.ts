@@ -6,7 +6,7 @@ import { HttpAdapter } from 'js-data-http';
 import { SessionService } from './session';
 
 type supportedMappers = 'auth' | 'user' | 'role' | 'permissions' | 'cluster' |
-  'playbook' | 'playbook_configuration' | 'server';
+  'playbook' | 'playbook_configuration' | 'server' | 'execution';
 
 declare module 'js-data' {
   interface Mapper {
@@ -36,6 +36,7 @@ export class DataService {
   playbook(): Mapper {return this.getMapper('playbook')}
   configuration(): Mapper {return this.getMapper('playbook_configuration')}
   server(): Mapper {return this.getMapper('server')}
+  execution(): Mapper {return this.getMapper('execution')}
 
   private modelsProperties = {
     auth: {
@@ -65,6 +66,10 @@ export class DataService {
       state: {type: 'string'},
       cluster_id: {type: 'string'},
       facts: {type: 'object'}
+    },
+    execution: {
+      playbook_configuration: {type: 'object'},
+      state: {type: 'string'}
     },
     user: {
       login: {type: 'string'},

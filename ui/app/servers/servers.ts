@@ -14,7 +14,6 @@ export class ServersComponent {
   ];
 
   constructor(private data: DataService) {
-    console.log(this.servers);
     this.fetchData();
   }
 

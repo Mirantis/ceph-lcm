@@ -509,6 +509,9 @@ a:hover > .glyphicon {
   margin: 30px 0px;
   height: 37px;
 }
+.page-title.navigated {
+  margin-top: 0;
+}
 .page-title h1 {
   font-family: 'Source Sans Pro', 'Open Sans', helvetica, arial, tahoma, verdana, sans-serif;
   font-size: 20px;
@@ -599,7 +602,7 @@ label {
 }
 .box > div.icon {
   height: 48px;
-  padding: 15px 0 0 30px;
+  padding: 8px 0 0 30px;
 }
 .box > div.name {
   height: 48px;
@@ -617,7 +620,7 @@ label {
 }
 .box > div.parameter button {
   line-height: 16px;
-  margin: -1px 0px 0px 0px;
+  margin: 3px 0px 0px 0px;
   display: inline-block;
   width: 70px;
 }
@@ -641,7 +644,6 @@ label {
   margin-right: 20px;
 }
 .box .bowels {
-  display: none;
   max-height: 225px;
   overflow-y: auto;
   overflow-x: hidden;

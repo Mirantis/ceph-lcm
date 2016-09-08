@@ -1,0 +1,52 @@
+<div class="page-title">
+  <div class="row">
+    <div class="col-xs-12"><h1>Executions</h1></div>
+  </div>
+</div>
+
+<loader *ngIf="!executions"></loader>
+
+<div *ngIf="executions && !executions.length" class="no-executions">
+  You don't have any executions.
+</div>
+
+<div class="executions row" *ngIf="executions && executions.length">
+  <div class="col-xs-12">
+
+    <div class="table-help">
+      <div class="col-xs-3">Configuration Name</div>
+      <div class="col-xs-2">Version</div>
+      <div class="col-xs-2">Playbook</div>
+      <div class="col-xs-2">Last Updated</div>
+      <div class="col-xs-3">Status</div>
+    </div>
+
+    <div class="box" *ngFor="let execution of executions">
+      <div class="col-xs-3 name">{{execution.data.playbook_configuration.id}}</div>
+      <div class="col-xs-2 parameter">
+        {{execution.data.playbook_configuration.version}}
+      </div>
+      <div class="col-xs-2 parameter">
+        &mdash;
+      </div>
+      <div class="col-xs-2 parameter">
+        {{execution.time_updated|date_time}}
+      </div>
+      <div class="col-xs-1 state" [ngClass]="execution.data.state">
+        {{execution.data.state}}
+      </div>
+      <div class="col-xs-1 parameter">
+        <button
+          *ngIf="execution.data.state === 'Running'"
+          class="btn btn-danger btn-xs"
+          type="button">
+          Stop
+        </button>
+      </div>
+      <div class="col-xs-1 parameter">
+        <button class="btn btn-primary btn-xs" type="button">Logs</button>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,24 +1,68 @@
-<button (click)="editUser()" class="btn btn-success pull-right">Create User</button>
+<div class="page-title navigated">
+  <div class="row">
+    <div class="col-xs-9"><h1>Users Management</h1></div>
+    <div class="col-xs-3 main-button">
+      <button type="button" class="btn btn-primary" (click)="editUser()">
+        Create New Cluster
+      </button>
+    </div>
+  </div>
+</div>
 
-<h3>Users Management</h3>
-<table class="users table" *ngIf="users.length">
-  <thead>
-    <tr>
-      <th>Login</th>
-      <th>Full Name</th>
-      <th width="1%">Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let user of users">
-      <td>{{user.data.login}}</td>
-      <td>{{user.data.full_name}}</td>
-      <td>
-        <button (click)="editUser(user)" class="btn btn-sm btn-success">Edit</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<div class="row" *ngIf="users && users.length">
+  <div class="col-xs-12">
+
+    <div class="table-help">
+      <div class="col-xs-4">User</div>
+      <div class="col-xs-4">Role</div>
+      <div class="col-xs-4">Created</div>
+    </div>
+
+    <div
+      class="box"
+      [ngClass]="{open: user.id === shownUserId}"
+      *ngFor="let user of users">
+      <div class="col-xs-4 name">
+        {{user.data.login}}
+      </div>
+      <div class="col-xs-4 parameter">
+        {{rolesNames[user.data.role_id]}}
+      </div>
+      <div class="col-xs-3 parameter">
+        {{user.time_updated|date_time}}
+      </div>
+
+      <div class="col-xs-1 action">
+        <div class="box-close">
+          <a (click)="showUserData(user)">
+            <i
+              class="glyphicon"
+              [ngClass]="user.id === shownUserId ? 'triangle-down-icon' : 'triangle-right-icon'"
+            ></i>
+          </a>
+        </div>
+      </div>
+      <div class="bowels" *ngIf="user.id === shownUserId">
+        <div class="col-xs-6"><h3>User Details</h3></div>
+        <div class="col-xs-6"><h3>Changelog</h3></div>
+
+        <div class="col-xs-6 server-details">
+          <div class="server-details-item">
+          </div>
+        </div>
+
+        <div class="col-xs-6 server-details">
+          <div class="server-details-item">
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<loader *ngIf="!users"></loader>
 
 <modal [title]="newUser.id ? 'Edit User' : 'Create New User'">
   <div class="modal-body">
@@ -76,10 +120,14 @@
     </form>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-default" (click)="modal.close()">Cancel</button>
+    <button class="btn btn-default pull-left" (click)="modal.close()">
+      Cancel
+    </button>
     <button
-      class="btn btn-success"
+      class="btn btn-primary"
       (click)="save()"
-      [disabled]="!newUserForm.form.valid">Save changes</button>
+      [disabled]="!newUserForm.form.valid">
+      Save changes
+    </button>
   </div>
 </modal>
