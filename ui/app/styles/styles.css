@@ -627,6 +627,14 @@ label {
   color: #747a81;
   text-align: center;
 }
+.box > div.state {
+  height: 48px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+.box > div.state.off {
+  color: #FF634C;
+}
 .box .box-close,
 .box .box-open {
   text-align: right;
@@ -675,17 +683,19 @@ label {
 .box .bowels .server-details .server-details-item .name {
   display: block;
   float: left;
-  width: 60%;
+  width: 30%;
   height: 30px;
   padding: 0;
+  overflow: hidden;
 }
 .box .bowels .server-details .server-details-item .parameter {
   display: block;
   float: right;
-  width: 30%;
+  width: 60%;
   text-align: right;
   height: 30px;
   padding: 0px;
+  overflow: hidden;
 }
 .box .bowels .server-details .server-details-item:last-child {
   border-bottom: 1px solid #c0c4c6;

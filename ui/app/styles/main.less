@@ -276,6 +276,16 @@ label {
       color: @text + 30%;
       text-align: center;
     }
+
+    &.state {
+      height: 48px;
+      font-weight: 400;
+      text-transform: uppercase;
+
+      &.off {
+        .text-danger;
+      }
+    }
   }
 
   .box-close,
@@ -327,18 +337,22 @@ label {
         .name {
           display: block;
           float: left;
-          width: 60%;
+          width: 30%;
           height: 30px;
           padding: 0;
+          overflow: hidden;
         }
+
         .parameter {
           display: block;
           float: right;
-          width: 30%;
+          width: 60%;
           text-align: right;
           height: 30px;
-          padding: 0px
+          padding: 0px;
+          overflow: hidden;
         }
+
         &:last-child {
           border-bottom: 1px solid @background - 30%;
         }

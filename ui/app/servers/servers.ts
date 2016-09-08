@@ -9,8 +9,12 @@ import * as _ from 'lodash';
 export class ServersComponent {
   servers: any[] = null;
   shownServerId: any = null;
+  configuration: any [] = [
+    ['name', 'fqdn', 'ip'], ['state', 'cluster_id']
+  ];
 
   constructor(private data: DataService) {
+    console.log(this.servers);
     this.fetchData();
   }
 
@@ -23,6 +27,4 @@ export class ServersComponent {
     this.shownServerId = this.shownServerId === server.id ?
       null : server.id;
   }
-
-
 }
