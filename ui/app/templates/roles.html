@@ -1,28 +1,35 @@
-<button (click)="editRole()" class="btn btn-success pull-right">Create Role</button>
+<div class="page-title navigated">
+  <div class="row">
+    <div class="col-xs-9"><h1>Roles</h1></div>
+    <div class="col-xs-3 main-button">
+      <button type="button" class="btn btn-primary" (click)="editRole()">
+        Create New Role
+      </button>
+    </div>
+  </div>
+</div>
 
-<h3>Roles Permissions</h3>
-
-<table class="roles table" *ngIf="roles.length">
-  <thead>
-    <tr>
-      <th></th>
-      <th *ngFor="let role of roles">
-        {{role.data.name}}
-        <button class="btn btn-link" (click)="editRole(role)">
-          <span class="glyphicon glyphicon-pencil"></span>
-        </button>
-      </th>
-    </tr>
-  </thead>
-  <tbody PermissionsGroup
+<div class="grid row" *ngIf="roles && roles.length">
+  <div class="grid-header">
+    <div class="col-xs-2"></div>
+    <div class="col-xs-2 name" *ngFor="let role of roles">
+      {{role.data.name|trim_by:16}}
+      <button class="btn btn-link" (click)="editRole(role)">
+        <span class="glyphicon glyphicon-pencil"></span>
+      </button>
+    </div>
+  </div>
+  <section PermissionsGroup
     *ngFor="let group of permissions|keys"
     [group]="group"
     [roles]="roles"
     [permissions]="permissions">
-  </tbody>
-</table>
+  </section>
+</div>
 
-<modal [title]="newRole.id ? 'Edit Role' : 'Create New Role'">
+<loader *ngIf="!roles"></loader>
+
+<modal [title]="newRole.id ? 'Edit Role' : 'New Role'">
   <div class="modal-body">
     <div class="alert alert-danger" role="alert" *ngIf="error">
       {{error}}
@@ -39,6 +46,9 @@
           [(ngModel)]="newRole.data.name"
           required>
       </div>
+
+      <label>Permissions groups</label>
+
       <div *ngFor="let group of permissions|keys">
         <h5>{{group}}</h5>
         <div class="checkbox" *ngFor="let permission of permissions|key:group">
@@ -48,17 +58,22 @@
               [name]="group"
               [value]="permission"
               [checked]="getGroupPermission(group, permission)"
-              (click)="toggleGroupPermission(group, permission)"> {{permission}}
+              (click)="toggleGroupPermission(group, permission)">
+              {{permission}}
           </label>
         </div>
       </div>
     </form>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-default" (click)="modal.close()">Cancel</button>
+    <button class="btn btn-default pull-left" (click)="modal.close()">
+      Cancel
+    </button>
     <button
-      class="btn btn-success"
+      class="btn btn-primary"
       (click)="save()"
-      [disabled]="!newRoleForm.form.valid">Save changes</button>
+      [disabled]="!newRoleForm.form.valid">
+      Save changes
+    </button>
   </div>
 </modal>

@@ -26,7 +26,7 @@ export class PermissionsGroup {
   directives: [PermissionsGroup]
 })
 export class RolesComponent {
-  roles: any[] = [];
+  roles: any[] = null;
   permissions: Object = {};
   newRole: any = {data: {permissions: {}}};
   error: any;

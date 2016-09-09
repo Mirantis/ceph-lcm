@@ -16,14 +16,15 @@
     <div class="table-help">
       <div class="col-xs-3">Name</div>
       <div class="col-xs-7">Description</div>
-      <div class="col-xs-2">Servers Required</div>
+      <div class="col-xs-2 text-right">Servers Involved</div>
     </div>
 
     <div class="box" *ngFor="let playbook of playbooks">
       <div class="col-xs-3 name">{{playbook.name}}</div>
       <div class="col-xs-7 parameter">{{playbook.description}}</div>
-      <div class="col-xs-2 icon">
-        <span *ngIf="playbook.required_server_list" class="glyphicon glyphicon-ok text-success"></span>
+      <div class="col-xs-2 icon text-center">
+        <span *ngIf="playbook.required_server_list" class="glyphicon glyphicon-ok">
+        </span>
       </div>
   </div>
 </div>

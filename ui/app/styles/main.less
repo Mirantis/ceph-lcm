@@ -299,14 +299,15 @@ label {
     margin-right: 20px;
   }
   .bowels {
-    max-height: 225px;
+    max-height: 310px;
     overflow-y: auto;
     overflow-x: hidden;
     cursor: default;
     clear: both;
     border-top: 1px solid @background - 50%;
     min-height: 50px;
-    padding-top: 20px;
+    padding: 20px 0 0 0;
+
     .col-xs-12 {
       &:last-child {
         margin-bottom: 20px;
@@ -320,15 +321,17 @@ label {
       padding: 0;
       font-weight: 100;
     }
-    .version-box {
-      clear: both;
-      display: block;
-      height: 50px;
-      border-top: 1px solid @background;
-      border-bottom: 1px solid @background;
-      margin: 0px;
-      padding: 0px;
+
+    div button {
+      margin: 3px auto;
     }
+
+    .name, .parameter {
+      display: block;
+      height: 30px;
+      overflow: hidden;
+    }
+
     .server-details {
       margin-bottom: 20px;
 
@@ -367,12 +370,30 @@ label {
 }
 
 .grid {
+  background-color: @white;
+  border: 1px solid @background - 50%;
+
+  .grid-header {
+    button.btn-link {
+      vertical-align: baseline;
+      font-size: 13px;
+      padding: 0;
+      .text-primary;
+    }
+  }
+
   .grid-line {
-    display: block;
-    height: 40px;
-    background-color: @white;
     border: 1px solid @background - 50%;
     border-width: 1px 0 0 0;
+
+    &.group {
+      background-color: @white - 10%;
+    }
+  }
+
+  .grid-line, .grid-header {
+    display: block;
+    height: 40px;
     overflow: hidden;
 
     &.table-help {
@@ -397,6 +418,7 @@ label {
 
     .icon {
       padding-top: 10px;
+      .text-primary;
     }
 
     .name {
@@ -443,6 +465,20 @@ label {
     font-weight: 500;
     text-transform: uppercase;
     margin: 7px 0px 14px;
+  }
+  form {
+    margin-bottom: none;
+
+    h5 {
+      font-weight: 600;
+    }
+
+    div.checkbox {
+      height: 25px;
+      label {
+        text-transform: none;
+      }
+    }
   }
 }
 .modal-footer {

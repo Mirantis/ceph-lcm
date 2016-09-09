@@ -14,6 +14,7 @@ export class UsersComponent {
   newUser: any = {data: {}};
   error: any;
   shownUserId: any = null;
+  usersVersions: Object = {};
 
   constructor(private data: DataService, private modal: Modal) {
     this.fetchData();
@@ -38,10 +39,11 @@ export class UsersComponent {
 
   editUser(user: any = null) {
     this.newUser = _.isNull(user) ? {data: {}} : user;
+    this.shownUserId = null;
     this.modal.show();
   }
 
-  save() {
+  saveUser() {
     this.error = null;
     var savePromise: Promise<any>;
     if (this.newUser.id) {
@@ -61,9 +63,28 @@ export class UsersComponent {
       );
   }
 
-  showUserData(user: any) {
-    this.shownUserId = this.shownUserId === user.id ? null : user.id;
+  deleteUser(user: any) {
+    this.data.user().destroy(user.id)
+      .then(() => {
+        this.shownUserId = null;
+        this.fetchData();
+      });
   }
 
+  showUserData(user: any) {
+    this.shownUserId = this.shownUserId === user.id ? null : user.id;
+    this.newUser = _.isNull(this.shownUserId) ? {data: {}} : user;
+  }
+
+  getUserVersions(user: any): any[] {
+    if (!this.usersVersions[user.id]) {
+      this.data.user().getVersions(user.id)
+        .then((versions: any) => {
+          this.usersVersions[user.id] = versions.items;
+        });
+      this.usersVersions[user.id] = [];
+    }
+    return this.usersVersions[user.id];
+  }
 
 }

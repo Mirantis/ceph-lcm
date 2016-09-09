@@ -644,14 +644,14 @@ label {
   margin-right: 20px;
 }
 .box .bowels {
-  max-height: 225px;
+  max-height: 310px;
   overflow-y: auto;
   overflow-x: hidden;
   cursor: default;
   clear: both;
   border-top: 1px solid #acb0b2;
   min-height: 50px;
-  padding-top: 20px;
+  padding: 20px 0 0 0;
 }
 .box .bowels .col-xs-12:last-child {
   margin-bottom: 20px;
@@ -663,14 +663,14 @@ label {
   padding: 0;
   font-weight: 100;
 }
-.box .bowels .version-box {
-  clear: both;
+.box .bowels div button {
+  margin: 3px auto;
+}
+.box .bowels .name,
+.box .bowels .parameter {
   display: block;
-  height: 50px;
-  border-top: 1px solid #DEE2E4;
-  border-bottom: 1px solid #DEE2E4;
-  margin: 0px;
-  padding: 0px;
+  height: 30px;
+  overflow: hidden;
 }
 .box .bowels .server-details {
   margin-bottom: 20px;
@@ -702,19 +702,36 @@ label {
 .box .bowels .server-details .server-details-item:last-child {
   border-bottom: 1px solid #c0c4c6;
 }
-.grid .grid-line {
-  display: block;
-  height: 40px;
+.grid {
   background-color: #ffffff;
   border: 1px solid #acb0b2;
+}
+.grid .grid-header button.btn-link {
+  vertical-align: baseline;
+  font-size: 13px;
+  padding: 0;
+  color: #565C63;
+}
+.grid .grid-line {
+  border: 1px solid #acb0b2;
   border-width: 1px 0 0 0;
+}
+.grid .grid-line.group {
+  background-color: #f5f5f5;
+}
+.grid .grid-line,
+.grid .grid-header {
+  display: block;
+  height: 40px;
   overflow: hidden;
 }
-.grid .grid-line.table-help {
+.grid .grid-line.table-help,
+.grid .grid-header.table-help {
   border-width: 0;
   margin-bottom: 0;
 }
-.grid .grid-line > div {
+.grid .grid-line > div,
+.grid .grid-header > div {
   display: block;
   height: 38px;
   padding: 4px 0px 4px 15px;
@@ -722,24 +739,32 @@ label {
   line-height: 30px;
 }
 .grid .grid-line > div input[type=radio],
-.grid .grid-line > div input[type=checkbox] {
+.grid .grid-header > div input[type=radio],
+.grid .grid-line > div input[type=checkbox],
+.grid .grid-header > div input[type=checkbox] {
   margin: 8px 4px 0 0;
   float: right;
 }
-.grid .grid-line > div input[type=checkbox] {
+.grid .grid-line > div input[type=checkbox],
+.grid .grid-header > div input[type=checkbox] {
   margin: 9px 2px 0 0;
 }
-.grid .grid-line .icon {
+.grid .grid-line .icon,
+.grid .grid-header .icon {
   padding-top: 10px;
+  color: #565C63;
 }
-.grid .grid-line .name {
+.grid .grid-line .name,
+.grid .grid-header .name {
   font-weight: 600;
 }
-.grid .grid-line .parameter {
+.grid .grid-line .parameter,
+.grid .grid-header .parameter {
   font-weight: 400;
   color: #747a81;
 }
-.grid .grid-line .parameter button {
+.grid .grid-line .parameter button,
+.grid .grid-header .parameter button {
   line-height: 16px;
   margin: -1px 0px 0px 0px;
   display: inline-block;
@@ -769,6 +794,18 @@ label {
   font-weight: 500;
   text-transform: uppercase;
   margin: 7px 0px 14px;
+}
+.modal-body form {
+  margin-bottom: none;
+}
+.modal-body form h5 {
+  font-weight: 600;
+}
+.modal-body form div.checkbox {
+  height: 25px;
+}
+.modal-body form div.checkbox label {
+  text-transform: none;
 }
 .modal-footer {
   border: 0;
