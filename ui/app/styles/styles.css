@@ -712,6 +712,9 @@ label {
   padding: 0;
   color: #565C63;
 }
+.grid .grid-header button.btn-link span {
+  margin: auto 0;
+}
 .grid .grid-line {
   border: 1px solid #acb0b2;
   border-width: 1px 0 0 0;

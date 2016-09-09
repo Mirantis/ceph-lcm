@@ -48,6 +48,11 @@ export class RolesComponent {
     this.modal.show();
   }
 
+  deleteRole(role: any = null) {
+    this.data.role().destroy(role.id)
+      .then(() => this.fetchData());
+  }
+
   getGroupPermission(group: string, permission: string): boolean {
     return _.includes(_.get(this.newRole.data.permissions, group, []), permission);
   }
