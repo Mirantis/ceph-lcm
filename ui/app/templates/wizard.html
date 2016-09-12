@@ -40,8 +40,8 @@
           <div class="grid-line table-help">
             <div class="col-xs-1"></div>
             <div class="col-xs-3">Name</div>
-            <div class="col-xs-6">Description</div>
-            <div class="col-xs-2">Servers</div>
+            <div class="col-xs-5">Description</div>
+            <div class="col-xs-3">Servers Required</div>
           </div>
 
           <div class="grid-line" *ngFor="let playbook of playbooks">
@@ -62,7 +62,7 @@
             </div>
             <div class="col-xs-6 parameter">{{playbook.description}}</div>
             <div class="col-xs-2 icon">
-              <span *ngIf="playbook.required_server_list" class="glyphicon glyphicon-ok text-success"></span>
+              <span *ngIf="playbook.required_server_list" class="glyphicon glyphicon-ok"></span>
             </div>
           </div>
         </div>
@@ -112,7 +112,7 @@
   </form>
 </div>
 <div class="modal-footer">
-  <button class="btn btn-default pull-left" (click)="modal.close()">
+  <button class="btn btn-default pull-left" (click)="reset()">
     Cancel
   </button>
   <button

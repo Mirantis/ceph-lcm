@@ -8,8 +8,7 @@ import { WizardComponent } from './wizard';
 import * as _ from 'lodash';
 
 @Component({
-  templateUrl: './app/templates/configurations.html',
-  directives: [Modal, WizardComponent, NgSwitch, NgSwitchCase]
+  templateUrl: './app/templates/configurations.html'
 })
 export class ConfigurationsComponent {
   @ViewChild(WizardComponent) wizard: WizardComponent;

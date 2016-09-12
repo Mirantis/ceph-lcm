@@ -7,8 +7,7 @@ import * as _ from 'lodash';
 
 @Component({
   selector: 'wizard',
-  templateUrl: './app/templates/wizard.html',
-  directives: [Modal]
+  templateUrl: './app/templates/wizard.html'
 })
 export class WizardComponent {
   step: number = 1;
@@ -29,6 +28,12 @@ export class WizardComponent {
 
   backward() {
     this.step -= 1;
+  }
+
+  reset() {
+    this.step = 1;
+    this.newConfiguration = {server_ids: []};
+    this.modal.close();
   }
 
   isSaveButtonShown() {
@@ -76,7 +81,7 @@ export class WizardComponent {
       .then(
         () => {
           this.fetchData();
-          this.modal.close();
+          this.reset();
         },
         (error) => {this.error = error}
       );

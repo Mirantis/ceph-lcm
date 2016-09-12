@@ -229,17 +229,18 @@ label {
   &.open {
     height: auto;
     min-height: 50px;
+
     .bowels {
       display: block;
     }
-    .glyphicon {
-      top: 10px;
-    }
-  }
 
-  .glyphicon {
-    top: 8px;
-    left: 10px;
+    & > div {
+      &.action {
+        .glyphicon {
+          top: 10px;
+        }
+      }
+    }
   }
 
   & > div {
@@ -250,7 +251,12 @@ label {
 
     &.icon {
       height: 48px;
-      padding: 8px 0 0 30px;
+      padding: 15px 0 0 30px;
+
+      &.servers {
+        text-align: right;
+        padding-right: 50px;
+      }
     }
 
     &.name {
@@ -279,7 +285,12 @@ label {
       height: 48px;
       font-weight: 400;
       color: @text + 30%;
-      text-align: center;
+      text-align: right;
+
+      .glyphicon {
+        right: 8px;
+        top: 8px;
+      }
     }
 
     &.state {
@@ -293,11 +304,6 @@ label {
     }
   }
 
-  .box-close,
-  .box-open {
-    text-align: right;
-    margin-right: 20px;
-  }
   .bowels {
     max-height: 310px;
     overflow-y: auto;

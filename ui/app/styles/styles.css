@@ -587,12 +587,8 @@ label {
 .box.open .bowels {
   display: block;
 }
-.box.open .glyphicon {
+.box.open > div.action .glyphicon {
   top: 10px;
-}
-.box .glyphicon {
-  top: 8px;
-  left: 10px;
 }
 .box > div {
   display: block;
@@ -602,7 +598,11 @@ label {
 }
 .box > div.icon {
   height: 48px;
-  padding: 8px 0 0 30px;
+  padding: 15px 0 0 30px;
+}
+.box > div.icon.servers {
+  text-align: right;
+  padding-right: 50px;
 }
 .box > div.name {
   height: 48px;
@@ -628,7 +628,11 @@ label {
   height: 48px;
   font-weight: 400;
   color: #747a81;
-  text-align: center;
+  text-align: right;
+}
+.box > div.action .glyphicon {
+  right: 8px;
+  top: 8px;
 }
 .box > div.state {
   height: 48px;
@@ -637,11 +641,6 @@ label {
 }
 .box > div.state.off {
   color: #FF634C;
-}
-.box .box-close,
-.box .box-open {
-  text-align: right;
-  margin-right: 20px;
 }
 .box .bowels {
   max-height: 310px;

@@ -5,8 +5,7 @@ import { DataService } from '../services/data';
 import * as _ from 'lodash';
 
 @Component({
-  templateUrl: './app/templates/clusters.html',
-  directives: [Modal]
+  templateUrl: './app/templates/clusters.html'
 })
 export class ClustersComponent {
   clusters: any[] = null;

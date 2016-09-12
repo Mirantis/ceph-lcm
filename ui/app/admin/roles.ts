@@ -22,8 +22,7 @@ export class PermissionsGroup {
 }
 
 @Component({
-  templateUrl: './app/templates/roles.html',
-  directives: [PermissionsGroup]
+  templateUrl: './app/templates/roles.html'
 })
 export class RolesComponent {
   roles: any[] = null;

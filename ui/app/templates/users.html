@@ -33,14 +33,12 @@
       </div>
 
       <div class="col-xs-1 action">
-        <div class="box-close">
-          <a (click)="showUserData(user)">
-            <span
-              class="glyphicon"
-              [ngClass]="user.id === shownUserId ? 'triangle-down-icon' : 'triangle-right-icon'"
-            ></span>
-          </a>
-        </div>
+        <a (click)="showUserData(user)">
+          <span
+            class="glyphicon"
+            [ngClass]="'glyphicon-triangle-' + (user.id === shownUserId ? 'bottom' : 'right')"
+          ></span>
+        </a>
       </div>
       <div class="bowels" *ngIf="user.id === shownUserId">
         <div class="col-xs-5"><h3>User Details</h3></div>

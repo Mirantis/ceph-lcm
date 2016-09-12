@@ -22,7 +22,7 @@
     <div class="box" *ngFor="let playbook of playbooks">
       <div class="col-xs-3 name">{{playbook.name}}</div>
       <div class="col-xs-7 parameter">{{playbook.description}}</div>
-      <div class="col-xs-2 icon text-center">
+      <div class="col-xs-2 icon servers">
         <span *ngIf="playbook.required_server_list" class="glyphicon glyphicon-ok">
         </span>
       </div>

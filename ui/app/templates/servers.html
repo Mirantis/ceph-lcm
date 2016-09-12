@@ -76,14 +76,12 @@
         {{server.data.state}}
       </div>
       <div class="col-xs-1 action">
-        <div class="box-close">
-          <a (click)="showVersions(server)">
-            <span
-              class="glyphicon"
-              [ngClass]="server.id === shownServerId ? 'triangle-down-icon' : 'triangle-right-icon'"
-            ></span>
-          </a>
-        </div>
+        <a (click)="showVersions(server)">
+          <span
+            class="glyphicon"
+            [ngClass]="'glyphicon-triangle-' + (server.id === shownServerId ? 'bottom' : 'right')"
+          ></span>
+        </a>
       </div>
 
       <div class="bowels">

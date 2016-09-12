@@ -5,13 +5,15 @@ import { RouterModule } from '@angular/router';
 
 import { SharedModule } from '../shared.module';
 
-import { AdminComponent, UsersComponent, RolesComponent } from './index';
+import { AdminComponent, UsersComponent,
+  RolesComponent, PermissionsGroup } from './index';
 
 @NgModule({
   declarations: [
     AdminComponent,
     UsersComponent,
-    RolesComponent
+    RolesComponent,
+    PermissionsGroup
   ],
   imports: [
     BrowserModule,
@@ -22,7 +24,8 @@ import { AdminComponent, UsersComponent, RolesComponent } from './index';
   exports: [
     AdminComponent,
     UsersComponent,
-    RolesComponent
+    RolesComponent,
+    PermissionsGroup
   ]
 })
 export class AdminModule { }
