@@ -12,6 +12,7 @@ declare module 'js-data' {
   interface Mapper {
     getVersion(): any;
     getVersions(versionId: string): any;
+    [key: string]: any;
   }
 }
 
@@ -26,7 +27,7 @@ export class DataService {
   // FIXME: to be moved to configuration
   adapter = new HttpAdapter({basePath: 'http://private-3509f-cephlcmswaggerapi.apiary-mock.com/v1'});
   // adapter = new HttpAdapter({basePath: 'http://private-47d2dd-cephlcm.apiary-mock.com/v1'});
-  mappers = {};
+  mappers: {[key: string]: Mapper} = {};
 
   token(): Mapper {return this.getMapper('auth')}
   user(): Mapper {return this.getMapper('user')}
@@ -38,7 +39,7 @@ export class DataService {
   server(): Mapper {return this.getMapper('server')}
   execution(): Mapper {return this.getMapper('execution')}
 
-  private modelsProperties = {
+  private modelsProperties: {[key: string]: Object} = {
     auth: {
      user_id: {type: 'string'},
      expires_at: {type: 'number'}

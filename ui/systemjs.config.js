@@ -21,7 +21,10 @@
     'lodash': 'npm:lodash/lodash.js',
     'js-data': 'npm:js-data',
     'js-data-http': 'npm:js-data-http',
-    'angular2-cookie': 'npm:angular2-cookie'
+    'angular2-cookie': 'npm:angular2-cookie',
+
+    'jquery': 'npm:jquery',
+    'bootstrap': 'npm:bootstrap'
   };
 
   var packages = {
@@ -44,6 +47,12 @@
     },
     'angular2-cookie': {
       main: 'core.js'
+    },
+    'jquery': {
+      main: 'dist/jquery.min.js'
+    },
+    'bootstrap': {
+      main: 'dist/js/bootstrap.min.js'
     }
   };
 

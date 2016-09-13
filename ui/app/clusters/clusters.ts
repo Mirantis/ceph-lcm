@@ -22,7 +22,7 @@ export class ClustersComponent {
   }
 
   editCluster(cluster: any = null) {
-    this.newCluster = _.isNull(cluster) ? {data: {}} : cluster;
+    this.newCluster = _.isNull(cluster) ? {data: {}} : _.cloneDeep(cluster);
     this.modal.show();
   }
 

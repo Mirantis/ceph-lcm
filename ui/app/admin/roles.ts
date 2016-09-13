@@ -11,12 +11,12 @@ import * as _ from 'lodash';
 export class PermissionsGroup {
   @Input() group: string;
   @Input() roles: any[];
-  @Input() permissions: Object;
+  @Input() permissions: {[key: string]: any};
 
   getPermissions(): any[] {
     return this.permissions[this.group];
   }
-  getRolePermission(permission: string, role: Object) {
+  getRolePermission(permission: string, role: {[key: string]: any}) {
     return _.includes(role[this.group], permission);
   }
 }

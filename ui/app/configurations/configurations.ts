@@ -17,7 +17,7 @@ export class ConfigurationsComponent {
   playbooks: any[] = [];
   servers: any[] = [];
   shownConfigurationId: string = null;
-  configurationVersions: Object = {};
+  configurationVersions: {[key: string]: any[]} = {};
   error: any;
 
   constructor(private data: DataService, private modal: Modal) {

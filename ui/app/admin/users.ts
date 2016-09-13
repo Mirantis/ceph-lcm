@@ -14,7 +14,7 @@ export class UsersComponent {
   newUser: any = {data: {}};
   error: any;
   shownUserId: any = null;
-  usersVersions: Object = {};
+  usersVersions: {[key: string]: any[]} = {};
 
   constructor(private data: DataService, private modal: Modal) {
     this.fetchData();
@@ -28,7 +28,7 @@ export class UsersComponent {
         this.roles = roles.items;
         this.rolesNames = _.reduce(
           this.roles,
-          (result, role) => {
+          (result: any[], role: any) => {
             result[role.data.name] = role;
             return result;
           },
@@ -38,7 +38,7 @@ export class UsersComponent {
   }
 
   editUser(user: any = null) {
-    this.newUser = _.isNull(user) ? {data: {}} : user;
+    this.newUser = _.isNull(user) ? {data: {}} : _.cloneDeep(user);
     this.shownUserId = null;
     this.modal.show();
   }
@@ -73,7 +73,7 @@ export class UsersComponent {
 
   showUserData(user: any) {
     this.shownUserId = this.shownUserId === user.id ? null : user.id;
-    this.newUser = _.isNull(this.shownUserId) ? {data: {}} : user;
+    this.newUser = _.isNull(this.shownUserId) ? {data: {}} : _.cloneDeep(user);
   }
 
   getUserVersions(user: any): any[] {

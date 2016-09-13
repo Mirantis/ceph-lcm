@@ -1,4 +1,6 @@
 import { Component, Input } from '@angular/core';
+import * as jQuery from 'jquery';
+import 'bootstrap';
 
 @Component({
   selector: 'modal',
@@ -10,11 +12,11 @@ export class Modal {
   @Input() isLarge: boolean = false;
 
   show(id: string = 'modal') {
-    $('#' + id)['modal']('show');
+    jQuery('#' + id).modal('show');
   }
 
   close(id: string = 'modal') {
-    $('#' + id)['modal']('hide');
+    jQuery('#' + id).modal('hide');
   }
 };
 
