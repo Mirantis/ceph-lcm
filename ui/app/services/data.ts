@@ -4,6 +4,8 @@ import { Injectable } from '@angular/core';
 import { DataStore, Record, Mapper } from 'js-data';
 import { HttpAdapter } from 'js-data-http';
 import { SessionService } from './session';
+import { Token, User, Permissions, Role, Cluster,
+  Playbook, PlaybookConfiguration, Server, Execution } from '../models';
 
 type supportedMappers = 'auth' | 'user' | 'role' | 'permissions' | 'cluster' |
   'playbook' | 'playbook_configuration' | 'server' | 'execution';
@@ -29,15 +31,15 @@ export class DataService {
   // adapter = new HttpAdapter({basePath: 'http://private-47d2dd-cephlcm.apiary-mock.com/v1'});
   mappers: {[key: string]: Mapper} = {};
 
-  token(): Mapper {return this.getMapper('auth')}
-  user(): Mapper {return this.getMapper('user')}
-  role(): Mapper {return this.getMapper('role')}
-  permissions(): Mapper {return this.getMapper('permissions')}
-  cluster(): Mapper {return this.getMapper('cluster')}
-  playbook(): Mapper {return this.getMapper('playbook')}
-  configuration(): Mapper {return this.getMapper('playbook_configuration')}
-  server(): Mapper {return this.getMapper('server')}
-  execution(): Mapper {return this.getMapper('execution')}
+  token(): Mapper {return this.getMapper('auth', Token)}
+  user(): Mapper {return this.getMapper('user', User)}
+  role(): Mapper {return this.getMapper('role', Role)}
+  permissions(): Mapper {return this.getMapper('permissions', Permissions)}
+  cluster(): Mapper {return this.getMapper('cluster', Cluster)}
+  playbook(): Mapper {return this.getMapper('playbook', Playbook)}
+  configuration(): Mapper {return this.getMapper('playbook_configuration', PlaybookConfiguration)}
+  server(): Mapper {return this.getMapper('server', Server)}
+  execution(): Mapper {return this.getMapper('execution', Execution)}
 
   private modelsProperties: {[key: string]: Object} = {
     auth: {
@@ -84,11 +86,7 @@ export class DataService {
     }
   };
 
-  private isModelVersionated = {
-    playbook_configuration: true
-  };
-
-  private getMapper(name: supportedMappers): Mapper {
+  private getMapper(name: supportedMappers, recordClass: any = Record): Mapper {
     let mapper: Mapper;
     if (this.mappers.hasOwnProperty(name)) {
       // return cached value
@@ -99,6 +97,7 @@ export class DataService {
         name,
         {
           endpoint: name,
+          recordClass: recordClass,
           schema: _.extend(
             {
               properties: {
@@ -122,8 +121,22 @@ export class DataService {
               }
             }
           ),
+          afterFind: function(props: any, opts: any, result: any) {
+            return _.map(result.items, (item, index) => new (this.recordClass)(item));
+          },
+          afterFindAll: function(props: any, opts: any, result: any) {
+            let items: any[];
+            if (name == 'permissions') {
+              return result;
+            } else if (name == 'playbook') {
+              items = result.playbooks;
+            } else {
+              items = result.items;
+            }
+            return _.map(items, (item, index) => new (this.recordClass)(item));
+          },
           getVersions: function(id: string) {
-            return this.find(id, {suffix: '/version'});
+            return this.findAll({}, {endpoint: name + '/' + id + '/version'});
           },
           getVersion: function(id: string, versionId: string) {
             return this.find(id, {suffix: '/version/' + versionId});

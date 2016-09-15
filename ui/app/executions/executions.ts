@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { DataService } from '../services/data';
+import { Execution } from '../models';
 
 import * as _ from 'lodash';
 
@@ -7,7 +8,7 @@ import * as _ from 'lodash';
   templateUrl: './app/templates/executions.html',
 })
 export class ExecutionsComponent {
-  executions: any[] = null;
+  executions: Execution[] = null;
 
   constructor(private data: DataService) {
     this.fetchData();
@@ -15,6 +16,6 @@ export class ExecutionsComponent {
 
   fetchData() {
     this.data.execution().findAll({})
-      .then((executions: any) => this.executions = executions.items);
+      .then((executions: Execution[]) => this.executions = executions);
   }
 }

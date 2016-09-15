@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { NgSwitch, NgSwitchCase } from '@angular/common';
 import { Modal } from '../bootstrap';
 import { DataService } from '../services/data';
+import { Cluster, Server, Playbook, PlaybookConfiguration } from '../models';
 
 import { WizardComponent } from './wizard';
 
@@ -12,12 +13,12 @@ import * as _ from 'lodash';
 })
 export class ConfigurationsComponent {
   @ViewChild(WizardComponent) wizard: WizardComponent;
-  configurations: any[] = null;
-  clusters: any[] = [];
-  playbooks: any[] = [];
-  servers: any[] = [];
+  configurations: PlaybookConfiguration[] = null;
+  clusters: Cluster[] = [];
+  playbooks: Playbook[] = [];
+  servers: Server[] = [];
   shownConfigurationId: string = null;
-  configurationVersions: {[key: string]: any[]} = {};
+  configurationVersions: {[key: string]: PlaybookConfiguration[]} = {};
   error: any;
 
   constructor(private data: DataService, private modal: Modal) {
@@ -26,29 +27,29 @@ export class ConfigurationsComponent {
 
   fetchData() {
     this.data.configuration().findAll({})
-      .then((configurations: any) => this.configurations = configurations.items);
+      .then((configurations: PlaybookConfiguration[]) => this.configurations = configurations);
   }
 
-  editConfiguration(configuration: any = null) {
+  editConfiguration(configuration: PlaybookConfiguration = null) {
     this.data.cluster().findAll({})
-      .then((clusters: any) => this.clusters = clusters.items);
+      .then((clusters: any) => this.clusters = clusters);
     this.data.playbook().findAll({})
-      .then((playbooks: any) => this.playbooks = playbooks.playbooks);
+      .then((playbooks: any) => this.playbooks = playbooks);
     this.data.server().findAll({})
-      .then((servers: any) => this.servers = servers.items);
+      .then((servers: any) => this.servers = servers);
     this.modal.show();
   }
 
-  showVersions(configuration: any) {
+  showVersions(configuration: PlaybookConfiguration) {
     this.shownConfigurationId = this.shownConfigurationId === configuration.id ?
       null : configuration.id;
   }
 
-  getConfigurationVersions(configuration: any) {
+  getConfigurationVersions(configuration: PlaybookConfiguration) {
     if (!this.configurationVersions[configuration.id]) {
       this.data.configuration().getVersions(configuration.id)
-        .then((versions: any) => {
-          this.configurationVersions[configuration.id] = versions.items;
+        .then((versions: PlaybookConfiguration[]) => {
+          this.configurationVersions[configuration.id] = versions;
         });
       this.configurationVersions[configuration.id] = [];
     }

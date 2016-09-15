@@ -90,8 +90,9 @@
   You don't have any clusters yet. Please create.
 </div>
 
-
-<modal [title]="newCluster.id ? 'Edit Cluster' : 'Create New Cluster'">
+<modal
+  [title]="newCluster.id ? 'Edit Cluster' : 'Create New Cluster'"
+>
   <div class="modal-body">
     <div class="alert alert-danger" role="alert" *ngIf="error">
       {{error}}

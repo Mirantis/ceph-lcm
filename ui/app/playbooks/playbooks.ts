@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
 import { DataService } from '../services/data';
 
+import { Playbook } from '../models';
+
 import * as _ from 'lodash';
 
 @Component({
   templateUrl: './app/templates/playbooks.html',
 })
 export class PlaybooksComponent {
-  playbooks: any[] = null;
+  playbooks: Playbook[] = null;
 
   constructor(private data: DataService) {
     this.fetchData();
@@ -15,6 +17,6 @@ export class PlaybooksComponent {
 
   fetchData() {
     this.data.playbook().findAll({})
-      .then((playbooks: any) => this.playbooks = playbooks.playbooks);
+      .then((playbooks: Playbook[]) => this.playbooks = playbooks);
   }
 }

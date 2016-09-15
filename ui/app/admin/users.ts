@@ -1,20 +1,24 @@
 import { Component } from '@angular/core';
 import { Modal } from '../bootstrap';
 import { DataService } from '../services/data';
+import { User, Role } from '../models';
 
 import * as _ from 'lodash';
+
+type roleNamesType = {[key: string]: Role};
+type userVersionsType = {[key: string]: User[]};
 
 @Component({
   templateUrl: './app/templates/users.html'
 })
 export class UsersComponent {
-  users: any[] = null;
-  roles: any[] = [];
-  rolesNames: Object = {};
-  newUser: any = {data: {}};
+  users: User[] = null;
+  userVersions: userVersionsType = {};
+  roles: Role[] = [];
+  roleNames: roleNamesType = {};
+  newUser: User = new User({});
   error: any;
-  shownUserId: any = null;
-  usersVersions: {[key: string]: any[]} = {};
+  shownUserId: string = null;
 
   constructor(private data: DataService, private modal: Modal) {
     this.fetchData();
@@ -22,23 +26,23 @@ export class UsersComponent {
 
   fetchData() {
     this.data.user().findAll({})
-      .then((users: any) => this.users = users.items);
+      .then((users: User[]) => this.users = users);
     this.data.role().findAll({})
-      .then((roles: any) => {
-        this.roles = roles.items;
-        this.rolesNames = _.reduce(
+      .then((roles: Role[]) => {
+        this.roles = roles;
+        this.roleNames = _.reduce(
           this.roles,
-          (result: any[], role: any) => {
+          (result: roleNamesType, role: Role) => {
             result[role.data.name] = role;
             return result;
           },
-          {}
+          {} as roleNamesType
         )
       });
   }
 
-  editUser(user: any = null) {
-    this.newUser = _.isNull(user) ? {data: {}} : _.cloneDeep(user);
+  editUser(user: User = null) {
+    this.newUser = _.isNull(user) ? new User({}) : user.clone();
     this.shownUserId = null;
     this.modal.show();
   }
@@ -63,7 +67,7 @@ export class UsersComponent {
       );
   }
 
-  deleteUser(user: any) {
+  deleteUser(user: User) {
     this.data.user().destroy(user.id)
       .then(() => {
         this.shownUserId = null;
@@ -73,18 +77,18 @@ export class UsersComponent {
 
   showUserData(user: any) {
     this.shownUserId = this.shownUserId === user.id ? null : user.id;
-    this.newUser = _.isNull(this.shownUserId) ? {data: {}} : _.cloneDeep(user);
+    this.newUser = _.isNull(this.shownUserId) ? new User({}) : user.clone();
   }
 
-  getUserVersions(user: any): any[] {
-    if (!this.usersVersions[user.id]) {
+  getUserVersions(user: any): User[] {
+    if (!this.userVersions[user.id]) {
       this.data.user().getVersions(user.id)
-        .then((versions: any) => {
-          this.usersVersions[user.id] = versions.items;
+        .then((versions: User[]) => {
+          this.userVersions[user.id] = versions;
         });
-      this.usersVersions[user.id] = [];
+      this.userVersions[user.id] = [];
     }
-    return this.usersVersions[user.id];
+    return this.userVersions[user.id];
   }
 
 }

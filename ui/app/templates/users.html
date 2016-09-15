@@ -26,7 +26,7 @@
         {{user.data.login}}
       </div>
       <div class="col-xs-4 parameter">
-        {{rolesNames[user.data.role_id]}}
+        {{roleNames[user.data.role_id]}}
       </div>
       <div class="col-xs-3 parameter">
         {{user.time_updated|date_time}}
@@ -126,8 +126,8 @@
         </div>
 
         <div class="col-xs-7">
-          <div *ngFor="let version of getUserVersions(user)">
-            {{version.id}}
+          <div *ngFor="let user of getUserVersions(user)">
+            {{user.version}}: {{user.id}}
           </div>
         </div>
 

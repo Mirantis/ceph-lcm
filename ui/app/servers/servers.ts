@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { DataService } from '../services/data';
+import { Server } from '../models';
 
 import * as _ from 'lodash';
 
@@ -7,9 +8,9 @@ import * as _ from 'lodash';
   templateUrl: './app/templates/servers.html',
 })
 export class ServersComponent {
-  servers: any[] = null;
-  shownServerId: any = null;
-  configuration: any [] = [
+  servers: Server[] = null;
+  shownServerId: string = null;
+  configuration: string[][] = [
     ['name', 'fqdn', 'ip'], ['state', 'cluster_id']
   ];
 
@@ -19,10 +20,10 @@ export class ServersComponent {
 
   fetchData() {
     this.data.server().findAll({})
-      .then((servers: any) => this.servers = servers.items);
+      .then((servers: Server[]) => this.servers = servers);
   }
 
-  showVersions(server: any) {
+  showVersions(server: Server) {
     this.shownServerId = this.shownServerId === server.id ?
       null : server.id;
   }

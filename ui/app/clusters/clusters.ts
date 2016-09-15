@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Modal } from '../bootstrap';
 import { DataService } from '../services/data';
+import { Cluster } from '../models';
 
 import * as _ from 'lodash';
 
@@ -8,8 +9,8 @@ import * as _ from 'lodash';
   templateUrl: './app/templates/clusters.html'
 })
 export class ClustersComponent {
-  clusters: any[] = null;
-  newCluster: any = {data: {}};
+  clusters: Cluster[] = null;
+  newCluster: Cluster = new Cluster({});
   error: any;
 
   constructor(private data: DataService, private modal: Modal) {
@@ -18,11 +19,11 @@ export class ClustersComponent {
 
   fetchData() {
     this.data.cluster().findAll({})
-      .then((clusters: any) => this.clusters = clusters.items);
+      .then((clusters: Cluster[]) => this.clusters = clusters);
   }
 
-  editCluster(cluster: any = null) {
-    this.newCluster = _.isNull(cluster) ? {data: {}} : _.cloneDeep(cluster);
+  editCluster(cluster: Cluster = null) {
+    this.newCluster = _.isNull(cluster) ? new Cluster({}) : cluster.clone();
     this.modal.show();
   }
 

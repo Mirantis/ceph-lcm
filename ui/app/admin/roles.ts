@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-
 import { DataService } from '../services/data';
+import { User, Role, Permissions } from '../models';
 import { Modal } from '../bootstrap';
 import * as _ from 'lodash';
 
@@ -10,14 +10,14 @@ import * as _ from 'lodash';
 })
 export class PermissionsGroup {
   @Input() group: string;
-  @Input() roles: any[];
-  @Input() permissions: {[key: string]: any};
+  @Input() roles: Role[];
+  @Input() permissions: Permissions;
 
-  getPermissions(): any[] {
+  getPermissions(): string[] {
     return this.permissions[this.group];
   }
-  getRolePermission(permission: string, role: {[key: string]: any}) {
-    return _.includes(role[this.group], permission);
+  getRolePermission(permission: string, role: Role) {
+    return _.includes(role.data.permissions[this.group], permission);
   }
 }
 
@@ -25,29 +25,29 @@ export class PermissionsGroup {
   templateUrl: './app/templates/roles.html'
 })
 export class RolesComponent {
-  roles: any[] = null;
-  permissions: Object = {};
-  newRole: any = {data: {permissions: {}}};
+  roles: Role[] = null;
+  permissions: Permissions = {} as Permissions;
+  newRole: Role = new Role({});
   error: any;
 
   constructor(private data: DataService, private modal: Modal) {
     this.fetchData();
     // Permissions are not going to change
     this.data.permissions().findAll({})
-      .then((permissions: Object) => this.permissions = permissions);
+      .then((permissions: Permissions) => this.permissions = permissions);
   }
 
   fetchData() {
     this.data.role().findAll({})
-      .then((roles: any) => this.roles = roles.items);
+      .then((roles: Role[]) => this.roles = roles);
   }
 
-  editRole(role: any = null) {
-    this.newRole = _.isNull(role) ? {data: {permissions: {}}} : role;
+  editRole(role: Role = null) {
+    this.newRole = _.isNull(role) ? new Role({}) : role.clone();
     this.modal.show();
   }
 
-  deleteRole(role: any = null) {
+  deleteRole(role: Role = null) {
     this.data.role().destroy(role.id)
       .then(() => this.fetchData());
   }
