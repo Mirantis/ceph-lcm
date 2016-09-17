@@ -33,9 +33,9 @@ RUN set -x \
     && cd /project \
     && pip3 install -r requirements.txt -c constraints.txt \
     && python3 setup.py install \
-    && cd playbook_plugins/playbook_helloworld \
+    && cd plugins/playbook/playbook_helloworld \
     && python3 setup.py install \
-    && cd /project/playbook_plugins/server_discovery \
+    && cd /project/plugins/playbook/server_discovery \
     && python3 setup.py install \
     && mkdir -p /usr/share/ansible/plugins/callback \
     && cp /project/scripts/cb_execution.py /usr/share/ansible/plugins/callback \
