@@ -28,6 +28,6 @@ setuptools.setup(
     },
     install_requires=[
         "cephlcm_common"
-    ]
+    ],
     zip_safe=False
 )

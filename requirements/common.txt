@@ -1,5 +1,0 @@
-# Requirements for cephlcm_common package
-
-pymongo
-simplejson
-toml
