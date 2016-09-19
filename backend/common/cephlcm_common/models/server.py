@@ -9,10 +9,10 @@ using API. It has to be created after Ansible playbook invocation.
 import enum
 import uuid
 
-from cephlcm.common import exceptions
-from cephlcm.common import retryutils
-from cephlcm.common.models import generic
-from cephlcm.common.models import properties
+from cephlcm_common import exceptions
+from cephlcm_common import retryutils
+from cephlcm_common.models import generic
+from cephlcm_common.models import properties
 
 
 @enum.unique
@@ -50,7 +50,7 @@ class ServerModel(generic.Model):
         self.lock = None
 
     _cluster = properties.ModelProperty(
-        "cephlcm.common.models.cluster.ClusterModel",
+        "cephlcm_common.models.cluster.ClusterModel",
         "cluster_id"
     )
 

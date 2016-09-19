@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""This module contains tests for cephlcm.common.models.token."""
+"""This module contains tests for cephlcm_common.models.token."""
 
 
 import pytest
 
-from cephlcm.common.models import token
+from cephlcm_common.models import token
 
 
 def test_create_token_in_db(configure_model, pymongo_connection, freeze_time):

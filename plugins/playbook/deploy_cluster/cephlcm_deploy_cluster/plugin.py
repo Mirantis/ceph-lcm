@@ -9,8 +9,8 @@ import tempfile
 
 import netaddr
 
-from cephlcm.common import log
-from cephlcm.common import playbook_plugin
+from cephlcm_common import log
+from cephlcm_common import playbook_plugin
 
 from . import exceptions
 from . import monitor_secret

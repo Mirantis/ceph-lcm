@@ -8,9 +8,9 @@ configuration to execute and creates task for execution.
 
 import enum
 
-from cephlcm.common.models import generic
-from cephlcm.common.models import playbook_configuration
-from cephlcm.common.models import properties
+from cephlcm_common.models import generic
+from cephlcm_common.models import playbook_configuration
+from cephlcm_common.models import properties
 
 
 @enum.unique

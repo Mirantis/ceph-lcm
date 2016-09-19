@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm.common.timeutils."""
+"""Tests for cephlcm_common.timeutils."""
 
 
 import time
 
 import pytest
 
-from cephlcm.common import timeutils
+from cephlcm_common import timeutils
 
 
 @pytest.mark.parametrize("timestamp", (

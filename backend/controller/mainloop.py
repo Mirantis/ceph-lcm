@@ -7,11 +7,11 @@ import os
 import sys
 import threading
 
-from cephlcm.common import config
-from cephlcm.common import log
-from cephlcm.common.models import execution
-from cephlcm.common.models import server
-from cephlcm.common.models import task
+from cephlcm_common import config
+from cephlcm_common import log
+from cephlcm_common.models import execution
+from cephlcm_common.models import server
+from cephlcm_common.models import task
 from cephlcm.controller import taskpool
 
 

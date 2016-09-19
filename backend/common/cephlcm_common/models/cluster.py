@@ -6,10 +6,10 @@ them to roles.
 """
 
 
-from cephlcm.common import exceptions
-from cephlcm.common import log
-from cephlcm.common.models import generic
-from cephlcm.common.models import server
+from cephlcm_common import exceptions
+from cephlcm_common import log
+from cephlcm_common.models import generic
+from cephlcm_common.models import server
 
 
 LOG = log.getLogger(__name__)

@@ -10,10 +10,10 @@ import platform
 import threading
 import time
 
-from cephlcm.common import config
-from cephlcm.common import log
-from cephlcm.common import plugins
-from cephlcm.common.models import task
+from cephlcm_common import config
+from cephlcm_common import log
+from cephlcm_common import plugins
+from cephlcm_common.models import task
 
 
 TaskState = collections.namedtuple("TaskState", ["future", "stop_event"])

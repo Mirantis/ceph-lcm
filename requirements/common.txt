@@ -1,4 +1,4 @@
-# Requirements for cephlcm.common package
+# Requirements for cephlcm_common package
 
 pymongo
 simplejson

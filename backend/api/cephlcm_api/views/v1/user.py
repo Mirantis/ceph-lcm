@@ -6,11 +6,11 @@ from cephlcm_api import auth
 from cephlcm_api import exceptions as http_exceptions
 from cephlcm_api import validators
 from cephlcm_api.views import generic
-from cephlcm.common import emailutils
-from cephlcm.common import exceptions as base_exceptions
-from cephlcm.common import log
-from cephlcm.common import passwords
-from cephlcm.common.models import user
+from cephlcm_common import emailutils
+from cephlcm_common import exceptions as base_exceptions
+from cephlcm_common import log
+from cephlcm_common import passwords
+from cephlcm_common.models import user
 
 
 DATA_SCHEMA = {

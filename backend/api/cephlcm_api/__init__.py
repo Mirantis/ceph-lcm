@@ -8,9 +8,9 @@ import flask_pymongo
 from cephlcml_api import config as app_config
 from cephlcml_api import handlers
 from cephlcml_api import views
-from cephlcm.common import config as base_config
-from cephlcm.common import log
-from cephlcm.common.models import generic as generic_model
+from cephlcm_common import config as base_config
+from cephlcm_common import log
+from cephlcm_common.models import generic as generic_model
 
 
 CONF = base_config.make_api_config()

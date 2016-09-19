@@ -11,11 +11,11 @@ import functools
 import flask
 
 from cephlcm_api import exceptions
-from cephlcm.common import log
-from cephlcm.common import passwords
-from cephlcm.common.models import role
-from cephlcm.common.models import token
-from cephlcm.common.models import user
+from cephlcm_common import log
+from cephlcm_common import passwords
+from cephlcm_common.models import role
+from cephlcm_common.models import token
+from cephlcm_common.models import user
 
 
 LOG = log.getLogger(__name__)

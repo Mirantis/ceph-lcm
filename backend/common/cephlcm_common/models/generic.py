@@ -36,11 +36,11 @@ import bson.objectid
 import pymongo
 import pymongo.errors
 
-from cephlcm.common import exceptions
-from cephlcm.common import log
-from cephlcm.common import timeutils
-from cephlcm.common import wrappers
-from cephlcm.common.models import properties
+from cephlcm_common import exceptions
+from cephlcm_common import log
+from cephlcm_common import timeutils
+from cephlcm_common import wrappers
+from cephlcm_common.models import properties
 
 
 MODEL_DB_STRUCTURE = {
@@ -221,7 +221,7 @@ class Model(Base, metaclass=abc.ABCMeta):
         self._id = None
 
     initiator = properties.ModelProperty(
-        "cephlcm.common.models.user.UserModel",
+        "cephlcm_common.models.user.UserModel",
         "initiator_id"
     )
 

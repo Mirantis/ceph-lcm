@@ -6,10 +6,10 @@ import collections
 
 import pymongo.errors
 
-from cephlcm.common import exceptions
-from cephlcm.common import passwords
-from cephlcm.common.models import generic
-from cephlcm.common.models import properties
+from cephlcm_common import exceptions
+from cephlcm_common import passwords
+from cephlcm_common.models import generic
+from cephlcm_common.models import properties
 
 
 class UserModel(generic.Model):
@@ -34,7 +34,7 @@ class UserModel(generic.Model):
         self._permissions = collections.defaultdict(set)
 
     role = properties.ModelProperty(
-        "cephlcm.common.models.role.RoleModel",
+        "cephlcm_common.models.role.RoleModel",
         "role_id"
     )
 
@@ -121,7 +121,7 @@ class UserModel(generic.Model):
     def delete(self):
         super().delete()
 
-        from cephlcm.common.models import token
+        from cephlcm_common.models import token
 
         token.revoke_for_user(self.model_id)
 

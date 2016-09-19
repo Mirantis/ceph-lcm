@@ -10,7 +10,7 @@ import werkzeug.exceptions
 
 from cephlcm_api import exceptions
 from cephlcm_api import pagination
-from cephlcm.common import log
+from cephlcm_common import log
 
 
 LOG = log.getLogger(__name__)

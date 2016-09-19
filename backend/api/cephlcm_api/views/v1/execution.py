@@ -8,12 +8,12 @@ from cephlcm_api import auth
 from cephlcm_api import exceptions as http_exceptions
 from cephlcm_api import validators
 from cephlcm_api.views import generic
-from cephlcm.common import exceptions as base_exceptions
-from cephlcm.common import log
-from cephlcm.common.models import execution
-from cephlcm.common.models import execution_step
-from cephlcm.common.models import playbook_configuration
-from cephlcm.common.models import task
+from cephlcm_common import exceptions as base_exceptions
+from cephlcm_common import log
+from cephlcm_common.models import execution
+from cephlcm_common.models import execution_step
+from cephlcm_common.models import playbook_configuration
+from cephlcm_common.models import task
 
 
 POST_SCHEMA = {

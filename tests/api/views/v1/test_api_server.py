@@ -6,8 +6,8 @@ import copy
 
 import pytest
 
-from cephlcm.common.models import server
-from cephlcm.common.models import task
+from cephlcm_common.models import server
+from cephlcm_common.models import task
 
 
 @pytest.fixture

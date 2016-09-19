@@ -7,8 +7,8 @@ import json
 
 import pytest
 
-from cephlcm.common import passwords
-from cephlcm.common.models import user
+from cephlcm_common import passwords
+from cephlcm_common.models import user
 
 
 @pytest.fixture

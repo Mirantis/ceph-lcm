@@ -6,9 +6,9 @@ from cephlcm_api import auth
 from cephlcm_api import exceptions as http_exceptions
 from cephlcm_api import validators
 from cephlcm_api.views import generic
-from cephlcm.common import exceptions as base_exceptions
-from cephlcm.common import log
-from cephlcm.common.models import role
+from cephlcm_common import exceptions as base_exceptions
+from cephlcm_common import log
+from cephlcm_common.models import role
 
 
 DATA_SCHEMA = {

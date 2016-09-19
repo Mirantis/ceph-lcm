@@ -4,7 +4,7 @@
 
 from cephlcm_api import auth
 from cephlcm_api.views import generic
-from cephlcm.common.models import role
+from cephlcm_common.models import role
 
 
 class PermissionView(generic.ModelView):

@@ -7,7 +7,7 @@ import json
 import pytest
 
 from cephlcm_api import pagination
-from cephlcm.common import config
+from cephlcm_common import config
 
 
 CONF = config.make_api_config()

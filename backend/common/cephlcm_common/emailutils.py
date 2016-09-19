@@ -7,8 +7,8 @@ import smtplib
 from email.mime import multipart
 from email.mime import text
 
-from cephlcm.common import config
-from cephlcm.common import log
+from cephlcm_common import config
+from cephlcm_common import log
 
 
 CONF = config.make_config()

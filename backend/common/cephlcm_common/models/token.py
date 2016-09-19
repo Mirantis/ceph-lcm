@@ -9,10 +9,10 @@ and expired tokens are invalid.
 
 import bson.objectid
 
-from cephlcm.common import config
-from cephlcm.common import timeutils
-from cephlcm.common.models import generic
-from cephlcm.common.models import properties
+from cephlcm_common import config
+from cephlcm_common import timeutils
+from cephlcm_common.models import generic
+from cephlcm_common.models import properties
 
 
 CONF = config.make_api_config()
@@ -38,7 +38,7 @@ class TokenModel(generic.Model):
         self.expires_at = 0
 
     user = properties.ModelProperty(
-        "cephlcm.common.models.user.UserModel",
+        "cephlcm_common.models.user.UserModel",
         "user_id"
     )
 

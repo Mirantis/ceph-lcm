@@ -11,14 +11,14 @@ import bson.objectid
 import pymongo
 import pymongo.errors
 
-from cephlcm.common import config
-from cephlcm.common import exceptions
-from cephlcm.common import log
-from cephlcm.common import retryutils
-from cephlcm.common import timeutils
-from cephlcm.common.models import generic
-from cephlcm.common.models import properties
-from cephlcm.common.models import server
+from cephlcm_common import config
+from cephlcm_common import exceptions
+from cephlcm_common import log
+from cephlcm_common import retryutils
+from cephlcm_common import timeutils
+from cephlcm_common.models import generic
+from cephlcm_common.models import properties
+from cephlcm_common.models import server
 
 
 TASK_TEMPLATE = {
@@ -180,7 +180,7 @@ class Task(generic.Base):
         )
 
     def get_execution(self):
-        from cephlcm.common.models import execution
+        from cephlcm_common.models import execution
 
         return execution.ExecutionModel.find_by_model_id(self.execution_id)
 
@@ -420,14 +420,14 @@ class PlaybookPluginTask(Task):
         server.ServerModel.unlock_servers(execution_model.servers)
 
     def start(self):
-        from cephlcm.common.models import execution
+        from cephlcm_common.models import execution
 
         super().start()
         exmodel = self.get_execution()
         self.set_execution_state(exmodel, execution.ExecutionState.started)
 
     def cancel(self):
-        from cephlcm.common.models import execution
+        from cephlcm_common.models import execution
 
         super().cancel()
         exmodel = self.get_execution()
@@ -435,7 +435,7 @@ class PlaybookPluginTask(Task):
         self.unlock_servers(exmodel)
 
     def complete(self):
-        from cephlcm.common.models import execution
+        from cephlcm_common.models import execution
 
         super().complete()
         exmodel = self.get_execution()
@@ -443,7 +443,7 @@ class PlaybookPluginTask(Task):
         self.unlock_servers(exmodel)
 
     def fail(self, error_message="Internal error"):
-        from cephlcm.common.models import execution
+        from cephlcm_common.models import execution
 
         super().fail(error_message)
         exmodel = self.get_execution()

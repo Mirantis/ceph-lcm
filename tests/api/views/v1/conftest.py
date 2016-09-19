@@ -5,8 +5,8 @@
 import flask.testing
 import pytest
 
-from cephlcm import api
-from cephlcm.common.models import user
+import cephlcm_api
+from cephlcm_common.models import user
 
 
 class JsonApiClient(flask.testing.FlaskClient):
@@ -58,7 +58,7 @@ class JsonApiClient(flask.testing.FlaskClient):
 
 @pytest.yield_fixture
 def app(configure_model):
-    application = api.create_application()
+    application = cephlcm_api.create_application()
     application.testing = True
     application.test_client_class = JsonApiClient
 

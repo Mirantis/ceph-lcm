@@ -6,7 +6,7 @@ import unittest.mock as mock
 
 import pytest
 
-from cephlcm.common.models import task
+from cephlcm_common.models import task
 
 
 def have_mocked(request, *mock_args, **mock_kwargs):

@@ -7,7 +7,7 @@ import string
 
 import bcrypt
 
-from cephlcm.common import config
+from cephlcm_common import config
 
 
 CONF = config.make_config()

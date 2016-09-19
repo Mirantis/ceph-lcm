@@ -6,7 +6,7 @@ import flask.json
 
 from werkzeug import exceptions
 
-from cephlcm.common import exceptions as app_exceptions
+from cephlcm_common import exceptions as app_exceptions
 
 
 class CephLCMJSONMixin(app_exceptions.CephLCMError, exceptions.HTTPException):

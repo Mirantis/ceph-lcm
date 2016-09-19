@@ -2,7 +2,7 @@
 """Simple KV storage."""
 
 
-from cephlcm.common.models import generic
+from cephlcm_common.models import generic
 
 
 class KV(generic.Base):

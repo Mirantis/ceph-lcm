@@ -10,10 +10,10 @@ result and, possibly, messages.
 
 import enum
 
-from cephlcm.common import execution_step
-from cephlcm.common import wrappers
-from cephlcm.common.models import generic
-from cephlcm.common.models import properties
+from cephlcm_common import execution_step
+from cephlcm_common import wrappers
+from cephlcm_common.models import generic
+from cephlcm_common.models import properties
 
 
 @enum.unique

@@ -9,7 +9,7 @@ import time
 
 import pymongo.errors
 
-from cephlcm.common import log
+from cephlcm_common import log
 
 
 LOG = log.getLogger(__name__)

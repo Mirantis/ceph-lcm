@@ -8,7 +8,7 @@ from cephlcm_api import auth
 from cephlcm_api import exceptions
 from cephlcm_api import validators
 from cephlcm_api.views import generic
-from cephlcm.common import log
+from cephlcm_common import log
 
 
 POST_SCHEMA = {

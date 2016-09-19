@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-"""This module contains tests for cephlcm.common.models.user."""
+"""This module contains tests for cephlcm_common.models.user."""
 
 
 import pytest
 
-from cephlcm.common import exceptions
-from cephlcm.common import passwords
-from cephlcm.common.models import token
-from cephlcm.common.models import user
+from cephlcm_common import exceptions
+from cephlcm_common import passwords
+from cephlcm_common.models import token
+from cephlcm_common.models import user
 
 
 def test_create_new_user(configure_model, pymongo_connection, freeze_time):

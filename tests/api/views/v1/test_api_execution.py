@@ -6,10 +6,10 @@ import unittest.mock
 
 import pytest
 
-from cephlcm.common.models import execution
-from cephlcm.common.models import execution_step
-from cephlcm.common.models import role
-from cephlcm.common.models import task
+from cephlcm_common.models import execution
+from cephlcm_common.models import execution_step
+from cephlcm_common.models import role
+from cephlcm_common.models import task
 
 
 @pytest.fixture

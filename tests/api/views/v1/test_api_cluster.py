@@ -4,7 +4,7 @@
 
 import pytest
 
-from cephlcm.common.models import cluster
+from cephlcm_common.models import cluster
 
 
 @pytest.fixture

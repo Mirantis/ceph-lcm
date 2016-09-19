@@ -6,9 +6,9 @@ import datetime
 import pprint
 import traceback
 
-from cephlcm.common import config
-from cephlcm.common import emailutils
-from cephlcm.common import log
+from cephlcm_common import config
+from cephlcm_common import emailutils
+from cephlcm_common import log
 
 
 UNMANAGED_TEXT_MESSAGE = """

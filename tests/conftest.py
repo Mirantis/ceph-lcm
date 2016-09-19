@@ -10,15 +10,15 @@ import pytest
 
 import cephlcm_api
 from cephlcm_api import config
-from cephlcm.common import emailutils
-from cephlcm.common import log
-from cephlcm.common.models import cluster
-from cephlcm.common.models import execution
-from cephlcm.common.models import generic
-from cephlcm.common.models import playbook_configuration
-from cephlcm.common.models import role
-from cephlcm.common.models import server
-from cephlcm.common.models import user
+from cephlcm_common import emailutils
+from cephlcm_common import log
+from cephlcm_common.models import cluster
+from cephlcm_common.models import execution
+from cephlcm_common.models import generic
+from cephlcm_common.models import playbook_configuration
+from cephlcm_common.models import role
+from cephlcm_common.models import server
+from cephlcm_common.models import user
 
 
 def have_mocked(request, *mock_args, **mock_kwargs):
@@ -86,7 +86,7 @@ def configure_model(mongo_db_name, pymongo_connection):
 @pytest.fixture
 def smtp(request, monkeypatch):
     sendmail_mock = mock.MagicMock()
-    client = have_mocked(request, "cephlcm.common.emailutils.make_client")
+    client = have_mocked(request, "cephlcm_common.emailutils.make_client")
     client.return_value = sendmail_mock
 
     return sendmail_mock
@@ -131,7 +131,7 @@ def public_playbook_name():
     mocked_plugin.PUBLIC = True
 
     patch = mock.patch(
-        "cephlcm.common.plugins.get_playbook_plugins",
+        "cephlcm_common.plugins.get_playbook_plugins",
         return_value={name: mocked_plugin}
     )
 

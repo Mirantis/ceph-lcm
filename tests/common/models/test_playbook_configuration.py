@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm.common.models.playbook_configuration."""
+"""Tests for cephlcm_common.models.playbook_configuration."""
 
 
 import pytest
 
-from cephlcm.common.models import playbook_configuration
+from cephlcm_common.models import playbook_configuration
 
 
 def test_create(new_cluster, new_servers, public_playbook_name,

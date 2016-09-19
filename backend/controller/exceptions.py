@@ -2,7 +2,7 @@
 """Exceptions, specific to controller."""
 
 
-from cephlcm.common import exceptions as base_exceptions
+from cephlcm_common import exceptions as base_exceptions
 
 
 class InventoryError(base_exceptions.CephLCMError):

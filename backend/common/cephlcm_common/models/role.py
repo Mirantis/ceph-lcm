@@ -4,9 +4,9 @@
 
 import collections
 
-from cephlcm.common import exceptions
-from cephlcm.common import plugins
-from cephlcm.common.models import generic
+from cephlcm_common import exceptions
+from cephlcm_common import plugins
+from cephlcm_common.models import generic
 
 
 class PermissionSet:
@@ -118,7 +118,7 @@ class RoleModel(generic.Model):
         return models
 
     def delete(self, initiator_id=None):
-        from cephlcm.common.models import user
+        from cephlcm_common.models import user
 
         user.UserModel.check_revoke_role(self.model_id, initiator_id)
         super().delete()

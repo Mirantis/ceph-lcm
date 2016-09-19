@@ -6,9 +6,9 @@ import functools
 
 import pkg_resources
 
-from cephlcm.common import config
-from cephlcm.common import log
-from cephlcm.common import playbook_plugin
+from cephlcm_common import config
+from cephlcm_common import log
+from cephlcm_common import playbook_plugin
 
 
 NS_ALERT = "cephlcm.alerts"

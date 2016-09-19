@@ -21,7 +21,7 @@ USER_CONFIG_HOME = os.getenv(
 """User config directory according to XDG specification."""
 
 CONFIG_FILES = (
-    pkg_resources.resource_filename("cephlcm", "configs/defaults.toml"),
+    pkg_resources.resource_filename("cephlcm_common", "configs/defaults.toml"),
     os.path.join("/", "etc", "cephlcm", "config.toml"),
     os.path.join(USER_CONFIG_HOME, "config.toml"),
     os.path.join(HOME, ".cephlcm.toml"),

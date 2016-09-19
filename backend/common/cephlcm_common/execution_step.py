@@ -12,8 +12,8 @@ import collections
 
 import pymongo
 
-from cephlcm.common import log
-from cephlcm.common import wrappers
+from cephlcm_common import log
+from cephlcm_common import wrappers
 
 
 STEP_TEMPLATE = {

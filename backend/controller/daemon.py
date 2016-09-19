@@ -5,10 +5,10 @@
 import click
 import daemonocle.cli
 
-from cephlcm.common import config
-from cephlcm.common import log
-from cephlcm.common import wrappers
-from cephlcm.common.models import generic
+from cephlcm_common import config
+from cephlcm_common import log
+from cephlcm_common import wrappers
+from cephlcm_common.models import generic
 from cephlcm.controller import mainloop
 
 

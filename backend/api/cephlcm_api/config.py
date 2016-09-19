@@ -2,7 +2,7 @@
 """This module has routines to configure API."""
 
 
-from cephlcm.common import config
+from cephlcm_common import config
 
 
 CONF = config.make_api_config()

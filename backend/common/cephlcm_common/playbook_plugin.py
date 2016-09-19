@@ -21,9 +21,9 @@ except ImportError:
 
 import toml
 
-from cephlcm.common import config
-from cephlcm.common import log
-from cephlcm.common.models import task
+from cephlcm_common import config
+from cephlcm_common import log
+from cephlcm_common.models import task
 
 
 CONF = config.make_controller_config()
@@ -210,7 +210,7 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
     @functools.lru_cache()
     def get_playbook_configuration(self, task):
-        from cephlcm.common.models import playbook_configuration
+        from cephlcm_common.models import playbook_configuration
 
         if not task:
             return None

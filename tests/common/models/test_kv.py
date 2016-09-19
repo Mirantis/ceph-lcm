@@ -4,7 +4,7 @@
 
 import pytest
 
-from cephlcm.common.models import kv
+from cephlcm_common.models import kv
 
 
 def test_upsert_create(configure_model):

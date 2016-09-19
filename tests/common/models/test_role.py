@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-"""This module has tests for cephlcm.common.models.role."""
+"""This module has tests for cephlcm_common.models.role."""
 
 
 import collections
 
 import pytest
 
-from cephlcm.common import exceptions
-from cephlcm.common.models import role
+from cephlcm_common import exceptions
+from cephlcm_common.models import role
 
 
 @pytest.fixture

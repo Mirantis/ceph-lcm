@@ -4,7 +4,7 @@
 
 import pytest
 
-from cephlcm.common import plugins
+from cephlcm_common import plugins
 
 
 def test_access_unauth(client_v1):
