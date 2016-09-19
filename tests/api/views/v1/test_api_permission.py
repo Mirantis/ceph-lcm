@@ -10,7 +10,11 @@ def test_access_ok(sudo_client_v1):
     response = sudo_client_v1.get("/v1/permission/")
 
     assert response.status_code == 200
-    assert pset.make_api_structure() == response.json
+    assert isinstance(response.json["items"], list)
+
+    items = {item["name"]: item["permissions"]
+             for item in response.json["items"]}
+    assert pset.make_api_structure() == items
 
 
 def test_access_authentication(client_v1):

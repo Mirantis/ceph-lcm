@@ -41,4 +41,4 @@ class PlaybookView(generic.ModelView):
             }
             data.append(plugin_data)
 
-        return {"playbooks": sorted(data, key=lambda elem: elem["name"])}
+        return {"items": sorted(data, key=lambda elem: elem["name"])}

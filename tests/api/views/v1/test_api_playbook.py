@@ -24,7 +24,7 @@ def test_playbook_list(sudo_client_v1):
 
     assert response.status_code == 200
     for plugin in list_of_plugins:
-        for data in response.json["playbooks"]:
+        for data in response.json["items"]:
             if plugin.name == data["name"]:
                 assert plugin.DESCRIPTION == data["description"]
                 assert plugin.REQUIRED_SERVER_LIST == \
