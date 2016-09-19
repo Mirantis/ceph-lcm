@@ -5,9 +5,9 @@
 import flask
 import flask_pymongo
 
-from cephlcml_api import config as app_config
-from cephlcml_api import handlers
-from cephlcml_api import views
+from cephlcm_api import config as app_config
+from cephlcm_api import handlers
+from cephlcm_api import views
 from cephlcm_common import config as base_config
 from cephlcm_common import log
 from cephlcm_common.models import generic as generic_model
