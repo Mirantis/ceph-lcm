@@ -1,0 +1,3 @@
+# Requirements for cephlcm plugin for email alerting
+
+cephlcm_common
