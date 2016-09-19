@@ -26,5 +26,8 @@ setuptools.setup(
             "config.toml",
         ]
     },
+    install_requires=[
+        "cephlcm_common"
+    ]
     zip_safe=False
 )

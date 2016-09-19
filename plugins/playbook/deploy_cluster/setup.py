@@ -33,7 +33,8 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "netaddr==0.7.18"
+        "netaddr==0.7.18",
+        "cephlcm_common"
     ],
     zip_safe=False
 )

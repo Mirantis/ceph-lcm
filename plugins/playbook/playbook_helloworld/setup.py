@@ -28,5 +28,8 @@ setuptools.setup(
             "roles/*"
         ]
     },
+    install_requires=[
+        "cephlcm_common"
+    ]
     zip_safe=False
 )
