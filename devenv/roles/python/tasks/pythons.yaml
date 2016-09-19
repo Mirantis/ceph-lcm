@@ -17,19 +17,30 @@
   command: bash -ic "pyenv virtualenv {{ cephlcm_python }} {{ venv }}"
   when: not cephlcm_virtualenv.stat.exists
 
-- name: Install CephLCM requirements
-  command: bash -ic "pyenv activate {{ venv }} && pip install -U pip && pip install -r requirements.txt -r test-requirements.txt -r optional-requirements.txt -c constraints.txt -e ."
+- name: Update Pip in PyEnv virtualenv
+  command: bash -ic "pyenv activate {{ venv }} && pip install -U pip"
            chdir=/vagrant
   tags:
     # This is to update requirements
     - skip_ansible_lint
 
-- name: Install CephLCM plugins
-  command: bash -ic "pyenv activate {{ venv }} && pip install -e ."
-          chdir=/vagrant/plugins/playbook/{{ item }}
+- name: Update PyEnv virtualenv
+  command: bash -ic "pyenv activate {{ venv }} && pip install -e {{ item }} -c constraints.txt"
+           chdir=/vagrant
   with_items:
-    - server_discovery
-    - playbook_helloworld
+    - backend/common
+    - backend/api
+    - backend/controller
+    - plugins/alerts/emails
+    - plugins/playbook/server_discovery
+    - plugins/playbook/playbook_helloworld
+  tags:
+    # This is to update requirements
+    - skip_ansible_lint
+
+- name: Update test requirements in PyEnv virtualenv
+  command: bash -ic "pyenv activate {{ venv }} && pip install -r test-requirements.txt -r optional-requirements.txt -c constraints.txt"
+           chdir=/vagrant
   tags:
     # This is to update requirements
     - skip_ansible_lint
