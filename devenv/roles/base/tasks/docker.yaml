@@ -51,3 +51,4 @@
   pip: name=docker-compose
        version={{ docker_compose_version }}
        state=present
+       executable=/usr/bin/pip

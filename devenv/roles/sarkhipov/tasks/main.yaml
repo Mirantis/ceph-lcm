@@ -10,7 +10,12 @@
 - include: dotfiles.yaml
 - include: neovim.yaml
 - include: tmux.yaml
-- include: keychain.yaml
 - include: fzf.yaml
 - include: gruvbox.yaml
 - include: environment.yaml
+- include: keychain.yaml
+
+- name: Activate tmux with tmuxinator by default
+  lineinfile: dest=.bashrc
+              line='if [ -z "$TMUX" ]; then tmux a || mux start {{ venv }}; fi'
+              state=present

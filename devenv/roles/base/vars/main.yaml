@@ -19,9 +19,11 @@ apt_packages:
   - iotop
   - ipython
   - ipython3
+  - jq
   - language-pack-ru
   - libxml2-dev
   - libxslt-dev
+  - libyaml-dev
   - ncurses-term
   - nodejs
   - nodejs-legacy
@@ -46,12 +48,14 @@ apt_packages:
   - python-pip
   - python-virtualenv
   - ruby
+  - shellcheck
   - silversearcher-ag
   - tig
   - tmux
   - tmuxinator
   - vim
   - wget
+  - yamllint
   - zsh
 
 unwanted_apt_packages:
@@ -64,5 +68,5 @@ ssh_known_hosts:
   - github.com
 
 docker_prerequisites:
-    - apt-transport-https
-    - ca-certificates
+  - apt-transport-https
+  - ca-certificates

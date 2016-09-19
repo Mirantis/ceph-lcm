@@ -42,4 +42,4 @@ env_vars:
   - name: PYTHONSTARTUP
     value: $HOME/.pythonrc
 
-fzf_version: 0.13.3
+fzf_version: 0.15.0

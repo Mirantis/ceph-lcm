@@ -30,8 +30,3 @@
 
 - name: Add tmuxinator config
   template: src=tmuxinator.proj.yaml.j2 dest=.tmuxinator/{{ venv }}.yml
-
-- name: Activate tmux with tmuxinator by default
-  lineinfile: dest=.bashrc
-              line='if [ -z "$TMUX" ]; then tmux a || mux start {{ venv }}; fi'
-              state=present

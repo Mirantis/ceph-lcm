@@ -29,6 +29,24 @@
   apt: name="{{ item }}" state=present
   with_items: "{{ apt_packages }}"
 
+- name: Update pip
+  become: true
+  pip: name=pip
+       state=latest
+       executable={{ item }}
+  with_items:
+    - /usr/bin/pip2
+    - /usr/bin/pip3
+
+- name: Update setuptools
+  become: true
+  pip: name=setuptools
+       state=latest
+       executable={{ item }}
+  with_items:
+    - /usr/bin/pip2
+    - /usr/bin/pip3
+
 - name: Remove unwanted provisioners
   become: true
   apt: name="{{ item }}" state=absent purge=yes
