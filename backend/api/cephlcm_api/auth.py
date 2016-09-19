@@ -10,7 +10,7 @@ import functools
 
 import flask
 
-from cephlcm.api import exceptions
+from cephlcm_api import exceptions
 from cephlcm.common import log
 from cephlcm.common import passwords
 from cephlcm.common.models import role

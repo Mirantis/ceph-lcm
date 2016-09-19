@@ -13,7 +13,7 @@ import flask
 import six
 import werkzeug.exceptions
 
-from cephlcm.api import exceptions
+from cephlcm_api import exceptions
 from cephlcm.common import log
 from cephlcm.common import plugins
 

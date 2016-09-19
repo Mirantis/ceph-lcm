@@ -1,4 +1,4 @@
-# Requirements for cephlcm.api package
+# Requirements for cephlcm_api package
 
 -r common.txt
 

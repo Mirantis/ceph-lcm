@@ -70,7 +70,7 @@ disable_existing_loggers = true
 [api]
 debug = true
 testing = false
-logger_name = "cephlcm.api.wsgi"
+logger_name = "cephlcm.cephlcm_api.wsgi"
 logger_handler_policy = "never"
 json_sort_keys = true
 jsonify_prettyprint_regular = true

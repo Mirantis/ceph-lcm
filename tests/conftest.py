@@ -8,8 +8,8 @@ import uuid
 import mongomock
 import pytest
 
-from cephlcm import api
-from cephlcm.api import config
+import cephlcm_api
+from cephlcm_api import config
 from cephlcm.common import emailutils
 from cephlcm.common import log
 from cephlcm.common.models import cluster
@@ -50,7 +50,7 @@ def freeze_time(request):
 
 @pytest.fixture(scope="session", autouse=True)
 def configure_logging():
-    log.configure_logging(api.CONF.logging_config)
+    log.configure_logging(cephlcm_api.CONF.logging_config)
 
 
 @pytest.yield_fixture(scope="module")

@@ -2,7 +2,7 @@
 """This module has instance of WSGI application."""
 
 
-from cephlcm import api
+import cephlcm_api
 
 
-app = application = api.create_application()
+app = application = cephlcm_api.create_application()

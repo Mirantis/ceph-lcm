@@ -8,8 +8,8 @@ import flask.json
 import flask.views
 import werkzeug.exceptions
 
-from cephlcm.api import exceptions
-from cephlcm.api import pagination
+from cephlcm_api import exceptions
+from cephlcm_api import pagination
 from cephlcm.common import log
 
 

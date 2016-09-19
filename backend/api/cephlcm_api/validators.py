@@ -6,7 +6,7 @@ import functools
 
 import jsonschema
 
-from cephlcm.api import exceptions
+from cephlcm_api import exceptions
 from cephlcm.common import log
 
 

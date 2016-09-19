@@ -9,7 +9,7 @@ require to have view as plugins.
 """
 
 
-from cephlcm.api.views import v1
+from cephlcm_api.views import v1
 
 
 def register_api(application):

@@ -3,7 +3,7 @@
 
 
 import cherrypy.wsgiserver as wsgiserver
-import cephlcm.api.wsgi as app
+import cephlcm_api.wsgi as app
 
 
 def patch(app):

@@ -4,15 +4,15 @@
 
 import flask
 
-from cephlcm.api.views.v1 import auth
-from cephlcm.api.views.v1 import cluster
-from cephlcm.api.views.v1 import execution
-from cephlcm.api.views.v1 import permission
-from cephlcm.api.views.v1 import playbook
-from cephlcm.api.views.v1 import playbook_configuration
-from cephlcm.api.views.v1 import role
-from cephlcm.api.views.v1 import server
-from cephlcm.api.views.v1 import user
+from cephlcm_api.views.v1 import auth
+from cephlcm_api.views.v1 import cluster
+from cephlcm_api.views.v1 import execution
+from cephlcm_api.views.v1 import permission
+from cephlcm_api.views.v1 import playbook
+from cephlcm_api.views.v1 import playbook_configuration
+from cephlcm_api.views.v1 import role
+from cephlcm_api.views.v1 import server
+from cephlcm_api.views.v1 import user
 
 
 BLUEPRINT_NAME = "ApiV1"

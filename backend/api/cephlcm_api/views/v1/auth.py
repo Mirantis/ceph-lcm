@@ -4,10 +4,10 @@
 
 import flask
 
-from cephlcm.api import auth
-from cephlcm.api import exceptions
-from cephlcm.api import validators
-from cephlcm.api.views import generic
+from cephlcm_api import auth
+from cephlcm_api import exceptions
+from cephlcm_api import validators
+from cephlcm_api.views import generic
 from cephlcm.common import log
 
 

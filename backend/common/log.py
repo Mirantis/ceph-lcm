@@ -29,5 +29,8 @@ else:
     logging.setLoggerClass(RequestIDLogger)
 
 
-getLogger = logging.getLogger
+def getLogger(name):  # NOQA
+    return logging.getLogger("cephlcm." + name)
+
+
 configure_logging = logging.config.dictConfig

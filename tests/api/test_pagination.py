@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm.api.pagination."""
+"""Tests for cephlcm_api.pagination."""
 
 
 import json
 
 import pytest
 
-from cephlcm.api import pagination
+from cephlcm_api import pagination
 from cephlcm.common import config
 
 
