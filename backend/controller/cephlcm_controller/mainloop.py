@@ -12,7 +12,7 @@ from cephlcm_common import log
 from cephlcm_common.models import execution
 from cephlcm_common.models import server
 from cephlcm_common.models import task
-from cephlcm.controller import taskpool
+from cephlcm_controller import taskpool
 
 
 CONF = config.make_controller_config()

@@ -9,7 +9,7 @@ from cephlcm_common import config
 from cephlcm_common import log
 from cephlcm_common import wrappers
 from cephlcm_common.models import generic
-from cephlcm.controller import mainloop
+from cephlcm_controller import mainloop
 
 
 CONF = config.make_controller_config()

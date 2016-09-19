@@ -9,8 +9,8 @@ import pytest
 
 from cephlcm_common import playbook_plugin
 from cephlcm_common.models import task
-from cephlcm.controller import exceptions
-from cephlcm.controller import inventory
+from cephlcm_controller import exceptions
+from cephlcm_controller import inventory
 
 
 @pytest.fixture()
