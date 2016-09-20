@@ -68,6 +68,15 @@ class ApiConfig(Config):
         self.MONGO_DBNAME = self.DB_DBNAME
         self.MONGO_CONNECT = self.DB_CONNECT
 
+        self.CORS_ORIGINS = self.API_CORS.get("origins", "*")
+        self.CORS_METHODS = self.API_CORS.get(
+            "methods",
+            ["HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"]
+        )
+        self.CORS_ALLOW_HEADERS = self.API_CORS.get("allow_headers", "*")
+        self.CORS_EXPOSE_HEADERS = self.API_CORS.get("expose_headers") or None
+        self.CORS_MAX_AGE = 3
+
         self.DEBUG = self.API_DEBUG
         self.TESTING = self.API_TESTING
         self.LOGGER_NAME = self.API_LOGGER_NAME

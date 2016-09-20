@@ -87,6 +87,12 @@ pagination_per_page = 25
     level = "DEBUG"
     handlers = ["stderr_debug"]
 
+    [api.cors]
+    origins = "*"
+    methods = ["HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    expose_headers = []
+    allow_headers = "*"
+
 
 # Common options
 [common]
