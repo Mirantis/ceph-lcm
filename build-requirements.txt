@@ -1,0 +1,6 @@
+# Common build requirements
+
+pbr
+pip
+setuptools
+wheel
