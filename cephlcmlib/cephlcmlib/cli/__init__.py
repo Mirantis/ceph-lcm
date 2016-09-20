@@ -18,16 +18,19 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 @click.group(context_settings=CONTEXT_SETTINGS)
 @click.option(
     "--url", "-u",
+    required=True,
     envvar="CEPHLCM_URL",
     help="Base URL for CephLCM."
 )
 @click.option(
     "--login", "-l",
+    required=True,
     envvar="CEPHLCM_LOGIN",
     help="Login to access CephLCM."
 )
 @click.option(
     "--password", "-p",
+    required=True,
     envvar="CEPHLCM_PASSWORD",
     help="Password to access CephLCM."
 )
