@@ -20,7 +20,5 @@ class PermissionView(generic.ModelView):
     def get(self):
         permissions = role.PermissionSet(role.PermissionSet.KNOWN_PERMISSIONS)
         permissions = permissions.make_api_structure()
-        permissions = [
-            {"name": k, "permissions": v} for k, v in permissions.items()]
 
         return {"items": permissions}

@@ -18,11 +18,11 @@ class PermissionSet:
         cls.KNOWN_PERMISSIONS[permission_class].add(value)
 
     def __init__(self, initial=None):
-        initial = initial or {}
-
         self.permissions = collections.defaultdict(set)
-        for pclass, values in initial.items():
-            self[pclass] = values
+
+        initial = initial or []
+        for item in initial:
+            self[item["name"]] = item["permissions"]
 
     def __setitem__(self, key, value):
         if key not in self.KNOWN_PERMISSIONS:
@@ -31,10 +31,7 @@ class PermissionSet:
         for v in value:
             if v not in self.KNOWN_PERMISSIONS[key]:
                 raise ValueError(
-                    "Unknown permission value {0} for class {1}".format(
-                        v,
-                        key
-                    )
+                    "Unknown permission value {0} for class {1}".format(v, key)
                 )
 
         self.permissions[key] = set(value)
@@ -43,7 +40,10 @@ class PermissionSet:
         return self.permissions[key]
 
     def make_api_structure(self, *args, **kwargs):
-        return {k: sorted(v) for k, v in self.permissions.items()}
+        return [
+            {"name": k, "permissions": sorted(v)}
+            for k, v in self.permissions.items()
+        ]
 
 
 for plugin in plugins.get_public_playbook_plugins():

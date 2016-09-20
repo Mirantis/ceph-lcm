@@ -205,7 +205,7 @@ def new_user(new_role, freeze_time):
 def new_role(configure_model, freeze_time):
     name = pytest.faux.gen_alpha()
     initiator_id = pytest.faux.gen_uuid()
-    permissions = {"api": []}
+    permissions = [{"name": "api", "permissions": []}]
 
     return role.RoleModel.make_role(name, permissions, initiator_id)
 
