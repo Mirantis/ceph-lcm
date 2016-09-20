@@ -100,11 +100,11 @@ def cli_group(func):
     return func
 
 
-import cephlcmlib.cli.cluster  # NOQA
-import cephlcmlib.cli.execution  # NOQA
-import cephlcmlib.cli.permission  # NOQA
-import cephlcmlib.cli.playbook_configuration  # NOQA
-import cephlcmlib.cli.playbook  # NOQA
-import cephlcmlib.cli.role  # NOQA
-import cephlcmlib.cli.server  # NOQA
-import cephlcmlib.cli.user  # NOQA
+from cephlcmlib.cli import cluster # NOQA
+from cephlcmlib.cli import execution # NOQA
+from cephlcmlib.cli import permission # NOQA
+from cephlcmlib.cli import playbook_configuration # NOQA
+from cephlcmlib.cli import playbook # NOQA
+from cephlcmlib.cli import role # NOQA
+from cephlcmlib.cli import server # NOQA
+from cephlcmlib.cli import user # NOQA

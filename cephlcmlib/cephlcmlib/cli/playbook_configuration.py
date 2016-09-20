@@ -8,12 +8,12 @@ from __future__ import unicode_literals
 import click
 import jsonpatch
 
-from cephlcmlib import cli
+from cephlcmlib.cli import cli_group
 from cephlcmlib.cli import decorators
 from cephlcmlib.cli import param_types
 
 
-@cli.cli_group
+@cli_group
 def playbook_configuration():
     """Playbook configuration subcommands."""
 

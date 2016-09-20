@@ -7,12 +7,12 @@ from __future__ import unicode_literals
 
 import click
 
-from cephlcmlib import cli
+from cephlcmlib.cli import cli_group
 from cephlcmlib.cli import decorators
 from cephlcmlib.cli import utils
 
 
-@cli.cli_group
+@cli_group
 def user():
     """User subcommands."""
 
