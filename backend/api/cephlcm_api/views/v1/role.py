@@ -14,10 +14,19 @@ from cephlcm_common.models import role
 DATA_SCHEMA = {
     "name": {"$ref": "#/definitions/non_empty_string"},
     "permissions": {
-        "type": "object",
-        "additionalProperties": {
-            "type": "array",
-            "items": {"$ref": "#/definitions/non_empty_string"}
+        "type": "array",
+        "items": {
+            "type": "object",
+            "required": ["name", "permissions"],
+            "additionalProperties": False,
+            "properties": {
+                "name": {"$ref": "#/definitions/non_empty_string"},
+                "permissions": {
+                    "type": "array",
+                    "items": {"$ref": "#/definitions/non_empty_string"}
+
+                }
+            }
         }
     }
 }

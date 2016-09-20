@@ -40,22 +40,22 @@ class TestPermisionSet(object):
 
     def test_init_without_known_permissions(self):
         with pytest.raises(ValueError):
-            role.PermissionSet({"api": ["1"]})
+            role.PermissionSet([{"name": "api", "permissions": ["1"]}])
 
         role.PermissionSet.add_permission("api", "2")
 
         with pytest.raises(ValueError):
-            role.PermissionSet({"api": ["1"]})
+            role.PermissionSet([{"name": "api", "permissions": ["1"]}])
 
     def test_init_with_known_permissions(self):
         role.PermissionSet.add_permission("api", "2")
-        pset = role.PermissionSet({"api": ["2"]})
+        pset = role.PermissionSet([{"name": "api", "permissions": ["2"]}])
 
         assert pset["api"] == {"2"}
 
     def test_unknown_permission_class(self):
         role.PermissionSet.add_permission("api", "1")
-        pset = role.PermissionSet({"api": ["1"]})
+        pset = role.PermissionSet([{"name": "api", "permissions": ["1"]}])
 
         with pytest.raises(ValueError):
             pset["a"] = ["1"]
@@ -63,9 +63,11 @@ class TestPermisionSet(object):
     def test_make_api_structure(self):
         role.PermissionSet.add_permission("api", "1")
         role.PermissionSet.add_permission("api", "2")
-        pset = role.PermissionSet({"api": ["1", "2"]})
+        pset = role.PermissionSet([{"name": "api", "permissions": ["1", "2"]}])
 
-        assert pset.make_api_structure() == {"api": ["1", "2"]}
+        assert pset.make_api_structure() == [
+            {"name": "api", "permissions": ["1", "2"]}
+        ]
 
 
 @pytest.mark.usefixtures("test_roles_defined")
@@ -73,35 +75,42 @@ class TestRoleModel(object):
 
     def test_set_unknown_permissions(self):
         with pytest.raises(ValueError):
-            role.RoleModel().permissions = {"api": ["1"]}
+            role.RoleModel().permissions = [
+                {"name": "api", "permissions": ["1"]}]
 
     def test_set_get(self):
         model = role.RoleModel()
-        model.permissions = {"api": ["view_user", "create_user"]}
+        model.permissions = [
+            {"name": "api", "permissions": ["view_user", "create_user"]}]
 
-        assert model.permissions == {
-            "api": ["create_user", "view_user"]
-        }
+        assert model.permissions == [{
+            "name": "api", "permissions": ["create_user", "view_user"]
+        }]
 
     def test_add_permissions(self):
         model = role.RoleModel()
-        model.permissions = {"api": ["view_user", "create_user"]}
+        model.permissions = [
+            {"name": "api", "permissions": ["view_user", "create_user"]}]
         model.add_permissions("api", ["delete_user"])
 
-        assert model.permissions == {
-            "api": ["create_user", "delete_user", "view_user"]
-        }
+        assert model.permissions == [{
+            "name": "api",
+            "permissions": ["create_user", "delete_user", "view_user"]
+        }]
 
     def test_remove_permissions(self):
         model = role.RoleModel()
-        model.permissions = {"api": ["view_user", "create_user"]}
+        model.permissions = [
+            {"name": "api", "permissions": ["view_user", "create_user"]}]
         model.remove_permissions("api", ["create_user"])
 
-        assert model.permissions == {"api": ["view_user"]}
+        assert model.permissions == [
+            {"name": "api", "permissions": ["view_user"]}]
 
     def test_has_permissions(self):
         model = role.RoleModel()
-        model.permissions = {"api": ["view_user", "create_user"]}
+        model.permissions = [
+            {"name": "api", "permissions": ["view_user", "create_user"]}]
         assert not model.has_permission("api", "delete_user")
 
         model.add_permissions("api", ["delete_user"])
@@ -110,7 +119,7 @@ class TestRoleModel(object):
     def test_make_role(self, configure_model, pymongo_connection):
         role_name = pytest.faux.gen_alpha()
         role_model = role.RoleModel.make_role(
-            role_name, {"api": ["view_user"]},
+            role_name, [{"name": "api", "permissions": ["view_user"]}],
             initiator_id=pytest.faux.gen_uuid()
         )
 
@@ -123,7 +132,8 @@ class TestRoleModel(object):
         assert role_model.permissions == db_role["permissions"]
 
         assert role_model.name == role_name
-        assert role_model.permissions == {"api": ["view_user"]}
+        assert role_model.permissions == [
+            {"name": "api", "permissions": ["view_user"]}]
 
     def test_make_api_structure(self, new_role, freeze_time):
         assert new_role.make_api_structure() == {
@@ -135,7 +145,7 @@ class TestRoleModel(object):
             "version": 1,
             "data": {
                 "name": new_role.name,
-                "permissions": {"api": []},
+                "permissions": [{"name": "api", "permissions": []}],
             }
         }
 
@@ -148,11 +158,14 @@ class TestRoleModel(object):
         new_role.delete()
 
     def test_find_by_model_ids(self, configure_model):
+        permissions = [
+            {"name": "api", "permissions": ["view_user", "create_user"]}
+        ]
         role_model1 = role.RoleModel.make_role(
-            pytest.faux.gen_alpha(), {"api": ["view_user", "create_user"]}
+            pytest.faux.gen_alpha(), permissions
         )
         role_model2 = role.RoleModel.make_role(
-            pytest.faux.gen_alpha(), {"api": ["view_user", "create_user"]}
+            pytest.faux.gen_alpha(), permissions
         )
 
         role_model1.save()

@@ -109,7 +109,10 @@ def email(smtp, monkeypatch):
 def sudo_role(pymongo_connection):
     return role.RoleModel.make_role(
         str(uuid.uuid4()),
-        {k: sorted(v) for k, v in role.PermissionSet.KNOWN_PERMISSIONS.items()}
+        [
+            {"name": key, "permissions": sorted(value)}
+            for key, value in role.PermissionSet.KNOWN_PERMISSIONS.items()
+        ]
     )
 
 
@@ -205,7 +208,7 @@ def new_user(new_role, freeze_time):
 def new_role(configure_model, freeze_time):
     name = pytest.faux.gen_alpha()
     initiator_id = pytest.faux.gen_uuid()
-    permissions = {"api": []}
+    permissions = [{"name": "api", "permissions": []}]
 
     return role.RoleModel.make_role(name, permissions, initiator_id)
 
