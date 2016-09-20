@@ -4,8 +4,8 @@ omit =
   tests/*
   */site-packages/*
 source =
-  cephlcm/
-  playbook_plugins/
+  backend/
+  plugins/
 
 [report]
 precision = 2

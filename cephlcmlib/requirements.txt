@@ -1,0 +1,6 @@
+# Requirements for cephlcmlib package
+
+click
+jsonpatch
+requests[socks]
+six

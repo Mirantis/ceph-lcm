@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm.common.passwords."""
+"""Tests for cephlcm_common.passwords."""
 
 
 import pytest
 
-from cephlcm.common import config
-from cephlcm.common import passwords
+from cephlcm_common import config
+from cephlcm_common import passwords
 
 
 CONF = config.make_config()

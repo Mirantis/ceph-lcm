@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm.controller.mainloop"""
+"""Tests for cephlcm_controller.mainloop"""
 
 
 import threading
@@ -7,10 +7,10 @@ import time
 
 import pytest
 
-from cephlcm.common.models import execution
-from cephlcm.common.models import server
-from cephlcm.common.models import task
-from cephlcm.controller import mainloop
+from cephlcm_common.models import execution
+from cephlcm_common.models import server
+from cephlcm_common.models import task
+from cephlcm_controller import mainloop
 
 
 @pytest.fixture

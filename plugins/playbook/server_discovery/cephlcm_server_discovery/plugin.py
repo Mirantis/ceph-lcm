@@ -14,10 +14,10 @@ try:
 except ImportError:
     import json
 
-from cephlcm.common import log
-from cephlcm.common import playbook_plugin
-from cephlcm.common import retryutils
-from cephlcm.common.models import server
+from cephlcm_common import log
+from cephlcm_common import playbook_plugin
+from cephlcm_common import retryutils
+from cephlcm_common.models import server
 
 
 DESCRIPTION = """

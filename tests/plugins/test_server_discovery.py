@@ -9,9 +9,9 @@ import shutil
 
 import pytest
 
-from cephlcm.common import playbook_plugin
-from cephlcm.common import plugins
-from cephlcm.common.models import task
+from cephlcm_common import playbook_plugin
+from cephlcm_common import plugins
+from cephlcm_common.models import task
 
 
 @pytest.fixture

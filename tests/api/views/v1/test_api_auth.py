@@ -4,7 +4,7 @@
 
 import pytest
 
-from cephlcm.common.models import user
+from cephlcm_common.models import user
 
 
 def make_user(login, password):

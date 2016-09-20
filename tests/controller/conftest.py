@@ -6,7 +6,7 @@ import unittest.mock as mock
 
 import pytest
 
-from cephlcm.common.models import task
+from cephlcm_common.models import task
 
 
 def have_mocked(request, *mock_args, **mock_kwargs):
@@ -30,13 +30,13 @@ def task_watch(request):
 
 @pytest.fixture
 def mainloop_process_task(request):
-    return have_mocked(request, "cephlcm.controller.mainloop.process_task")
+    return have_mocked(request, "cephlcm_controller.mainloop.process_task")
 
 
 @pytest.fixture
 def mainloop_possible_to_process(request):
     mocked = have_mocked(request,
-                         "cephlcm.controller.mainloop.possible_to_process")
+                         "cephlcm_controller.mainloop.possible_to_process")
     mocked.return_value = True
 
     return mocked

@@ -2,7 +2,7 @@
 """Playbook plugin to install helloworld."""
 
 
-from cephlcm.common import playbook_plugin
+from cephlcm_common import playbook_plugin
 
 
 DESCRIPTION = """\

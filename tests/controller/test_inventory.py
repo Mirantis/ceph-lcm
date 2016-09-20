@@ -7,15 +7,15 @@ import os
 
 import pytest
 
-from cephlcm.common import playbook_plugin
-from cephlcm.common.models import task
-from cephlcm.controller import exceptions
-from cephlcm.controller import inventory
+from cephlcm_common import playbook_plugin
+from cephlcm_common.models import task
+from cephlcm_controller import exceptions
+from cephlcm_controller import inventory
 
 
 @pytest.fixture()
 def mocked_configure(monkeypatch, configure_model, pymongo_connection):
-    monkeypatch.setattr("cephlcm.common.wrappers.MongoDBWrapper",
+    monkeypatch.setattr("cephlcm_common.wrappers.MongoDBWrapper",
                         lambda: pymongo_connection)
 
 

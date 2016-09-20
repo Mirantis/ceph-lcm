@@ -1,0 +1,140 @@
+# This is a default config for CephLCM tool
+#
+# It is implemented as TOML
+# https://github.com/toml-lang/toml/blob/master/versions/en/toml-v0.4.0.md
+#
+# It has all options you may find useful. If you want to redefine something,
+# just set required options, all other options would be taken from previous
+# config in load order. This config is always first.
+#
+# Load order is:
+# - This file
+# - /etc/cephlcm/config.toml
+# - $HOME/.config/cephlcm/config.toml (or $XDG_CONFIG_HOME/cephlcm/config.toml)
+# - ~/.cephlcm.toml
+# - $(pwd)/cephlcm.toml
+
+# Database related settings
+# MongoDB is used.
+[db]
+host = "127.0.0.1"
+port = 27017
+dbname = "devel"
+connect = false
+task_queue_length = 1000
+
+
+# Default Python logging is used.
+# https://docs.python.org/2/library/logging.config.html#dictionary-schema-details
+[logging]
+version = 1
+incremental = false
+disable_existing_loggers = true
+
+    [logging.root]
+    handlers = []
+
+    [logging.filters]
+
+    [logging.formatters.stderr_debug]
+    format = "%(asctime)s [%(levelname)-8s] (%(filename)15s:%(lineno)-4d): %(message)s"
+    datefmt = "%Y-%m-%d %H:%M:%S"
+
+    [logging.formatters.stderr_default]
+    format = "%(asctime)s [%(levelname)-8s]: %(message)s"
+    datefmt = "%Y-%m-%d %H:%M:%S"
+
+    [logging.formatters.syslog]
+    format = "%(name)s %(asctime)s [%(levelname)-8s]: %(message)s"
+    datefmt = "%Y-%m-%d %H:%M:%S"
+
+    [logging.handlers.stderr_debug]
+    class = "logging.StreamHandler"
+    formatter = "stderr_debug"
+    level = "DEBUG"
+
+    [logging.handlers.stderr_default]
+    class = "logging.StreamHandler"
+    formatter = "stderr_default"
+    level = "DEBUG"
+
+    [logging.handlers.syslog]
+    class = "logging.handlers.SysLogHandler"
+    formatter = "syslog"
+    level = "DEBUG"
+
+
+# API specific settings
+# Options here are Flask options so please check
+# http://flask.pocoo.org/docs/0.11/config/#builtin-configuration-values
+[api]
+debug = true
+testing = false
+logger_name = "cephlcm.cephlcm_api.wsgi"
+logger_handler_policy = "never"
+json_sort_keys = true
+jsonify_prettyprint_regular = true
+json_as_ascii = false
+pagination_per_page = 25
+
+    # API options related to tokens
+    [api.token]
+    # Default TTL for token in seconds
+    ttl_in_seconds = 120
+
+    [api.logging]
+    propagate = true
+    level = "DEBUG"
+    handlers = ["stderr_debug"]
+
+
+# Common options
+[common]
+# Default length of the generated passwords
+password_length = 10
+# Minimal amount of rounds for testing purposes.
+# Please set to 12 in production.
+bcrypt_rounds = 4
+
+    [common.email]
+    # Do we have email sending configured or not.
+    enabled = false
+    # Default email in FROM field
+    from = "noreply@mirantis.com"
+    # Default SMTP host
+    host = "localhost"
+    # Default SMTP port
+    port = 25
+    # Default SMTP login (set to "" if no auth is required)
+    login = ""
+    # Default SMTP password (set to "" if no auth is required)
+    password = ""
+
+
+# Plugins settings
+[plugins.alerts]
+enabled = []
+
+    # Settings for plugins
+    [plugins.alerts.email]
+    enabled = false
+    send_to = ["bigboss@example.com"]
+    from = "errors@example.com"
+
+[plugins.playbooks]
+disabled = []
+
+
+[controller]
+pidfile = "/tmp/cephlcm-controller.pid"
+daemon = false
+timeout = 60
+ansible_config = "/vagrant/ansible.cfg"
+# 0 worker_threads means that we will have 2 * CPU count threads
+worker_threads = 0
+graceful_stop = 10
+
+    [controller.logging]
+    propagate = true
+    level = "DEBUG"
+    handlers = ["syslog", "stderr_debug"]

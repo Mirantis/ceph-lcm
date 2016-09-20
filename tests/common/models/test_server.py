@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm.common.models.server."""
+"""Tests for cephlcm_common.models.server."""
 
 
 import pytest
 
-from cephlcm.common import exceptions
-from cephlcm.common.models import server
+from cephlcm_common import exceptions
+from cephlcm_common.models import server
 
 
 @pytest.mark.parametrize("state", (

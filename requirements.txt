@@ -1,9 +1,0 @@
-# All requirements for CephLCM project
-
-# Cannot use it here because pbr still do not understand such line.
-# -c constraints.txt
-
--r requirements/common.txt
--r requirements/api.txt
--r requirements/client.txt
--r requirements/controller.txt

@@ -30,15 +30,14 @@ RUN set -x \
 COPY . /project
 
 RUN set -x \
-    && cd /project \
-    && pip3 install -r requirements.txt -c constraints.txt \
-    && python3 setup.py install \
-    && cd plugins/playbook/playbook_helloworld \
-    && python3 setup.py install \
-    && cd /project/plugins/playbook/server_discovery \
-    && python3 setup.py install \
+    && pip3 install -U pip setuptools \
+    && cd /project/backend/common && pip3 install -r requirements.txt -c /project/constraints.txt && python3 setup.py install \
+    && cd /project/backend/api && pip3 install -r requirements.txt -c /project/constraints.txt && python3 setup.py install \
+    && cd /project/backend/controller && pip3 install -r requirements.txt -c /project/constraints.txt && python3 setup.py install \
+    && cd /project/plugins/playbook/playbook_helloworld && python3 setup.py install \
+    && cd /project/plugins/playbook/server_discovery && python3 setup.py install \
     && mkdir -p /usr/share/ansible/plugins/callback \
-    && cp /project/scripts/cb_execution.py /usr/share/ansible/plugins/callback \
+    && cp /project/backend/controller/ansible_execution_step_callback/* /usr/share/ansible/plugins/callback \
     && mkdir -p /etc/ansible \
     && cp /project/devenv/devstage/ansible.cfg /etc/ansible \
     && mkdir -p /etc/cephlcm \

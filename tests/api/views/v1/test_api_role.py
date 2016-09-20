@@ -6,7 +6,7 @@ import uuid
 
 import pytest
 
-from cephlcm.common.models import role
+from cephlcm_common.models import role
 
 
 @pytest.fixture

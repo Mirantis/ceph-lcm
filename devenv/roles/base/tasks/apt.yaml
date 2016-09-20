@@ -37,6 +37,8 @@
   with_items:
     - /usr/bin/pip2
     - /usr/bin/pip3
+  tags:
+    - skip_ansible_lint
 
 - name: Update setuptools
   become: true
@@ -46,6 +48,8 @@
   with_items:
     - /usr/bin/pip2
     - /usr/bin/pip3
+  tags:
+    - skip_ansible_lint
 
 - name: Remove unwanted provisioners
   become: true
