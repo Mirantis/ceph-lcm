@@ -1,6 +1,6 @@
 # Requirements for ceplcm.controller package
 
-cephlcm_common>=0.1,<1.0
+cephlcm_common
 
 daemonocle
 click

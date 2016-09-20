@@ -27,7 +27,7 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "cephlcm_common==0.1.0"
+        "cephlcm_common"
     ],
     zip_safe=False
 )

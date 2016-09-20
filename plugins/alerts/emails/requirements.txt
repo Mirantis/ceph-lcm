@@ -1,3 +1,3 @@
 # Requirements for cephlcm plugin for email alerting
 
-cephlcm_common>=0.1,<1.0
+cephlcm_common
