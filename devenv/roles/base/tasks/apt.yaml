@@ -62,3 +62,7 @@
   tags:
     # It is ok to run it a lot
     - skip_ansible_lint
+
+- name: Install ansible
+  become: true
+  apt: name=ansible state=present
