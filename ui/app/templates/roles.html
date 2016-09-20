@@ -23,10 +23,9 @@
     </div>
   </div>
   <section PermissionsGroup
-    *ngFor="let group of permissions|keys"
+    *ngFor="let group of permissions"
     [group]="group"
-    [roles]="roles"
-    [permissions]="permissions">
+    [roles]="roles">
   </section>
 </div>
 
@@ -52,9 +51,9 @@
 
       <label>Permissions groups</label>
 
-      <div *ngFor="let group of permissions|keys">
-        <h5>{{group}}</h5>
-        <div class="checkbox" *ngFor="let permission of permissions|key:group">
+      <div *ngFor="let group of permissions">
+        <h5>{{group.name}}</h5>
+        <div class="checkbox" *ngFor="let permission of group.permissions">
           <label>
             <input
               type="checkbox"

@@ -20,7 +20,10 @@ export class ServersComponent {
 
   fetchData() {
     this.data.server().findAll({})
-      .then((servers: Server[]) => this.servers = servers);
+      .then(
+        (servers: Server[]) => this.servers = servers,
+        (error: any) => this.data.handleResponseError(error)
+      );
   }
 
   showVersions(server: Server) {

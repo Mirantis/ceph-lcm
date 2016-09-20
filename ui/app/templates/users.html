@@ -26,7 +26,7 @@
         {{user.data.login}}
       </div>
       <div class="col-xs-4 parameter">
-        {{roleNames[user.data.role_id]}}
+        {{getRoleName(user.data.role_id)}}
       </div>
       <div class="col-xs-3 parameter">
         {{user.time_updated|date_time}}

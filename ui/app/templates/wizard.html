@@ -24,7 +24,7 @@
           name="configuration_cluster"
           id="configuration_cluster"
           placeholder="Cluster"
-          [(ngModel)]="newConfiguration.cluster"
+          [(ngModel)]="newConfiguration.cluster_id"
           required>
           <option *ngFor="let cluster of clusters" [value]="cluster.id">
             {{cluster.data.name}}

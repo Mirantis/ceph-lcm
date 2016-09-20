@@ -1,7 +1,8 @@
-import {Injectable} from '@angular/core';
-import {Router, CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot} from '@angular/router';
-import {SessionService} from './session';
-import {DataService} from './data';
+import { Injectable } from '@angular/core';
+import { Router, CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
+import { SessionService } from './session';
+import { DataService } from './data';
+import { Token, User } from '../models';
 
 import * as _ from 'lodash';
 
@@ -14,43 +15,52 @@ export class AuthService {
   ) {}
 
   redirectUrl: string;
-  loggedUser: any = null;
+  loggedUser: User = null;
 
-  login(email: string, password: string): Promise<any> {
+  login(email: string, password: string): Promise<Token> {
     return this.data.token()
-      .create({login: email, password: password})
-      .then((token: any) => {
-        this.session.saveToken(token);
+      .create({username: email, password: password})
+      .then(
+        (token: Token) => {
+          this.session.saveToken(token);
 
-        this.getLoggedUser();
+          this.loggedUser = token.data.user;
 
-        var url = this.redirectUrl || '/dashboard';
-        this.redirectUrl = null;
-        this.router.navigate([url]);
-      }, (error: any) => {
-        console.warn(error);
-      })
+          var url = this.redirectUrl || '/dashboard';
+          this.redirectUrl = null;
+          this.router.navigate([url]);
+          return token;
+        },
+        (error: any) => this.data.handleResponseError(error)
+      )
   }
 
-  logout(): Promise<any> {
+  logout(): Promise<void> {
     this.session.removeToken();
     this.loggedUser = null;
     return this.data.token().destroy(null)
-      .then(() => this.router.navigate(['/login']));
+      .then(
+        () => {
+          this.router.navigate(['/login'])
+        },
+        (error: any) => this.data.handleResponseError(error)
+      );
   }
 
-  isLoggedIn() {
+  isLoggedIn(): boolean {
     return !_.isEmpty(this.session.getToken());
   }
 
-  getLoggedUser() {
+  getLoggedUser(): User {
     if (this.isLoggedIn() && !this.loggedUser) {
-      this.loggedUser = this.data.user().find(this.session.getLoggedUserId())
-        .then((user: any) => {
-          this.loggedUser = user;
-
-          return this.loggedUser;
-        });
+      this.data.user().find(this.session.getLoggedUserId())
+        .then(
+          (user: User) => {
+            this.loggedUser = user;
+            return this.loggedUser;
+          },
+          (error: any) => this.data.handleResponseError(error)
+        );
     }
     return this.loggedUser;
   }

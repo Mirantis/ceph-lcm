@@ -30,7 +30,7 @@ function two(value: number): string {
 @Pipe({name: 'date_time'})
 export class DateTime implements PipeTransform {
   transform(value: number): string {
-    var date = new Date(value);
+    var date = new Date(1000 * value);
     return two(date.getDate()) + '/' +
       two(1 + date.getMonth()) + '/' +
       date.getFullYear() + ' ' +

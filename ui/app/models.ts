@@ -15,7 +15,8 @@ declare module './models' {
   interface Token extends BaseModel {
     data: {
       expires_at: number,
-      user_id: string
+      user_id: string,
+      user: User
     }
   }
 
@@ -28,14 +29,15 @@ declare module './models' {
     }
   }
 
-  interface Permissions {
-     [key: string]: any
+  interface PermissionGroup {
+    name: string,
+    permissions: [string]
   }
 
   interface Role extends BaseModel {
     data: {
       name: string,
-      permissions: Permissions
+      permissions: [PermissionGroup]
     }
   }
 
@@ -85,16 +87,6 @@ declare module './models' {
 }
 
 export class BaseModel extends Record {
-  get dateDeleted(): Date {
-    return new Date(this.time_deleted);
-  }
-  set dateDeleted(value: Date) {};
-
-  get dateUpdated(): Date {
-    return new Date(this.time_updated);
-  }
-  set dateUpdated(value: Date) {};
-
   constructor(props: any) {
     super(props);
     if (!this.data) {
@@ -111,7 +103,7 @@ export class Cluster extends BaseModel {}
 export class Token extends BaseModel {}
 export class User extends BaseModel {}
 export class Role extends BaseModel {}
-export class Permissions extends Record {}
+export class PermissionGroup extends Record {}
 export class Playbook extends Record {}
 export class PlaybookConfiguration extends BaseModel {}
 export class Server extends BaseModel {}

@@ -5,7 +5,7 @@ import { User, Role } from '../models';
 
 import * as _ from 'lodash';
 
-type roleNamesType = {[key: string]: Role};
+type roleIdsType = {[key: string]: Role};
 type userVersionsType = {[key: string]: User[]};
 
 @Component({
@@ -15,7 +15,7 @@ export class UsersComponent {
   users: User[] = null;
   userVersions: userVersionsType = {};
   roles: Role[] = [];
-  roleNames: roleNamesType = {};
+  roleIds: roleIdsType = {};
   newUser: User = new User({});
   error: any;
   shownUserId: string = null;
@@ -26,19 +26,30 @@ export class UsersComponent {
 
   fetchData() {
     this.data.user().findAll({})
-      .then((users: User[]) => this.users = users);
+      .then(
+        (users: User[]) => this.users = users,
+        (error) => this.data.handleResponseError(error)
+       );
     this.data.role().findAll({})
-      .then((roles: Role[]) => {
-        this.roles = roles;
-        this.roleNames = _.reduce(
-          this.roles,
-          (result: roleNamesType, role: Role) => {
-            result[role.data.name] = role;
-            return result;
-          },
-          {} as roleNamesType
-        )
-      });
+      .then(
+        (roles: Role[]) => {
+          this.roles = roles;
+          this.roleIds = _.reduce(
+            this.roles,
+            (result: roleIdsType, role: Role) => {
+              result[role.id] = role;
+              return result;
+            },
+            {} as roleIdsType
+          );
+        },
+        (error) => this.data.handleResponseError(error)
+      );
+  }
+
+  getRoleName(role_id: string): string {
+    let role = this.roleIds[role_id];
+    return role ? role.data.name : '-';
   }
 
   editUser(user: User = null) {
@@ -52,10 +63,10 @@ export class UsersComponent {
     var savePromise: Promise<any>;
     if (this.newUser.id) {
       // Update user
-      savePromise = this.data.user().update(this.newUser.id, this.newUser);
+      savePromise = this.data.user().postUpdate(this.newUser.id, this.newUser);
     } else {
       // Create new user
-      savePromise = this.data.user().create(this.newUser);
+      savePromise = this.data.user().postCreate(this.newUser);
     }
     return savePromise
       .then(
@@ -63,7 +74,7 @@ export class UsersComponent {
           this.modal.close();
           this.fetchData();
         },
-        (error) => {this.error = error}
+        (error) => this.data.handleResponseError(error)
       );
   }
 
@@ -83,12 +94,14 @@ export class UsersComponent {
   getUserVersions(user: any): User[] {
     if (!this.userVersions[user.id]) {
       this.data.user().getVersions(user.id)
-        .then((versions: User[]) => {
-          this.userVersions[user.id] = versions;
-        });
+        .then(
+          (versions: User[]) => {
+            this.userVersions[user.id] = versions;
+          },
+          (error: any) => this.data.handleResponseError(error)
+        );
       this.userVersions[user.id] = [];
     }
     return this.userVersions[user.id];
   }
-
 }

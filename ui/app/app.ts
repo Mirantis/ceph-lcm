@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-
 import { AuthService } from './services/auth';
 
 @Component({
@@ -13,7 +11,7 @@ export class AppComponent {
     auth.getLoggedUser();
   }
 
-  getLoggedUserName() {
+  getLoggedUserName(): string {
     var loggedUser = this.auth.loggedUser;
     return loggedUser && loggedUser.data ?
       loggedUser.data.full_name + ' (' + loggedUser.data.login + ')' : '';

@@ -19,7 +19,10 @@ export class ClustersComponent {
 
   fetchData() {
     this.data.cluster().findAll({})
-      .then((clusters: Cluster[]) => this.clusters = clusters);
+      .then(
+        (clusters: Cluster[]) => this.clusters = clusters,
+        (error: any) => this.data.handleResponseError(error)
+      );
   }
 
   editCluster(cluster: Cluster = null) {
@@ -32,10 +35,10 @@ export class ClustersComponent {
     var savePromise: Promise<any>;
     if (this.newCluster.id) {
       // Update cluster
-      savePromise = this.data.cluster().update(this.newCluster.id, this.newCluster);
+      savePromise = this.data.cluster().postUpdate(this.newCluster.id, this.newCluster);
     } else {
       // Create new cluster
-      savePromise = this.data.cluster().create(this.newCluster);
+      savePromise = this.data.cluster().postCreate(this.newCluster);
     }
     return savePromise
       .then(
@@ -43,7 +46,7 @@ export class ClustersComponent {
           this.modal.close();
           this.fetchData();
         },
-        (error) => {this.error = error}
+        (error: any) => this.data.handleResponseError(error)
       );
   }
 }

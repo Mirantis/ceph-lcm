@@ -51,7 +51,7 @@ export class WizardComponent {
   areAllServersSelected() {
     return this.newConfiguration.server_ids.length === this.servers.length;
   }
-
+  // TODO: Use Server type here
   toggleServer(server: any) {
     var server_ids = this.newConfiguration.server_ids;
     this.newConfiguration.server_ids = this.isServerSelected(server) ?
@@ -72,10 +72,10 @@ export class WizardComponent {
     var savePromise: Promise<any>;
     if (this.newConfiguration.id) {
       // Update configuration
-      savePromise = this.data.configuration().update(this.newConfiguration.id, this.newConfiguration);
+      savePromise = this.data.configuration().postUpdate(this.newConfiguration.id, this.newConfiguration);
     } else {
       // Create new configuration
-      savePromise = this.data.configuration().create(this.newConfiguration);
+      savePromise = this.data.configuration().postCreate(this.newConfiguration);
     }
     return savePromise
       .then(
@@ -83,7 +83,7 @@ export class WizardComponent {
           this.fetchData();
           this.reset();
         },
-        (error) => {this.error = error}
+        (error: any) => this.data.handleResponseError(error)
       );
   }
 

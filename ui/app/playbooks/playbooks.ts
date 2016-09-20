@@ -17,6 +17,9 @@ export class PlaybooksComponent {
 
   fetchData() {
     this.data.playbook().findAll({})
-      .then((playbooks: Playbook[]) => this.playbooks = playbooks);
+      .then(
+        (playbooks: Playbook[]) => this.playbooks = playbooks,
+        (error: any) => this.data.handleResponseError(error)
+      );
   }
 }
