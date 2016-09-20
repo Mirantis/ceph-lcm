@@ -109,7 +109,10 @@ def email(smtp, monkeypatch):
 def sudo_role(pymongo_connection):
     return role.RoleModel.make_role(
         str(uuid.uuid4()),
-        {k: sorted(v) for k, v in role.PermissionSet.KNOWN_PERMISSIONS.items()}
+        [
+            {"name": key, "permissions": sorted(value)}
+            for key, value in role.PermissionSet.KNOWN_PERMISSIONS.items()
+        ]
     )
 
 

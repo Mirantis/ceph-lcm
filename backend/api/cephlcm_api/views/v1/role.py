@@ -20,7 +20,7 @@ DATA_SCHEMA = {
             "required": ["name", "permissions"],
             "additionalProperties": False,
             "properties": {
-                "name": {"$ref", "#/definitions/non_empty_string"},
+                "name": {"$ref": "#/definitions/non_empty_string"},
                 "permissions": {
                     "type": "array",
                     "items": {"$ref": "#/definitions/non_empty_string"}

@@ -29,7 +29,10 @@ def valid_request(sudo_role):
 
 def add_permission_to_user(client, user_model, permissions):
     role_data = user_model.role.make_api_structure()
-    role_data["data"]["permissions"] = permissions
+    role_data["data"]["permissions"] = [
+        {"name": k, "permissions": v}
+        for k, v in permissions.items()
+    ]
     response = client.put(
         "/v1/role/{0}/".format(role_data["id"]), data=role_data
     )
@@ -93,7 +96,7 @@ def test_api_create_broken_parameter(name, sudo_client_v1, valid_request):
 
 @pytest.mark.parametrize("prm", (1, str(uuid.uuid4()), {}, [], None))
 def test_api_create_role_broken_permission(prm, sudo_client_v1, valid_request):
-    valid_request["permissions"]["api"].append(prm)
+    valid_request["permissions"][0]["permissions"].append(prm)
     response = sudo_client_v1.post("/v1/role/", data=valid_request)
 
     assert response.status_code == 400
@@ -101,7 +104,9 @@ def test_api_create_role_broken_permission(prm, sudo_client_v1, valid_request):
 
 def test_api_create_role_unknown_class(sudo_client_v1, sudo_role,
                                        valid_request):
-    valid_request["permissions"][pytest.faux.gen_alpha()] = []
+    valid_request["permissions"].append(
+        {"name": pytest.faux.gen_alpha(), "permissions": []}
+    )
     response = sudo_client_v1.post("/v1/role/", data=valid_request)
 
     assert response.status_code == 400
@@ -109,10 +114,11 @@ def test_api_create_role_unknown_class(sudo_client_v1, sudo_role,
 
 def test_add_permission_to_role(client_v1, sudo_client_v1, sudo_role,
                                 valid_request):
-    valid_request["permissions"]["api"] = []
+    valid_request["permissions"][0]["permissions"] = []
     response = sudo_client_v1.post("/v1/role/", data=valid_request)
     model = response.json
-    model["data"]["permissions"]["api"] = [sudo_role.permissions["api"][0]]
+    model["data"]["permissions"][0]["permissions"] = [
+        sudo_role.permissions[0]["permissions"][0]]
 
     resp = client_v1.put(
         "/v1/role/{0}/".format(response.json["id"]), data=model
@@ -132,7 +138,7 @@ def test_remove_permission_from_role(client_v1, sudo_client_v1, sudo_role,
                                      valid_request):
     response = sudo_client_v1.post("/v1/role/", data=valid_request)
     model = response.json
-    model["data"]["permissions"]["api"] = [sudo_role.permissions["api"][0]]
+    model["data"]["permissions"][0]["permissions"] = []
 
     resp = client_v1.put(
         "/v1/role/{0}/".format(response.json["id"]), data=model
@@ -272,7 +278,8 @@ def test_add_permission_to_edit_user(client_v1, sudo_client_v1, sudo_role,
                                      normal_user_with_role, valid_request):
     client_v1.login(normal_user_with_role.login, "qwerty")
     role_data = normal_user_with_role.role.make_api_structure()
-    role_data["data"]["permissions"] = {"api": ["edit_role"]}
+    role_data["data"]["permissions"] = [
+        {"name": "api", "permissions": ["edit_role"]}]
 
     response = client_v1.put(
         "/v1/role/{0}/".format(role_data["id"]), data=role_data
@@ -290,7 +297,7 @@ def test_add_permission_to_edit_user(client_v1, sudo_client_v1, sudo_role,
     )
     assert response.status_code == 403
 
-    role_data["data"]["permissions"]["api"].append("view_role")
+    role_data["data"]["permissions"][0]["permissions"].append("view_role")
     response = sudo_client_v1.put(
         "/v1/role/{0}/".format(role_data["id"]), data=role_data
     )
@@ -304,7 +311,7 @@ def test_add_permission_to_edit_user(client_v1, sudo_client_v1, sudo_role,
 
 def test_add_permission_to_delete_user(client_v1, sudo_client_v1, sudo_role,
                                        normal_user_with_role, valid_request):
-    client_v1.login(normal_user_with_role.login, "qwerty")
+    response = client_v1.login(normal_user_with_role.login, "qwerty")
 
     response = sudo_client_v1.post("/v1/role/", data=valid_request)
     model = response.json

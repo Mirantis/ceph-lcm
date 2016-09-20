@@ -18,7 +18,9 @@ class PermissionView(generic.ModelView):
     ENDPOINT = "/permission/"
 
     def get(self):
-        permissions = role.PermissionSet(role.PermissionSet.KNOWN_PERMISSIONS)
-        permissions = permissions.make_api_structure()
+        known_permissions = [
+            {"name": key, "permissions": sorted(value)}
+            for key, value in role.PermissionSet.KNOWN_PERMISSIONS.items()
+        ]
 
-        return {"items": permissions}
+        return {"items": known_permissions}
