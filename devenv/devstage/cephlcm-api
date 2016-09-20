@@ -21,8 +21,10 @@ def patch(app):
 
         role_model = role.RoleModel.make_role(
             "Sudo",
-            {k: sorted(v)
-             for k, v in role.PermissionSet.KNOWN_PERMISSIONS.items()}
+            [
+                {"name": k, "permissions": sorted(v)}
+                for k, v in role.PermissionSet.KNOWN_PERMISSIONS.items()
+            ]
         )
         user.UserModel.make_user(
             "sudo",
