@@ -9,7 +9,7 @@ import setuptools
 setuptools.setup(
     name="cephlcm-server-discovery",
     description="Server discovery plugin for CephLCM",
-    version="0.1",
+    version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
@@ -27,7 +27,7 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "cephlcm_common"
+        "cephlcm_common==0.1.0"
     ],
     zip_safe=False
 )
