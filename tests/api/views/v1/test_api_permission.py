@@ -11,7 +11,7 @@ def test_access_ok(sudo_client_v1):
         for k, v in role.PermissionSet.KNOWN_PERMISSIONS.items()
     ]
     pset = role.PermissionSet(known_permissions)
-    response = sudo_client_v1.get("/v1/permission/")
+    response = sudo_client_v1.get("/v1/permission")
 
     assert response.status_code == 200
     assert isinstance(response.json["items"], list)

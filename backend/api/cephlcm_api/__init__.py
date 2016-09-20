@@ -21,6 +21,7 @@ def create_application():
     """Creates and configures WSGI application."""
 
     application = flask.Flask(__name__)
+    application.url_map.strict_slashes = False
 
     app_config.configure(application)
     handlers.register_handlers(application)
