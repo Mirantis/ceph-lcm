@@ -1,13 +1,14 @@
 {
+  "IMPORTANT": [
+    "jQuery dt should be changed in accordance with",
+    "http://stackoverflow.com/questions/34641185/subsequent-variable-declarations-must-have-the-same-type-variable-must-be-o"
+  ],
   "globalDependencies": {
     "angular-protractor": "registry:dt/angular-protractor#1.5.0+20160425143459",
-    "bootstrap": "registry:dt/bootstrap#3.3.5+20160619023404",
-    "core-js": "registry:dt/core-js#0.0.0+20160725163759",
+    "core-js": "registry:dt/core-js#0.0.0+20160914114559",
     "jasmine": "registry:dt/jasmine#2.2.0+20160621224255",
-    // IMPORTANT: jQuery dt should be changed in accordance with
-    // http://stackoverflow.com/questions/34641185/subsequent-variable-declarations-must-have-the-same-type-variable-must-be-o
     "jquery": "registry:dt/jquery#1.10.0+20160908203239",
-    "node": "registry:dt/node#6.0.0+20160909174046",
+    "node": "registry:dt/node#6.0.0+20160919063032",
     "selenium-webdriver": "registry:dt/selenium-webdriver#2.44.0+20160317120654"
   },
   "dependencies": {
