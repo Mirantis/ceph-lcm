@@ -196,7 +196,7 @@ def test_get_by_execution_id(task_type, configure_model):
 ))
 def test_plugin_finish(action, state, new_pcmodel, new_execution):
     new_task = task.PlaybookPluginTask(
-        new_pcmodel.playbook, new_pcmodel._id, new_execution.model_id)
+        new_pcmodel.playbook_id, new_pcmodel._id, new_execution.model_id)
     new_task.create()
     new_task.start()
 

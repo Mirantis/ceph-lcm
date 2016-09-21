@@ -89,7 +89,7 @@ class ExecutionView(generic.VersionedCRUDView):
             )
 
         auth.check_auth_permission(flask.g.token.user,
-                                   "playbook", config.playbook)
+                                   "playbook", config.playbook_id)
 
         model = execution.ExecutionModel.create(config, self.initiator_id)
         LOG.info(
@@ -100,7 +100,7 @@ class ExecutionView(generic.VersionedCRUDView):
 
         try:
             tsk = task.PlaybookPluginTask(
-                config.playbook, config._id, model.model_id
+                config.playbook_id, config._id, model.model_id
             )
             tsk.create()
         except Exception as exc:

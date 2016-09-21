@@ -185,7 +185,7 @@ def new_pcmodel(public_playbook_name, new_cluster, new_servers):
 
     return playbook_configuration.PlaybookConfigurationModel.create(
         name=name,
-        playbook=public_playbook_name,
+        playbook_id=public_playbook_name,
         cluster=new_cluster,
         servers=new_servers,
         initiator_id=initiator_id

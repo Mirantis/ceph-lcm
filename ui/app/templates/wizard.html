@@ -14,7 +14,7 @@
           name="configuration_name"
           id="configuration_name"
           placeholder="Name"
-          [(ngModel)]="newConfiguration.name"
+          [(ngModel)]="newConfiguration.data.name"
           required>
       </div>
       <div class="form-group">
@@ -24,7 +24,7 @@
           name="configuration_cluster"
           id="configuration_cluster"
           placeholder="Cluster"
-          [(ngModel)]="newConfiguration.cluster_id"
+          [(ngModel)]="newConfiguration.data.cluster_id"
           required>
           <option *ngFor="let cluster of clusters" [value]="cluster.id">
             {{cluster.data.name}}
@@ -47,16 +47,16 @@
           <div class="grid-line" *ngFor="let playbook of playbooks">
             <div class="col-xs-1">
               <input
-                [(ngModel)]="newConfiguration.data.playbook"
+                [(ngModel)]="newConfiguration.data.playbook_id"
                 id="playbook"
                 name="playbook"
-                [value]="playbook.name"
+                [value]="playbook.id"
                 type="radio"
                 required
               >
             </div>
             <div class="col-xs-3 name">
-              <a (click)="newConfiguration.data.playbook = playbook.name">
+              <a (click)="newConfiguration.data.playbook_id = playbook.id">
                 {{playbook.name}}
               </a>
             </div>
@@ -110,13 +110,15 @@
       </div>
     </template>
     <template [ngSwitchCase]="4">
-      <h1>Configuration tweaking</h1>
-      <textarea
-        class="form-control"
-        rows="5"
-        name="configuration"
-        [(ngModel)]="jsonConfiguration"
-      ></textarea>
+      <h1>Configuration</h1>
+      <div class="form-group" [ngClass]="{'has-error': !isJSONValid()}">
+        <textarea
+          class="form-control mono"
+          rows="10"
+          name="configuration"
+          [(ngModel)]="jsonConfiguration"
+        ></textarea>
+      </div>
     </template>
   </form>
 </div>

@@ -33,6 +33,10 @@ a {
 .text-warning {color: @orange;}
 .text-danger  {color: @shrimp;}
 
+.mono {
+  font-family: monospace;
+}
+
 .line {
   display: block;
   height: 1px;
@@ -332,10 +336,17 @@ label {
       margin: 3px auto;
     }
 
-    .name, .parameter {
+    .name, .parameter, .buttons {
       display: block;
-      height: 30px;
+      height: 35px;
       overflow: hidden;
+    }
+
+    .buttons {
+      text-align: right;
+      button {
+        margin-left: 8px;
+      }
     }
 
     .server-details {

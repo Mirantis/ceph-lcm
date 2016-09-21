@@ -59,7 +59,8 @@ declare module './models' {
   interface PlaybookConfiguration extends BaseModel {
     data: {
       name: string,
-      playbook: string,
+      cluster_id: string,
+      playbook_id: string,
       configuration: Object,
       server_ids?: string[]
     }

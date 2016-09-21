@@ -384,6 +384,9 @@ a:hover > .glyphicon {
 .text-danger {
   color: #FF634C;
 }
+.mono {
+  font-family: monospace;
+}
 .line {
   display: block;
   height: 1px;
@@ -666,10 +669,17 @@ label {
   margin: 3px auto;
 }
 .box .bowels .name,
-.box .bowels .parameter {
+.box .bowels .parameter,
+.box .bowels .buttons {
   display: block;
-  height: 30px;
+  height: 35px;
   overflow: hidden;
+}
+.box .bowels .buttons {
+  text-align: right;
+}
+.box .bowels .buttons button {
+  margin-left: 8px;
 }
 .box .bowels .server-details {
   margin-bottom: 20px;

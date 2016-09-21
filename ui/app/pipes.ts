@@ -1,5 +1,7 @@
-import { Pipe, PipeTransform } from '@angular/core';
 import * as _ from 'lodash';
+import { Pipe, PipeTransform } from '@angular/core';
+
+var formatJSON = require('format-json');
 
 @Pipe({name: 'key'})
 export class Key implements PipeTransform {
@@ -43,6 +45,6 @@ export class DateTime implements PipeTransform {
 @Pipe({name: 'json'})
 export class JSONString implements PipeTransform {
   transform(value: Object): string {
-    return JSON.stringify(value);
+    return formatJSON.plain(value);
   }
 }

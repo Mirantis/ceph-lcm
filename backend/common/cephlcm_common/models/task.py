@@ -405,10 +405,10 @@ class ServerDiscoveryTask(Task):
 
 class PlaybookPluginTask(Task):
 
-    def __init__(self, playbook, config_id, initiator_id):
+    def __init__(self, playbook_id, config_id, initiator_id):
         super().__init__(TaskType.playbook, initiator_id)
 
-        self.data["playbook"] = playbook
+        self.data["playbook_id"] = playbook_id
         self.data["playbook_configuration_id"] = config_id
 
     def set_execution_state(self, execution_model, new_state):
