@@ -772,6 +772,9 @@ label {
   display: inline-block;
   width: 70px;
 }
+.roles.grid .grid-header .name {
+  text-align: center;
+}
 .modal-content {
   border-radius: 0;
 }
