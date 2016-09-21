@@ -6,14 +6,13 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import click
-import jsonpatch
 
-from cephlcmlib.cli import cli_group
-from cephlcmlib.cli import decorators
-from cephlcmlib.cli import param_types
+from cephlcm_cli.cli import main
+from cephlcm_cli.cli import decorators
+from cephlcm_cli.cli import param_types
 
 
-@cli_group
+@main.cli_group
 def playbook_configuration():
     """Playbook configuration subcommands."""
 
@@ -96,29 +95,17 @@ def delete(playbook_configuration_id, client):
     help="JSON dump of global vars"
 )
 @click.option(
-    "--global-vars-patch",
-    default=None,
-    type=param_types.JSON,
-    help="JSON patch dump of global vars. Please check RFC6902 for details."
-)
-@click.option(
     "--inventory",
     default=None,
     type=param_types.JSON,
     help="JSON dump of inventory."
 )
-@click.option(
-    "--inventory-patch",
-    default=None,
-    type=param_types.JSON,
-    help="JSON patch dump of inventory. Please check RFC6902 for details."
-)
 @decorators.model_edit(
     "playbook_configuration_id",
     "get_playbook_configuration"
 )
-def update(playbook_configuration_id, global_vars, global_vars_patch,
-           inventory, inventory_patch, name, model, client, **kwargs):
+def update(playbook_configuration_id, global_vars, inventory, name, model,
+           client, **kwargs):
     """Updates playbook configuration.
 
     Since playbook configuration is complex, there are the rules on
@@ -136,22 +123,11 @@ def update(playbook_configuration_id, global_vars, global_vars_patch,
 
     if not model:
         model = client.get_playbook_configuration(playbook_configuration_id)
-
         if name is not None:
             model["data"]["name"] = name
-
         if global_vars is not None:
             model["data"]["configuration"]["global_vars"] = global_vars
-        elif global_vars_patch:
-            model_vars = model["data"]["configuration"]["global_vars"]
-            model_vars = jsonpatch.apply_patch(model_vars, global_vars_patch)
-            model["data"]["configuration"]["global_vars"] = model_vars
-
         if inventory is not None:
             model["data"]["configuration"]["inventory"] = inventory
-        elif inventory_patch:
-            model_vars = model["data"]["configuration"]["inventory"]
-            model_vars = jsonpatch.apply_patch(model_vars, inventory_patch)
-            model["data"]["configuration"]["inventory"] = model_vars
 
     return client.update_playbook_configuration(model)

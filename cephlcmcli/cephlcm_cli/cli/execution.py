@@ -7,11 +7,11 @@ from __future__ import unicode_literals
 
 import click
 
-from cephlcmlib.cli import cli_group
-from cephlcmlib.cli import decorators
+from cephlcm_lib.cli import main
+from cephlcm_lib.cli import decorators
 
 
-@cli_group
+@main.cli_group
 def execution():
     """Execution subcommands."""
 
