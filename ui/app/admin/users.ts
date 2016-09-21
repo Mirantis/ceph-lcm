@@ -73,6 +73,7 @@ export class UsersComponent {
         () => {
           this.modal.close();
           this.fetchData();
+          this.getUserVersions(this.newUser, true);
         },
         (error) => this.data.handleResponseError(error)
       );
@@ -91,8 +92,8 @@ export class UsersComponent {
     this.newUser = _.isNull(this.shownUserId) ? new User({}) : user.clone();
   }
 
-  getUserVersions(user: any): User[] {
-    if (!this.userVersions[user.id]) {
+  getUserVersions(user: any, reread: boolean = false): User[] {
+    if (!this.userVersions[user.id] || reread) {
       this.data.user().getVersions(user.id)
         .then(
           (versions: User[]) => {

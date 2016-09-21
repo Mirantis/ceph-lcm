@@ -16,19 +16,15 @@ export class PermissionsGroup {
   rolesPermissionGroups: rolesPermissionGroupsType = {};
 
   constructor() {
-    this.rolesPermissionGroups = _.reduce(
-      this.roles,
-      (result: rolesPermissionGroupsType, role: Role) => {
-        let rolePermissionsGroup = _.find(role.data.permissions, {name: this.group.name});
-        result[role.id] = rolePermissionsGroup ? rolePermissionsGroup.permissions : [];
-        return result;
-      },
-      {}
-    ) as rolesPermissionGroupsType;
+  }
+
+  getRoleGroupPermissions(role: Role): string[] {
+    let rolePermissionsGroup = _.find(role.data.permissions, {name: this.group.name});
+    return rolePermissionsGroup ? rolePermissionsGroup.permissions : [];
   }
 
   getRolePermission(permission: string, role: Role) {
-    return _.includes(this.rolesPermissionGroups[role.id], permission);
+    return _.includes(this.getRoleGroupPermissions(role), permission);
   }
 }
 
@@ -38,7 +34,7 @@ export class PermissionsGroup {
 export class RolesComponent {
   roles: Role[] = null;
   permissions: [PermissionGroup] = [] as [PermissionGroup];
-  newRole: Role = new Role({});
+  newRole: Role = new Role({data: {permissions: []}});
   error: any;
 
   constructor(private data: DataService, private modal: Modal) {
@@ -51,11 +47,6 @@ export class RolesComponent {
       );
   }
 
-  getPermissionsGroupByName(groupName: string, haystack: [PermissionGroup]): PermissionGroup {
-    return _.find(haystack, {data: {name: groupName}})
-      || new PermissionGroup({data: {name: groupName, permissions: []}})
-  }
-
   fetchData() {
     this.data.role().findAll({})
       .then(
@@ -65,7 +56,7 @@ export class RolesComponent {
   }
 
   editRole(role: Role = null) {
-    this.newRole = _.isNull(role) ? new Role({}) : role.clone();
+    this.newRole = _.isNull(role) ? new Role({data: {permissions: []}}) : role.clone();
     this.modal.show();
   }
 
@@ -78,14 +69,20 @@ export class RolesComponent {
   }
 
   getGroupPermission(group: PermissionGroup, permission: string): boolean {
-    return _.includes(group.permissions, permission);
+    let roleGroup = _.find(this.newRole.data.permissions, {name: group.name});
+    if (!roleGroup) {
+      return false;
+    }
+    return _.includes(roleGroup.permissions, permission);
   }
 
   toggleGroupPermission(group: PermissionGroup, permission: string) {
     let groupIndex = _.findIndex(this.newRole.data.permissions, {name: group.name});
-    let groupPermissions = this.newRole.data.permissions[groupIndex];
+    let groupPermissions = groupIndex >= 0 ?
+      this.newRole.data.permissions[groupIndex] :
+      new PermissionGroup({name: group.name, permissions: []});
 
-    if (this.getGroupPermission(group, permission)) {
+    if (_.includes(groupPermissions.permissions, permission)) {
       _.pull(groupPermissions.permissions, permission);
       if (_.isEmpty(groupPermissions.permissions)) {
         this.newRole.data.permissions = _.remove(
@@ -97,7 +94,11 @@ export class RolesComponent {
     } else {
       groupPermissions.permissions.push(permission);
     }
-    this.newRole.data.permissions[groupIndex] = groupPermissions;
+    if (groupIndex >= 0) {
+      this.newRole.data.permissions[groupIndex] = groupPermissions;
+    } else {
+      this.newRole.data.permissions.push(groupPermissions);
+    }
   }
 
   save() {
@@ -108,6 +109,7 @@ export class RolesComponent {
       savePromise = this.data.role().postUpdate(this.newRole.id, this.newRole);
     } else {
       // Create new role
+      console.log(this.newRole);
       savePromise = this.data.role().postCreate(this.newRole);
     }
     return savePromise
