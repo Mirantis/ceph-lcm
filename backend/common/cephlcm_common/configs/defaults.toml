@@ -76,6 +76,7 @@ json_sort_keys = true
 jsonify_prettyprint_regular = true
 json_as_ascii = false
 pagination_per_page = 25
+server_discovery_token = "26758c32-3421-4f3d-9603-e4b5337e7ecc"
 
     # API options related to tokens
     [api.token]

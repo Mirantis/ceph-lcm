@@ -2,11 +2,16 @@
 """This module contains view for /v1/server API."""
 
 
+import functools
+
+import flask
+
 from cephlcm_api import auth
 from cephlcm_api import exceptions as http_exceptions
 from cephlcm_api import validators
 from cephlcm_api.views import generic
 from cephlcm_common import exceptions as base_exceptions
+from cephlcm_common import config
 from cephlcm_common import log
 from cephlcm_common.models import server
 from cephlcm_common.models import task
@@ -45,8 +50,28 @@ SERVER_DISCOVERY_SCHEMA = validators.create_data_schema(
 )
 """Schema for the server discovery."""
 
+CONF = config.make_api_config()
+"""Config."""
+
 LOG = log.getLogger(__name__)
 """Logger."""
+
+
+def require_create_server_authorization(func):
+    """Special authorization decorator for server create."""
+
+    normal_decorated_func = auth.require_authorization("api", "create_server")
+    normal_decorated_func = normal_decorated_func(func)
+    normal_decorated_func = auth.require_authentication(normal_decorated_func)
+
+    @functools.wraps(func)
+    def decorator(*args, **kwargs):
+        token_id = flask.request.headers.get("Authorization")
+        if token_id == CONF.API_SERVER_DISCOVERY_TOKEN:
+            return func(*args, **kwargs)
+        return normal_decorated_func(*args, **kwargs)
+
+    return decorator
 
 
 class ServerView(generic.VersionedCRUDView):
@@ -59,20 +84,24 @@ class ServerView(generic.VersionedCRUDView):
     ENDPOINT = "/server/"
     PARAMETER_TYPE = "uuid"
 
+    @auth.require_authentication
     @auth.require_authorization("api", "view_server")
     def get_all(self):
         return server.ServerModel.list_models(self.pagination)
 
+    @auth.require_authentication
     @auth.require_authorization("api", "view_server")
     @validators.with_model(server.ServerModel)
     def get_item(self, item_id, item, *args):
         return item
 
+    @auth.require_authentication
     @auth.require_authorization("api", "view_server")
     @auth.require_authorization("api", "view_server_versions")
     def get_versions(self, item_id):
         return server.ServerModel.list_versions(str(item_id), self.pagination)
 
+    @auth.require_authentication
     @auth.require_authorization("api", "view_server")
     @auth.require_authorization("api", "view_server_versions")
     def get_version(self, item_id, version):
@@ -85,6 +114,7 @@ class ServerView(generic.VersionedCRUDView):
 
         return model
 
+    @auth.require_authentication
     @auth.require_authorization("api", "view_server")
     @auth.require_authorization("api", "edit_server")
     @validators.with_model(server.ServerModel)
@@ -118,12 +148,11 @@ class ServerView(generic.VersionedCRUDView):
 
         return item
 
-    @auth.require_authorization("api", "create_server")
+    @require_create_server_authorization
     @validators.require_schema(SERVER_DISCOVERY_SCHEMA)
     def post(self):
         tsk = task.ServerDiscoveryTask(
-            self.request_json["id"],
-            self.request_json["host"],
+            self.request_json["id"], self.request_json["host"],
             self.request_json["username"],
             self.request_id  # execution for server discovery is request
         )
@@ -140,6 +169,7 @@ class ServerView(generic.VersionedCRUDView):
 
         return {}
 
+    @auth.require_authentication
     @auth.require_authorization("api", "view_server")
     @auth.require_authorization("api", "delete_server")
     @validators.with_model(server.ServerModel)
