@@ -40,6 +40,7 @@ pytest-cov==2.3.1
 pytest-fauxfactory==1.0
 pytest-flask==0.10.0
 pytest-profiling==1.1.1
+PyYAML==3.12
 radon==1.4.2
 requests==2.11.0
 see==1.3.2
