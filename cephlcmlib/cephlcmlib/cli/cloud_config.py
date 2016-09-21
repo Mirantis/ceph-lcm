@@ -4,7 +4,6 @@
 
 import argparse
 import functools
-import json
 import sys
 import uuid
 
@@ -21,6 +20,16 @@ UUID_FILENAME = "/tmp/__uuid__"
 DEFAULT_USER = "ansible"
 """Default user for Ansible."""
 
+PYTHON_PROG = """
+import json,urllib2
+d={{"username":{username!r},"host":open({ip_filename!r}).read(),"id":open({uuid_filename!r}).read()}}
+r=urllib2.Request({url!r},json.dumps(d))
+r.add_header("Content-Type","application/json")
+r.add_header("Authorization",{token!r})
+print(urllib2.urlopen(r).read())
+""".strip()
+"""Python program to use instead of Curl."""
+
 
 def bootcmd(func):
     @functools.wraps(func)
@@ -36,9 +45,9 @@ def bootcmd(func):
 
 def main():
     options = get_options()
+
     document = {
         "users": get_users(options),
-        "packages": get_packages(options),
         "bootcmd": get_bootcmd(options)
     }
 
@@ -58,21 +67,18 @@ def get_users(options):
     ]
 
 
-def get_packages(options):
-    return ["dmidecode", "iproute2", "curl"]
-
-
 def get_bootcmd(options):
     bootcmd = [
         get_command_header(options),
+        get_command_debug(options),
         get_command_uuid(options),
         get_command_ip(options),
-        get_command_curl(options),
+        get_command_notify(options),
         get_command_clean(options),
         get_command_footer(options)
     ]
     if not options.debug:
-        bootcmd = bootcmd[1:-1]
+        bootcmd = bootcmd[2:-1]
 
     return bootcmd
 
@@ -81,49 +87,48 @@ def get_command_header(options):
     return ["echo", "=== START CEPHLCM SERVER DISCOVERY ==="]
 
 
+def get_command_debug(options):
+    return [
+        "echo",
+        "DISCOVERY DATA: URL={0!r}, TOKEN={1!r}".format(
+            options.url, str(options.token))
+    ]
+
+
 @bootcmd
 def get_command_uuid(options):
     return (
         "dmidecode | grep UUID | rev | cut -f1 -d' ' | rev | "
-        "tr -d '[[:space:]]' | tr '[[:upper:]]' '[[:lower:]]' "
-        "{0}".format(shell_redirect(options, UUID_FILENAME))
+        "tr '[[:upper:]]' '[[:lower:]]' {0}".format(
+            shell_redirect(options, UUID_FILENAME))
     )
 
 
 @bootcmd
 def get_command_ip(options):
     return (
-        "getent ahostsv4 {0} | head -n1 | cut -f1 -d' ' | "
-        "tr -d '[[:space:]]' {1}".format(
-            get_hostname(options.url),
-            shell_redirect(options, IP_FILENAME)
+        "ip route get $(getent ahostsv4 {0!r} | head -n1 | cut -f1 -d' ') | "
+        "head -n1 | rev | cut -f2 -d' ' | rev {1}".format(
+            get_hostname(options.url), shell_redirect(options, IP_FILENAME)
         )
     )
 
 
-@bootcmd
-def get_command_curl(options):
-    request = get_request_data(options)
-    request = six.moves.shlex_quote(request)
-    token = str(options.token)
-
+def get_command_notify(options):
     url = options.url
     if not url.startswith(("http://", "https://")):
         url = "http://{0}".format(url)
 
-    command = ["curl"]
-    if options.debug:
-        command.append("--verbose")
-    else:
-        command.append("--silent")
-    command.append("--location")
-    command.extend(["--request", "POST"])
-    command.extend(["--header", "'Authorization: {0}'".format(token)])
-    command.extend(["--header", "'Content-Type: application/json'"])
-    command.extend(["--data", request])
-    command.append("{0}/v1/auth/".format(url))
+    program = PYTHON_PROG.format(
+        username=options.username,
+        ip_filename=IP_FILENAME,
+        uuid_filename=UUID_FILENAME,
+        url=url,
+        token=str(options.token)
+    )
+    program = ";".join(program.split("\n"))
 
-    return " ".join(command)
+    return ["python2", "-c", program]
 
 
 def get_command_clean(options):
@@ -134,22 +139,15 @@ def get_command_footer(options):
     return ["echo", "=== FINISH CEPHLCM SERVER DISCOVERY ==="]
 
 
-def get_request_data(options):
-    data = {
-        "id": "$(cat {0})".format(UUID_FILENAME),
-        "username": options.username,
-        "host": "$(cat {0})".format(IP_FILENAME)
-    }
-    data = json.dumps(data, separators=(",", ":"))
-
-    return data
-
-
 def shell_redirect(options, filename):
-    if options.debug:
-        return "| tee {0}".format(filename)
+    ending = "| tr -d '[[:space:]]' "
 
-    return "> {0}".format(filename)
+    if options.debug:
+        ending += "| tee {0}".format(filename)
+    else:
+        ending += "> {0}".format(filename)
+
+    return ending
 
 
 def get_hostname(hostname):
