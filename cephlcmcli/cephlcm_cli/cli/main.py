@@ -101,13 +101,3 @@ def cli_group(func):
     cli.add_command(func, name=name)
 
     return func
-
-
-from cephlcm_cli.cli import cluster  # NOQA
-from cephlcm_cli.cli import execution  # NOQA
-from cephlcm_cli.cli import permission  # NOQA
-from cephlcm_cli.cli import playbook  # NOQA
-from cephlcm_cli.cli import playbook_configuration  # NOQA
-from cephlcm_cli.cli import role  # NOQA
-from cephlcm_cli.cli import server  # NOQA
-from cephlcm_cli.cli import user  # NOQA
