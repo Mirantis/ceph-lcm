@@ -1,12 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
-import { NgSwitch, NgSwitchCase } from '@angular/common';
 import { Router } from '@angular/router';
 import { Modal } from '../bootstrap';
 import { DataService } from '../services/data';
 import { Cluster, Server, Playbook, PlaybookConfiguration, Execution } from '../models';
 import { Record } from 'js-data';
-
-import { WizardComponent } from './wizard';
 
 import * as _ from 'lodash';
 
@@ -14,7 +11,7 @@ import * as _ from 'lodash';
   templateUrl: './app/templates/configurations.html'
 })
 export class ConfigurationsComponent {
-  @ViewChild(WizardComponent) wizard: WizardComponent;
+
   configurations: PlaybookConfiguration[] = null;
   clusters: Cluster[] = [];
   playbooks: Playbook[] = [];

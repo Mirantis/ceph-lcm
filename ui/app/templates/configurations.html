@@ -63,7 +63,6 @@
 
 <!-- Filters -->
 
-
 <div class="configurations row" *ngIf="configurations && configurations.length">
   <div class="col-xs-12">
     <div class="table-help">
@@ -126,14 +125,11 @@
   You don't have any configurations yet. Please create.
 </div>
 
-<modal
-  [title]="'New Playbook Configuration'"
-  [isLarge]="false"
->
+<modal [title]="'New Playbook Configuration'">
   <wizard
     [playbooks]="playbooks"
     [clusters]="clusters"
     [servers]="servers"
-    [fetchData]="fetchData"
+    (callback)="fetchData()"
   ></wizard>
 </modal>
