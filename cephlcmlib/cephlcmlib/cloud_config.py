@@ -47,7 +47,7 @@ def generate_cloud_config(url, server_discovery_token, public_key, username,
         "bootcmd": get_bootcmd(url, server_discovery_token, username, timeout,
                                debug)
     }
-    cloud_config = yaml.dump(document, indent=2, width=9999)
+    cloud_config = yaml.safe_dump(document, indent=2, width=9999)
 
     return "#cloud-config\n{0}".format(cloud_config)
 
