@@ -51,27 +51,33 @@ def get_packages(options):
 
 def get_bootcmd(options):
     return [
+        get_command_header(options),
         get_command_uuid(options),
         get_command_ip(options),
         get_command_all(options),
-        get_command_clean(options)
+        get_command_clean(options),
+        get_command_footer(options)
     ]
+
+
+def get_command_header(options):
+    return ["echo", "=== START CEPHLCM SERVER DISCOVERY ==="]
 
 
 def get_command_uuid(options):
     return [
-        "sh", "-c",
+        "sh", "-cx",
         "dmidecode | grep UUID | rev | cut -f1 -d' ' | rev | "
-        "tr -d '[[:space:]]' | tr '[[:upper:]]' '[[:lower:]]' > {0}".format(
-            UUID_FILENAME)
+        "tr -d '[[:space:]]' | tr '[[:upper:]]' '[[:lower:]]' "
+        "{0}".format(shell_redirect(options, UUID_FILENAME))
     ]
 
 
 def get_command_ip(options):
     return [
-        "sh", "-c",
+        "sh", "-cx",
         "ip r g 8.8.8.8 | head -n1 | rev | cut -f2 -d' ' | rev | "
-        "tr -d '[[:space:]]' > {0}".format(IP_FILENAME)
+        "tr -d '[[:space:]]' {0}".format(shell_redirect(options, IP_FILENAME))
     ]
 
 
@@ -88,7 +94,10 @@ def get_curl_command(options):
     request = shlex.quote(request)
 
     command = ["curl"]
-    command.append("--silent")
+    if options.debug:
+        command.append("--verbose")
+    else:
+        command.append("--silent")
     command.append("--location")
     command.extend(["--request", "POST"])
     command.extend(["--header", "'Authorization: {0}'".format(options.token)])
@@ -97,6 +106,10 @@ def get_curl_command(options):
     command.append(options.url)
 
     return " ".join(command)
+
+
+def get_command_footer(options):
+    return ["echo", "=== FINISH CEPHLCM SERVER DISCOVERY ==="]
 
 
 def get_request_data(options):
@@ -108,6 +121,13 @@ def get_request_data(options):
     data = json.dumps(data, separators=(",", ":"))
 
     return data
+
+
+def shell_redirect(options, filename):
+    if options.debug:
+        return "| tee {0}".format(filename)
+
+    return "> {0}".format(filename)
 
 
 def get_options():
@@ -139,6 +159,12 @@ def get_options():
     parser.add_argument(
         "-g", "--group",
         help="Group of Ansible user to use."
+    )
+    parser.add_argument(
+        "-d", "--debug",
+        help="Generate debugable cloud config.",
+        action="store_true",
+        default=False
     )
 
     return parser.parse_args()

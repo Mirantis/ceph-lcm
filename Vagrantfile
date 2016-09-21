@@ -2,7 +2,25 @@
 # vi: set ft=ruby :
 
 
+require 'tempfile'
+
+
 VAGRANTFILE_API_VERSION = "2"
+
+CLOUD_CONFIG_USERNAME = "ansible"
+CLOUD_CONFIG_URL = "http://10.0.0.10:5000/v1/server/"
+CLOUD_CONFIG_KEY = "~/.ssh/id_rsa.pub"
+CLOUD_CONFIG_TOKEN = "26758c32-3421-4f3d-9603-e4b5337e7ecc"
+CLOUD_CONFIG_CONTENT = `python3 scripts/generate_cloud_config.py -d -k #{CLOUD_CONFIG_KEY} -u #{CLOUD_CONFIG_USERNAME} #{CLOUD_CONFIG_URL} #{CLOUD_CONFIG_TOKEN}`
+
+CLOUD_CONFIG_FILE = Tempfile::new("cloud_config")
+begin
+  CLOUD_CONFIG_FILE.write CLOUD_CONFIG_CONTENT
+  CLOUD_CONFIG_FILE.close
+end
+at_exit do
+  CLOUD_CONFIG_FILE.delete
+end
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -63,8 +81,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         s.privileged = false
         s.inline = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
       end
-      client.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/me.pub"
-      client.vm.provision "shell", inline: "cat ~vagrant/.ssh/me.pub >> ~vagrant/.ssh/authorized_keys"
+
+      client.vm.provision "copy-cloud-config",
+        type: "file",
+        source: CLOUD_CONFIG_FILE.path,
+        destination: "/tmp/user-data"
+      client.vm.provision "cloud-init", type: "shell" do |s|
+        s.privileged = true
+        s.inline = "mv /tmp/user-data /var/lib/cloud/seed/nocloud-net/user-data && rm -r /var/lib/cloud/instances/* && cloud-init init --local && cloud-init init && cloud-init modules"
+      end
 
       client.vm.provider "virtualbox" do |vb|
         vb.gui = false
