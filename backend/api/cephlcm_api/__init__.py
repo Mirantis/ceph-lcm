@@ -3,7 +3,6 @@
 
 
 import flask
-import flask_cors
 import flask_pymongo
 
 from cephlcm_api import config as app_config
@@ -28,7 +27,6 @@ def create_application():
     handlers.register_handlers(application)
     views.register_api(application)
     generic_model.configure_models(flask_pymongo.PyMongo(application))
-    flask_cors.CORS(application)
 
     with application.app_context():
         generic_model.ensure_indexes()

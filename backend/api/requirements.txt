@@ -3,7 +3,6 @@
 cephlcm_common
 
 Flask
-Flask-CORS
 Flask-PyMongo
 jsonschema
 bcrypt

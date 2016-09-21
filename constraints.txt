@@ -21,7 +21,6 @@ flake8-polyfill==1.0.1
 flake8-quotes==0.8.1
 flake8-string-format==0.2.3
 Flask==0.11.1
-Flask-CORS==3.0.2
 Flask-PyMongo==0.4.1
 hacking==0.11.0
 ipdb==0.10.1
