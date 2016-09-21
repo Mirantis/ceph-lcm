@@ -3,8 +3,10 @@
 
 
 import argparse
+import functools
 import json
 import sys
+import uuid
 
 import six.moves
 import yaml
@@ -15,6 +17,21 @@ IP_FILENAME = "/tmp/__ip__"
 
 UUID_FILENAME = "/tmp/__uuid__"
 """Temporary filename to store machine UUID."""
+
+DEFAULT_USER = "ansible"
+"""Default user for Ansible."""
+
+
+def bootcmd(func):
+    @functools.wraps(func)
+    def decorator(options):
+        command = func(options)
+        if options.debug:
+            return ["sh", "-xc", command]
+
+        return ["sh", "-c", command]
+
+    return decorator
 
 
 def main():
@@ -42,56 +59,57 @@ def get_users(options):
 
 
 def get_packages(options):
-    return [
-        "dmidecode",
-        "iproute2",
-        "curl"
-    ]
+    return ["dmidecode", "iproute2", "curl"]
 
 
 def get_bootcmd(options):
-    return [
+    bootcmd = [
         get_command_header(options),
         get_command_uuid(options),
         get_command_ip(options),
-        get_command_all(options),
+        get_command_curl(options),
         get_command_clean(options),
         get_command_footer(options)
     ]
+    if not options.debug:
+        bootcmd = bootcmd[1:-1]
+
+    return bootcmd
 
 
 def get_command_header(options):
     return ["echo", "=== START CEPHLCM SERVER DISCOVERY ==="]
 
 
+@bootcmd
 def get_command_uuid(options):
-    return [
-        "sh", "-cx",
+    return (
         "dmidecode | grep UUID | rev | cut -f1 -d' ' | rev | "
         "tr -d '[[:space:]]' | tr '[[:upper:]]' '[[:lower:]]' "
         "{0}".format(shell_redirect(options, UUID_FILENAME))
-    ]
+    )
 
 
+@bootcmd
 def get_command_ip(options):
-    return [
-        "sh", "-cx",
-        "ip r g 8.8.8.8 | head -n1 | rev | cut -f2 -d' ' | rev | "
-        "tr -d '[[:space:]]' {0}".format(shell_redirect(options, IP_FILENAME))
-    ]
+    return (
+        "getent ahostsv4 {0} | head -n1 | cut -f1 -d' ' | "
+        "tr -d '[[:space:]]' {1}".format(
+            get_hostname(options.url),
+            shell_redirect(options, IP_FILENAME)
+        )
+    )
 
 
-def get_command_all(options):
-    return ["sh", "-cx", get_curl_command(options)]
-
-
-def get_command_clean(options):
-    return ["rm", UUID_FILENAME, IP_FILENAME]
-
-
-def get_curl_command(options):
+@bootcmd
+def get_command_curl(options):
     request = get_request_data(options)
     request = six.moves.shlex_quote(request)
+    token = str(options.token)
+
+    url = options.url
+    if not url.startswith(("http://", "https://")):
+        url = "http://{0}".format(url)
 
     command = ["curl"]
     if options.debug:
@@ -100,12 +118,16 @@ def get_curl_command(options):
         command.append("--silent")
     command.append("--location")
     command.extend(["--request", "POST"])
-    command.extend(["--header", "'Authorization: {0}'".format(options.token)])
+    command.extend(["--header", "'Authorization: {0}'".format(token)])
     command.extend(["--header", "'Content-Type: application/json'"])
     command.extend(["--data", request])
-    command.append(options.url)
+    command.append("{0}/v1/auth/".format(url))
 
     return " ".join(command)
+
+
+def get_command_clean(options):
+    return ["rm", UUID_FILENAME, IP_FILENAME]
 
 
 def get_command_footer(options):
@@ -130,8 +152,23 @@ def shell_redirect(options, filename):
     return "> {0}".format(filename)
 
 
+def get_hostname(hostname):
+    if not hostname.startswith(("http://", "https://")):
+        hostname = "http://{0}".format(hostname)
+
+    parsed = six.moves.urllib.parse.urlparse(hostname)
+    parsed = parsed.netloc.split(":", 1)[0]
+
+    return parsed
+
+
 def get_options():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description=(
+            "Generate user data configuration for cloud-init on cephlcm "
+            "cluster hosts."
+        )
+    )
 
     parser.add_argument(
         "url",
@@ -139,7 +176,8 @@ def get_options():
     )
     parser.add_argument(
         "token",
-        help="Server token."
+        help="Server token.",
+        type=uuid.UUID
     )
     parser.add_argument(
         "-k", "--public-key",
@@ -153,12 +191,13 @@ def get_options():
     )
     parser.add_argument(
         "-u", "--username",
-        help="Username for Ansible to use.",
-        default="ansible"
+        help="Username for Ansible to use. Default is {0!r}.".format(
+            DEFAULT_USER),
+        default=DEFAULT_USER
     )
     parser.add_argument(
         "-g", "--group",
-        help="Group of Ansible user to use."
+        help="Group of Ansible user to use. Default is given username."
     )
     parser.add_argument(
         "-d", "--debug",
