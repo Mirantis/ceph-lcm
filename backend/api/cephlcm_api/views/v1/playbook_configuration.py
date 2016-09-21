@@ -16,7 +16,7 @@ from cephlcm_common.models import playbook_configuration
 
 DATA_SCHEMA = {
     "name": {"$ref": "#/definitions/non_empty_string"},
-    "playbook": {"$ref": "#/definitions/non_empty_string"},
+    "playbook_id": {"$ref": "#/definitions/non_empty_string"},
     "cluster_id": {"$ref": "#/definitions/uuid4"},
     "configuration": {"type": "object"}
 }
@@ -31,7 +31,7 @@ MODEL_SCHEMA = validators.create_model_schema(
 POST_SCHEMA = {
     "name": {"$ref": "#/definitions/non_empty_string"},
     "cluster_id": {"$ref": "#/definitions/uuid4"},
-    "playbook": {"$ref": "#/definitions/non_empty_string"},
+    "playbook_id": {"$ref": "#/definitions/non_empty_string"},
     "server_ids": {"$ref": "#/definitions/uuid4_array"}
 }
 POST_SCHEMA = validators.create_data_schema(POST_SCHEMA, True)
@@ -118,7 +118,7 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
     def post(self):
         cluster_model = self.get_cluster_model(self.request_json["cluster_id"])
         servers_for_playbook = self.get_servers_for_playbook(
-            self.request_json["playbook"],
+            self.request_json["playbook_id"],
             self.request_json["server_ids"],
             cluster_model
         )
@@ -126,7 +126,7 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
         try:
             pcmodel = playbook_configuration.PlaybookConfigurationModel.create(
                 name=self.request_json["name"],
-                playbook=self.request_json["playbook"],
+                playbook_id=self.request_json["playbook_id"],
                 cluster=cluster_model,
                 servers=servers_for_playbook,
                 initiator_id=self.initiator_id
@@ -159,17 +159,17 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
 
         return item
 
-    def get_servers_for_playbook(self, playbook_name, suggested_servers,
+    def get_servers_for_playbook(self, playbook_id, suggested_servers,
                                  cluster_model):
         plugs = plugins.get_public_playbook_plugins()
-        if playbook_name not in plugs:
-            raise http_exceptions.UnknownPlaybookError(playbook_name)
+        if playbook_id not in plugs:
+            raise http_exceptions.UnknownPlaybookError(playbook_id)
 
-        plug = plugs[playbook_name]
+        plug = plugs[playbook_id]
         if plug.REQUIRED_SERVER_LIST:
             if not suggested_servers:
                 raise http_exceptions.ServerListIsRequiredForPlaybookError(
-                    playbook_name
+                    playbook_id
                 )
             servers = server.ServerModel.find_by_model_id(*suggested_servers)
             if len(servers) != len(set(suggested_servers)):

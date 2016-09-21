@@ -23,7 +23,7 @@ def clean_pc_collection(mongo_collection):
 def valid_post_request(new_cluster, new_servers, public_playbook_name):
     return {
         "name": pytest.faux.gen_alpha(),
-        "playbook": public_playbook_name,
+        "playbook_id": public_playbook_name,
         "cluster_id": new_cluster.model_id,
         "server_ids": [srv.model_id for srv in new_servers]
     }
@@ -40,7 +40,7 @@ def config():
 def pcmodel(new_cluster, new_servers, config, public_playbook_name):
     model = playbook_configuration.PlaybookConfigurationModel.create(
         name=pytest.faux.gen_alpha(),
-        playbook=public_playbook_name,
+        playbook_id=public_playbook_name,
         cluster=new_cluster,
         servers=new_servers,
         initiator_id=pytest.faux.gen_uuid()
@@ -146,7 +146,7 @@ def test_create_new_playbook_configuration(
     response = sudo_client_v1.post("/v1/playbook_configuration/",
                                    data=valid_post_request)
     assert response.status_code == 200
-    for key in "name", "playbook":
+    for key in "name", "playbook_id":
         assert response.json["data"][key] == valid_post_request[key]
 
     assert isinstance(response.json["data"]["configuration"], dict)
@@ -155,7 +155,7 @@ def test_create_new_playbook_configuration(
 def test_create_new_playbook_configuration_unknown_playbook(
     sudo_client_v1, valid_post_request
 ):
-    valid_post_request["playbook"] = pytest.faux.gen_alphanumeric()
+    valid_post_request["playbook_id"] = pytest.faux.gen_alphanumeric()
 
     response = sudo_client_v1.post("/v1/playbook_configuration/",
                                    data=valid_post_request)
@@ -167,7 +167,7 @@ def test_create_new_playbook_configuration_unknown_playbook(
 def test_create_new_playbook_configuration_not_required_server_list(
     server_list, sudo_client_v1, valid_post_request, new_cluster
 ):
-    plug = get_playbook_plug(valid_post_request["playbook"])
+    plug = get_playbook_plug(valid_post_request["playbook_id"])
     plug.REQUIRED_SERVER_LIST = False
 
     if server_list:
@@ -183,7 +183,7 @@ def test_create_new_playbook_configuration_not_required_server_list(
 def test_create_new_playbook_configuration_required_server_list_ok(
     sudo_client_v1, valid_post_request
 ):
-    plug = get_playbook_plug(valid_post_request["playbook"])
+    plug = get_playbook_plug(valid_post_request["playbook_id"])
     plug.REQUIRED_SERVER_LIST = True
 
     valid_post_request["server_ids"].pop()
@@ -196,7 +196,7 @@ def test_create_new_playbook_configuration_required_server_list_ok(
 def test_create_new_playbook_configuration_required_server_list_fail(
     sudo_client_v1, valid_post_request
 ):
-    plug = get_playbook_plug(valid_post_request["playbook"])
+    plug = get_playbook_plug(valid_post_request["playbook_id"])
     plug.REQUIRED_SERVER_LIST = True
 
     valid_post_request["server_ids"] = []

@@ -12,7 +12,7 @@ def test_create(new_cluster, new_servers, public_playbook_name,
     name = pytest.faux.gen_alpha()
     pcmodel = playbook_configuration.PlaybookConfigurationModel.create(
         name=name,
-        playbook=public_playbook_name,
+        playbook_id=public_playbook_name,
         cluster=new_cluster,
         servers=new_servers,
         initiator_id=pytest.faux.gen_uuid()
@@ -24,7 +24,7 @@ def test_create(new_cluster, new_servers, public_playbook_name,
 
     assert db_pc
     assert pcmodel.name == db_pc["name"]
-    assert pcmodel.playbook == db_pc["playbook"]
+    assert pcmodel.playbook_id == db_pc["playbook_id"]
     assert pcmodel.configuration == db_pc["configuration"]
     assert pcmodel.model_id == db_pc["model_id"]
     assert pcmodel.version == db_pc["version"]
@@ -34,7 +34,7 @@ def test_create(new_cluster, new_servers, public_playbook_name,
     assert pcmodel.cluster_id == db_pc["cluster_id"]
 
     assert pcmodel.name == name
-    assert pcmodel.playbook == public_playbook_name
+    assert pcmodel.playbook_id == public_playbook_name
     assert pcmodel.version == 1
     assert pcmodel.time_created == int(freeze_time.return_value)
     assert pcmodel.time_deleted == 0
@@ -46,7 +46,7 @@ def test_update(new_cluster, new_servers, public_playbook_name,
     name = pytest.faux.gen_alpha()
     pcmodel = playbook_configuration.PlaybookConfigurationModel.create(
         name=name,
-        playbook=public_playbook_name,
+        playbook_id=public_playbook_name,
         cluster=new_cluster,
         servers=new_servers,
         initiator_id=pytest.faux.gen_uuid()
@@ -64,7 +64,7 @@ def test_delete(new_cluster, new_servers, public_playbook_name,
                 pymongo_connection, freeze_time):
     pcmodel = playbook_configuration.PlaybookConfigurationModel.create(
         name=pytest.faux.gen_alpha(),
-        playbook=public_playbook_name,
+        playbook_id=public_playbook_name,
         cluster=new_cluster,
         servers=new_servers,
         initiator_id=pytest.faux.gen_uuid()
@@ -81,7 +81,7 @@ def test_configuration_with_keys(new_cluster, new_servers,
     name = pytest.faux.gen_alpha()
     pcmodel = playbook_configuration.PlaybookConfigurationModel.create(
         name=name,
-        playbook=public_playbook_name,
+        playbook_id=public_playbook_name,
         cluster=new_cluster,
         servers=new_servers,
         initiator_id=pytest.faux.gen_uuid()

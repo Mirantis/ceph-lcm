@@ -29,12 +29,12 @@ class PlaybookConfigurationModel(generic.Model):
         super().__init__()
 
         self.name = None
-        self._playbook = None
+        self._playbook_id = None
         self.cluster = None
         self.configuration = {}
 
-    playbook = properties.ChoicesProperty(
-        "_playbook",
+    playbook_id = properties.ChoicesProperty(
+        "_playbook_id",
         plugins.get_public_playbook_plugins
     )
 
@@ -44,10 +44,10 @@ class PlaybookConfigurationModel(generic.Model):
     )
 
     @classmethod
-    def create(cls, name, playbook, cluster, servers, initiator_id=None):
+    def create(cls, name, playbook_id, cluster, servers, initiator_id=None):
         model = cls()
         model.name = name
-        model.playbook = playbook
+        model.playbook_id = playbook_id
         model.cluster = cluster
         model.configuration = model.make_configuration(cluster, servers)
         model.initiator_id = initiator_id
@@ -71,7 +71,7 @@ class PlaybookConfigurationModel(generic.Model):
 
     def make_configuration(self, cluster, servers):
         plug = plugins.get_public_playbook_plugins()
-        plug = plug[self.playbook]
+        plug = plug[self.playbook_id]
         configuration = plug.build_playbook_configuration(cluster, servers)
 
         return configuration
@@ -80,7 +80,7 @@ class PlaybookConfigurationModel(generic.Model):
         super().update_from_db_document(structure)
 
         self.name = structure["name"]
-        self.playbook = structure["playbook"]
+        self.playbook_id = structure["playbook_id"]
         self.configuration = generic.dot_unescape(structure["configuration"])
         self.cluster = structure["cluster_id"]
 
@@ -88,7 +88,7 @@ class PlaybookConfigurationModel(generic.Model):
         return {
             "name": self.name,
             "initiator_id": self.initiator_id,
-            "playbook": self.playbook,
+            "playbook_id": self.playbook_id,
             "cluster_id": self.cluster_id,
             "configuration": generic.dot_escape(self.configuration)
         }
@@ -96,7 +96,7 @@ class PlaybookConfigurationModel(generic.Model):
     def make_api_specific_fields(self):
         return {
             "name": self.name,
-            "playbook": self.playbook,
+            "playbook_id": self.playbook_id,
             "cluster_id": self.cluster_id,
             "configuration": self.configuration
         }
