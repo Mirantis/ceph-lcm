@@ -2,6 +2,9 @@ ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 OUTPUT_DIR := $(ROOT_DIR)/output
 EGGS_DIR := $(OUTPUT_DIR)/eggs
 
+CONTAINER_BASE_NAME := cephlcm-base
+CONTAINER_CONTROLLER_NAME := cephlcm-controller
+
 # -----------------------------------------------------------------------------
 
 define build_egg
@@ -51,3 +54,20 @@ make_egg_directory: make_output_directory
 
 make_output_directory:
 	mkdir -p "$(OUTPUT_DIR)" || true
+
+# -----------------------------------------------------------------------------
+
+
+build_containers: build_container_api build_container_controller build_container_frontend build_container_db
+
+build_container_api: build_base_container
+
+build_container_controller:
+	docker build -f "$(ROOT_DIR)/containerization/backend-controller.dockerfile" --tag $(CONTAINER_CONTROLLER_NAME) --rm "$(ROOT_DIR)"
+
+build_container_frontend: build_base_container
+
+build_container_db: build_base_container
+
+build_base_container:
+	docker build -f "$(ROOT_DIR)/containerization/backend-base.dockerfile" --tag $(CONTAINER_BASE_NAME) --pull --rm "$(ROOT_DIR)"
