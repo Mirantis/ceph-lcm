@@ -8,7 +8,7 @@ require 'tempfile'
 VAGRANTFILE_API_VERSION = "2"
 
 CLOUD_CONFIG_USERNAME = "ansible"
-CLOUD_CONFIG_URL = "http://10.0.0.10:5000/v1/server/"
+CLOUD_CONFIG_URL = "http://10.0.0.10:8000/v1/server/"
 CLOUD_CONFIG_KEY = "~/.ssh/id_rsa.pub"
 CLOUD_CONFIG_TOKEN = "26758c32-3421-4f3d-9603-e4b5337e7ecc"
 CLOUD_CONFIG_GEN = File.dirname(__FILE__) + "/cephlcmlib/cephlcmlib/cli/cloud_config.py"
