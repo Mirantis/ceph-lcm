@@ -6,6 +6,7 @@ import copy
 
 import pytest
 
+from cephlcm_common import config
 from cephlcm_common.models import server
 from cephlcm_common.models import task
 
@@ -119,6 +120,24 @@ def test_post_server(host, client_v1, normal_user, sudo_client_v1,
 
     servers = pymongo_connection.db.server.find({})
     assert servers.count() == 0
+
+
+def test_post_server_server_discovery_token(client_v1, pymongo_connection):
+    request = {
+        "id": pytest.faux.gen_uuid(),
+        "host": pytest.faux.gen_alphanumeric(),
+        "username": pytest.faux.gen_alpha()
+    }
+
+    conf = config.make_api_config()
+    client_v1.auth_token = conf.API_SERVER_DISCOVERY_TOKEN
+    response = client_v1.post("/v1/server/", data=request)
+    assert response.status_code == 200
+    assert response.json == {}
+
+    found_task = pymongo_connection.db.task.find_one(
+        {"data.host": request["host"]})
+    assert found_task
 
 
 def test_update_server(sudo_client_v1, new_server, client_v1, normal_user):

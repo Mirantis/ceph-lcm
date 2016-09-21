@@ -77,8 +77,6 @@ def require_create_server_authorization(func):
 class ServerView(generic.VersionedCRUDView):
     """Implementation of view for /v1/server/."""
 
-    decorators = [auth.require_authentication]
-
     NAME = "server"
     MODEL_NAME = "server"
     ENDPOINT = "/server/"
