@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 
 import click.types
 
-from cephlcm_cli.cli import utils
+from cephlcm_cli import utils
 
 
 class CSVParamType(click.types.ParamType):

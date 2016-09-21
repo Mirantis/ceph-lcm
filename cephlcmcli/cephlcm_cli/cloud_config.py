@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""This module has cloud-config command implementation."""
 
 
 from __future__ import absolute_import
@@ -7,7 +8,7 @@ from __future__ import unicode_literals
 
 import click
 
-from cephlcm_cli.cli import main
+from cephlcm_cli import main
 from cephlcmlib import cloud_config
 
 

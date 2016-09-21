@@ -6,9 +6,9 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import click
-import cephlcmlib
 
-from cephlcm_cli.cli import utils
+from cephlcm_cli import utils
+import cephlcmlib
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
