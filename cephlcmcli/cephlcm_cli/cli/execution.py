@@ -7,8 +7,8 @@ from __future__ import unicode_literals
 
 import click
 
-from cephlcm_lib.cli import main
-from cephlcm_lib.cli import decorators
+from cephlcm_cli.cli import main
+from cephlcm_cli.cli import decorators
 
 
 @main.cli_group
