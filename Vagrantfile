@@ -75,7 +75,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.define "#{host}", autostart: false do |client|
       client.vm.box = "ubuntu/trusty64"
       client.vm.hostname = "ceph-#{host}"
-      client.vm.network "private_network", ip: "10.1.0.1#{idx}"
+      client.vm.network "private_network", ip: "10.0.0.2#{idx}"
 
       # http://foo-o-rama.com/vagrant--stdin-is-not-a-tty--fix.html
       client.vm.provision "fix-no-tty", type: "shell" do |s|
