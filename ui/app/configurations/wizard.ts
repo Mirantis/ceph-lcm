@@ -1,4 +1,4 @@
-import { Component, Input, Output } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { DataService } from '../services/data';
 
 import { Modal } from '../bootstrap';
@@ -14,7 +14,7 @@ export class WizardComponent {
   @Input() playbooks: Object[];
   @Input() clusters: Object[];
   @Input() servers: Object[];
-  @Input() fetchData: Function;
+  @Output() callback = new EventEmitter();
 
   newConfiguration: any = {server_ids: []};
   error: any;
@@ -80,7 +80,7 @@ export class WizardComponent {
     return savePromise
       .then(
         () => {
-          this.fetchData();
+          this.callback.emit();
           this.reset();
         },
         (error: any) => this.data.handleResponseError(error)

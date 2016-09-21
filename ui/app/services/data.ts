@@ -127,9 +127,9 @@ export class DataService {
               }
             }
           ),
-          afterFind: function(props: any, opts: any, result: any) {
-            return _.map(result.items, (item, index) => new (this.recordClass)(item));
-          },
+          // afterFind: function(props: any, opts: any, result: any) {
+          //   return _.map(result.items, (item, index) => new (this.recordClass)(item));
+          // },
           afterFindAll: function(props: any, opts: any, result: any) {
             return _.map(result.items, (item, index) => new (this.recordClass)(item));
           },
@@ -169,8 +169,8 @@ export class DataService {
   }
 
   handleResponseError(error: any): void {
+    console.log('API returned an error', error);
     if (error.code === 401) {
-      console.warn('Unauthorised', error);
       this.session.removeToken();
       this.router.navigate(['/login']);
     }

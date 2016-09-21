@@ -85,7 +85,7 @@ export class RolesComponent {
     if (_.includes(groupPermissions.permissions, permission)) {
       _.pull(groupPermissions.permissions, permission);
       if (_.isEmpty(groupPermissions.permissions)) {
-        this.newRole.data.permissions = _.remove(
+        _.remove(
           this.newRole.data.permissions,
           (roleGroup) => roleGroup.name === group.name
         ) as [PermissionGroup];
@@ -94,6 +94,7 @@ export class RolesComponent {
     } else {
       groupPermissions.permissions.push(permission);
     }
+
     if (groupIndex >= 0) {
       this.newRole.data.permissions[groupIndex] = groupPermissions;
     } else {

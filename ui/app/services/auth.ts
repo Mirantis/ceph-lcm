@@ -15,7 +15,7 @@ export class AuthService {
   ) {}
 
   redirectUrl: string;
-  loggedUser: User = null;
+  public loggedUser: User = null;
 
   login(email: string, password: string): Promise<Token> {
     return this.data.token()
@@ -55,10 +55,7 @@ export class AuthService {
     if (this.isLoggedIn() && !this.loggedUser) {
       this.data.user().find(this.session.getLoggedUserId())
         .then(
-          (user: User) => {
-            this.loggedUser = user;
-            return this.loggedUser;
-          },
+          (user: User) => this.loggedUser = user,
           (error: any) => this.data.handleResponseError(error)
         );
     }
