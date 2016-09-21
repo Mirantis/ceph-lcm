@@ -55,7 +55,7 @@ def main():
     }
 
     print("#cloud-config")
-    print(yaml.dump(document, indent=2, width=9999))
+    print(yaml.dump(document, indent=2, width=9999).rstrip())
 
 
 def get_users(options):
