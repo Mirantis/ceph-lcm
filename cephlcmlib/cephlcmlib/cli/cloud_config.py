@@ -20,13 +20,16 @@ UUID_FILENAME = "/tmp/__uuid__"
 DEFAULT_USER = "ansible"
 """Default user for Ansible."""
 
+REQUEST_TIMEOUT = 5  # seconds
+"""How long to wait for response from API."""
+
 PYTHON_PROG = """
 import json,urllib2
 d={{"username":{username!r},"host":open({ip_filename!r}).read(),"id":open({uuid_filename!r}).read()}}
 r=urllib2.Request({url!r},json.dumps(d))
 r.add_header("Content-Type","application/json")
 r.add_header("Authorization",{token!r})
-print(urllib2.urlopen(r).read())
+print(urllib2.urlopen(r,timeout={timeout}).read())
 """.strip()
 """Python program to use instead of Curl."""
 
@@ -124,7 +127,8 @@ def get_command_notify(options):
         ip_filename=IP_FILENAME,
         uuid_filename=UUID_FILENAME,
         url=url,
-        token=str(options.token)
+        token=str(options.token),
+        timeout=options.timeout
     )
     program = ";".join(program.split("\n"))
 
@@ -196,6 +200,13 @@ def get_options():
     parser.add_argument(
         "-g", "--group",
         help="Group of Ansible user to use. Default is given username."
+    )
+    parser.add_argument(
+        "-t", "--timeout",
+        type=int,
+        default=REQUEST_TIMEOUT,
+        help="Timeout to access API in seconds. Default is {0}.".format(
+            REQUEST_TIMEOUT)
     )
     parser.add_argument(
         "-d", "--debug",
