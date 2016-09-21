@@ -11,9 +11,10 @@ CLOUD_CONFIG_USERNAME = "ansible"
 CLOUD_CONFIG_URL = "http://10.0.0.10:5000/v1/server/"
 CLOUD_CONFIG_KEY = "~/.ssh/id_rsa.pub"
 CLOUD_CONFIG_TOKEN = "26758c32-3421-4f3d-9603-e4b5337e7ecc"
-CLOUD_CONFIG_CONTENT = `python3 scripts/generate_cloud_config.py -d -k #{CLOUD_CONFIG_KEY} -u #{CLOUD_CONFIG_USERNAME} #{CLOUD_CONFIG_URL} #{CLOUD_CONFIG_TOKEN}`
-
+CLOUD_CONFIG_GEN = File.dirname(__FILE__) + "/cephlcmlib/cephlcmlib/cli/cloud_config.py"
 CLOUD_CONFIG_FILE = Tempfile::new("cloud_config")
+CLOUD_CONFIG_CONTENT = `#{CLOUD_CONFIG_GEN} -d -k #{CLOUD_CONFIG_KEY} -u #{CLOUD_CONFIG_USERNAME} #{CLOUD_CONFIG_URL} #{CLOUD_CONFIG_TOKEN}`
+
 begin
   CLOUD_CONFIG_FILE.write CLOUD_CONFIG_CONTENT
   CLOUD_CONFIG_FILE.close

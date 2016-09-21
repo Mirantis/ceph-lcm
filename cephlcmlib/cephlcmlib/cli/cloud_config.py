@@ -1,12 +1,12 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 
 import argparse
 import json
-import shlex
 import sys
 
+import six.moves
 import yaml
 
 
@@ -91,7 +91,7 @@ def get_command_clean(options):
 
 def get_curl_command(options):
     request = get_request_data(options)
-    request = shlex.quote(request)
+    request = six.moves.shlex_quote(request)
 
     command = ["curl"]
     if options.debug:
