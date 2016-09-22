@@ -13,6 +13,17 @@ from cephlcmlib.cli import param_types
 from cephlcmlib.cli import utils
 
 
+def permissions_to_dict(permissions):
+    return {item["name"]: item["permissions"] for item in permissions}
+
+
+def permissions_to_list(permissions):
+    return [
+        {"name": key, "permissions": sorted(value)}
+        for key, value in permissions.items()
+    ]
+
+
 @cli_group
 def role():
     """Role subcommands."""
@@ -100,10 +111,10 @@ def update(role_id, name, api_permissions, playbook_permissions, model,
 
     permissions = None
     if api_permissions or playbook_permissions:
-        permissions = {
-            "api": api_permissions,
-            "playbook": playbook_permissions
-        }
+        permissions = [
+            {"name": "api", "permissions": api_permissions},
+            {"name": "playbook", "permissions": playbook_permissions}
+        ]
 
     return utils.update_model(
         role_id,
@@ -135,10 +146,12 @@ def add_permission(role_id, permission_type, permission, client):
     """Add new permissions to the role."""
 
     role_model = client.get_role(role_id)
-    permissions = role_model["data"]["permissions"][permission_type]
+
+    all_permissions = permissions_to_dict(role_model["data"]["permissions"])
+    permissions = all_permissions[permission_type]
     permissions += permission
-    permissions = sorted(set(permissions))
-    role_model["data"]["permissions"][permission_type] = permissions
+    all_permissions[permission_type] = sorted(set(permissions))
+    role_model["data"]["permissions"] = permissions_to_list(all_permissions)
 
     return client.update_role(role_model)
 
@@ -154,16 +167,16 @@ def remove_permission(role_id, permission_type, permission, client):
     """
 
     role_model = client.get_role(role_id)
-    permissions = role_model["data"]["permissions"][permission_type]
-    permissions = set(permissions)
-
+    all_permissions = permissions_to_dict(role_model["data"]["permissions"])
+    permissions = set(all_permissions[permission_type])
     to_remove = set(permission)
+
     if to_remove:
         permissions -= to_remove
     else:
         permissions = []
 
-    permissions = sorted(permissions)
-    role_model["data"]["permissions"][permission_type] = permissions
+    all_permissions[permission_type] = sorted(permissions)
+    role_model["data"]["permissions"] = permissions_to_list(all_permissions)
 
     return client.update_role(role_model)

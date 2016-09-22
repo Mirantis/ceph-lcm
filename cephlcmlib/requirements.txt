@@ -2,5 +2,6 @@
 
 click
 jsonpatch
+PyYAML
 requests[socks]
 six
