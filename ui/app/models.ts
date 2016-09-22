@@ -60,7 +60,8 @@ declare module './models' {
     data: {
       name: string,
       playbook: string,
-      configuration: Object
+      configuration: Object,
+      server_ids?: string[]
     }
   }
 

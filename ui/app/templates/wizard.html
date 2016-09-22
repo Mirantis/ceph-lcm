@@ -1,6 +1,6 @@
 <div class="modal-body">
-  <div class="alert alert-danger" role="alert" *ngIf="error">
-    {{error}}
+  <div class="alert alert-danger" role="alert" *ngIf="getValidationSummary()">
+    {{getValidationSummary()}}
   </div>
   <form #newConfigurationForm="ngForm" [ngSwitch]="step">
 
@@ -47,16 +47,16 @@
           <div class="grid-line" *ngFor="let playbook of playbooks">
             <div class="col-xs-1">
               <input
-                [(ngModel)]="newConfiguration.playbook"
+                [(ngModel)]="newConfiguration.data.playbook"
                 id="playbook"
                 name="playbook"
-                [value]="playbook"
+                [value]="playbook.name"
                 type="radio"
                 required
               >
             </div>
             <div class="col-xs-3 name">
-              <a (click)="newConfiguration.playbook = playbook">
+              <a (click)="newConfiguration.data.playbook = playbook.name">
                 {{playbook.name}}
               </a>
             </div>
@@ -109,14 +109,23 @@
         </div>
       </div>
     </template>
+    <template [ngSwitchCase]="4">
+      <h1>Configuration tweaking</h1>
+      <textarea
+        class="form-control"
+        rows="5"
+        name="configuration"
+        [(ngModel)]="jsonConfiguration"
+      ></textarea>
+    </template>
   </form>
 </div>
 <div class="modal-footer">
-  <button class="btn btn-default pull-left" (click)="reset()">
-    Cancel
+  <button class="btn btn-default pull-left" (click)="modal.close()">
+    {{step === 4 ? 'Close': 'Cancel'}}
   </button>
   <button
-    *ngIf="step > 1"
+    *ngIf="step > 1 && step < 4"
     class="btn btn-default"
     (click)="backward()"
     [disabled]="!newConfigurationForm.form.valid"
@@ -135,7 +144,7 @@
     *ngIf="isSaveButtonShown()"
     class="btn btn-primary"
     (click)="save()"
-    [disabled]="!newConfigurationForm.form.valid || !areSomeServersSelected()"
+    [disabled]="!newConfigurationForm.form.valid || !areSomeServersSelected() || !isJSONValid()"
   >
     Save changes
   </button>

@@ -22,11 +22,11 @@ var SharedModule = (function () {
             ],
             declarations: [
                 bootstrap_1.Modal, bootstrap_1.Loader,
-                pipes_1.Keys, pipes_1.Key, pipes_1.TrimBy, pipes_1.DateTime
+                pipes_1.Keys, pipes_1.Key, pipes_1.TrimBy, pipes_1.DateTime, pipes_1.JSONString
             ],
             exports: [
                 bootstrap_1.Modal, bootstrap_1.Loader,
-                pipes_1.Keys, pipes_1.Key, pipes_1.TrimBy, pipes_1.DateTime
+                pipes_1.Keys, pipes_1.Key, pipes_1.TrimBy, pipes_1.DateTime, pipes_1.JSONString
             ],
             providers: [
                 bootstrap_1.Modal, bootstrap_1.Loader

@@ -73,7 +73,7 @@
 
     <div
       class="box"
-      [ngClass]="{open: configuration.id === shownConfigurationId}"
+      [ngClass]="{open: isCurrent(configuration)}"
       *ngFor="let configuration of configurations"
     >
       <div class="col-xs-3 name">{{configuration.data.name}}</div>
@@ -83,11 +83,11 @@
         <a (click)="showVersions(configuration)">
           <span
             class="glyphicon"
-            [ngClass]="'glyphicon-triangle-' + (configuration.id === shownConfigurationId ? 'bottom' : 'right')"
+            [ngClass]="'glyphicon-triangle-' + (isCurrent(configuration) ? 'bottom' : 'right')"
           ></span>
         </a>
       </div>
-      <div class="bowels" *ngIf="configuration.id === shownConfigurationId">
+      <div class="bowels" *ngIf="isCurrent(configuration)">
         <div class="col-xs-12"><h3>Versions</h3></div>
         <div *ngFor="let version of getConfigurationVersions(configuration)">
 
@@ -102,13 +102,19 @@
             <button type="button" class="btn btn-primary btn-xs">History</button>
           </div>
           <div class="col-xs-1 parameter">
-            <button type="button" class="btn btn-primary btn-xs">Clone</button>
+            <button
+              type="button"
+              class="btn btn-primary btn-xs"
+              (click)="editConfiguration(version)"
+            >
+              Clone
+            </button>
           </div>
           <div class="col-xs-1 parameter">
             <button
               type="button"
               class="btn btn-success btn-xs"
-              (click)="executeConfiguration(configuration, version)"
+              (click)="executeConfiguration(version)"
             >
               Execute
             </button>
@@ -130,6 +136,6 @@
     [playbooks]="playbooks"
     [clusters]="clusters"
     [servers]="servers"
-    (callback)="fetchData()"
+    (callback)="refreshConfigurations()"
   ></wizard>
 </modal>

@@ -1,11 +1,11 @@
+import * as _ from 'lodash';
+import { Record } from 'js-data';
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Modal } from '../bootstrap';
 import { DataService } from '../services/data';
 import { Cluster, Server, Playbook, PlaybookConfiguration, Execution } from '../models';
-import { Record } from 'js-data';
-
-import * as _ from 'lodash';
+import { WizardComponent } from './wizard';
 
 @Component({
   templateUrl: './app/templates/configurations.html'
@@ -16,9 +16,11 @@ export class ConfigurationsComponent {
   clusters: Cluster[] = [];
   playbooks: Playbook[] = [];
   servers: Server[] = [];
-  shownConfigurationId: string = null;
+  shownConfiguration: PlaybookConfiguration = null;
   configurationVersions: {[key: string]: PlaybookConfiguration[]} = {};
   error: any;
+  clone: PlaybookConfiguration = null;
+  @ViewChild(WizardComponent) wizard: WizardComponent;
 
   constructor(
     private data: DataService,
@@ -37,6 +39,7 @@ export class ConfigurationsComponent {
   }
 
   editConfiguration(configuration: PlaybookConfiguration = null) {
+    this.clone = configuration;
     Promise.all([
       this.data.cluster().findAll({})
         .then((clusters: Cluster[]) => this.clusters = clusters),
@@ -45,17 +48,28 @@ export class ConfigurationsComponent {
       this.data.server().findAll({})
         .then((servers: Server[]) => this.servers = servers)
     ]).catch((error: any) => this.data.handleResponseError(error));
-
+    this.wizard.init(configuration);
     this.modal.show();
   }
 
-  showVersions(configuration: PlaybookConfiguration) {
-    this.shownConfigurationId = this.shownConfigurationId === configuration.id ?
-      null : configuration.id;
+  refreshConfigurations() {
+    if (this.shownConfiguration) {
+      this.getConfigurationVersions(this.shownConfiguration, true);
+    } else {
+      this.fetchData();
+    }
   }
 
-  getConfigurationVersions(configuration: PlaybookConfiguration) {
-    if (!this.configurationVersions[configuration.id]) {
+  isCurrent(configuration: PlaybookConfiguration) {
+    return this.shownConfiguration && this.shownConfiguration.id === configuration.id;
+  }
+
+  showVersions(configuration: PlaybookConfiguration) {
+    this.shownConfiguration = this.isCurrent(configuration) ? null : configuration;
+  }
+
+  getConfigurationVersions(configuration: PlaybookConfiguration, reread: boolean = false) {
+    if (!this.configurationVersions[configuration.id] || reread) {
       this.data.configuration().getVersions(configuration.id)
         .then(
           (versions: PlaybookConfiguration[]) => {

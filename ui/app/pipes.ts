@@ -39,3 +39,10 @@ export class DateTime implements PipeTransform {
       two(date.getSeconds());
   }
 }
+
+@Pipe({name: 'json'})
+export class JSONString implements PipeTransform {
+  transform(value: Object): string {
+    return JSON.stringify(value);
+  }
+}
