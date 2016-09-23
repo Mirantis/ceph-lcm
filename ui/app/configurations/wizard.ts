@@ -1,11 +1,12 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import * as _ from 'lodash';
 import { FormControl } from '@angular/forms';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 import { Modal } from '../bootstrap';
 import { DataService } from '../services/data';
 import { Playbook, Cluster, Server, PlaybookConfiguration } from '../models';
 
-import * as _ from 'lodash';
+var formatJSON = require('format-json');
 
 @Component({
   selector: 'wizard',
@@ -37,7 +38,7 @@ export class WizardComponent {
     if (configuration) {
       this.step = 4;
       this.newConfiguration = configuration;
-      this.jsonConfiguration = JSON.stringify(this.newConfiguration.data.configuration);
+      this.jsonConfiguration = formatJSON.plain(this.newConfiguration.data.configuration);
     } else {
       this.step = 1;
       this.newConfiguration = new PlaybookConfiguration({data: {server_ids: []}});
@@ -76,9 +77,13 @@ export class WizardComponent {
   }
 
   isJSONValid() {
+    if (_.isUndefined(this.jsonConfiguration)) {
+      return true;
+    }
     try {
       JSON.parse(this.jsonConfiguration);
     } catch (e) {
+      console.log('Invalid json', this.jsonConfiguration);
       return false;
     }
     return true;
@@ -88,9 +93,6 @@ export class WizardComponent {
     let summary: string[] = [];
     if (!this.areSomeServersSelected()) {
       summary.push('Servers selection is required.');
-    }
-    if (!this.isJSONValid()) {
-      summary.push('Configuration should be in valid JSON format.');
     }
     return summary.join('');
   }

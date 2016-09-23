@@ -24,7 +24,8 @@
     'angular2-cookie': 'npm:angular2-cookie',
 
     'jquery': 'npm:jquery',
-    'bootstrap': 'npm:bootstrap'
+    'bootstrap': 'npm:bootstrap',
+    'format-json': 'npm:format-json'
   };
 
   var packages = {
@@ -53,6 +54,9 @@
     },
     'bootstrap': {
       main: 'dist/js/bootstrap.min.js'
+    },
+    'format-json': {
+      main: 'index.js'
     }
   };
 

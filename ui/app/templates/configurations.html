@@ -89,28 +89,24 @@
       </div>
       <div class="bowels" *ngIf="isCurrent(configuration)">
         <div class="col-xs-12"><h3>Versions</h3></div>
-        <div *ngFor="let version of getConfigurationVersions(configuration)">
+        <div *ngFor="let version of getConfigurationVersions(configuration);let i = index">
 
           <div class="col-xs-12"><div class="line"></div></div>
 
           <div class="col-xs-3 name">
             {{version.data.name}} ({{version.version}})
           </div>
-          <div class="col-xs-3 parameter">{{version.data.playbook}}</div>
+          <div class="col-xs-3 parameter"></div>
           <div class="col-xs-3 parameter">{{version.time_updated|date_time}}</div>
-          <div class="col-xs-1 parameter">
-            <button type="button" class="btn btn-primary btn-xs">History</button>
-          </div>
-          <div class="col-xs-1 parameter">
+          <div class="col-xs-3 buttons">
             <button
+              *ngIf="!i"
               type="button"
               class="btn btn-primary btn-xs"
               (click)="editConfiguration(version)"
             >
               Clone
             </button>
-          </div>
-          <div class="col-xs-1 parameter">
             <button
               type="button"
               class="btn btn-success btn-xs"
