@@ -10,9 +10,9 @@ import os
 import click
 import six
 
+from cephlcm_cli import param_types
+from cephlcm_cli import utils
 from cephlcmlib import exceptions
-from cephlcmlib.cli import utils
-from cephlcmlib.cli import param_types
 
 
 def catch_errors(func):

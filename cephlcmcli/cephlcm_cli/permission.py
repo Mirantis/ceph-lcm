@@ -5,11 +5,11 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from cephlcmlib.cli import cli_group
-from cephlcmlib.cli import decorators
+from cephlcm_cli import main
+from cephlcm_cli import decorators
 
 
-@cli_group
+@main.cli_group
 def permission():
     """Permission subcommands."""
 

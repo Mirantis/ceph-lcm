@@ -7,12 +7,12 @@ from __future__ import unicode_literals
 
 import click
 
-from cephlcmlib.cli import cli_group
-from cephlcmlib.cli import decorators
-from cephlcmlib.cli import utils
+from cephlcm_cli import main
+from cephlcm_cli import decorators
+from cephlcm_cli import utils
 
 
-@cli_group
+@main.cli_group
 def server():
     """Server subcommands."""
 

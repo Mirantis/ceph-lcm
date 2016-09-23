@@ -2,25 +2,17 @@
 # vi: set ft=ruby :
 
 
-require 'tempfile'
-
-
 VAGRANTFILE_API_VERSION = "2"
 
 CLOUD_CONFIG_USERNAME = "ansible"
-CLOUD_CONFIG_URL = "http://10.0.0.10:8000/v1/server/"
+CLOUD_CONFIG_URL = "10.0.0.10:5000"
 CLOUD_CONFIG_KEY = "~/.ssh/id_rsa.pub"
 CLOUD_CONFIG_TOKEN = "26758c32-3421-4f3d-9603-e4b5337e7ecc"
 CLOUD_CONFIG_GEN = File.dirname(__FILE__) + "/cephlcmlib/cephlcmlib/cli/cloud_config.py"
-CLOUD_CONFIG_FILE = Tempfile::new("cloud_config")
-CLOUD_CONFIG_CONTENT = `#{CLOUD_CONFIG_GEN} -d -k #{CLOUD_CONFIG_KEY} -u #{CLOUD_CONFIG_USERNAME} #{CLOUD_CONFIG_URL} #{CLOUD_CONFIG_TOKEN}`
+CLOUD_CONFIG_FILE = `./devenv/vagrant-cloud-config.py #{CLOUD_CONFIG_USERNAME} #{CLOUD_CONFIG_URL} #{CLOUD_CONFIG_KEY} #{CLOUD_CONFIG_TOKEN}`
 
-begin
-  CLOUD_CONFIG_FILE.write CLOUD_CONFIG_CONTENT
-  CLOUD_CONFIG_FILE.close
-end
 at_exit do
-  CLOUD_CONFIG_FILE.delete
+  File.delete CLOUD_CONFIG_FILE
 end
 
 
@@ -85,7 +77,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       client.vm.provision "copy-cloud-config",
         type: "file",
-        source: CLOUD_CONFIG_FILE.path,
+        source: CLOUD_CONFIG_FILE,
         destination: "/tmp/user-data"
       client.vm.provision "cloud-init", type: "shell" do |s|
         s.privileged = true

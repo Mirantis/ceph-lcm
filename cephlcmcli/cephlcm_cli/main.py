@@ -7,8 +7,8 @@ from __future__ import unicode_literals
 
 import click
 
+from cephlcm_cli import utils
 import cephlcmlib
-from cephlcmlib.cli import utils
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
@@ -101,13 +101,3 @@ def cli_group(func):
     cli.add_command(func, name=name)
 
     return func
-
-
-from cephlcmlib.cli import cluster  # NOQA
-from cephlcmlib.cli import execution  # NOQA
-from cephlcmlib.cli import permission  # NOQA
-from cephlcmlib.cli import playbook  # NOQA
-from cephlcmlib.cli import playbook_configuration  # NOQA
-from cephlcmlib.cli import role  # NOQA
-from cephlcmlib.cli import server  # NOQA
-from cephlcmlib.cli import user  # NOQA

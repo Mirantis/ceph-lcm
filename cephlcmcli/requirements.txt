@@ -1,4 +1,9 @@
 # Requirements for cephlcmlib package
 
+cephlcmlib
+
+click
+jsonpatch
+PyYAML
 requests[socks]
 six

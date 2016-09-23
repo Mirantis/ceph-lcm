@@ -10,7 +10,7 @@ endef
 
 # -----------------------------------------------------------------------------
 
-build_eggs: build_backend_eggs build_cephlcmlib_eggs build_plugins_eggs
+build_eggs: build_backend_eggs build_cephlcmlib_eggs build_cephlcmcli_eggs build_plugins_eggs
 build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs
 build_plugins_eggs: build_alerts_eggs build_playbook_eggs
 build_alerts_eggs: build_email_eggs
@@ -27,6 +27,9 @@ build_controller_eggs: clean make_egg_directory
 
 build_cephlcmlib_eggs:
 	$(call build_egg,"$(ROOT_DIR)/cephlcmlib","$(EGGS_DIR)")
+
+build_cephlcmcli_eggs:
+	$(call build_egg,"$(ROOT_DIR)/cephlcmcli","$(EGGS_DIR)")
 
 build_email_eggs:
 	$(call build_egg,"$(ROOT_DIR)/plugins/alerts/emails","$(EGGS_DIR)")
