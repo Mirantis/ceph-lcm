@@ -9,7 +9,7 @@ CONTAINER_PLUGINS_NAME := cephlcm-plugins-base
 # -----------------------------------------------------------------------------
 
 define build_egg
-    cd $(1) && rm -rf dist && python setup.py sdist && cp dist/* $(2) && rm -rf dist build
+    cd $(1) && rm -rf dist && python setup.py bdist_wheel && cp dist/* $(2) && rm -rf dist build
 endef
 
 # -----------------------------------------------------------------------------

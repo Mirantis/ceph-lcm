@@ -17,7 +17,7 @@ setuptools.setup(
     version="0.1.0-alpha",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
-    mainainer="Sergey Arkhipov",
+    maintainer="Sergey Arkhipov",
     maintainer_email="sarkhipov@mirantis.com",
     license="Apache2",
     url="https://github.com/Mirantis/ceph-lcm",

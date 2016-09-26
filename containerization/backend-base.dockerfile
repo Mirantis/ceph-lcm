@@ -36,10 +36,9 @@ RUN set -x \
       libyaml-dev \
       python3-dev \
       python3-pip \
-      python3-wheel \
-    && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcmlib*.tar.gz \
-    && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcm-common*.tar.gz \
-    && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcm-server-discovery*.tar.gz \
+    && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcmlib*.whl \
+    && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcm_common*.whl \
+    && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcm_server_discovery*.whl \
     && rm -r /eggs /constraints.txt \
     && apt-get clean \
     && apt-get purge -y libyaml-dev gcc python3-dev python3-pip \
