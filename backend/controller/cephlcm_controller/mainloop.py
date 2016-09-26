@@ -66,13 +66,10 @@ def wait_to_finish():
     SHUTDOWN_EVENT.set()
 
 
-def shutdown_callback(message, code):
+def shutdown_callback():
     """deamonocle callback to shutdown deamon."""
 
-    LOG.info(
-        "Controller process is going shut down (%s) with exit code %d",
-        message, code
-    )
+    LOG.info("Controller process is going shut down")
 
     SHUTDOWN_EVENT.set()
 

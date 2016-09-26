@@ -29,4 +29,5 @@ RUN set -x \
   && rm -r /var/lib/apt/lists/*
 
 
-ENTRYPOINT ["/usr/local/bin/dumb-init", "-c", "cephlcm-controller", "start"]
+ENTRYPOINT ["/usr/local/bin/dumb-init", "-c", "--"]
+CMD ["cephlcm-controller"]

@@ -7,8 +7,8 @@ import setuptools
 
 REQUIREMENTS = (
     "cephlcm-common==0.1.0-alpha",
-    "daemonocle",
-    "click"
+    "python-daemon",
+    "lockfile"
 )
 
 
