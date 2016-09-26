@@ -3,3 +3,11 @@ host = "database"
 
 [controller]
 ansible_config = "/ansible.cfg"
+
+[api]
+debug = false
+json_sort_keys = false
+jsonify_prettyprint_regular = false
+
+[common]
+bcrypt_rounds = 12
