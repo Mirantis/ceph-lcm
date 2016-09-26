@@ -8,7 +8,7 @@ MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 COPY output/eggs /eggs
 COPY constraints.txt /constraints.txt
 COPY backend/controller/ansible_execution_step_callback/cb_execution.py /usr/share/ansible/plugins/callback/cb_execution.py
-COPY containerization/files/ansible.cfg /etc/ansible/ansible.cfg
+COPY containerization/files/ansible.cfg /ansible.cfg
 
 
 RUN set -x \

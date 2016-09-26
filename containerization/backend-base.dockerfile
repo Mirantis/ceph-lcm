@@ -26,6 +26,7 @@ RUN set -x \
 
 COPY output/eggs /eggs
 COPY constraints.txt /constraints.txt
+COPY containerization/files/config.toml /etc/cephlcm/config.toml
 
 
 RUN set -x \

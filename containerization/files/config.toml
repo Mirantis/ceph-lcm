@@ -1,0 +1,5 @@
+[db]
+host = "database"
+
+[controller]
+ansible_config = "/ansible.cfg"
