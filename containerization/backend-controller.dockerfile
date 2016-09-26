@@ -21,9 +21,10 @@ RUN set -x \
   && pip3 install --no-cache-dir --disable-pip-version-check \
     -c /constraints.txt \
     -r /controller-requirements.txt \
-    /eggs/cephlcm_controller*.tar.gz \
+    /eggs/cephlcm-controller*.tar.gz \
   && pip2 install --no-cache-dir --disable-pip-version-check -c /constraints.txt pymongo \
   && mkdir -p /usr/share/ansible/plugins/callback \
+  && cp /cb_execution.py /usr/share/ansible/plugins/callback \
   && rm -r /eggs /constraints.txt /controller-requirements.txt /cb_execution.py \
   && apt-get clean \
   && apt-get purge -y python-pip python-dev gcc python3-dev python3-pip \

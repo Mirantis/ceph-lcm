@@ -4,6 +4,7 @@ EGGS_DIR := $(OUTPUT_DIR)/eggs
 
 CONTAINER_BASE_NAME := cephlcm-base
 CONTAINER_CONTROLLER_NAME := cephlcm-controller
+CONTAINER_PLUGINS_NAME := cephlcm-plugins-base
 
 # -----------------------------------------------------------------------------
 
@@ -71,3 +72,6 @@ build_container_db: build_base_container
 
 build_base_container:
 	docker build -f "$(ROOT_DIR)/containerization/backend-base.dockerfile" --tag $(CONTAINER_BASE_NAME) --pull --rm "$(ROOT_DIR)"
+
+build_plugins_container: build_base_container
+	docker build -f "$(ROOT_DIR)/containerization/backend-plugins.dockerfile" --tag $(CONTAINER_PLUGINS_NAME) --rm "$(ROOT_DIR)"

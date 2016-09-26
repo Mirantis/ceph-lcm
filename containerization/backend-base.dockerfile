@@ -18,31 +18,30 @@ RUN set -x \
   && apt-get clean \
   && apt-get purge -y wget \
   && apt-get autoremove -y \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -r /var/lib/apt/lists/*
 
-COPY output/eggs /eggs
-COPY constraints.txt /constraints.txt
-COPY backend/common/requirements.txt /common-requirements.txt
-COPY cephlcmlib/requirements.txt /cephlcmlib-requirements.txt
+COPY . /proj
 
 RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
       gcc \
+      git \
       libyaml-0-2 \
       libyaml-dev \
       python3-dev \
       python3-pip \
-    && pip3 install --no-cache-dir --disable-pip-version-check \
-      -c /constraints.txt \
-      -r /cephlcmlib-requirements.txt \
-      /eggs/cephlcmlib*.tar.gz \
-    && pip3 install --no-cache-dir --disable-pip-version-check \
-      -c /constraints.txt \
-      -r /common-requirements.txt \
-      /eggs/cephlcm_common*.tar.gz \
-    && rm -r /common-requirements.txt /cephlcmlib-requirements.txt /constraints.txt /eggs \
+    && cd /proj/cephlcmlib \
+    && pip3 install --no-cache-dir --disable-pip-version-check -r requirements.txt -c /proj/constraints.txt \
+    && python3 setup.py install \
+    && cd /proj/backend/common \
+    && pip3 install --no-cache-dir --disable-pip-version-check -r requirements.txt -c /proj/constraints.txt \
+    && python3 setup.py install \
+    && cd /proj/plugins/playbook/server_discovery \
+    && python3 setup.py install \
+    && cd / \
+    && rm -r /proj \
     && apt-get clean \
-    && apt-get purge -y libyaml-dev gcc python3-dev python3-pip \
+    && apt-get purge -y git libyaml-dev gcc python3-dev python3-pip \
     && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -r /var/lib/apt/lists/*
