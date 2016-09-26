@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { DataService } from '../services/data';
 import { Execution } from '../models';
 
@@ -10,7 +11,7 @@ import { Execution } from '../models';
 export class ExecutionsComponent {
   executions: Execution[] = null;
 
-  constructor(private data: DataService) {
+  constructor(private data: DataService, private router: Router) {
     this.fetchData();
   }
 
@@ -20,5 +21,9 @@ export class ExecutionsComponent {
         (executions: Execution[]) => this.executions = executions,
         (error: any) => this.data.handleResponseError(error)
       );
+  }
+
+  showExecutionLog(execution: Execution) {
+    this.router.navigate(['/executions', execution.id]);
   }
 }

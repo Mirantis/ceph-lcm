@@ -77,7 +77,7 @@
       *ngFor="let configuration of configurations"
     >
       <div class="col-xs-3 name">{{configuration.data.name}}</div>
-      <div class="col-xs-3 parameter">{{configuration.data.playbook}}</div>
+      <div class="col-xs-3 parameter">{{configuration.data.playbook_id}}</div>
       <div class="col-xs-5 parameter">{{configuration.time_updated|date_time}}</div>
       <div class="col-xs-1 action">
         <a (click)="showVersions(configuration)">

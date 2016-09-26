@@ -5,11 +5,12 @@ import { RouterModule } from '@angular/router';
 
 import { SharedModule } from '../shared.module';
 
-import { ExecutionsComponent } from './index';
+import { ExecutionsComponent, LogsComponent } from './index';
 
 @NgModule({
   declarations: [
-    ExecutionsComponent
+    ExecutionsComponent,
+    LogsComponent
   ],
   imports: [
     BrowserModule,
@@ -18,7 +19,8 @@ import { ExecutionsComponent } from './index';
     SharedModule
   ],
   exports: [
-    ExecutionsComponent
+    ExecutionsComponent,
+    LogsComponent
   ]
 })
 export class ExecutionsModule { }
