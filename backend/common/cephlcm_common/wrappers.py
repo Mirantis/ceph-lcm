@@ -64,15 +64,19 @@ class MongoDBWrapper:
     This is require to support Flask-PyMongo way of DB referring.
     """
 
-    def __init__(self, host=None, port=None, dbname=None, connect=None):
+    def __init__(self, host=None, port=None, dbname=None, connect=None,
+                 connect_timeout=None, socket_timeout=None):
         host = host or CONF.DB_HOST
         port = port or CONF.DB_PORT
         dbname = dbname or CONF.DB_DBNAME
         connect = connect if connect is not None else CONF.DB_CONNECT
+        connect_timeout = connect_timeout or CONF.DB_CONNECT_TIMEOUT
+        socket_timeout = socket_timeout or CONF.DB_SOCKET_TIMEOUT
 
         self.dbname = dbname
         self.client = pymongo.MongoClient(
-            host=host, port=port, connect=connect
+            host=host, port=port, connect=connect,
+            socketTimeoutMS=socket_timeout, connectTimeoutMS=connect_timeout
         )
 
     @property

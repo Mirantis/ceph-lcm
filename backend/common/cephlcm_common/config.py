@@ -67,6 +67,8 @@ class ApiConfig(Config):
         self.MONGO_PORT = self.DB_PORT
         self.MONGO_DBNAME = self.DB_DBNAME
         self.MONGO_CONNECT = self.DB_CONNECT
+        self.MONGO_SOCKET_TIMEOUT_MS = self.DB_SOCKET_TIMEOUT
+        self.MONGO_CONNECT_TIMEOUT_MS = self.DB_CONNECT_TIMEOUT
 
         self.CORS_ORIGINS = self.API_CORS.get("origins", "*")
         self.CORS_METHODS = self.API_CORS.get(
