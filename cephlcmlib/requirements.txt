@@ -1,4 +1,0 @@
-# Requirements for cephlcmlib package
-
-requests[socks]
-six
