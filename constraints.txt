@@ -29,7 +29,6 @@ jsonpatch==1.14
 jsonschema==2.5.1
 mongomock==3.6.0
 netaddr==0.7.18
-pbr==1.10.0
 pep8-naming==0.4.1
 pip==8.1.2
 pycodestyle==2.0.0
