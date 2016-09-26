@@ -9,7 +9,7 @@ CONTAINER_PLUGINS_NAME := cephlcm-plugins-base
 # -----------------------------------------------------------------------------
 
 define build_egg
-    cd $(1) && rm -rf dist && python setup.py sdist && cp dist/* $(2)
+    cd $(1) && rm -rf dist && python setup.py sdist && cp dist/* $(2) && rm -rf dist build
 endef
 
 # -----------------------------------------------------------------------------
@@ -73,5 +73,5 @@ build_container_db: build_base_container
 build_base_container:
 	docker build -f "$(ROOT_DIR)/containerization/backend-base.dockerfile" --tag $(CONTAINER_BASE_NAME) --pull --rm "$(ROOT_DIR)"
 
-build_plugins_container: build_base_container
+build_plugins_container:
 	docker build -f "$(ROOT_DIR)/containerization/backend-plugins.dockerfile" --tag $(CONTAINER_PLUGINS_NAME) --rm "$(ROOT_DIR)"

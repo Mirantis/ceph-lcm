@@ -24,10 +24,8 @@ setuptools.setup(
     package_data={
         "cephlcm_deploy_cluster": [
             "config.toml",
-            "playbooks/site.yml",
             "playbooks/LICENSE",
-            "playbooks/library/*",
-            "playbooks/infrastructure-playbooks",
+            "playbooks/library",
             "playbooks/plugins",
             "playbooks/roles"
         ]

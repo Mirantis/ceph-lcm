@@ -1,3 +1,6 @@
+# vi: set ft=dockerfile :
+
+
 FROM cephlcm-base
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 

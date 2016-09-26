@@ -1,3 +1,6 @@
+# vi: set ft=dockerfile :
+
+
 FROM ubuntu:xenial
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
@@ -20,28 +23,25 @@ RUN set -x \
   && apt-get autoremove -y \
   && rm -r /var/lib/apt/lists/*
 
-COPY . /proj
+
+COPY output/eggs /eggs
+COPY constraints.txt /constraints.txt
+
 
 RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
       gcc \
-      git \
       libyaml-0-2 \
       libyaml-dev \
       python3-dev \
       python3-pip \
-    && cd /proj/cephlcmlib \
-    && pip3 install --no-cache-dir --disable-pip-version-check -r requirements.txt -c /proj/constraints.txt \
-    && python3 setup.py install \
-    && cd /proj/backend/common \
-    && pip3 install --no-cache-dir --disable-pip-version-check -r requirements.txt -c /proj/constraints.txt \
-    && python3 setup.py install \
-    && cd /proj/plugins/playbook/server_discovery \
-    && python3 setup.py install \
-    && cd / \
-    && rm -r /proj \
+      python3-wheel \
+    && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcmlib*.tar.gz \
+    && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcm-common*.tar.gz \
+    && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcm-server-discovery*.tar.gz \
+    && rm -r /eggs /constraints.txt \
     && apt-get clean \
-    && apt-get purge -y git libyaml-dev gcc python3-dev python3-pip \
+    && apt-get purge -y libyaml-dev gcc python3-dev python3-pip \
     && apt-get autoremove -y \
     && rm -r /var/lib/apt/lists/*
