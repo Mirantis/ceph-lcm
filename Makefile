@@ -9,6 +9,7 @@ CONTAINER_CONTROLLER_NAME := cephlcm-controller
 CONTAINER_PLUGINS_NAME    := cephlcm-plugins-base
 CONTAINER_DB_NAME         := cephlcm-db
 CONTAINER_FRONTEND_NAME   := cephlcm-frontend
+CONTAINER_CLI_NAME        := cephlcm-cli
 
 # -----------------------------------------------------------------------------
 
@@ -75,7 +76,10 @@ build_container_controller:
 	docker build -f "$(ROOT_DIR)/containerization/backend-controller.dockerfile" --tag $(CONTAINER_CONTROLLER_NAME) --rm "$(ROOT_DIR)"
 
 build_container_frontend:
-	docker build -f "$(ROOT_DIR)/containerization/frontend.dockerfile" --tag $(CONTAINER_FRONTEND_NAME) --rm "$(ROOT_DIR)"
+	docker build -f "$(ROOT_DIR)/containerization/frontend.dockerfile" --tag $(CONTAINER_FRONTEND_NAME) --pull --rm "$(ROOT_DIR)"
+
+build_container_cli:
+	docker build -f "$(ROOT_DIR)/containerization/cli.dockerfile" --tag $(CONTAINER_CLI_NAME) --pull --rm "$(ROOT_DIR)"
 
 build_container_db:
 	docker build -f "$(ROOT_DIR)/containerization/db.dockerfile" --tag $(CONTAINER_DB_NAME) --rm "$(ROOT_DIR)"

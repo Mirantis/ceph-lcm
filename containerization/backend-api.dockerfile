@@ -19,7 +19,7 @@ RUN set -x \
     python3-pip \
   && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt uwsgi \
   && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcm_api*.whl \
-  && chmod +x /usr/local/bin/cephlcm-api \
+  && chmod 0755 /usr/local/bin/cephlcm-api \
   && apt-get clean \
   && apt-get purge -y python3-dev python3-pip gcc \
   && apt-get autoremove -y \

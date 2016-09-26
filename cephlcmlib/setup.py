@@ -7,7 +7,8 @@ import setuptools
 
 REQUIREMENTS = (
     "requests[socks]",
-    "six"
+    "six",
+    "PyYAML"
 )
 
 

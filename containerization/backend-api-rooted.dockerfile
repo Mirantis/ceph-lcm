@@ -10,4 +10,4 @@ COPY containerization/files/cephlcm-api-rooted.sh /usr/local/bin/cephlcm-api
 
 
 RUN set -x \
-  && chmod +x /usr/local/bin/cephlcm-api-inject-root-user /usr/local/bin/cephlcm-api
+  && chmod 0755 /usr/local/bin/cephlcm-api-inject-root-user /usr/local/bin/cephlcm-api
