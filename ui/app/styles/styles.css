@@ -515,12 +515,18 @@ a:hover > .glyphicon {
 .page-title.navigated {
   margin-top: 0;
 }
-.page-title h1 {
+.page-title h1,
+.page-title h2 {
   font-family: 'Source Sans Pro', 'Open Sans', helvetica, arial, tahoma, verdana, sans-serif;
   font-size: 20px;
   font-weight: 500;
   text-transform: uppercase;
   margin: 7px 0px;
+}
+.page-title h2 {
+  font-weight: 400;
+  font-size: 14px;
+  color: #6a7077;
 }
 .page-title .main-button {
   text-align: right;

@@ -1,0 +1,27 @@
+<div class="page-title">
+  <div class="row">
+    <div class="col-xs-9">
+      <h1>Configuration Execution Log</h1>
+      <h2 *ngIf="execution">
+        ID: {{execution.data.playbook_configuration.id}},
+        version: {{execution.data.playbook_configuration.version}}
+      </h2>
+    </div>
+    <div class="col-xs-3 main-button">
+      <button type="button" class="btn btn-primary">Refresh
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="logs grid row" *ngIf="steps && steps.length">
+  <div class="col-xs-12">
+    <div class="grid-header">
+      <div class="col-xs-3 name">Name</div>
+    </div>
+
+    <div class="grid-line" *ngFor="let step of steps">
+      <div class="col-xs-3">{{step.data.name}}</div>
+    </div>
+  </div>
+</div>

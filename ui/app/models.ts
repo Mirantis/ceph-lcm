@@ -86,6 +86,18 @@ declare module './models' {
       state: string
     }
   }
+
+  interface ExecutionStep extends BaseModel {
+    data: {
+      execution_id: string,
+      role: string,
+      name: string,
+      error_message: string,
+      time_started: number,
+      time_finished: number,
+      result: string
+    }
+  }
 }
 
 export class BaseModel extends Record {
@@ -110,3 +122,4 @@ export class Playbook extends Record {}
 export class PlaybookConfiguration extends BaseModel {}
 export class Server extends BaseModel {}
 export class Execution extends BaseModel {}
+export class ExecutionStep extends BaseModel {}
