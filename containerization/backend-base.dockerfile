@@ -12,6 +12,7 @@ ENV LANG C.UTF-8
 RUN set -x \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
+    libpython3.5-stdlib \
     python3 \
     python3-setuptools \
     wget \

@@ -3,6 +3,7 @@ OUTPUT_DIR := $(ROOT_DIR)/output
 EGGS_DIR := $(OUTPUT_DIR)/eggs
 
 CONTAINER_BASE_NAME := cephlcm-base
+CONTAINER_API_NAME := cephlcm-api
 CONTAINER_CONTROLLER_NAME := cephlcm-controller
 CONTAINER_PLUGINS_NAME := cephlcm-plugins-base
 
@@ -61,7 +62,8 @@ make_output_directory:
 
 build_containers: build_container_api build_container_controller build_container_frontend build_container_db
 
-build_container_api: build_base_container
+build_container_api:
+	docker build -f "$(ROOT_DIR)/containerization/backend-api.dockerfile" --tag $(CONTAINER_API_NAME) --rm "$(ROOT_DIR)"
 
 build_container_controller:
 	docker build -f "$(ROOT_DIR)/containerization/backend-controller.dockerfile" --tag $(CONTAINER_CONTROLLER_NAME) --rm "$(ROOT_DIR)"
