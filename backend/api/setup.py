@@ -29,6 +29,11 @@ setuptools.setup(
     python_requires=">=3.4",
     install_requires=REQUIREMENTS,
     zip_safe=True,
+    entry_points={
+        "console_scripts": [
+            "cephlcm-api-ensure-indexes = cephlcm_api:index_db"
+        ]
+    },
     classifiers=(
         "Intended Audience :: Information Technology",
         "Intended Audience :: System Administrators",

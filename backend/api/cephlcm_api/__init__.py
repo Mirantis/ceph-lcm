@@ -28,9 +28,15 @@ def create_application():
     views.register_api(application)
     generic_model.configure_models(flask_pymongo.PyMongo(application))
 
-    with application.app_context():
-        generic_model.ensure_indexes()
-
     log.configure_logging(CONF.logging_config)
 
     return application
+
+
+def index_db():
+    """Ensures DB indexes are created."""
+
+    application = create_application()
+
+    with application.app_context():
+        generic_model.ensure_indexes()

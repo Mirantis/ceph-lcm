@@ -12,8 +12,8 @@ ENV LANG C.UTF-8
 RUN set -x \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
-    libpython3.5-stdlib \
-    python3 \
+    libpython3.5 \
+    python3.5 \
     python3-setuptools \
     wget \
   && wget --no-check-certificate https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64.deb \
