@@ -30,7 +30,9 @@ setuptools.setup(
     entry_points={
         "console_scripts": [
             "cephlcm-controller = cephlcm_controller.daemon:main",
-            "cephlcm-inventory = cephlcm_controller.inventory:main"
+            "cephlcm-inventory = cephlcm_controller.inventory:main",
+            "cephlcm-cron-clean-expired-tokens = cephlcm_controller.cron:clean_expired_tokens",  # NOQA
+            "cephlcm-cron-clean-old-tasks = cephlcm_controller.cron:clean_old_tasks"  # NOQA
         ]
     },
     classifiers=(

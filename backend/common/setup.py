@@ -33,11 +33,6 @@ setuptools.setup(
             "configs/**",
         ]
     },
-    entry_points={
-        "console_scripts": [
-            "cephlcm = cephlcm_cli.main:cli"
-        ]
-    },
     classifiers=(
         "Intended Audience :: Information Technology",
         "Intended Audience :: System Administrators",
