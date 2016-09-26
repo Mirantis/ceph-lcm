@@ -3,13 +3,13 @@
 
 
 import flask
-import flask_pymongo
 
 from cephlcm_api import config as app_config
 from cephlcm_api import handlers
 from cephlcm_api import views
 from cephlcm_common import config as base_config
 from cephlcm_common import log
+from cephlcm_common.models import db
 from cephlcm_common.models import generic as generic_model
 
 
@@ -26,7 +26,7 @@ def create_application():
     app_config.configure(application)
     handlers.register_handlers(application)
     views.register_api(application)
-    generic_model.configure_models(flask_pymongo.PyMongo(application))
+    generic_model.configure_models(db.MongoDB())
 
     log.configure_logging(CONF.logging_config)
 

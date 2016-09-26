@@ -1,5 +1,5 @@
 [db]
-host = "database"
+host = "mongodb://database:27017/cephlcm"
 
 [controller]
 ansible_config = "/ansible.cfg"

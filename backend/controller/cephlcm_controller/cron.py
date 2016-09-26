@@ -8,7 +8,7 @@ import time
 from cephlcm_common import config
 from cephlcm_common import log
 from cephlcm_common import timeutils
-from cephlcm_common import wrappers
+from cephlcm_common.models import db
 from cephlcm_common.models import generic
 from cephlcm_common.models import token
 from cephlcm_common.models import task
@@ -25,7 +25,7 @@ def configure(func):
     @functools.wraps(func)
     def decorator(*args, **kwargs):
         log.configure_logging(CONF.logging_config)
-        generic.configure_models(wrappers.MongoDBWrapper())
+        generic.configure_models(db.MongoDB())
 
         return func(*args, **kwargs)
 

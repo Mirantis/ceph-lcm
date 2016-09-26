@@ -9,7 +9,6 @@ REQUIREMENTS = (
     "bcrypt",
     "cephlcm-common==0.1.0-alpha",
     "Flask",
-    "Flask-PyMongo",
     "jsonschema"
 )
 

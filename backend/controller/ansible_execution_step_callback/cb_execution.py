@@ -69,14 +69,8 @@ SERVER_COLLECTION_NAME = "server"
 ENV_EXECUTION_ID = "CEPHLCM_EXECUTION_ID"
 """Environment variable for execuiton ID."""
 
-ENV_DB_HOST = "CEPHLCM_DB_HOST"
-"""Environment variable for DB hostname."""
-
-ENV_DB_PORT = "CEPHLCM_DB_PORT"
-"""Environment variable for DB port."""
-
-ENV_DB_NAME = "CEPHLCM_DB_NAME"
-"""Environment variable for DB name."""
+ENV_DB_URI = "CEPHLCM_DB_URI"
+"""Environment variable for DB URI."""
 
 LOG = logging.getLogger("ansible logger")
 """Logger."""
@@ -99,16 +93,16 @@ class CallbackModule(callback.CallbackBase):
         self.playbook = None
 
         self.db_client = pymongo.MongoClient(
-            host=os.environ[ENV_DB_HOST],
-            port=int(os.environ[ENV_DB_PORT]),
+            os.environ[ENV_DB_URI],
+            maxPoolSize=30,
             connect=False,
             socketTimeoutMS=TIMEOUT,
             connectTimeoutMS=TIMEOUT,
             waitQueueTimeoutMS=TIMEOUT
         )
-        self.db = self.db_client[os.environ[ENV_DB_NAME]]
-        self.step_collection = self.db[STEP_COLLECTION_NAME]
-        self.server_collection = self.db[SERVER_COLLECTION_NAME]
+        database = self.db_client.get_default_database()
+        self.step_collection = database[STEP_COLLECTION_NAME]
+        self.server_collection = database[SERVER_COLLECTION_NAME]
 
         self.task_starts = {}
         self.server_ids = {}
