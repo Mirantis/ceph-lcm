@@ -8,6 +8,7 @@ MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 COPY output/eggs /eggs
 COPY constraints.txt /constraints.txt
 COPY backend/controller/ansible_execution_step_callback/cb_execution.py /usr/share/ansible/plugins/callback/cb_execution.py
+COPY containerization/files/ansible.cfg /etc/ansible/ansible.cfg
 
 
 RUN set -x \
@@ -29,5 +30,5 @@ RUN set -x \
   && rm -r /var/lib/apt/lists/*
 
 
-ENTRYPOINT ["/usr/local/bin/dumb-init", "-c", "--"]
+ENTRYPOINT ["/usr/bin/dumb-init", "-c", "--"]
 CMD ["cephlcm-controller"]
