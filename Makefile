@@ -7,6 +7,7 @@ CONTAINER_API_NAME := cephlcm-api
 CONTAINER_API_ROOTED_NAME := cephlcm-api-rooted
 CONTAINER_CONTROLLER_NAME := cephlcm-controller
 CONTAINER_PLUGINS_NAME := cephlcm-plugins-base
+CONTAINER_DB_NAME := cephlcm-db
 
 # -----------------------------------------------------------------------------
 
@@ -74,7 +75,8 @@ build_container_controller:
 
 build_container_frontend: build_base_container
 
-build_container_db: build_base_container
+build_container_db:
+	docker build -f "$(ROOT_DIR)/containerization/db.dockerfile" --tag $(CONTAINER_DB_NAME) --rm "$(ROOT_DIR)"
 
 build_container_base:
 	docker build -f "$(ROOT_DIR)/containerization/backend-base.dockerfile" --tag $(CONTAINER_BASE_NAME) --pull --rm "$(ROOT_DIR)"
