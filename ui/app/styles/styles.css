@@ -404,6 +404,10 @@ a:hover > .glyphicon {
   margin-left: auto;
   margin-right: auto;
 }
+.main > .alert {
+  margin-top: 15px;
+  margin-bottom: 0;
+}
 .form-control {
   border-color: #7897a1;
   padding: 6px 8px;

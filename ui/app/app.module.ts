@@ -18,6 +18,7 @@ import { AuthService, LoggedIn}  from './services/auth';
 import { SessionService }  from './services/session';
 import { CookieService }  from 'angular2-cookie/core';
 import { DataService }  from './services/data';
+import { ErrorService }  from './services/error';
 
 import { appRoutingProviders, routing } from './app.routes';
 
@@ -45,6 +46,7 @@ import { appRoutingProviders, routing } from './app.routes';
     DataService,
     CookieService,
     SessionService,
+    ErrorService,
     appRoutingProviders
   ],
   bootstrap: [ AppComponent ]

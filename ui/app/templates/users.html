@@ -127,7 +127,7 @@
 
         <div class="col-xs-7">
           <div *ngFor="let user of getUserVersions(user)">
-            {{user.version}}: {{user.id}}
+            {{user.version}}: {{user.time_updated|date_time}}
           </div>
         </div>
 
