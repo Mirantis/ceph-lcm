@@ -1,7 +1,7 @@
 # vi: set ft=dockerfile :
 
 
-FROM cephlcm-plugins-base
+FROM cephlcm-base-plugins
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
