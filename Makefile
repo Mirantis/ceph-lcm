@@ -1,13 +1,14 @@
-ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+ROOT_DIR   := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 OUTPUT_DIR := $(ROOT_DIR)/output
-EGGS_DIR := $(OUTPUT_DIR)/eggs
+EGGS_DIR   := $(OUTPUT_DIR)/eggs
 
-CONTAINER_BASE_NAME := cephlcm-base
-CONTAINER_API_NAME := cephlcm-api
+CONTAINER_BASE_NAME       := cephlcm-base
+CONTAINER_API_NAME        := cephlcm-api
 CONTAINER_API_ROOTED_NAME := cephlcm-api-rooted
 CONTAINER_CONTROLLER_NAME := cephlcm-controller
-CONTAINER_PLUGINS_NAME := cephlcm-plugins-base
-CONTAINER_DB_NAME := cephlcm-db
+CONTAINER_PLUGINS_NAME    := cephlcm-plugins-base
+CONTAINER_DB_NAME         := cephlcm-db
+CONTAINER_FRONTEND_NAME   := cephlcm-frontend
 
 # -----------------------------------------------------------------------------
 
@@ -73,7 +74,8 @@ build_container_api_rooted:
 build_container_controller:
 	docker build -f "$(ROOT_DIR)/containerization/backend-controller.dockerfile" --tag $(CONTAINER_CONTROLLER_NAME) --rm "$(ROOT_DIR)"
 
-build_container_frontend: build_base_container
+build_container_frontend:
+	docker build -f "$(ROOT_DIR)/containerization/frontend.dockerfile" --tag $(CONTAINER_FRONTEND_NAME) --rm "$(ROOT_DIR)"
 
 build_container_db:
 	docker build -f "$(ROOT_DIR)/containerization/db.dockerfile" --tag $(CONTAINER_DB_NAME) --rm "$(ROOT_DIR)"
