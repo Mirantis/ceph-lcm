@@ -35,6 +35,12 @@
   </div>
 
   <div class="main">
+    <div class="alert row alert-danger" *ngIf="errors.length">
+      <button class="close" aria-label="Close" (click)="dismissErrors()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <p *ngFor="let error of errors"><strong>{{error.error}}:</strong> {{error.message}}</p>
+    </div>
     <router-outlet></router-outlet>
   </div>
 </div>

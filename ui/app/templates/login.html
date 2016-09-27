@@ -1,11 +1,22 @@
 <div class='login_form'>
   <div class='login' *ngIf='!auth.isLoggedIn()'>
-  <form (ngSubmit)='login()' #loginForm='ngForm'>
-    <h3>Login</h3>
-    <input type='text' placeholder='E-mail' [(ngModel)]='email' name='email' class='form-control' required>
-    <input type='password' placeholder='Password' [(ngModel)]='password' name='password' class='form-control' required>
+    <form (ngSubmit)='login()' #loginForm='ngForm'>
+      <h3>Login</h3>
 
-    <button type='submit' [disabled]='!loginForm.form.valid' class='btn'>Get In</button>
+      <div class="text-danger" *ngIf="loginError">Authentication error</div>
+
+      <input type='text' placeholder='E-mail' [(ngModel)]='email' name='email' class='form-control' required>
+      <input type='password' placeholder='Password' [(ngModel)]='password' name='password' class='form-control' required>
+
+      <div class="pull-right">
+        <button
+          type='submit'
+          [disabled]='!loginForm.form.valid'
+          class='btn btn-primary'
+        >
+          Get In
+        </button>
+      </div>
     </form>
   </div>
   <div *ngIf='auth.isLoggedIn()'>

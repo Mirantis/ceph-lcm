@@ -10,7 +10,7 @@ import { Execution, ExecutionStep } from '../models';
 })
 export class LogsComponent {
   execution: Execution = null;
-  steps: ExecutionStep[] = [new ExecutionStep({})];
+  steps: ExecutionStep[] = [];
   poller: NodeJS.Timer;
   stopPolling: boolean = false;
 

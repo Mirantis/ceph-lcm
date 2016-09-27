@@ -5,8 +5,10 @@ import { Router } from '@angular/router';
 import { DataStore, Record, Mapper } from 'js-data';
 import { HttpAdapter } from 'js-data-http';
 import { SessionService } from './session';
+import { ErrorService } from './error';
 import { Token, User, PermissionGroup, Role, Cluster,
   Playbook, PlaybookConfiguration, Server, Execution, ExecutionStep } from '../models';
+import { Modal } from '../bootstrap';
 
 type supportedMappers = 'auth' | 'user' | 'role' | 'permission' | 'cluster' |
   'playbook' | 'playbook_configuration' | 'server' | 'execution' | 'execution_step';
@@ -26,7 +28,9 @@ declare module 'js-data' {
 export class DataService {
   constructor(
     private session: SessionService,
-    private router: Router
+    private error: ErrorService,
+    private router: Router,
+    private modal: Modal
   ) {
     this.store.registerAdapter('http', this.adapter, {default: true});
   }
@@ -144,12 +148,10 @@ export class DataService {
             return _.map(result.items, (item, index) => new (this.recordClass)(item));
           },
           postCreate(props: any, opts: any = {}): Promise<Record> {
-            console.log('Create', props);
             // Only data: {} should be sent upon object creation
             return this.create(_.get(props, 'data', props), opts);
           },
           postUpdate(id: string, props: any, opts: any = {}): Promise<Record> {
-            console.log('Update', props);
             // All fields are expected on update
             return this.update(id, props);
           },
@@ -179,10 +181,11 @@ export class DataService {
   }
 
   handleResponseError(error: any): void {
-    console.log('API returned an error', error);
-    if (error.code === 401) {
+    if (error.response.status === 401) {
       this.session.removeToken();
+      this.modal.close();
       this.router.navigate(['/login']);
     }
+    this.error.add(error.response.data.error, error.response.data.message);
   }
 }

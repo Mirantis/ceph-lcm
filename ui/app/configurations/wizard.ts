@@ -34,11 +34,15 @@ export class WizardComponent {
     this.step -= 1;
   }
 
+  initForEditing(configuration: PlaybookConfiguration) {
+    this.step = 4;
+    this.newConfiguration = configuration;
+    this.jsonConfiguration = formatJSON.plain(this.newConfiguration.data.configuration);
+  }
+
   init(configuration: PlaybookConfiguration = null) {
     if (configuration) {
-      this.step = 4;
-      this.newConfiguration = configuration;
-      this.jsonConfiguration = formatJSON.plain(this.newConfiguration.data.configuration);
+      this.initForEditing(configuration);
     } else {
       this.step = 1;
       this.newConfiguration = new PlaybookConfiguration({data: {server_ids: []}});
@@ -83,7 +87,6 @@ export class WizardComponent {
     try {
       JSON.parse(this.jsonConfiguration);
     } catch (e) {
-      console.log('Invalid json', this.jsonConfiguration);
       return false;
     }
     return true;
@@ -112,9 +115,8 @@ export class WizardComponent {
       .then(
         (configuration: PlaybookConfiguration) => {
           this.callback.emit();
-          if (this.step === 3) {
-            this.newConfiguration = configuration;
-            this.forward();
+          if (this.step !== 4) {
+            this.initForEditing(configuration);
           } else {
             this.modal.close();
           }
