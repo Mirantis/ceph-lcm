@@ -145,12 +145,3 @@ def revoke_for_user(user_id):
 
     collection = TokenModel.collection()
     collection.delete_many({"user_id": user_id})
-
-
-def clean_expired():
-    """This function swipe out expired tokens from DB."""
-
-    collection = TokenModel.collection()
-    collection.delete_many(
-        {"expires_at": {"$lt": timeutils.current_unix_timestamp()}}
-    )

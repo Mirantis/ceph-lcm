@@ -17,11 +17,12 @@
 # Database related settings
 # MongoDB is used.
 [db]
-host = "127.0.0.1"
-port = 27017
-dbname = "devel"
+uri = "mongodb://127.0.0.1:27017/devel"
 connect = false
 task_queue_length = 1000
+connect_timeout = 5000  # ms, 5 seconds
+socket_timeout = 5000  # ms, 5 seconds
+pool_size = 50
 
 
 # Default Python logging is used.
@@ -145,3 +146,7 @@ graceful_stop = 10
     propagate = true
     level = "DEBUG"
     handlers = ["syslog", "stderr_debug"]
+
+
+[cron]
+clean_finished_tasks_after_seconds = 2592000  # 60 * 60 * 24 * 30; 30 days

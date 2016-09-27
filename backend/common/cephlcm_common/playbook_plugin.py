@@ -35,9 +35,7 @@ LOG = log.getLogger(__name__)
 ENV_ENTRY_POINT = "CEPHLCM_ENTRYPOINT"
 ENV_TASK_ID = "CEPHLCM_TASK_ID"
 ENV_EXECUTION_ID = "CEPHLCM_EXECUTION_ID"
-ENV_DB_HOST = "CEPHLCM_DB_HOST"
-ENV_DB_PORT = "CEPHLCM_DB_PORT"
-ENV_DB_NAME = "CEPHLCM_DB_NAME"
+ENV_DB_URI = "CEPHLCM_DB_URI"
 DYNAMIC_INVENTORY_PATH = shutil.which("cephlcm-inventory")
 
 
@@ -95,9 +93,7 @@ class Base(metaclass=abc.ABCMeta):
             ENV_ENTRY_POINT: self.entry_point,
             ENV_TASK_ID: str(task._id),
             ENV_EXECUTION_ID: str(task.execution_id or ""),
-            ENV_DB_HOST: CONF.DB_HOST,
-            ENV_DB_PORT: str(CONF.DB_PORT),
-            ENV_DB_NAME: CONF.DB_DBNAME,
+            ENV_DB_URI: CONF.DB_URI,
             "ANSIBLE_CONFIG": str(CONF.CONTROLLER_ANSIBLE_CONFIG)
         }
 

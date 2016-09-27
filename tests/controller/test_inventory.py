@@ -15,7 +15,7 @@ from cephlcm_controller import inventory
 
 @pytest.fixture()
 def mocked_configure(monkeypatch, configure_model, pymongo_connection):
-    monkeypatch.setattr("cephlcm_common.wrappers.MongoDBWrapper",
+    monkeypatch.setattr("cephlcm_common.models.db.MongoDB",
                         lambda: pymongo_connection)
 
 

@@ -1,0 +1,7 @@
+.git/*
+.tox/*
+**.pyc
+**.pyo
+.vagrant/*
+.cache/*
+.eggs/*

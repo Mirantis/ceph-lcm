@@ -9,7 +9,6 @@ import mongomock
 import pytest
 
 import cephlcm_api
-from cephlcm_api import config
 from cephlcm_common import emailutils
 from cephlcm_common import log
 from cephlcm_common.models import cluster
@@ -57,19 +56,13 @@ def configure_logging():
 def mongo_db_name():
     """This fixture creates a separate MongoDB database."""
 
-    db_name = str(uuid.uuid4())
-    old_name = config.CONF.MONGO_DBNAME
-    config.CONF.MONGO_DBNAME = db_name
-
-    yield db_name
-
-    config.CONF.MONGO_DBNAME = old_name
+    yield pytest.faux.gen_uuid()
 
 
 @pytest.yield_fixture(scope="module")
 def pymongo_connection(mongo_db_name):
     client = mongomock.MongoClient()
-    with mock.patch("flask_pymongo.PyMongo", return_value=client):
+    with mock.patch("cephlcm_common.models.db.MongoDB", return_value=client):
         yield client
 
 

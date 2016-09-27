@@ -1,0 +1,29 @@
+---
+version: "2"
+services:
+  frontend:
+    image: cephlcm-frontend
+    links:
+      - api
+    ports:
+      - "9999:80"
+  api:
+    image: cephlcm-api
+    links:
+      - database
+  controller:
+    image: cephlcm-controller
+    links:
+      - database
+  database:
+    image: cephlcm-db
+    volumes_from:
+      - database_data
+  database_data:
+    image: tianon/true
+    volumes:
+      - /data/db
+  cron:
+    image: cephlcm-cron
+    links:
+      - database

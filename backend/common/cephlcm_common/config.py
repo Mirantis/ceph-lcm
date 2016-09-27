@@ -63,11 +63,6 @@ class ApiConfig(Config):
     def __init__(self, config):
         super().__init__(config)
 
-        self.MONGO_HOST = self.DB_HOST
-        self.MONGO_PORT = self.DB_PORT
-        self.MONGO_DBNAME = self.DB_DBNAME
-        self.MONGO_CONNECT = self.DB_CONNECT
-
         self.CORS_ORIGINS = self.API_CORS.get("origins", "*")
         self.CORS_METHODS = self.API_CORS.get(
             "methods",

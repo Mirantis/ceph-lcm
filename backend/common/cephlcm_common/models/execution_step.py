@@ -10,7 +10,6 @@ result and, possibly, messages.
 
 import enum
 
-from cephlcm_common import execution_step
 from cephlcm_common import wrappers
 from cephlcm_common.models import generic
 from cephlcm_common.models import properties
@@ -32,8 +31,8 @@ class ExecutionStep(generic.Base):
     the most performant model to create.
     """
 
-    MODEL_NAME = execution_step.COLLECTION_NAME
-    COLLECTION_NAME = execution_step.COLLECTION_NAME
+    MODEL_NAME = "execution_step"
+    COLLECTION_NAME = "execution_step"
     DEFAULT_SORT_BY = [
         ("time_finished", generic.SORT_DESC),
         ("time_started", generic.SORT_DESC)

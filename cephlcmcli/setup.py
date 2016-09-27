@@ -5,14 +5,41 @@
 import setuptools
 
 
-try:
-    import multiprocessing
-    assert multiprocessing
-except ImportError:
-    pass
+REQUIREMENTS = (
+    "cephlcmlib==0.1.0-alpha",
+    "click",
+    "six"
+)
 
 
 setuptools.setup(
-    setup_requires=["pbr>=1.10"],
-    pbr=True
+    name="cephlcm-cli",
+    description="Ceph Lifecycle Management CLI",
+    long_description="",  # TODO
+    version="0.1.0-alpha",
+    author="Sergey Arkhipov",
+    author_email="sarkhipov@mirantis.com",
+    maintainer="Sergey Arkhipov",
+    maintainer_email="sarkhipov@mirantis.com",
+    license="Apache2",
+    url="https://github.com/Mirantis/ceph-lcm",
+    packages=setuptools.find_packages(),
+    python_requires=">=2.7",
+    install_requires=REQUIREMENTS,
+    zip_safe=False,
+    entry_points={
+        "console_scripts": [
+            "cephlcm = cephlcm_cli.main:cli"
+        ]
+    },
+    classifiers=(
+        "Intended Audience :: Information Technology",
+        "Intended Audience :: System Administrators",
+        "Operating System :: POSIX :: Linux",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5"
+    )
 )

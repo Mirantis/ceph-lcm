@@ -56,7 +56,7 @@ def test_shutdown_callback(main_thread):
     time.sleep(0.5)
 
     assert main_thread.is_alive()
-    mainloop.shutdown_callback("message", 1)
+    mainloop.shutdown_callback()
 
     time.sleep(0.5)
     assert not main_thread.is_alive()

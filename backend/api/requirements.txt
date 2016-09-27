@@ -1,8 +1,0 @@
-# Requirements for cephlcm_api package
-
-cephlcm_common
-
-Flask
-Flask-PyMongo
-jsonschema
-bcrypt

@@ -1,8 +1,5 @@
 # Optional requirements for CephLCM (suitable for development)
 
-# Cannot use it here because pbr still do not understand such line.
-# -c constraints.txt
-
 ipdb
 ipython
 see
