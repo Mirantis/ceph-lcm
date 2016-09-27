@@ -5,8 +5,10 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import base64
 import functools
 
+import six
 import six.moves
 import yaml
 
@@ -36,7 +38,7 @@ print(urllib2.urlopen(r,timeout={timeout}).read())
 
 def generate_cloud_config(url, server_discovery_token, public_key, username,
                           usergroup=None, timeout=REQUEST_TIMEOUT,
-                          debug=False):
+                          debug=False, to_base64=False):
     usergroup = usergroup or username
     server_discovery_token = str(server_discovery_token)
     if not url.startswith(("http://", "https://")):
@@ -47,9 +49,15 @@ def generate_cloud_config(url, server_discovery_token, public_key, username,
         "bootcmd": get_bootcmd(url, server_discovery_token, username, timeout,
                                debug)
     }
-    cloud_config = yaml.safe_dump(document, indent=2, width=9999)
 
-    return "#cloud-config\n{0}".format(cloud_config)
+    cloud_config = yaml.safe_dump(document, indent=2, width=9999)
+    cloud_config = "#cloud-config\n{0}".format(cloud_config)
+    if to_base64:
+        if not isinstance(cloud_config, six.binary_type):
+            cloud_config = cloud_config.encode("utf-8")
+        cloud_config = base64.urlsafe_b64encode(cloud_config)
+
+    return cloud_config
 
 
 def bootcmd(func):
