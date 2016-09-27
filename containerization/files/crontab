@@ -1,0 +1,2 @@
+* * * * * /usr/local/bin/cephlcm-cron-clean-expired-tokens > /var/log/docker-stdout.log 2>&1
+0 3 * * * /usr/local/bin/cephlcm-cron-clean-old-tasks > /var/log/docker-stdout.log 2>&1

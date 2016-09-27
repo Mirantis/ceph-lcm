@@ -23,9 +23,11 @@ LOG = log.getLogger(__name__)
 
 def configure(func):
     @functools.wraps(func)
-    def decorator():
+    def decorator(*args, **kwargs):
         log.configure_logging(CONF.logging_config)
         generic.configure_models(wrappers.MongoDBWrapper())
+
+        return func(*args, **kwargs)
 
     return decorator
 

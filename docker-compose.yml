@@ -23,3 +23,7 @@ services:
     image: tianon/true
     volumes:
       - /data/db
+  cron:
+    image: cephlcm-cron
+    links:
+      - database

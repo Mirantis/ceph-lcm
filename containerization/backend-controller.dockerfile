@@ -16,6 +16,7 @@ RUN set -x \
   && apt-get install -y --no-install-recommends \
     ansible \
     gcc \
+    libpython2.7 \
     python3-dev \
     python3-pip \
     python-dev \
