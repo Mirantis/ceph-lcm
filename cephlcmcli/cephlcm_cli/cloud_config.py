@@ -55,8 +55,6 @@ def cli(ctx, public_key_filename, server_discovery_token, user, group, base64):
         - CEPHLCM_DEBUG    - this environment variable sets debug mode.
     """
 
-    url = ctx.obj["client"]._make_url("/v1/server/")
-    public_key = public_key_filename.read().strip()
     server_discovery_token = str(server_discovery_token)
 
     config = cloud_config.generate_cloud_config(
