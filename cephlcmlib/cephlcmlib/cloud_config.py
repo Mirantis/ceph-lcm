@@ -37,21 +37,23 @@ print(urllib2.urlopen(r,timeout={timeout}).read())
 
 
 def generate_cloud_config(url, server_discovery_token, public_key, username,
-                          usergroup=None, timeout=REQUEST_TIMEOUT,
-                          debug=False, to_base64=False):
-    usergroup = usergroup or username
+                          timeout=REQUEST_TIMEOUT, debug=False,
+                          to_base64=False):
     server_discovery_token = str(server_discovery_token)
+    timeout = timeout or REQUEST_TIMEOUT
+
     if not url.startswith(("http://", "https://")):
         url = "http://{0}".format(url)
 
     document = {
-        "users": get_users(username, usergroup, public_key),
+        "users": get_users(username, public_key),
         "bootcmd": get_bootcmd(url, server_discovery_token, username, timeout,
                                debug)
     }
-
     cloud_config = yaml.safe_dump(document, indent=2, width=9999)
     cloud_config = "#cloud-config\n{0}".format(cloud_config)
+    cloud_config = cloud_config.rstrip()
+
     if to_base64:
         if not isinstance(cloud_config, six.binary_type):
             cloud_config = cloud_config.encode("utf-8")
@@ -68,11 +70,11 @@ def bootcmd(func):
     return decorator
 
 
-def get_users(username, usergroup, public_key):
+def get_users(username, public_key):
     return [
         {
             "name": username,
-            "groups": ["sudo", usergroup],
+            "groups": ["sudo"],
             "shell": "/bin/bash",
             "sudo": ["ALL=(ALL) NOPASSWD:ALL"],
             "ssh-authorized-keys": [public_key]
