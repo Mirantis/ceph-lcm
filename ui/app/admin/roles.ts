@@ -110,7 +110,6 @@ export class RolesComponent {
       savePromise = this.data.role().postUpdate(this.newRole.id, this.newRole);
     } else {
       // Create new role
-      console.log(this.newRole);
       savePromise = this.data.role().postCreate(this.newRole);
     }
     return savePromise

@@ -51,6 +51,10 @@ a {
   margin: 0;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .main {
   width: @max-size;
   margin-left: auto;
@@ -534,7 +538,7 @@ label {
   width: 100%;
   height: 100%;
   background-image: url(../images/background.png);
-  //background-size: contain;
+  background-size: auto;
   background-position: 0px 0px;
   background-repeat: repeat-x;
   animation: animatedBackground 40s linear infinite;
@@ -546,15 +550,79 @@ label {
   height: @size;
   border-radius: @size / 2;
   background-color: @white;
-  margin-top: @size / 2;
+  margin-top: 5%;
   margin-right: auto;
   margin-left: auto;
+  .logo-box {
+    height: 200px;
+    padding-top: 30px;
+    .logo {
+      display: block;
+      width: 140px;
+      height: 150px;
+      margin-left: auto;
+      margin-right: auto;
+      background-image: url(../images/shrimp-logo-title.svg);
+      background-repeat: no-repeat;
+      background-size: auto;
+    }
+  }
+  .form-group {
+    @base-size: 8px;
+    @padding-size: 90px;
+    position: relative;
+    padding: 0px @padding-size;
+    .login-icon {
+      display: inline-block;
+      position: absolute;
+      top: @base-size;
+      left: @padding-size + 4px;
+      z-index: 2;
+    }
+    .pass-icon {
+      display: inline-block;
+      position: absolute;
+      top: @base-size * 8;
+      left: @padding-size + 4px;
+      z-index: 2;
+      margin-top: 1px;
+    }
+    input {
+      margin-bottom: @base-size * 3;
+      padding-left: 30px;
+    }
+  }
+  .login-error-message {
+    text-align: center;
+    margin-bottom: 15px;
+    padding: 0 50px;
+    max-height: 38px;
+    overflow: hidden;
+  }
+  .login-button {
+    display: block;
+    width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+    button {
+      width: 100%;
+    }
+  }
+}
+
+.copyrights {
+  text-align: center;
+  margin: 20px 0px;
+  font-size: 11px;
+  color: @base;
 }
 
 @keyframes animatedBackground {
   from { background-position: 0 0; }
-  to { background-position: -100% 0; }
+  to { background-position: 2500px 0; }
 }
+
+// LOADER
 
 .loader {
   text-align: center;

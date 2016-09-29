@@ -7,7 +7,7 @@ import {ErrorService}   from '../services/error';
   templateUrl: './app/templates/login.html'
 })
 export class LoginComponent {
-  email: string;
+  username: string;
   password: string;
   loginError: any = null;
 
@@ -17,11 +17,6 @@ export class LoginComponent {
 
   login() {
     this.loginError = null;
-    this.auth.login(this.email, this.password);
-  };
-
-  logout() {
-    this.auth.logout()
-      .catch(() => true);
+    this.auth.login(this.username, this.password);
   }
 }

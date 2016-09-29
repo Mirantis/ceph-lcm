@@ -17,16 +17,16 @@ export class AuthService {
   redirectUrl: string;
   public loggedUser: User = null;
 
-  login(email: string, password: string): Promise<Token> {
+  login(username: string, password: string): Promise<Token> {
     return this.data.token()
-      .create({username: email, password: password})
+      .create({username, password})
       .then(
         (token: Token) => {
           this.session.saveToken(token);
 
           this.loggedUser = token.data.user;
 
-          var url = this.redirectUrl || '/dashboard';
+          var url = this.redirectUrl || '/';
           this.redirectUrl = null;
           this.router.navigate([url]);
           return token;
@@ -41,7 +41,7 @@ export class AuthService {
     return this.data.token().destroy(null)
       .then(
         () => {
-          this.router.navigate(['/login'])
+          this.router.navigate(['/login']);
         },
         (error: any) => this.data.handleResponseError(error)
       );

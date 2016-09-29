@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { LoggedIn } from '../services/auth';
 import { AdminComponent, UsersComponent, RolesComponent } from './index';
 
-export const usersRoutes: Routes = [
+export const adminRoutes: Routes = [
   {
     path: 'admin', component: AdminComponent, canActivate: [LoggedIn],
     children: [

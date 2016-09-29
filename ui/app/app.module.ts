@@ -1,24 +1,23 @@
-import { NgModule }      from '@angular/core';
-import { FormsModule }   from '@angular/forms';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { AppComponent }  from './app';
+import { AppComponent } from './app';
 import { LoginComponent, DashboardComponent }  from './dashboard/index';
-import { UsersComponent }  from './admin/index';
-import { PageNotFoundComponent }  from './404';
+import { PageNotFoundComponent } from './404';
 
-import { AdminModule }  from './admin/admin.module';
-import { ClustersModule }  from './clusters/clusters.module';
-import { ConfigurationsModule }  from './configurations/configurations.module';
-import { PlaybooksModule }  from './playbooks/playbooks.module';
-import { ServersModule }  from './servers/servers.module';
-import { ExecutionsModule }  from './executions/executions.module';
+import { AdminModule } from './admin/admin.module';
+import { ClustersModule } from './clusters/clusters.module';
+import { ConfigurationsModule } from './configurations/configurations.module';
+import { PlaybooksModule } from './playbooks/playbooks.module';
+import { ServersModule } from './servers/servers.module';
+import { ExecutionsModule } from './executions/executions.module';
 
-import { AuthService, LoggedIn}  from './services/auth';
-import { SessionService }  from './services/session';
-import { CookieService }  from 'angular2-cookie/core';
-import { DataService }  from './services/data';
-import { ErrorService }  from './services/error';
+import { AuthService, LoggedIn} from './services/auth';
+import { SessionService } from './services/session';
+import { CookieService } from 'angular2-cookie/core';
+import { DataService } from './services/data';
+import { ErrorService } from './services/error';
 
 import { appRoutingProviders, routing } from './app.routes';
 
@@ -27,7 +26,7 @@ import { appRoutingProviders, routing } from './app.routes';
     AppComponent,
     LoginComponent,
     DashboardComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
   ],
   imports: [
     routing,
@@ -38,7 +37,7 @@ import { appRoutingProviders, routing } from './app.routes';
     ServersModule,
     ExecutionsModule,
     FormsModule,
-    BrowserModule
+    BrowserModule,
   ],
   providers: [
     LoggedIn,
@@ -47,7 +46,7 @@ import { appRoutingProviders, routing } from './app.routes';
     CookieService,
     SessionService,
     ErrorService,
-    appRoutingProviders
+    appRoutingProviders,
   ],
   bootstrap: [ AppComponent ]
 })

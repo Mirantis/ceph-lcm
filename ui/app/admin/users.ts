@@ -73,11 +73,15 @@ export class UsersComponent {
         () => {
           this.modal.close();
           this.fetchData();
-          this.getUserVersions(this.newUser, true);
-        },
+          if (this.newUser.id) {
+            this.getUserVersions(this.newUser, true);
+          }
+        }
+      )
+      .catch(
         (error) => this.data.handleResponseError(error)
       );
-  }
+}
 
   deleteUser(user: User) {
     this.data.user().destroy(user.id)

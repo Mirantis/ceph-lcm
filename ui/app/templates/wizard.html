@@ -47,16 +47,17 @@
           <div class="grid-line" *ngFor="let playbook of playbooks">
             <div class="col-xs-1">
               <input
-                [(ngModel)]="newConfiguration.data.playbook_id"
+                (click)="selectPlaybook(playbook)"
                 id="playbook"
                 name="playbook"
                 [value]="playbook.id"
+                [checked]="newConfiguration.data.playbook_id === playbook.id"
                 type="radio"
                 required
               >
             </div>
             <div class="col-xs-3 name">
-              <a (click)="newConfiguration.data.playbook_id = playbook.id">
+              <a (click)="selectPlaybook(playbook)">
                 {{playbook.name}}
               </a>
             </div>

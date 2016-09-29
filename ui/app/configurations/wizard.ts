@@ -22,6 +22,7 @@ export class WizardComponent {
   newConfiguration: PlaybookConfiguration = new PlaybookConfiguration({data: {server_ids: []}});
   error: any = null;
   jsonConfiguration: string;
+  serversRequired: boolean = false;
 
   constructor(private data: DataService, private modal: Modal) {
   }
@@ -34,6 +35,11 @@ export class WizardComponent {
     this.step -= 1;
   }
 
+  selectPlaybook(playbook: Playbook) {
+    this.serversRequired = playbook.required_server_list;
+    this.newConfiguration.data.playbook_id = playbook.id;
+  }
+
   initForEditing(configuration: PlaybookConfiguration) {
     this.step = 4;
     this.newConfiguration = configuration;
@@ -41,6 +47,7 @@ export class WizardComponent {
   }
 
   init(configuration: PlaybookConfiguration = null) {
+    this.serversRequired = false;
     if (configuration) {
       this.initForEditing(configuration);
     } else {
@@ -50,10 +57,7 @@ export class WizardComponent {
   }
 
   isSaveButtonShown() {
-    var areServersInvolved = _.get(
-      this.newConfiguration, 'playbook.required_server_list', false
-    );
-    return this.step >= 3 || (this.step === 2 && !areServersInvolved);
+    return this.step >= 3 || (this.step === 2 && !this.serversRequired);
   }
 
   toggleSelectAll() {
