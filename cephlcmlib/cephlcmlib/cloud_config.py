@@ -7,6 +7,8 @@ from __future__ import unicode_literals
 
 import base64
 import functools
+import gzip
+import io
 
 import six
 import six.moves
@@ -19,6 +21,15 @@ IP_FILENAME = "/tmp/__ip__"
 UUID_FILENAME = "/tmp/__uuid__"
 """Temporary filename to store machine UUID."""
 
+PYTHON_MARKER_FILENAME = "/tmp/__server_discovery__"
+"""Marker filename for Pythons.
+
+Basically, we do not know if python2 or python3 were installed therefore
+we have to try both. To avoid 2 requests for server, we are going to
+use marker file. If one python succeed to run, then such file has to be
+created. It means that next python won't continue to work.
+"""
+
 DEFAULT_USER = "ansible"
 """Default user for Ansible."""
 
@@ -26,14 +37,42 @@ REQUEST_TIMEOUT = 5  # seconds
 """How long to wait for response from API."""
 
 PYTHON_PROG = """
-import json,urllib2
-d={{"username":{username!r},"host":open({ip_filename!r}).read(),"id":open({uuid_filename!r}).read()}}
-r=urllib2.Request({url!r},json.dumps(d))
-r.add_header("Content-Type","application/json")
-r.add_header("Authorization",{token!r})
-print(urllib2.urlopen(r,timeout={timeout}).read())
+from __future__ import print_function
+
+import json
+import os.path
+import sys
+
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
+
+if os.path.exists({marker_filename!r}):
+    sys.exit(0)
+
+open({marker_filename!r}, "w").close()
+
+data = {{
+    "username": {username!r},
+    "host": open({ip_filename!r}).read().strip(),
+    "id": open({uuid_filename!r}).read().strip()
+}}
+
+request = urllib2.Request({url!r}, json.dumps(data).encode("utf-8"))
+request.add_header("Content-Type", "application/json")
+request.add_header("Authorization", {token!r})
+request.add_header("User-Agent", "cloud-init server discovery")
+
+urllib2.urlopen(request, timeout={timeout}).read()
+print("Server discovery completed.")
 """.strip()
 """Python program to use instead of Curl."""
+
+PACKAGES = (
+    "python",
+)
+"""A list of packages to install with cloud-init."""
 
 
 def generate_cloud_config(url, server_discovery_token, public_key, username,
@@ -47,6 +86,7 @@ def generate_cloud_config(url, server_discovery_token, public_key, username,
 
     document = {
         "users": get_users(username, public_key),
+        "packages": PACKAGES,
         "bootcmd": get_bootcmd(url, server_discovery_token, username, timeout,
                                debug)
     }
@@ -83,19 +123,23 @@ def get_users(username, public_key):
 
 
 def get_bootcmd(url, server_discovery_token, username, timeout, debug):
-    bootcmd = [
+    command = [
         get_command_header(),
         get_command_debug(url, server_discovery_token),
+        get_command_clean(),
         get_command_uuid(debug),
-        get_command_ip(url, debug),
-        get_command_notify(url, server_discovery_token, username, timeout),
+        get_command_ip(url, debug)
+    ]
+    command += get_commands_notify(url, server_discovery_token, username,
+                                   timeout)
+    command += [
         get_command_clean(),
         get_command_footer()
     ]
     if not debug:
-        bootcmd = bootcmd[2:-1]
+        command = command[2:-1]
 
-    return bootcmd
+    return command
 
 
 def get_command_header():
@@ -129,22 +173,30 @@ def get_command_ip(url, debug):
     )
 
 
-def get_command_notify(url, server_discovery_token, username, timeout):
+def get_commands_notify(url, server_discovery_token, username, timeout):
     program = PYTHON_PROG.format(
         username=username,
         ip_filename=IP_FILENAME,
         uuid_filename=UUID_FILENAME,
+        marker_filename=PYTHON_MARKER_FILENAME,
         url=url,
         token=server_discovery_token,
         timeout=timeout
     )
-    program = ";".join(program.split("\n"))
+    program = gzip_text(program)
+    program = base64.b64encode(program)
+    program = program.decode("utf-8")
 
-    return ["python2", "-c", program]
+    return [
+        ["sh", "-xc",
+         "echo {0!r} | base64 -d | gzip -d | python2 -".format(program)],
+        ["sh", "-xc",
+         "echo {0!r} | base64 -d | gzip -d | python3 -".format(program)],
+    ]
 
 
 def get_command_clean():
-    return ["rm", UUID_FILENAME, IP_FILENAME]
+    return ["rm", "-f", UUID_FILENAME, IP_FILENAME, PYTHON_MARKER_FILENAME]
 
 
 def get_command_footer():
@@ -167,3 +219,16 @@ def get_hostname(hostname):
     parsed = parsed.netloc.split(":", 1)[0]
 
     return parsed
+
+
+def gzip_text(text):
+    text = text.encode("utf-8")
+
+    if hasattr(gzip, "compress"):  # python 3.2+
+        return gzip.compress(text, compresslevel=9)
+
+    fileobj = io.BytesIO()
+    with gzip.GzipFile(mode="wb", fileobj=fileobj, compresslevel=9) as gzfp:
+        gzfp.write(text)
+
+    return fileobj.getvalue()
