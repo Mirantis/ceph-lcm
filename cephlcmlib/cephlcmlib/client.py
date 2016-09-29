@@ -223,6 +223,9 @@ class V1Client(Client):
         return response
 
     def logout(self, **kwargs):
+        if not self._session.auth.token:
+            return {}
+
         url = self._make_url(self.AUTH_CLASS.AUTH_URL)
 
         try:
