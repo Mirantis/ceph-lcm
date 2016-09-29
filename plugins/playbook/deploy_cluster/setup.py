@@ -9,7 +9,7 @@ import setuptools
 setuptools.setup(
     name="cephlcm-deploy-cluster",
     description="Deploy cluster plugin for CephLCM",
-    version="0.1",
+    version="0.1.0a0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",

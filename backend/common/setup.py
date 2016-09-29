@@ -16,7 +16,7 @@ setuptools.setup(
     name="cephlcm-common",
     description="Ceph Lifecycle Management common package",
     long_description="",  # TODO
-    version="0.1.0-alpha",
+    version="0.1.0a0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",
