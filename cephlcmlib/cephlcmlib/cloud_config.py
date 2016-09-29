@@ -69,6 +69,11 @@ print("Server discovery completed.")
 """.strip()
 """Python program to use instead of Curl."""
 
+PACKAGES = (
+    "python",
+)
+"""A list of packages to install with cloud-init."""
+
 
 def generate_cloud_config(url, server_discovery_token, public_key, username,
                           timeout=REQUEST_TIMEOUT, debug=False,
@@ -81,6 +86,7 @@ def generate_cloud_config(url, server_discovery_token, public_key, username,
 
     document = {
         "users": get_users(username, public_key),
+        "packages": PACKAGES,
         "bootcmd": get_bootcmd(url, server_discovery_token, username, timeout,
                                debug)
     }
