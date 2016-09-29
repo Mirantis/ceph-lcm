@@ -4,7 +4,7 @@
 
 - name: Add APT key
   become: true
-  apt_key: keyserver=keyserver.ubuntu.com id="{{ repo_key }}"
+  apt_key: keyserver=hkp://keyserver.ubuntu.com:80 id="{{ repo_key }}"
 
 - name: Add repository
   become: true
