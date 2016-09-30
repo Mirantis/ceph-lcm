@@ -30,6 +30,13 @@ use marker file. If one python succeed to run, then such file has to be
 created. It means that next python won't continue to work.
 """
 
+PYTHON_MARKER_READY_FILENAME = "/var/lib/cloud/instance/server_discover_ready"
+"""Marker filename for server discovery scripts to be started.
+
+Well, not ALL cloud images have /usr/bin/python so we have a problems to
+use bootcmd. This marker means that Ansible is ready for rush.
+"""
+
 DEFAULT_USER = "ansible"
 """Default user for Ansible."""
 
@@ -48,6 +55,8 @@ try:
 except ImportError:
     import urllib2
 
+if not os.path.exists({marker_ready_filename!r}):
+    sys.exit(0)
 if os.path.exists({marker_filename!r}):
     sys.exit(0)
 
@@ -75,22 +84,30 @@ PACKAGES = (
 """A list of packages to install with cloud-init."""
 
 
+class ExplicitDumper(yaml.SafeDumper):
+    """A dumper that will never emit aliases."""
+
+    def ignore_aliases(self, data):
+        return True
+
+
 def generate_cloud_config(url, server_discovery_token, public_key, username,
-                          timeout=REQUEST_TIMEOUT, debug=False,
-                          to_base64=False):
+                          timeout=REQUEST_TIMEOUT, to_base64=False):
     server_discovery_token = str(server_discovery_token)
     timeout = timeout or REQUEST_TIMEOUT
 
     if not url.startswith(("http://", "https://")):
         url = "http://{0}".format(url)
 
+    commands = get_bootcmd(url, server_discovery_token, username, timeout)
     document = {
         "users": get_users(username, public_key),
         "packages": PACKAGES,
-        "bootcmd": get_bootcmd(url, server_discovery_token, username, timeout,
-                               debug)
+        "bootcmd": commands,
+        "runcmd": [["touch", PYTHON_MARKER_READY_FILENAME]] + commands
     }
-    cloud_config = yaml.safe_dump(document, indent=2, width=9999)
+    cloud_config = yaml.dump(document, Dumper=ExplicitDumper,
+                             indent=2, width=9999)
     cloud_config = "#cloud-config\n{0}".format(cloud_config)
     cloud_config = cloud_config.rstrip()
 
@@ -122,13 +139,13 @@ def get_users(username, public_key):
     ]
 
 
-def get_bootcmd(url, server_discovery_token, username, timeout, debug):
+def get_bootcmd(url, server_discovery_token, username, timeout):
     command = [
         get_command_header(),
         get_command_debug(url, server_discovery_token),
         get_command_clean(),
-        get_command_uuid(debug),
-        get_command_ip(url, debug)
+        get_command_uuid(),
+        get_command_ip(url)
     ]
     command += get_commands_notify(url, server_discovery_token, username,
                                    timeout)
@@ -136,8 +153,6 @@ def get_bootcmd(url, server_discovery_token, username, timeout, debug):
         get_command_clean(),
         get_command_footer()
     ]
-    if not debug:
-        command = command[2:-1]
 
     return command
 
@@ -155,20 +170,20 @@ def get_command_debug(url, server_discovery_token):
 
 
 @bootcmd
-def get_command_uuid(debug):
+def get_command_uuid():
     return (
         "dmidecode | grep UUID | rev | cut -f1 -d' ' | rev | "
         "tr '[[:upper:]]' '[[:lower:]]' {0}".format(
-            shell_redirect(UUID_FILENAME, debug))
+            shell_redirect(UUID_FILENAME))
     )
 
 
 @bootcmd
-def get_command_ip(url, debug):
+def get_command_ip(url):
     return (
         "ip route get $(getent ahostsv4 {0!r} | head -n1 | cut -f1 -d' ') | "
         "head -n1 | rev | cut -f2 -d' ' | rev {1}".format(
-            get_hostname(url), shell_redirect(IP_FILENAME, debug)
+            get_hostname(url), shell_redirect(IP_FILENAME)
         )
     )
 
@@ -179,6 +194,7 @@ def get_commands_notify(url, server_discovery_token, username, timeout):
         ip_filename=IP_FILENAME,
         uuid_filename=UUID_FILENAME,
         marker_filename=PYTHON_MARKER_FILENAME,
+        marker_ready_filename=PYTHON_MARKER_READY_FILENAME,
         url=url,
         token=server_discovery_token,
         timeout=timeout
@@ -203,15 +219,8 @@ def get_command_footer():
     return ["echo", "=== FINISH CEPHLCM SERVER DISCOVERY ==="]
 
 
-def shell_redirect(filename, debug):
-    ending = "| tr -d '[[:space:]]' "
-
-    if debug:
-        ending += "| tee {0}".format(filename)
-    else:
-        ending += "> {0}".format(filename)
-
-    return ending
+def shell_redirect(filename):
+    return "| tr -d '[[:space:]]' | tee {0}".format(filename)
 
 
 def get_hostname(hostname):

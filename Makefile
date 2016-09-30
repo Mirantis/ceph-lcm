@@ -66,6 +66,7 @@ make_output_directory:
 
 
 build_containers: build_container_api build_container_api_rooted build_container_controller build_container_frontend build_container_db build_container_cron
+build_containers_dev: copy_example_keys build_containers
 
 build_container_api: build_container_plugins
 	docker build -f "$(ROOT_DIR)/containerization/backend-api.dockerfile" --tag $(CONTAINER_API_NAME) --rm "$(ROOT_DIR)"
@@ -93,3 +94,6 @@ build_container_base: build_eggs
 
 build_container_plugins: build_container_base
 	docker build -f "$(ROOT_DIR)/containerization/backend-plugins.dockerfile" --tag $(CONTAINER_PLUGINS_NAME) --rm "$(ROOT_DIR)"
+
+copy_example_keys:
+	cp "$(ROOT_DIR)/containerization/files/ansible_ssh_keyfile.pem" "$(ROOT_DIR)"

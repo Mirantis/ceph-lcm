@@ -40,14 +40,6 @@ def cli(ctx, public_key_filename, server_discovery_token, user, base64):
 
     These settings are possible to setup using commandline parameter,
     but if you want, you can set environment variables:
-
-    URL is full URL to /v1/server endpoint.
-    SERVER_DISCOVERY_TOKEN is a token set in configuration file of
-    CephLCM
-
-    \b
-        - CEPHLCM_TIMEOUT  - this environment variable sets timeout.
-        - CEPHLCM_DEBUG    - this environment variable sets debug mode.
     """
 
     server_discovery_token = str(server_discovery_token)
@@ -58,7 +50,6 @@ def cli(ctx, public_key_filename, server_discovery_token, user, base64):
         public_key=public_key_filename.read().strip(),
         username=user,
         timeout=ctx.obj["timeout"],
-        debug=ctx.obj["debug"],
         to_base64=base64
     )
 
