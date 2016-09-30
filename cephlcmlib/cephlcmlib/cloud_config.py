@@ -44,7 +44,7 @@ PYTHON_PROG = """\
 from __future__ import print_function
 
 import json
-import os.path
+import os
 import sys
 
 try:
@@ -52,10 +52,10 @@ try:
 except ImportError:
     import urllib2
 
-if os.path.exists({marker_filename!r}):
+try:
+    os.close(os.open({marker_filename!r}, os.O_CREAT | os.O_EXCL))
+except OSError:
     sys.exit(0)
-
-open({marker_filename!r}, "w").close()
 
 data = {{
     "username": {username!r},
