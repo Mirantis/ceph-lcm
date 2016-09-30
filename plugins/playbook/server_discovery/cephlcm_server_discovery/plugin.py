@@ -38,6 +38,9 @@ LOG = log.getLogger(__name__)
 NOT_IP_REGEXP = re.compile("[^0-9\.]")
 """Regexp for characters which tells that it is not IP."""
 
+HOST_WAIT_TMO = 30  # seconds
+"""Host long to wait for host to be up and running."""
+
 
 class ServerDiscovery(playbook_plugin.Ansible):
 
@@ -77,6 +80,7 @@ class ServerDiscovery(playbook_plugin.Ansible):
 
     def on_pre_execute(self, task):
         self.tempdir = tempfile.mkdtemp()
+        self.wait_for_host(task.data["host"])
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
         try:
@@ -130,3 +134,25 @@ class ServerDiscovery(playbook_plugin.Ansible):
             return socket.gethostbyname(task.data["host"])
         except socket.error as exc:
             LOG.warning("Cannot resolve hostname %s", task.data["host"])
+
+    def wait_for_host(self, host):
+        LOG.info("Wait for host %s to be up and running", host)
+
+        wait_method = retryutils.sleep_retry(
+            attempts=10, max_sleep=HOST_WAIT_TMO)(verbose_create_connection)
+
+        try:
+            with wait_method(host, 22):
+                LOG.info("Host %s is up and running", host)
+        except Exception as exc:
+            LOG.warning("Host %s was not up and running in %d seconds: %s",
+                        host, HOST_WAIT_TMO, exc)
+            raise
+
+
+def verbose_create_connection(host, port):
+    try:
+        return socket.create_connection((host, port), timeout=1)
+    except Exception as exc:
+        raise Exception("Cannot connect to {0}:{1}: {2}".format(
+            host, port, exc)) from exc
