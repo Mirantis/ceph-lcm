@@ -22,15 +22,10 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     default="ansible",
     help="User to use with Ansible. Default is 'ansible'."
 )
-@click.option(
-    "--base64", "-b",
-    is_flag=True,
-    help="Encode to base64."
-)
 @click.argument("server_discovery_token", type=click.UUID)
 @click.argument("public_key_filename", type=click.File(lazy=False))
 @click.pass_context
-def cli(ctx, public_key_filename, server_discovery_token, user, base64):
+def cli(ctx, public_key_filename, server_discovery_token, user):
     """Generates config for cloud-init.
 
     This command generates cloud-init user-data config to setup CephLCM
@@ -49,8 +44,7 @@ def cli(ctx, public_key_filename, server_discovery_token, user, base64):
         server_discovery_token=server_discovery_token,
         public_key=public_key_filename.read().strip(),
         username=user,
-        timeout=ctx.obj["timeout"],
-        to_base64=base64
+        timeout=ctx.obj["timeout"]
     )
 
     click.echo(config.rstrip())

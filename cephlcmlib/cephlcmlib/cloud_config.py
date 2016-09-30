@@ -5,7 +5,6 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import base64
 import functools
 import gzip
 import io
@@ -21,6 +20,9 @@ IP_FILENAME = "/tmp/__ip__"
 UUID_FILENAME = "/tmp/__uuid__"
 """Temporary filename to store machine UUID."""
 
+PYTHON_SCRIPT_FILENAME = "/usr/share/server_discovery.py"
+"""File where Python script is going to be placed."""
+
 PYTHON_MARKER_FILENAME = "/tmp/__server_discovery__"
 """Marker filename for Pythons.
 
@@ -30,20 +32,15 @@ use marker file. If one python succeed to run, then such file has to be
 created. It means that next python won't continue to work.
 """
 
-PYTHON_MARKER_READY_FILENAME = "/var/lib/cloud/instance/server_discover_ready"
-"""Marker filename for server discovery scripts to be started.
-
-Well, not ALL cloud images have /usr/bin/python so we have a problems to
-use bootcmd. This marker means that Ansible is ready for rush.
-"""
-
 DEFAULT_USER = "ansible"
 """Default user for Ansible."""
 
 REQUEST_TIMEOUT = 5  # seconds
 """How long to wait for response from API."""
 
-PYTHON_PROG = """
+PYTHON_PROG = """\
+#-*- coding: utf-8 -*-
+
 from __future__ import print_function
 
 import json
@@ -55,8 +52,6 @@ try:
 except ImportError:
     import urllib2
 
-if not os.path.exists({marker_ready_filename!r}):
-    sys.exit(0)
 if os.path.exists({marker_filename!r}):
     sys.exit(0)
 
@@ -67,15 +62,22 @@ data = {{
     "host": open({ip_filename!r}).read().strip(),
     "id": open({uuid_filename!r}).read().strip()
 }}
+data = json.dumps(data).encode("utf-8")
 
-request = urllib2.Request({url!r}, json.dumps(data).encode("utf-8"))
-request.add_header("Content-Type", "application/json")
-request.add_header("Authorization", {token!r})
-request.add_header("User-Agent", "cloud-init server discovery")
+headers = {{
+    "Content-Type": "application/json",
+    "Authorization": {token!r},
+    "User-Agent": "cloud-init server discovery"
+}}
 
-urllib2.urlopen(request, timeout={timeout}).read()
+request = urllib2.Request({url!r}, data=data, headers=headers)
+try:
+    urllib2.urlopen(request, timeout={timeout}).read()
+except Exception as exc:
+    sys.exit(str(exc))
+
 print("Server discovery completed.")
-""".strip()
+"""
 """Python program to use instead of Curl."""
 
 PACKAGES = (
@@ -91,32 +93,59 @@ class ExplicitDumper(yaml.SafeDumper):
         return True
 
 
+class YAMLLiteral(six.text_type):
+    pass
+
+
+def literal_presenter(dumper, data):
+    return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
+
+
+yaml.add_representer(YAMLLiteral, literal_presenter)
+ExplicitDumper.add_representer(YAMLLiteral, literal_presenter)
+
+
 def generate_cloud_config(url, server_discovery_token, public_key, username,
-                          timeout=REQUEST_TIMEOUT, to_base64=False):
+                          timeout=REQUEST_TIMEOUT):
     server_discovery_token = str(server_discovery_token)
     timeout = timeout or REQUEST_TIMEOUT
 
     if not url.startswith(("http://", "https://")):
         url = "http://{0}".format(url)
 
-    commands = get_bootcmd(url, server_discovery_token, username, timeout)
+    commands = get_commands(url)
     document = {
         "users": get_users(username, public_key),
         "packages": PACKAGES,
         "bootcmd": commands,
-        "runcmd": [["touch", PYTHON_MARKER_READY_FILENAME]] + commands
+        "write_files": get_files(url, server_discovery_token, username,
+                                 timeout),
+        "runcmd": commands
     }
     cloud_config = yaml.dump(document, Dumper=ExplicitDumper,
                              indent=2, width=9999)
     cloud_config = "#cloud-config\n{0}".format(cloud_config)
-    cloud_config = cloud_config.rstrip()
-
-    if to_base64:
-        if not isinstance(cloud_config, six.binary_type):
-            cloud_config = cloud_config.encode("utf-8")
-        cloud_config = base64.urlsafe_b64encode(cloud_config)
 
     return cloud_config
+
+
+def get_files(url, server_discovery_token, username, timeout):
+    program = PYTHON_PROG.format(
+        username=username,
+        ip_filename=IP_FILENAME,
+        uuid_filename=UUID_FILENAME,
+        marker_filename=PYTHON_MARKER_FILENAME,
+        url=url,
+        token=server_discovery_token,
+        timeout=timeout
+    )
+    return [
+        {
+            "content": YAMLLiteral(program),
+            "path": PYTHON_SCRIPT_FILENAME,
+            "permissions": "0440"
+        }
+    ]
 
 
 def bootcmd(func):
@@ -139,16 +168,14 @@ def get_users(username, public_key):
     ]
 
 
-def get_bootcmd(url, server_discovery_token, username, timeout):
+def get_commands(url):
     command = [
         get_command_header(),
-        get_command_debug(url, server_discovery_token),
         get_command_clean(),
         get_command_uuid(),
         get_command_ip(url)
     ]
-    command += get_commands_notify(url, server_discovery_token, username,
-                                   timeout)
+    command += get_commands_notify()
     command += [
         get_command_clean(),
         get_command_footer()
@@ -181,33 +208,17 @@ def get_command_uuid():
 @bootcmd
 def get_command_ip(url):
     return (
-        "ip route get $(getent ahostsv4 {0!r} | head -n1 | cut -f1 -d' ') | "
+        "ip route get $(getent ahostsv4 '{0}' | head -n1 | cut -f1 -d' ') | "
         "head -n1 | rev | cut -f2 -d' ' | rev {1}".format(
             get_hostname(url), shell_redirect(IP_FILENAME)
         )
     )
 
 
-def get_commands_notify(url, server_discovery_token, username, timeout):
-    program = PYTHON_PROG.format(
-        username=username,
-        ip_filename=IP_FILENAME,
-        uuid_filename=UUID_FILENAME,
-        marker_filename=PYTHON_MARKER_FILENAME,
-        marker_ready_filename=PYTHON_MARKER_READY_FILENAME,
-        url=url,
-        token=server_discovery_token,
-        timeout=timeout
-    )
-    program = gzip_text(program)
-    program = base64.b64encode(program)
-    program = program.decode("utf-8")
-
+def get_commands_notify():
     return [
-        ["sh", "-xc",
-         "echo {0!r} | base64 -d | gzip -d | python2 -".format(program)],
-        ["sh", "-xc",
-         "echo {0!r} | base64 -d | gzip -d | python3 -".format(program)],
+        ["python2", PYTHON_SCRIPT_FILENAME],
+        ["python3", PYTHON_SCRIPT_FILENAME],
     ]
 
 
