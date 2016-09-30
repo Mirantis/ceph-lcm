@@ -110,6 +110,8 @@
         </div>
       </div>
     </template>
+  </form>
+  <form #newConfigurationForm="ngForm" [ngSwitch]="step">
     <template [ngSwitchCase]="4">
       <h1>Configuration</h1>
       <div class="form-group" [ngClass]="{'has-error': !isJSONValid()}">

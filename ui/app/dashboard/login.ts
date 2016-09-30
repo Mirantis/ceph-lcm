@@ -17,6 +17,7 @@ export class LoginComponent {
   }
 
   getErrorMessage(): string {
+    console.log(this.loginError);
     if (!this.loginError) {
       return '';
     }
