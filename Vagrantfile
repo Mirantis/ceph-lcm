@@ -20,16 +20,31 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box_check_update = false
   config.ssh.forward_agent   = true
 
-  config.vm.define "default", primary: true do |devbox|
-    devbox.vm.box = "ubuntu/xenial64"
+  config.vm.define "devbox", primary: true do |devbox|
     devbox.vm.hostname = "cephlcm"
     devbox.vm.network "private_network", ip: "10.0.0.10"
-    devbox.vm.synced_folder ".", "/vagrant", type: "nfs"
+    devbox.vm.synced_folder ".", "/vagrant",
+      type: "nfs",
+      mount_options: ["rw", "vers=3", "noatime", "async"]
 
-    devbox.vm.provider "virtualbox" do |vb|
+    devbox.vm.provider "virtualbox" do |vb, override|
+      override.vm.box = "ubuntu/xenial64"
+
       vb.gui = false
       vb.memory = 3092
       vb.cpus = 2
+    end
+
+    devbox.vm.provider "libvirt" do |lv, override|
+      override.vm.box = "yk0/ubuntu-xenial"
+
+      lv.nested = false
+      lv.memory = 3092
+      lv.cpus = 2
+      lv.cpu_mode ="host-passthrough"
+      lv.machine_virtual_size = 60
+      lv.disk_bus = "virtio"
+      lv.nic_model_type = "virtio"
     end
 
     if Vagrant.has_plugin?("vagrant-cachier")
@@ -63,54 +78,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  config.vm.define "devbox", primary: false, autostart: false do |libvirt_devbox|
-    libvirt_devbox.vm.box = "yk0/ubuntu-xenial"
-    libvirt_devbox.vm.hostname = "cephlcm"
-    libvirt_devbox.vm.network "private_network", ip: "10.20.0.10"
-    libvirt_devbox.vm.synced_folder ".", "/vagrant", type: "nfs", mount_options: ["rw", "vers=3", "noatime", "async"]
-
-    libvirt_devbox.vm.provider :libvirt do |lv|
-      lv.memory = 3092
-      lv.cpus = 2
-      lv.nested = true
-      lv.cpu_mode = "host-passthrough"
-      lv.machine_virtual_size = 60
-    end
-
-    if Vagrant.has_plugin?("vagrant-cachier")
-      libvirt_devbox.cache.scope = :box
-      libvirt_devbox.cache.enable :apt
-      libvirt_devbox.cache.enable :apt_lists
-      libvirt_devbox.cache.enable :bower
-      libvirt_devbox.cache.enable :npm
-      libvirt_devbox.cache.enable :generic, {
-        "pip" => { :cache_dir => ".cache/pip" },
-        "ccache" => { :cache_dir => ".ccache"  }
-      }
-      libvirt_devbox.cache.synced_folder_opts = {
-        type: :nfs, mount_options: ['rw', 'vers=3', 'noatime', 'async']
-      }
-    else
-      print "vagrant-cachier plugin has not been found."
-      print "You can install it by `vagrant plugin install vagrant-cachier`"
-    end
-
-    if Vagrant.has_plugin?("vagrant-host-shell")
-      libvirt_devbox.vm.provision :host_shell do |host_shell|
-        host_shell.inline = "ansible-galaxy install -r devenv/requirements.yaml -p devenv/galaxy"
-      end
-    else
-      abort "You have to install vagrant-host-shell plugin to continue"
-    end
-
-    libvirt_devbox.vm.provision "ansible" do |ansible|
-      ansible.playbook = "devenv/devbox.yaml"
-    end
-  end
-
   ["mon", "osd0", "osd1", "osd2"].each_with_index do |host, idx|
     config.vm.define "#{host}", autostart: false do |client|
-      client.vm.box = "ubuntu/trusty64"
       client.vm.hostname = "ceph-#{host}"
       client.vm.network "private_network", ip: "10.0.0.2#{idx}"
 
@@ -129,7 +98,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         s.inline = "mv /tmp/user-data /var/lib/cloud/seed/nocloud-net/user-data && rm -r /var/lib/cloud/instances/* && cloud-init init --local && cloud-init init && cloud-init modules"
       end
 
-      client.vm.provider "virtualbox" do |vb|
+      client.vm.provider "virtualbox" do |vb, override|
+        override.vm.box = "ubuntu/trusty64"
+
         vb.gui = false
         vb.memory = 512
         vb.cpus = 2
@@ -146,7 +117,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                           "--type", "hdd",
                           "--medium", "#{disk_name}.vdi"]
         end
+      end
 
+      client.vm.provider "libvirt" do |lv, override|
+        override.vm.box = "alxgrh/ubuntu-trusty-x86_64"
+
+        lv.nested = false
+        lv.memory = 512
+        lv.cpus = 2
+        lv.cpu_mode = "host-passthrough"
+        lv.disk_bus = "virtio"
+        lv.nic_model_type = "virtio"
+
+        lv.storage :file, :size => "11G", :bus => "sata"
+        lv.storage :file, :size => "11G", :bus => "sata"
       end
     end
   end
