@@ -30,9 +30,9 @@ export class AuthService {
           this.redirectUrl = null;
           this.router.navigate([url]);
           return token;
-        },
-        (error: any) => this.data.handleResponseError(error)
+        }
       )
+      .catch((error: any) => this.data.handleResponseError(error));
   }
 
   logout(): Promise<void> {

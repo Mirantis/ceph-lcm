@@ -181,11 +181,20 @@ export class DataService {
   }
 
   handleResponseError(error: any): void {
-    if (error.response.status === 401) {
-      this.session.removeToken();
-      this.modal.close();
-      this.router.navigate(['/login']);
+    var errorCode = 'Error';
+    var errorMessage = '';
+
+    if (error && error.response) {
+      if (error.response.status === 401) {
+        this.session.removeToken();
+        this.modal.close();
+        this.router.navigate(['/login']);
+      }
+      errorCode = error.response.data.error;
+      errorMessage = error.response.data.message;
+    } else {
+      errorMessage = (<Error>error).message;
     }
-    this.error.add(error.response.data.error, error.response.data.message);
+    this.error.add(errorCode, errorMessage);
   }
 }

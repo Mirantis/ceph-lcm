@@ -23,7 +23,7 @@
         >
       </div>
       <div class="login-error-message text-danger" *ngIf="loginError">
-        Authentication error. Please check that you've provided correct credentials.
+        {{getErrorMessage()}}
       </div>
 
       <div class="login-button">

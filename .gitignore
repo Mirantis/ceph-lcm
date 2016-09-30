@@ -69,4 +69,6 @@ devenv/*.retry
 prof/
 test-results.xml
 *.vdi
+
+.DS_Store
 ansible_ssh_keyfile.pem*

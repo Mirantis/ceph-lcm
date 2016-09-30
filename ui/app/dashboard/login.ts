@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import {Component} from '@angular/core';
 import {AuthService}   from '../services/auth';
 import {ErrorService}   from '../services/error';
@@ -9,10 +10,20 @@ import {ErrorService}   from '../services/error';
 export class LoginComponent {
   username: string;
   password: string;
-  loginError: any = null;
+  loginError: {error: string, message: string} = null;
 
   constructor(public auth: AuthService, private error: ErrorService) {
     this.error.errorHappened.subscribe((error: any) => this.loginError = error);
+  }
+
+  getErrorMessage(): string {
+    if (!this.loginError) {
+      return '';
+    }
+    if (this.loginError.message.indexOf('Network') >= 0) {
+      return this.loginError.message;
+    }
+    return `Authentication error. Please check that you've provided correct credentials.`;
   }
 
   login() {
