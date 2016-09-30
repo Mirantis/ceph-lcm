@@ -96,4 +96,4 @@ build_container_plugins: build_container_base
 	docker build -f "$(ROOT_DIR)/containerization/backend-plugins.dockerfile" --tag $(CONTAINER_PLUGINS_NAME) --rm "$(ROOT_DIR)"
 
 copy_example_keys:
-	cp "$(ROOT_DIR)/containerization/files/ansible_ssh_keyfile.pem" "$(ROOT_DIR)/containerization/files/ansible_ssh_keyfile.pem.pub" "$(ROOT_DIR)"
+	cp "$(ROOT_DIR)/containerization/files/ansible_ssh_keyfile.pem" "$(ROOT_DIR)"
