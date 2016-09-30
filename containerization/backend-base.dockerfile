@@ -13,6 +13,7 @@ RUN set -x \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
     libpython3.5 \
+    libyaml-0-2 \
     python3.5 \
     python3-setuptools \
     wget \
@@ -34,7 +35,6 @@ RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
       gcc \
-      libyaml-0-2 \
       libyaml-dev \
       python3-dev \
       python3-pip \
