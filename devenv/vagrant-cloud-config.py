@@ -31,8 +31,7 @@ def main():
             url="http://{0}/v1/server/".format(options.url),
             server_discovery_token=options.token,
             public_key=options.ssh_public_key_filename.read().strip(),
-            username=options.username,
-            debug=True
+            username=options.username
         )
         filefp.write(content)
         print(filefp.name, end="")
