@@ -38,8 +38,8 @@ export class DataService {
   store = new DataStore();
 
   // FIXME: to be moved to configuration
-  adapter = new HttpAdapter({basePath: 'http://private-3509f-cephlcmswaggerapi.apiary-mock.com/v1'});
-  // adapter = new HttpAdapter({basePath: 'http://localhost:9999/v1'});
+  // adapter = new HttpAdapter({basePath: 'http://private-3509f-cephlcmswaggerapi.apiary-mock.com/v1'});
+  adapter = new HttpAdapter({basePath: 'http://localhost:9999/v1'});
   mappers: {[key: string]: Mapper} = {};
 
   token(): Mapper {return this.getMapper('auth', Token)}

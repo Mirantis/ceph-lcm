@@ -12,8 +12,14 @@
 <div class="roles grid row" *ngIf="roles && roles.length">
   <div class="grid-header">
     <div class="col-xs-2"></div>
-    <div class="col-xs-1 name" *ngFor="let role of roles">
-      {{role.data.name|trim_by:16}}
+    <div
+      class="col-xs-2 name"
+      *ngFor="let role of roles"
+      data-toggle="tooltip"
+      data-placement="top"
+      title="{{role.data.name}}"
+    >
+      {{role.data.name|trim_by:10}}
       <button class="btn btn-link" (click)="editRole(role)">
         <span class="glyphicon glyphicon-pencil"></span>
       </button>
