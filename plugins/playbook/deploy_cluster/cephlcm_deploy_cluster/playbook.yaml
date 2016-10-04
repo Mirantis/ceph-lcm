@@ -1,0 +1,51 @@
+---
+
+- hosts: mons
+  become: True
+  roles:
+  - ceph-mon
+
+- hosts: agents
+  become: True
+  roles:
+  - ceph-agent
+
+- hosts: osds
+  become: True
+  roles:
+  - ceph-osd
+
+- hosts: mdss
+  become: True
+  roles:
+  - ceph-mds
+
+- hosts: rgws
+  become: True
+  roles:
+  - ceph-rgw
+
+- hosts: nfss
+  become: True
+  roles:
+  - ceph-nfs
+
+- hosts: restapis
+  become: True
+  roles:
+  - ceph-restapi
+
+- hosts: rbdmirrors
+  become: True
+  roles:
+  - ceph-rbd-mirror
+
+- hosts: clients
+  become: True
+  roles:
+  - ceph-client
+
+- hosts: iscsigws
+  become: True
+  roles:
+  - ceph-iscsi-gw

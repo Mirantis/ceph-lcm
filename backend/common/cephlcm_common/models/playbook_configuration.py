@@ -71,7 +71,7 @@ class PlaybookConfigurationModel(generic.Model):
 
     def make_configuration(self, cluster, servers):
         plug = plugins.get_public_playbook_plugins()
-        plug = plug[self.playbook_id]
+        plug = plug[self.playbook_id]()
         configuration = plug.build_playbook_configuration(cluster, servers)
 
         return configuration
