@@ -33,11 +33,12 @@ class PlaybookView(generic.ModelView):
         data = []
 
         for plugin in plugins.get_public_playbook_plugins().values():
+            plug = plugin()
             plugin_data = {
-                "name": plugin.name,
-                "id": plugin.entry_point,
-                "description": plugin.DESCRIPTION,
-                "required_server_list": bool(plugin.REQUIRED_SERVER_LIST)
+                "name": plug.name,
+                "id": plug.entry_point,
+                "description": plug.DESCRIPTION,
+                "required_server_list": bool(plug.REQUIRED_SERVER_LIST)
             }
             data.append(plugin_data)
 

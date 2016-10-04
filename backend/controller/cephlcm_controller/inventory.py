@@ -103,7 +103,7 @@ def get_plugin(entry_point):
     if not plugin:
         raise exceptions.InventoryError("Unknown plugin for {0}", entry_point)
 
-    return plugin
+    return plugin()
 
 
 def get_options():

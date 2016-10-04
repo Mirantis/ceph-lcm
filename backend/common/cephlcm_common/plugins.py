@@ -50,14 +50,14 @@ def get_playbook_plugins(namespace=NS_PLAYBOOKS):
 
         loaded = load_playbook_plugin(plugin)
         if loaded:
-            plugins[loaded.entry_point] = loaded
+            plugins[plugin.name] = loaded
 
     return plugins
 
 
 def get_public_playbook_plugins(namespace=NS_PLAYBOOKS):
     return {k: v
-            for k, v in get_playbook_plugins(namespace).items() if v.PUBLIC}
+            for k, v in get_playbook_plugins(namespace).items() if v().PUBLIC}
 
 
 def load_playbook_plugin(plugin):
@@ -72,7 +72,9 @@ def load_playbook_plugin(plugin):
         return
 
     try:
-        return loaded(plugin.name, plugin.module_name)
+        return functools.partial(
+            loaded, entry_point=plugin.name, module_name=plugin.module_name
+        )
     except Exception as exc:
         LOG.exception("Cannot initialize plugin %s: %s", plugin.name, exc)
         return

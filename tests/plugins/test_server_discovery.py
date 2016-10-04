@@ -31,7 +31,7 @@ def new_task(configure_model):
 @pytest.yield_fixture
 def plugin():
     plug = plugins.get_playbook_plugins()
-    plug = plug["server_discovery"]
+    plug = plug["server_discovery"]()
 
     yield plug
 

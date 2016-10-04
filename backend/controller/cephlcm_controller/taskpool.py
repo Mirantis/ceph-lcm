@@ -153,7 +153,7 @@ class TaskPool:
         plug = plugs.get(plugin_name)
 
         if plug:
-            return plug
+            return plug()
 
         raise ValueError(
             "Cannot find suitable plugin for task {0} {1}".format(

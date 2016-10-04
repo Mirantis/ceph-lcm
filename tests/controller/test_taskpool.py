@@ -42,7 +42,7 @@ def mocked_plugin():
         required_mock.returncode = os.EX_OK
         plugin.execute.return_value.__enter__.return_value = required_mock
 
-        ptch.return_value.get.return_value = plugin
+        ptch.return_value.get.return_value.return_value = plugin
 
         yield required_mock
 

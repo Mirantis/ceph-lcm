@@ -15,7 +15,7 @@ def test_access_unauth(client_v1):
 
 def test_playbook_list(sudo_client_v1):
     list_of_plugins = plugins.get_playbook_plugins()
-    list_of_plugins = [v for k, v in list_of_plugins.items() if v.PUBLIC]
+    list_of_plugins = [v for k, v in list_of_plugins.items() if v().PUBLIC]
 
     if not list_of_plugins:
         pytest.skip("No public plugins, test is meaningless.")
@@ -24,6 +24,7 @@ def test_playbook_list(sudo_client_v1):
 
     assert response.status_code == 200
     for plugin in list_of_plugins:
+        plugin = plugin()
         for data in response.json["items"]:
             if plugin.name == data["name"]:
                 assert plugin.DESCRIPTION == data["description"]
