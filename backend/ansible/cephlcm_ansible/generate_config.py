@@ -5,7 +5,10 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import copy
+import errno
 import io
+import os
+import os.path
 import posixpath
 
 try:
@@ -83,6 +86,12 @@ def generate_config(**kwargs):
 
 
 def write_config(**kwargs):
+    try:
+        os.makedirs(os.path.dirname(ANSIBLE_CONFIG_PATH))
+    except OSError as exc:
+        if exc.errno != errno.EEXIST:
+            raise
+
     with open(ANSIBLE_CONFIG_PATH, "wt") as configfp:
         configfp.write(generate_config(**kwargs))
         configfp.write("\n")
