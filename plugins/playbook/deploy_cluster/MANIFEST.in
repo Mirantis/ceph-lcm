@@ -1,5 +1,6 @@
 include cephlcm_deploy_cluster/config.toml
 include cephlcm_deploy_cluster/playbooks/LICENSE
+include cephlcm_deploy_cluster/playbooks/site.yml.sample
 graft cephlcm_deploy_cluster/playbooks/library
 graft cephlcm_deploy_cluster/playbooks/plugins
 graft cephlcm_deploy_cluster/playbooks/roles
