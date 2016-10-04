@@ -13,7 +13,10 @@ try:
 except ImportError:
     import configparser
 
-import pkg_resources
+try:
+    unicode
+except NameError:
+    unicode = str
 
 
 ANSIBLE_CONFIG_PATH = "/etc/ansible/ansible.cfg"
@@ -21,8 +24,6 @@ ANSIBLE_CONFIG_PATH = "/etc/ansible/ansible.cfg"
 
 ANSIBLE_DEFAULT_PLUGIN_PATH = "/usr/share/ansible/plugins"
 """Default path to ansible plugins."""
-
-CURRENT_PACKAGE = pkg_resources.Requirement("cephlcm_ansible")
 
 
 class PathList(list):
@@ -34,17 +35,9 @@ class PathList(list):
 CONFIG_OPTIONS = {
     "host_key_checking": False,
     "callback_plugins": PathList(
-        [
-            posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "callback"),
-            pkg_resources.resource_filename(CURRENT_PACKAGE,
-                                            "plugins/callback")
-        ]),
+        [posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "callback")]),
     "action_plugins": PathList(
-        [
-            posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "action"),
-            pkg_resources.resource_filename(CURRENT_PACKAGE,
-                                            "ceph-ansible/plugins/actions")
-        ]),
+        [posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "action")]),
     "connection_plugins": PathList(
         [posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "connection")]),
     "lookup_plugins": PathList(
@@ -53,17 +46,8 @@ CONFIG_OPTIONS = {
         [posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "vars")]),
     "filter_plugins": PathList(
         [posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "filter")]),
-    "roles_path": PathList(
-        [pkg_resources.resource_filename(CURRENT_PACKAGE,
-                                         "ceph-ansible/roles")]
-    ),
-    "library": PathList(
-        [
-            "/usr/share/ansible",
-            pkg_resources.resource_filename(CURRENT_PACKAGE,
-                                            "ceph-ansible/library")
-        ]
-    ),
+    "roles_path": PathList(),
+    "library": PathList(["/usr/share/ansible"]),
     "ask_pass": False,
     "ask_sudo_pass": False,
     "bin_ansible_callbacks": False,
@@ -90,7 +74,7 @@ def generate_config(**kwargs):
     parser.add_section("defaults")
 
     for key, value in sorted(config.items()):
-        parser.set("defaults", key, str(value))
+        parser.set("defaults", key, unicode(value))
 
     output = io.StringIO()
     parser.write(output)
