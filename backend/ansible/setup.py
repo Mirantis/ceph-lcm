@@ -13,6 +13,7 @@ import setuptools.command.install
 
 REQUIREMENTS = (
     "ansible",
+    "pymongo"
 )
 
 NEED_TO_GENERATE_CONFIG = True
@@ -90,7 +91,8 @@ setuptools.setup(
             "ceph-ansible/LICENSE",
             "ceph-ansible/library",
             "ceph-ansible/plugins",
-            "ceph-ansible/roles"
+            "ceph-ansible/roles",
+            "plugins"
         ]
     },
     classifiers=(

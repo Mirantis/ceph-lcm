@@ -2,3 +2,4 @@ include cephlcm_ansible/ceph-ansible/LICENSE
 graft cephlcm_ansible/ceph-ansible/library
 graft cephlcm_ansible/ceph-ansible/plugins
 graft cephlcm_ansible/ceph-ansible/roles
+graft cephlcm_ansible/plugins
