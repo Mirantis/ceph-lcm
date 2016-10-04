@@ -2,7 +2,6 @@
 """Playbook plugin to deploy Ceph cluster."""
 
 
-import os.path
 import posixpath
 import shutil
 import tempfile
@@ -34,8 +33,6 @@ class DeployCluster(playbook_plugin.Playbook):
     DESCRIPTION = DESCRIPTION
     PUBLIC = True
     REQUIRED_SERVER_LIST = True
-
-    PLAYBOOK_FILENAME = os.path.join("playbooks", "site.yml.sample")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

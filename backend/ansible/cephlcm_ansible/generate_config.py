@@ -6,15 +6,17 @@ from __future__ import unicode_literals
 
 import copy
 import errno
-import io
 import os
 import os.path
 import posixpath
+import StringIO
 
 try:
     import ConfigParser as configparser
 except ImportError:
     import configparser
+
+import pkg_resources
 
 try:
     unicode
@@ -34,13 +36,23 @@ class PathList(list):
     def __str__(self):
         return ":".join(item.rstrip("/ ") for item in self)
 
+    __unicode__ = __str__
+
 
 CONFIG_OPTIONS = {
     "host_key_checking": False,
     "callback_plugins": PathList(
-        [posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "callback")]),
+        [
+            posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "callback"),
+            pkg_resources.resource_filename("cephlcm_ansible",
+                                            "plugins/callback")
+        ]),
     "action_plugins": PathList(
-        [posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "action")]),
+        [
+            posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "action"),
+            pkg_resources.resource_filename("cephlcm_ansible",
+                                            "ceph-ansible/plugins/actions")
+        ]),
     "connection_plugins": PathList(
         [posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "connection")]),
     "lookup_plugins": PathList(
@@ -49,7 +61,12 @@ CONFIG_OPTIONS = {
         [posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "vars")]),
     "filter_plugins": PathList(
         [posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "filter")]),
-    "roles_path": PathList(),
+    "roles_path": PathList(
+        [
+            pkg_resources.resource_filename("cephlcm_ansible",
+                                            "ceph-ansible/roles")
+        ]
+    ),
     "library": PathList(["/usr/share/ansible"]),
     "ask_pass": False,
     "ask_sudo_pass": False,
@@ -79,7 +96,7 @@ def generate_config(**kwargs):
     for key, value in sorted(config.items()):
         parser.set("defaults", key, unicode(value))
 
-    output = io.StringIO()
+    output = StringIO.StringIO()
     parser.write(output)
 
     return output.getvalue().strip()

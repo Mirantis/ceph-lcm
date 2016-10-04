@@ -165,7 +165,7 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
         if playbook_id not in plugs:
             raise http_exceptions.UnknownPlaybookError(playbook_id)
 
-        plug = plugs[playbook_id]
+        plug = plugs[playbook_id]()
         if plug.REQUIRED_SERVER_LIST:
             if not suggested_servers:
                 raise http_exceptions.ServerListIsRequiredForPlaybookError(
