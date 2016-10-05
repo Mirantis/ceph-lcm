@@ -7,9 +7,12 @@ var minify = require('gulp-minify');
 var sysBuilder = require('systemjs-builder');
 var runSequence = require('run-sequence');
 var less = require('gulp-less');
-var cssmin = require('gulp-cssmin');
+var autoprefixer = require('autoprefixer');
+var cssnano = require('cssnano');
+var postcss = require('gulp-postcss')
 var googleWebFonts = require('gulp-google-webfonts');
 var replace = require('gulp-replace');
+var rimraf = require('rimraf');
 
 // Bundle dependencies into vendors file
 gulp.task('bundle:libs', function () {
@@ -61,10 +64,10 @@ gulp.task('minify:js', function () {
 gulp.task('styles:less', function () {
   return gulp.src('app/styles/styles.less')
   .pipe(less())
-  .pipe(cssmin({
-    processImport: true,
-    keepBreaks: true
-  }))
+  .pipe(postcss([
+    autoprefixer(),
+    cssnano()
+  ]))
   .pipe(gulp.dest('build/styles/'));
 });
 
@@ -88,7 +91,7 @@ gulp.task('fonts:bootstrap', function () {
 
 // Bundle app scripts and external libs
 gulp.task('build:js', function (callback) {
-  runSequence('compile:ts', 'bundle:js', ['bundle:libs', 'minify:js'], callback);
+  runSequence('compile:ts', 'bundle:js', ['bundle:libs', 'minify:js'], 'cleanup', callback);
 });
 
 // Builds styles
@@ -102,8 +105,13 @@ gulp.task('images', function () {
   .pipe(gulp.dest('build/images'));
 });
 
+// Cleanup building artifacts
+gulp.task('cleanup', function (callback) {
+  return rimraf('build/tmp', callback);
+});
+
 // Builds the whole project and updates references
-gulp.task('build', ['build:js', 'build:styles', 'images'], function () {
+gulp.task('default', ['build:js', 'build:styles', 'images'], function () {
   return gulp.src('index.html')
   .pipe(replace('"app/styles', '"styles'))
   .pipe(replace(/<\!---->[\s\S]+-->/m, '    <script src="js/vendors.min.js"></script>\n    <script src="js/app.min.js"></script>'))

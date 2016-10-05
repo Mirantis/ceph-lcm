@@ -56,14 +56,16 @@
     "zone.js": "^0.6.23"
   },
   "devDependencies": {
+    "autoprefixer": "^6.5.0",
     "canonical-path": "0.0.2",
     "concurrently": "^2.2.0",
+    "cssnano": "^3.7.6",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
-    "gulp-cssmin": "^0.1.7",
     "gulp-google-webfonts": "0.0.14",
     "gulp-less": "^3.1.0",
     "gulp-minify": "0.0.14",
+    "gulp-postcss": "^6.2.0",
     "gulp-replace": "^0.5.4",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^3.0.2",
