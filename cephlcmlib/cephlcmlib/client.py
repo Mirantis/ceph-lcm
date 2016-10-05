@@ -10,7 +10,9 @@ import inspect
 import logging
 import socket
 
+import pkg_resources
 import requests
+import requests.adapters
 import six
 
 from cephlcmlib import auth
@@ -24,6 +26,9 @@ except ImportError:
 
 LOG = logging.getLogger(__name__)
 """Logger."""
+
+VERSION = pkg_resources.get_distribution("cephlcmlib").version
+"""Package version."""
 
 
 def json_dumps(data):
@@ -146,6 +151,15 @@ def client_metaclass(name, bases, attrs):
     return type(name, bases, new_attrs)
 
 
+class HTTPAdapter(requests.adapters.HTTPAdapter):
+
+    USER_AGENT = "cephlcmlib/{0}".format(VERSION)
+
+    def add_headers(self, request, **kwargs):
+        request.headers["User-Agent"] = self.USER_AGENT
+        super().add_headers(request, **kwargs)
+
+
 @six.add_metaclass(abc.ABCMeta)
 @six.python_2_unicode_compatible
 class Client(object):
@@ -169,12 +183,21 @@ class Client(object):
 
         return url
 
-    def __init__(self, url, login, password, timeout=None):
+    def __init__(self, url, login, password, timeout=None, verify=True,
+                 certificate_file=None):
         self._url = self._prepare_base_url(url)
         self._login = login
         self._password = password
         self._session = requests.Session()
         self._timeout = timeout or socket.getdefaulttimeout() or None
+
+        adapter = HTTPAdapter()
+        self._session.mount("http://", adapter)
+        self._session.mount("https://", adapter)
+
+        self._session.verify = bool(verify)
+        if verify and certificate_file:
+            self._session.cert = certificate_file
 
         if self.AUTH_CLASS:
             self._session.auth = self.AUTH_CLASS(self)
