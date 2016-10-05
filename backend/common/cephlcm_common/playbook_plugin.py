@@ -19,14 +19,12 @@ try:
 except ImportError:
     import json
 
-import toml
-
 from cephlcm_common import config
 from cephlcm_common import log
 from cephlcm_common.models import task
 
 
-CONF = config.make_controller_config()
+CONF = config.make_config()
 """Config."""
 
 LOG = log.getLogger(__name__)
@@ -69,7 +67,7 @@ class Base(metaclass=abc.ABCMeta):
     def __init__(self, entry_point, module_name):
         self.name = self.NAME or entry_point
         self.playbook_filename = self.PLAYBOOK_FILENAME or "playbook.yaml"
-        self.config_filename = self.CONFIG_FILENAME or "config.toml"
+        self.config_filename = self.CONFIG_FILENAME or "config.yaml"
 
         self.module_name = module_name
         self.entry_point = entry_point
@@ -78,8 +76,8 @@ class Base(metaclass=abc.ABCMeta):
     def get_filename(self, filename):
         return pkg_resources.resource_filename(self.module_name, filename)
 
-    def load_config(self, config):
-        return toml.load(self.get_filename(config or self.config_filename))
+    def load_config(self, cnf):
+        return config.yaml_load(self.get_filename(cnf or self.config_filename))
 
     @functools.lru_cache()
     def get_task(self, task_id):
@@ -93,8 +91,8 @@ class Base(metaclass=abc.ABCMeta):
             ENV_ENTRY_POINT: self.entry_point,
             ENV_TASK_ID: str(task._id),
             ENV_EXECUTION_ID: str(task.execution_id or ""),
-            ENV_DB_URI: CONF.DB_URI,
-            "ANSIBLE_CONFIG": str(CONF.CONTROLLER_ANSIBLE_CONFIG)
+            ENV_DB_URI: CONF["db"]["uri"],
+            "ANSIBLE_CONFIG": str(CONF["controller"]["ansible_config"])
         }
 
     @contextlib.contextmanager

@@ -20,7 +20,7 @@ PASSWORD_LETTERS = string.printable.strip()
 def hash_password(password):
     """This function creates secure password hash from the given password."""
 
-    salt = bcrypt.gensalt(CONF.COMMON_BCRYPT_ROUNDS)
+    salt = bcrypt.gensalt(CONF["common"]["bcrypt_rounds"])
     if isinstance(password, str):
         password = password.encode("utf-8")
     hashed = bcrypt.hashpw(password, salt)
@@ -42,7 +42,7 @@ def compare_passwords(password, suspected_hash):
 def generate_password(length=None):
     """Generates secure password of given length."""
 
-    length = length or CONF.COMMON_PASSWORD_LENGTH
+    length = length or CONF["common"]["password_length"]
 
     return "".join(random_password_character() for _ in range(length))
 

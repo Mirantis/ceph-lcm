@@ -96,7 +96,7 @@ class TokenModel(generic.Model):
     def default_ttl(self):
         """Returns a TTL for the token. It always returns seconds, integer."""
 
-        return int(CONF.API_TOKEN["ttl_in_seconds"])
+        return int(CONF["api"]["token"]["ttl_in_seconds"])
 
     def update_from_db_document(self, structure):
         super().update_from_db_document(structure)

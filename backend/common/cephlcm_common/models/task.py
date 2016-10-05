@@ -11,7 +11,6 @@ import bson.objectid
 import pymongo
 import pymongo.errors
 
-from cephlcm_common import config
 from cephlcm_common import exceptions
 from cephlcm_common import log
 from cephlcm_common import retryutils
@@ -42,9 +41,6 @@ TASK_TEMPLATE = {
     "data": {}
 }
 """DB task template."""
-
-CONF = config.make_config()
-"""Config."""
 
 LOG = log.getLogger(__name__)
 """Logger."""

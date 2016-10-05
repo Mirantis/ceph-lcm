@@ -30,7 +30,7 @@ RUN set -x \
 
 COPY output/eggs /eggs
 COPY constraints.txt /constraints.txt
-COPY containerization/files/config.toml /etc/cephlcm/config.toml
+COPY containerization/files/config.yaml /etc/cephlcm/config.yaml
 
 
 RUN set -x \

@@ -8,7 +8,7 @@ import setuptools
 REQUIREMENTS = (
     "pymongo",
     "simplejson",
-    "toml"
+    "PyYAML"
 )
 
 

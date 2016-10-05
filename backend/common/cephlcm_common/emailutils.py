@@ -24,15 +24,15 @@ def send(to, subject, text_body, html_body=None, cc=None, bcc=None,
 
     to, cc and bcc are user email lists.
     """
-    from_ = from_ or CONF.COMMON_EMAIL["from"]
-    host = host or CONF.COMMON_EMAIL["host"]
-    port = port or CONF.COMMON_EMAIL["port"]
-    login = login or CONF.COMMON_EMAIL["login"]
-    password = password or CONF.COMMON_EMAIL["password"]
+    from_ = from_ or CONF["common"]["email"]["from"]
+    host = host or CONF["common"]["email"]["host"]
+    port = port or CONF["common"]["email"]["port"]
+    login = login or CONF["common"]["email"]["login"]
+    password = password or CONF["common"]["email"]["password"]
 
     to, cc, bcc = make_lists(to, cc, bcc)
     message = make_message(from_, to, cc, subject, text_body, html_body)
-    if not CONF.COMMON_EMAIL["enabled"]:
+    if not CONF["common"]["email"]["enabled"]:
         LOG.info(
             "Send email(to=%r, cc=%r, bcc=%r, subject=%r): %s",
             to, cc, bcc, subject, text_body

@@ -31,7 +31,7 @@ def get_alert_plugins(namespace=NS_ALERT):
     plugins = []
 
     for plugin in pkg_resources.iter_entry_points(group=namespace):
-        if plugin.name in CONF.PLUGINS_ALERTS["enabled"]:
+        if plugin.name in CONF["plugins"]["alerts"]["enabled"]:
             try:
                 plugins.append(plugin.load())
             except Exception as exc:
@@ -45,7 +45,7 @@ def get_playbook_plugins(namespace=NS_PLAYBOOKS):
     plugins = {}
 
     for plugin in pkg_resources.iter_entry_points(group=namespace):
-        if plugin.name in CONF.PLUGINS_PLAYBOOKS["disabled"]:
+        if plugin.name in CONF["plugins"]["playbooks"]["disabled"]:
             continue
 
         loaded = load_playbook_plugin(plugin)

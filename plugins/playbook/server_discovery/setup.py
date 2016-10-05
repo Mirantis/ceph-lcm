@@ -23,7 +23,7 @@ setuptools.setup(
     include_package_data=True,
     package_data={
         "cephlcm_server_discovery": [
-            "config.toml",
+            "config.yaml",
         ]
     },
     install_requires=[

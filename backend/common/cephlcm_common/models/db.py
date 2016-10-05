@@ -19,11 +19,12 @@ class MongoDB:
 
     def __init__(self, uri=None, connect=None, connect_timeout=None,
                  socket_timeout=None, pool_size=None):
-        uri = uri if uri is not None else CONF.DB_URI
-        connect = connect if connect is not None else CONF.DB_CONNECT
-        connect_timeout = connect_timeout or CONF.DB_CONNECT_TIMEOUT
-        socket_timeout = socket_timeout or CONF.DB_SOCKET_TIMEOUT
-        pool_size = pool_size if pool_size is not None else CONF.DB_POOL_SIZE
+        uri = uri if uri is not None else CONF["db"]["uri"]
+        connect = connect if connect is not None else CONF["db"]["connect"]
+        connect_timeout = connect_timeout or CONF["db"]["connect_timeout"]
+        socket_timeout = socket_timeout or CONF["db"]["socket_timeout"]
+        pool_size = pool_size if pool_size is not None \
+            else CONF["db"]["pool_size"]
 
         self.client = pymongo.MongoClient(
             uri, connect=connect, socketTimeoutMS=socket_timeout,

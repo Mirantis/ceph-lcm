@@ -1,2 +1,2 @@
-include cephlcm_deploy_cluster/config.toml
+include cephlcm_deploy_cluster/config.yaml
 include cephlcm_deploy_cluster/playbook.yaml
