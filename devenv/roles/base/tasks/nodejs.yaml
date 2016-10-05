@@ -1,0 +1,14 @@
+---
+# NodeJS and UI related stuff
+
+
+- name: Install typings
+  npm: name=typings global=yes
+
+- name: Install UI dependencies
+  npm: path=/vagrant/ui
+
+- name: Install typings libraries into project
+  command: typings install chdir=/vagrant/ui
+  tags:
+    - skip_ansible_lint

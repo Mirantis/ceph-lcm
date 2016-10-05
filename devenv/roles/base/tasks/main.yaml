@@ -7,4 +7,5 @@
 - include: htop.yaml
 - include: ssh.yaml
 - include: docker.yaml
+- include: nodejs.yaml
 - include: bashrc.yaml
