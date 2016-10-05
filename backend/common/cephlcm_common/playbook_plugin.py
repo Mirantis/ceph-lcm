@@ -77,7 +77,7 @@ class Base(metaclass=abc.ABCMeta):
         return pkg_resources.resource_filename(self.module_name, filename)
 
     def load_config(self, cnf):
-        return config.yaml_load(self.get_filename(cnf or self.config_filename))
+        return load_config(self.get_filename(cnf or self.config_filename))
 
     @functools.lru_cache()
     def get_task(self, task_id):
@@ -250,3 +250,8 @@ class Playbook(Base, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def make_playbook_configuration(self, servers):
         raise NotImplementedError()
+
+
+@functools.lru_cache()
+def load_config(filename):
+    return config.yaml_load(filename)
