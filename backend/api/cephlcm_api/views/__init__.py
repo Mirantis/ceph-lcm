@@ -9,7 +9,6 @@ require to have view as plugins.
 """
 
 
-from cephlcm_api.views import info
 from cephlcm_api.views import v1
 
 
@@ -17,4 +16,3 @@ def register_api(application):
     """Register API endpoints to the application."""
 
     application.register_blueprint(v1.BLUEPRINT, url_prefix="/v1")
-    application.add_url_rule("/info/", "info", info.endpoint)

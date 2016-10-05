@@ -7,6 +7,7 @@ import flask
 from cephlcm_api.views.v1 import auth
 from cephlcm_api.views.v1 import cluster
 from cephlcm_api.views.v1 import execution
+from cephlcm_api.views.v1 import info
 from cephlcm_api.views.v1 import permission
 from cephlcm_api.views.v1 import playbook
 from cephlcm_api.views.v1 import playbook_configuration
@@ -26,6 +27,7 @@ auth.AuthView.register_to(BLUEPRINT)
 cluster.ClusterView.register_to(BLUEPRINT)
 execution.ExecutionStepsView.register_to(BLUEPRINT)
 execution.ExecutionView.register_to(BLUEPRINT)
+info.InfoView.register_to(BLUEPRINT)
 permission.PermissionView.register_to(BLUEPRINT)
 playbook_configuration.PlaybookConfigurationView.register_to(BLUEPRINT)
 playbook.PlaybookView.register_to(BLUEPRINT)
