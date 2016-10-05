@@ -67,6 +67,17 @@ make_output_directory:
 
 # -----------------------------------------------------------------------------
 
+build_ui: clean_ui npm_install
+	cd "$(ROOT_DIR)/ui" && ./node_modules/gulp/bin/gulp.js build && rm -rf build/tmp
+
+npm_install:
+	cd "$(ROOT_DIR)/ui" && npm install
+
+clean_ui:
+	rm -rf "$(ROOT_DIR)/ui/build"
+
+# -----------------------------------------------------------------------------
+
 
 build_containers: build_container_api build_container_api_rooted build_container_controller build_container_frontend build_container_db build_container_cron
 build_containers_dev: copy_example_keys build_containers
@@ -83,7 +94,7 @@ build_container_controller: build_container_plugins
 build_container_cron: build_container_controller
 	docker build -f "$(ROOT_DIR)/containerization/backend-cron.dockerfile" --tag $(CONTAINER_CRON_NAME) --rm "$(ROOT_DIR)"
 
-build_container_frontend:
+build_container_frontend: build_ui
 	docker build -f "$(ROOT_DIR)/containerization/frontend.dockerfile" --tag $(CONTAINER_FRONTEND_NAME) --pull --rm "$(ROOT_DIR)"
 
 build_container_cli: build_eggs
