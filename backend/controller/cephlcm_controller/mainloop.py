@@ -24,7 +24,7 @@ LOG = log.getLogger(__name__)
 SHUTDOWN_EVENT = threading.Event()
 """Event which should be set by signal handler."""
 
-TASK_POOL = taskpool.TaskPool(CONF.CONTROLLER_WORKER_THREADS)
+TASK_POOL = taskpool.TaskPool(CONF["controller"]["worker_threads"])
 
 
 def main():

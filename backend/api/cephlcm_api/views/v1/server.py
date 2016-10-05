@@ -67,7 +67,7 @@ def require_create_server_authorization(func):
     @functools.wraps(func)
     def decorator(*args, **kwargs):
         token_id = flask.request.headers.get("Authorization")
-        if token_id == CONF.API_SERVER_DISCOVERY_TOKEN:
+        if token_id == CONF["api"]["server_discovery_token"]:
             return func(*args, **kwargs)
         return normal_decorated_func(*args, **kwargs)
 

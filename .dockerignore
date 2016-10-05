@@ -5,3 +5,4 @@
 .vagrant/*
 .cache/*
 .eggs/*
+ui/*

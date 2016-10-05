@@ -87,7 +87,7 @@ def smtp(request, monkeypatch):
 
 @pytest.fixture
 def email(smtp, monkeypatch):
-    monkeypatch.setitem(emailutils.CONF.COMMON_EMAIL, "enabled", True)
+    monkeypatch.setitem(emailutils.CONF["common"]["email"], "enabled", True)
     monkeypatch.setattr(
         emailutils, "make_message",
         lambda from_, to, cc, subject, text_body, html_body: (

@@ -6,8 +6,6 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import functools
-import gzip
-import io
 
 import six
 import six.moves
@@ -239,16 +237,3 @@ def get_hostname(hostname):
     parsed = parsed.netloc.split(":", 1)[0]
 
     return parsed
-
-
-def gzip_text(text):
-    text = text.encode("utf-8")
-
-    if hasattr(gzip, "compress"):  # python 3.2+
-        return gzip.compress(text, compresslevel=9)
-
-    fileobj = io.BytesIO()
-    with gzip.GzipFile(mode="wb", fileobj=fileobj, compresslevel=9) as gzfp:
-        gzfp.write(text)
-
-    return fileobj.getvalue()

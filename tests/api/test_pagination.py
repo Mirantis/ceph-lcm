@@ -18,7 +18,7 @@ def test_defaults():
 
     assert result == {
         "page": 1,
-        "per_page": CONF.API_PAGINATION_PER_PAGE,
+        "per_page": CONF["api"]["pagination_per_page"],
         "filter": {},
         "sort_by": [],
         "all": False
@@ -36,7 +36,7 @@ def test_param_fail(param, value):
     if param == "page":
         assert result[param] == 1
     else:
-        assert result[param] == CONF.API_PAGINATION_PER_PAGE
+        assert result[param] == CONF["api"]["pagination_per_page"]
 
 
 @pytest.mark.parametrize("value", (

@@ -23,7 +23,7 @@ setuptools.setup(
     include_package_data=True,
     package_data={
         "cephlcm_hello_world": [
-            "config.toml",
+            "config.yaml",
             "playbook.yaml",
             "roles/*"
         ]

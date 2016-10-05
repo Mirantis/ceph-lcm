@@ -178,7 +178,7 @@ def test_gentle_stop_full(mocked_plugin, tpool, configure_model, freeze_time):
     assert mocked_plugin.mock_calls == [
         unittest.mock.call.poll(),
         unittest.mock.call.terminate(),
-        unittest.mock.call.wait(CONF.CONTROLLER_GRACEFUL_STOP),
+        unittest.mock.call.wait(CONF["controller"]["graceful_stop"]),
         unittest.mock.call.poll(),
         unittest.mock.call.kill(),
         unittest.mock.call.wait()
@@ -200,7 +200,7 @@ def test_gentle_stop_term(mocked_plugin, tpool, configure_model, freeze_time):
     assert mocked_plugin.mock_calls == [
         unittest.mock.call.poll(),
         unittest.mock.call.terminate(),
-        unittest.mock.call.wait(CONF.CONTROLLER_GRACEFUL_STOP),
+        unittest.mock.call.wait(CONF["controller"]["graceful_stop"]),
         unittest.mock.call.poll()
     ]
 

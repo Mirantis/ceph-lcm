@@ -1,1 +1,1 @@
-include cephlcm_server_discovery/config.toml
+include cephlcm_server_discovery/config.yaml

@@ -54,7 +54,7 @@ def clean_old_tasks():
     """This function removes old finished tasks from database."""
 
     timestamp = timeutils.current_unix_timestamp()
-    old_limit = timestamp - CONF.CRON_CLEAN_FINISHED_TASKS_AFTER_SECONDS
+    old_limit = timestamp - CONF["cron"]["clean_finished_tasks_after_seconds"]
     limit_condition = {"$gt": 0, "$lte": old_limit}
     query = {
         "$or": [

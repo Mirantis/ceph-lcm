@@ -1,3 +1,3 @@
-include cephlcm_helloworld/config.toml
+include cephlcm_helloworld/config.yaml
 include cephlcm_helloworld/playbook.yaml
 recursive-include cephlcm_helloworld/roles *

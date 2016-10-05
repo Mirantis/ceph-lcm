@@ -9,7 +9,12 @@ import os.path
 
 import pkg_resources
 
-import toml
+import yaml
+
+try:
+    from yaml import CLoader as YAMLLoader
+except Exception as exc:
+    from yaml import Loader as YAMLLoader
 
 
 HOME = os.path.expanduser("~")
@@ -21,84 +26,66 @@ USER_CONFIG_HOME = os.getenv(
 """User config directory according to XDG specification."""
 
 CONFIG_FILES = (
-    pkg_resources.resource_filename("cephlcm_common", "configs/defaults.toml"),
-    os.path.join("/", "etc", "cephlcm", "config.toml"),
-    os.path.join(USER_CONFIG_HOME, "config.toml"),
-    os.path.join(HOME, ".cephlcm.toml"),
-    "cephlcm.toml"
+    "cephlcm.yaml",
+    os.path.join(USER_CONFIG_HOME, "config.yaml"),
+    os.path.join(HOME, ".cephlcm.yaml"),
+    os.path.join("/", "etc", "cephlcm", "config.yaml"),
+    pkg_resources.resource_filename("cephlcm_common", "configs/defaults.yaml")
 )
 """A list of config files in order to load/parse them."""
 
-_PARSED_CACHE = {}
+_PARSED_CONFIG = None
 """Internal cache to avoid reparsing of files anytime."""
 
 
-class Config:
-    """Base class for config."""
-
-    def __init__(self, config):
-        self._raw = config
-
-        for section_key, section_values in config.items():
-            for key, value in section_values.items():
-                set_key = "_".join([section_key, key]).upper()
-                setattr(self, set_key, value)
+class Config(dict):
 
     @property
     def logging_config(self):
+        conf = self["logging"]
+
         return {
-            "version": self.LOGGING_VERSION,
-            "incremental": self.LOGGING_INCREMENTAL,
-            "disable_existing_loggers": self.LOGGING_DISABLE_EXISTING_LOGGERS,
-            "formatters": self.LOGGING_FORMATTERS,
-            "handlers": self.LOGGING_HANDLERS,
-            "filters": self.LOGGING_FILTERS,
-            "root": self.LOGGING_ROOT
+            "version": conf["version"],
+            "incremental": conf["incremental"],
+            "disable_existing_loggers": conf["disable_existing_loggers"],
+            "formatters": conf["formatters"],
+            "handlers": conf["handlers"],
+            "filters": conf["filters"],
+            "root": conf["root"]
         }
 
 
 class ApiConfig(Config):
-    """A config which has specific options for API."""
 
-    def __init__(self, config):
-        super().__init__(config)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-        self.CORS_ORIGINS = self.API_CORS.get("origins", "*")
-        self.CORS_METHODS = self.API_CORS.get(
-            "methods",
-            ["HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"]
-        )
-        self.CORS_ALLOW_HEADERS = self.API_CORS.get("allow_headers", "*")
-        self.CORS_EXPOSE_HEADERS = self.API_CORS.get("expose_headers") or None
-        self.CORS_MAX_AGE = 3
-
-        self.DEBUG = self.API_DEBUG
-        self.TESTING = self.API_TESTING
-        self.LOGGER_NAME = self.API_LOGGER_NAME
-        self.LOGGER_HANDLER_POLICY = self.API_LOGGER_HANDLER_POLICY
-        self.JSON_SORT_KEYS = self.API_JSON_SORT_KEYS
+        self.DEBUG = self["api"]["debug"]
+        self.TESTING = self["api"]["testing"]
+        self.LOGGER_NAME = self["api"]["logger_name"]
+        self.LOGGER_HANDLER_POLICY = self["api"]["logger_handler_policy"]
+        self.JSON_SORT_KEYS = self["api"]["json_sort_keys"]
         self.JSONIFY_PRETTYPRINT_REGULAR = \
-            self.API_JSONIFY_PRETTYPRINT_REGULAR
-        self.JSON_AS_ASCII = self.API_JSON_AS_ASCII
+            self["api"]["jsonify_prettyprint_regular"]
+        self.JSON_AS_ASCII = self["api"]["json_as_ascii"]
 
     @property
     def logging_config(self):
         config = super().logging_config
         config["loggers"] = {
-            "cephlcm": self.API_LOGGING
+            "cephlcm": self["api"]["logging"]
         }
 
         return config
 
 
 class ControllerConfig(Config):
-    """A config which has specific options for controller."""
 
     @property
     def logging_config(self):
         config = super().logging_config
         config["loggers"] = {
-            "cephlcm": self.CONTROLLER_LOGGING
+            "cephlcm": self["controller"]["logging"]
         }
 
         return config
@@ -107,72 +94,43 @@ class ControllerConfig(Config):
 def with_parsed_configs(func):
     @functools.wraps(func)
     def decorator(*args, **kwargs):
-        if not _PARSED_CACHE:
-            _PARSED_CACHE.update(collect_config(CONFIG_FILES))
+        global _PARSED_CONFIG
 
-        return func(_PARSED_CACHE, *args, **kwargs)
+        if not _PARSED_CONFIG:
+            _PARSED_CONFIG = parse_configs(CONFIG_FILES)
+
+        return func(_PARSED_CONFIG, *args, **kwargs)
 
     return decorator
-
-
-def parse_configs(filenames):
-    """Reads a list of filenames and evaluates them."""
-
-    for filename in filenames:
-        try:
-            yield toml.load(filename)
-        except IOError as exc:
-            logging.info("Cannot open %s: %s", filename, exc)
-            yield {}
-        except Exception as exc:
-            logging.warning("Cannot parse %s: %s", filename, exc)
-            yield {}
-
-
-def merge_config(dest, src):
-    """Merges src dict into dest."""
-
-    for key, value in src.items():
-        if key not in dest:
-            dest[key] = value
-            continue
-
-        for skey, svalue in value.items():
-            dest[key][skey] = svalue
-
-    return dest
-
-
-def collect_config(filenames):
-    """Composes unified config from given filenames list."""
-
-    config = {}
-
-    for content in parse_configs(filenames):
-        merge_config(config, content)
-
-    return config
-
-
-@functools.lru_cache(2)
-@with_parsed_configs
-def make_config(raw_config):
-    """Makes Api specific config."""
-
-    return Config(raw_config)
 
 
 @functools.lru_cache(2)
 @with_parsed_configs
 def make_api_config(raw_config):
-    """Makes Api specific config."""
-
     return ApiConfig(raw_config)
 
 
 @functools.lru_cache(2)
 @with_parsed_configs
 def make_controller_config(raw_config):
-    """Makes controller specific config."""
-
     return ControllerConfig(raw_config)
+
+
+make_config = make_controller_config
+
+
+def parse_configs(filenames):
+    for filename in filenames:
+        try:
+            return yaml_load(filename)
+        except IOError as exc:
+            logging.info("Cannot open %s: %s", filename, exc)
+        except Exception as exc:
+            logging.warning("Cannot parse %s: %s", filename, exc)
+
+    raise ValueError("Cannot find suitable config file within %s", filenames)
+
+
+def yaml_load(filename):
+    with open(filename, "rt") as yamlfp:
+        return yaml.load(yamlfp, Loader=YAMLLoader)

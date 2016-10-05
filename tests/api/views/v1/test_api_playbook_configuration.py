@@ -168,7 +168,7 @@ def test_create_new_playbook_configuration_not_required_server_list(
     server_list, sudo_client_v1, valid_post_request, new_cluster
 ):
     plug = get_playbook_plug(valid_post_request["playbook_id"])
-    plug.REQUIRED_SERVER_LIST = False
+    plug.return_value.REQUIRED_SERVER_LIST = False
 
     if server_list:
         valid_post_request["server_ids"] = []
@@ -184,7 +184,7 @@ def test_create_new_playbook_configuration_required_server_list_ok(
     sudo_client_v1, valid_post_request
 ):
     plug = get_playbook_plug(valid_post_request["playbook_id"])
-    plug.REQUIRED_SERVER_LIST = True
+    plug.return_value.REQUIRED_SERVER_LIST = True
 
     valid_post_request["server_ids"].pop()
 
@@ -197,7 +197,7 @@ def test_create_new_playbook_configuration_required_server_list_fail(
     sudo_client_v1, valid_post_request
 ):
     plug = get_playbook_plug(valid_post_request["playbook_id"])
-    plug.REQUIRED_SERVER_LIST = True
+    plug.return_value.REQUIRED_SERVER_LIST = True
 
     valid_post_request["server_ids"] = []
 

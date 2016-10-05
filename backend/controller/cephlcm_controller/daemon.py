@@ -63,9 +63,9 @@ def get_options():
 
     parser.add_argument(
         "-f", "--pid-file",
-        default=CONF.CONTROLLER_PIDFILE,
+        default=CONF["controller"]["pidfile"],
         help="Path to the controller pidfile. Used with daemonize option only."
-             " Default is {0!r}.".format(CONF.CONTROLLER_PIDFILE)
+             " Default is {0!r}.".format(CONF["controller"]["pidfile"])
     )
     parser.add_argument(
         "-d", "--daemonize",

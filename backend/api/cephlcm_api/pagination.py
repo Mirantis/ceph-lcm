@@ -118,7 +118,7 @@ def query_per_page(params):
     """Returns a query 'per_page' parameter."""
 
     return convert_dict_or(params, "per_page", convert_to_positive_int,
-                           CONF.API_PAGINATION_PER_PAGE)
+                           CONF["api"]["pagination_per_page"])
 
 
 def query_filter(params):

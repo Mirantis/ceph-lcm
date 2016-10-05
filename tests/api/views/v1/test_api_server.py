@@ -130,7 +130,7 @@ def test_post_server_server_discovery_token(client_v1, pymongo_connection):
     }
 
     conf = config.make_api_config()
-    client_v1.auth_token = conf.API_SERVER_DISCOVERY_TOKEN
+    client_v1.auth_token = conf["api"]["server_discovery_token"]
     response = client_v1.post("/v1/server/", data=request)
     assert response.status_code == 200
     assert response.json == {}

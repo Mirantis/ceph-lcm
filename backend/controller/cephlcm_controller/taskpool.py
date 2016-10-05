@@ -167,7 +167,7 @@ class TaskPool:
         LOG.debug("Send SIGTERM to process %d", process.pid)
 
         process.terminate()
-        process.wait(CONF.CONTROLLER_GRACEFUL_STOP)
+        process.wait(CONF["controller"]["graceful_stop"])
 
         if process.poll() is None:
             LOG.debug(
