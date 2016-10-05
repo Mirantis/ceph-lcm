@@ -169,12 +169,17 @@ class Client(object):
 
         return url
 
-    def __init__(self, url, login, password, timeout=None):
+    def __init__(self, url, login, password, timeout=None, verify=True,
+                 certificate_file=None):
         self._url = self._prepare_base_url(url)
         self._login = login
         self._password = password
         self._session = requests.Session()
         self._timeout = timeout or socket.getdefaulttimeout() or None
+
+        self._session.verify = bool(verify)
+        if verify and certificate_file:
+            self._session.cert = certificate_file
 
         if self.AUTH_CLASS:
             self._session.auth = self.AUTH_CLASS(self)
