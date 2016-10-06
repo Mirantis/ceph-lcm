@@ -72,3 +72,6 @@ test-results.xml
 
 .DS_Store
 ansible_ssh_keyfile.pem*
+ssl.key
+ssl.crt
+ssl-dhparam.pem

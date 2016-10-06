@@ -7,6 +7,7 @@ services:
       - api
     ports:
       - "9999:80"
+      - "10000:443"
   api:
     image: cephlcm-api-rooted
     links:

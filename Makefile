@@ -110,4 +110,7 @@ build_container_plugins: build_container_base
 	docker build -f "$(ROOT_DIR)/containerization/backend-plugins.dockerfile" --tag $(CONTAINER_PLUGINS_NAME) --rm "$(ROOT_DIR)"
 
 copy_example_keys:
-	cp "$(ROOT_DIR)/containerization/files/ansible_ssh_keyfile.pem" "$(ROOT_DIR)"
+	cp "$(ROOT_DIR)/containerization/files/ansible_ssh_keyfile.pem" "$(ROOT_DIR)" && \
+	cp "$(ROOT_DIR)/containerization/files/nginx-selfsigned.key" "$(ROOT_DIR)/ssl.key" && \
+	cp "$(ROOT_DIR)/containerization/files/nginx-selfsigned.crt" "$(ROOT_DIR)/ssl.crt" && \
+	cp "$(ROOT_DIR)/containerization/files/nginx-dhparam.pem" "$(ROOT_DIR)/ssl-dhparam.pem"
