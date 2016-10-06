@@ -45,11 +45,18 @@ gulp.task('modify:typings', function () {
 gulp.task('compile:ts', ['modify:typings'], function () {
   return tsProject.src()
   .pipe(tsProject())
-  .js.pipe(gulp.dest('build/tmp'));
+  .js.pipe(gulp.dest('./'));
+});
+
+// Enables production mode in bundle
+gulp.task('modify:prod-mode', function () {
+  return gulp.src('app/main.js')
+  .pipe(replace('(!!0)', '(!0)'))
+  .pipe(gulp.dest('app'));
 });
 
 // Generate systemjs-based build
-gulp.task('bundle:js', function () {
+gulp.task('bundle:js', ['modify:prod-mode'], function () {
   var builder = new sysBuilder('./', 'systemjs.config.js');
   return builder.buildStatic('app', 'build/tmp/js/app.min.js', {
     minify: true,

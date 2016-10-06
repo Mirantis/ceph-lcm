@@ -190,7 +190,6 @@ export class DataService {
         this.modal.close();
         this.router.navigate(['/login']);
       }
-      console.log(error.response);
       errorCode = error.response.data.error || error.response.status;
       errorMessage = error.response.data.message || error.response.statusText;
     } else {
