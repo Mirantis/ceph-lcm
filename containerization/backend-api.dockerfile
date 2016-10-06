@@ -22,6 +22,7 @@ RUN set -x \
   && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt uwsgi \
   && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcm_api*.whl \
   && chmod 0755 /usr/local/bin/cephlcm-api \
+  && rm -r /eggs /constraints.txt \
   && apt-get clean \
   && apt-get purge -y libpcre3-dev python3-dev python3-pip gcc \
   && apt-get autoremove -y \

@@ -7,7 +7,7 @@ import setuptools
 
 
 setuptools.setup(
-    name="cephlcm-server-discovery",
+    name="cephlcm-plugin-server-discovery",
     description="Server discovery plugin for CephLCM",
     version="0.1.0a0",
     author="Sergey Arkhipov",

@@ -11,7 +11,7 @@ REQUIREMENTS = (
 
 
 setuptools.setup(
-    name="cephlcm-email-alerts",
+    name="cephlcm-plugin-alerts",
     description="Ceph Lifecycle Management email alerts plugin",
     long_description="",  # TODO
     version="0.1.0a0",

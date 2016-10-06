@@ -7,7 +7,7 @@ import setuptools
 
 
 setuptools.setup(
-    name="cephlcm-helloworld",
+    name="cephlcm-plugin-playbook-helloworld",
     description="Hello world plugin for CephLCM",
     version="0.1.0a0",
     author="Sergey Arkhipov",

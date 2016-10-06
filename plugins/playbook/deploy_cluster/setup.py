@@ -7,7 +7,7 @@ import setuptools
 
 
 setuptools.setup(
-    name="cephlcm-deploy-cluster",
+    name="cephlcm-plugin-playbook-deploy-cluster",
     description="Deploy cluster plugin for CephLCM",
     version="0.1.0a0",
     author="Sergey Arkhipov",
