@@ -7545,6 +7545,11 @@ a.grid .grid-header .icon:focus {
   display: inline-block;
   width: 70px;
 }
+.grid .grid-line .json,
+.grid .grid-header .json {
+  font-family: monospace;
+  white-space: pre-wrap;
+}
 .roles.grid .grid-header .name {
   text-align: center;
 }

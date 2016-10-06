@@ -22,6 +22,7 @@
 
     <div class="grid-line" *ngFor="let step of steps">
       <div class="col-xs-3">{{step.data.name}}</div>
+      <div class="col-xs-9 json">{{step.data.error|json}}</div>>
     </div>
   </div>
 </div>

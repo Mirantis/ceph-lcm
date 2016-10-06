@@ -92,7 +92,7 @@ declare module './models' {
       execution_id: string,
       role: string,
       name: string,
-      error_message: string,
+      error: Object,
       time_started: number,
       time_finished: number,
       result: string
