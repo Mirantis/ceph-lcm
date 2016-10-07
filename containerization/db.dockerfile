@@ -1,7 +1,7 @@
 # vi: set ft=dockerfile :
 
 
-FROM mongo:3.2.9
+FROM mongo:3.2.10
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
