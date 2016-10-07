@@ -171,11 +171,15 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
                 raise http_exceptions.ServerListIsRequiredForPlaybookError(
                     playbook_id
                 )
+
             servers = server.ServerModel.find_by_model_id(*suggested_servers)
+            if not isinstance(servers, list):
+                servers = [servers]
             if len(servers) != len(set(suggested_servers)):
                 raise ValueError(
                     "All suggested servers were not found. "
                     "Suggested servers were {0}".format(suggested_servers))
+
             deleted_servers = [srv for srv in servers if srv.time_deleted]
             if deleted_servers:
                 raise ValueError(

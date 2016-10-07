@@ -6,9 +6,10 @@ import setuptools
 
 
 REQUIREMENTS = (
+    "netaddr",
     "pymongo",
-    "simplejson",
-    "PyYAML"
+    "PyYAML",
+    "simplejson"
 )
 
 
