@@ -7,11 +7,14 @@ import contextlib
 import copy
 import functools
 import os
+import posixpath
 import shlex
 import shutil
 import subprocess
 import sys
+import tempfile
 
+import netaddr
 import pkg_resources
 
 try:
@@ -250,6 +253,142 @@ class Playbook(Base, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def make_playbook_configuration(self, servers):
         raise NotImplementedError()
+
+
+class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
+
+    @classmethod
+    def get_public_network(cls, servers):
+        networks = [cls.get_networks(srv)[srv.ip] for srv in servers]
+
+        if not networks:
+            raise ValueError(
+                "List of servers should contain at lease 1 element.")
+        if len(networks) == 1:
+            return networks[0]
+
+        return netaddr.spanning_cidr(networks)
+
+    @classmethod
+    def get_cluster_network(cls, servers):
+        networks = {}
+        public_network = cls.get_public_network(servers)
+
+        for srv in servers:
+            networks[srv.ip] = cls.get_networks(srv)
+            networks[srv.ip].pop(srv.ip, None)
+
+        first_network = networks.pop(servers[0].ip)
+        if not first_network:
+            return public_network
+
+        _, first_network = first_network.popitem()
+        other_similar_networks = []
+
+        for other_networks in networks.values():
+            for ip_addr, other_network in other_networks.items():
+                if ip_addr in first_network:
+                    other_similar_networks.append(other_network)
+                    break
+            else:
+                return public_network
+
+        other_similar_networks.append(first_network)
+        if len(other_similar_networks) == 1:
+            return first_network
+
+        return netaddr.spanning_cidr(other_similar_networks)
+
+    @classmethod
+    def get_networks(cls, srv):
+        networks = {}
+
+        for ifname in srv.facts["ansible_interfaces"]:
+            interface = srv.facts.get("ansible_{0}".format(ifname))
+
+            if not interface:
+                continue
+            if not interface["active"] or interface["type"] == "loopback":
+                continue
+
+            network = "{0}/{1}".format(
+                interface["ipv4"]["network"],
+                interface["ipv4"]["netmask"]
+            )
+            networks[interface["ipv4"]["address"]] = netaddr.IPNetwork(network)
+
+        return networks
+
+    @classmethod
+    def get_devices(cls, srv):
+        mounts = {mount["device"] for mount in srv.facts["ansible_mounts"]}
+        mounts = {posixpath.basename(mount) for mount in mounts}
+
+        devices = []
+        for name, data in srv.facts["ansible_devices"].items():
+            partitions = set(data["partitions"])
+            if not partitions or not (partitions & mounts):
+                devices.append(posixpath.join("/", "dev", name))
+
+        return devices
+
+    @classmethod
+    def get_public_network_if(cls, servers, srv):
+        public_network = cls.get_public_network(servers)
+
+        for name in srv.facts["ansible_interfaces"]:
+            interface = srv.facts["ansible_{0}".format(name)]
+            addr = interface["ipv4"]["address"]
+            if addr in public_network:
+                return interface["device"]
+
+        raise ValueError("Cannot find suitable interface for server %s",
+                         srv.model_id)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fetchdir = None
+
+    def on_pre_execute(self, task):
+        self.fetchdir = tempfile.mkdtemp()
+
+    def on_post_execute(self, task, exc_value, exc_type, exc_tb):
+        shutil.rmtree(self.fetchdir)
+
+    def get_extra_vars(self, task):
+        config = super().get_extra_vars(task)
+        config["fetch_directory"] = self.fetchdir
+
+        return config
+
+    def make_global_vars(self, cluster, servers):
+        result = {
+            "ceph_{0}".format(self.config["install"]["source"]): True,
+            "fsid": cluster.model_id,
+            "cluster": cluster.name,
+            "copy_admin_key": bool(self.config.get("copy_admin_key", False)),
+            "public_network": str(self.get_public_network(servers)),
+            "os_tuning_params": []
+        }
+        if self.config["install"]["source"] == "stable":
+            result["ceph_stable_release"] = self.config["install"]["release"]
+
+        # FIXME(Sergey Arkhipov): For some reason, Ceph cannot converge
+        # if I set another network.
+        result["cluster_network"] = result["public_network"]
+
+        for family, values in self.config.get("os", {}).items():
+            for param, value in values.items():
+                parameter = {
+                    "name": ".".join([family, param]),
+                    "value": value
+                }
+                result["os_tuning_params"].append(parameter)
+
+        if "max_open_files" in self.config:
+            result["max_open_files"] = self.config["max_open_files"]
+
+        return result
 
 
 @functools.lru_cache()
