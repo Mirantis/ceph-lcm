@@ -132,7 +132,7 @@ gulp.task('cleanup', function (callback) {
 // Modifies index.html with the proper references
 gulp.task('modify:index', function () {
   return gulp.src('index.html')
-  .pipe(replace('"app/styles', '"styles'))
+  .pipe(replace('"href="app/', 'href="'))
   .pipe(replace(/<\!---->[\s\S]+-->/m, '    <script src="js/shrimp.min.js"></script>'))
   .pipe(replace(/\s*<script>[\s\S]+<\/script>/m, ''))
   .pipe(gulp.dest('build'));
