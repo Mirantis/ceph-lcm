@@ -94,9 +94,6 @@
   [title]="newCluster.id ? 'Edit Cluster' : 'Create New Cluster'"
 >
   <div class="modal-body">
-    <div class="alert alert-danger" role="alert" *ngIf="error">
-      {{error}}
-    </div>
     <form #newClusterForm="ngForm">
       <div class="form-group">
         <label for="cluster_name">Cluster Name</label>

@@ -11,7 +11,6 @@ import * as _ from 'lodash';
 export class ClustersComponent {
   clusters: Cluster[] = null;
   newCluster: Cluster = new Cluster({});
-  error: any;
 
   constructor(private data: DataService, private modal: Modal) {
     this.fetchData();
@@ -31,7 +30,6 @@ export class ClustersComponent {
   }
 
   save() {
-    this.error = null;
     var savePromise: Promise<any>;
     if (this.newCluster.id) {
       // Update cluster

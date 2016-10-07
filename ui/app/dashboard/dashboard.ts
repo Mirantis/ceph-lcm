@@ -1,6 +1,7 @@
-import {Component} from '@angular/core';
+import { Component } from '@angular/core';
 import { AuthService } from '../services/auth';
 import { ErrorService } from '../services/error';
+import { Modal } from '../bootstrap';
 
 @Component({
   templateUrl: './app/templates/dashboard.html'
@@ -8,7 +9,11 @@ import { ErrorService } from '../services/error';
 export class DashboardComponent {
   errors: string[] = [];
 
-  constructor(private auth: AuthService, private error: ErrorService) {
+  constructor(
+    private auth: AuthService,
+    private error: ErrorService,
+    private modal: Modal
+  ) {
     error.errorHappened.subscribe((error: any) => this.addError(error));
     auth.getLoggedUser();
   }
@@ -19,7 +24,9 @@ export class DashboardComponent {
   }
 
   addError(error: any) {
-    this.errors.push(error);
+    if (!this.modal.isOpened()) {
+      this.errors.push(error);
+    }
   }
 
   dismissErrors() {

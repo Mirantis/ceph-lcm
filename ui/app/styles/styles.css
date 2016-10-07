@@ -7571,6 +7571,42 @@ a.grid .grid-header .icon:focus {
 .modal-header .close {
   margin-top: 2px;
 }
+.modal-errors {
+  background-color: #f2dede;
+  border-color: #ebccd1;
+  color: #a94442;
+  position: relative;
+  padding: 15px;
+  border-bottom: 1px solid #FF634C;
+}
+.modal-errors hr {
+  border-top-color: #e4b9c0;
+}
+.modal-errors .alert-link {
+  color: #843534;
+}
+.modal-errors h1 {
+  font-family: 'Source Sans Pro', 'Open Sans', helvetica, arial, tahoma, verdana, sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin: 7px 0px 14px;
+}
+.modal-errors form {
+  margin-bottom: none;
+}
+.modal-errors form h5 {
+  font-weight: 600;
+}
+.modal-errors form div.checkbox {
+  height: 25px;
+}
+.modal-errors form div.checkbox label {
+  text-transform: none;
+}
+.modal-errors p:last-child {
+  margin-bottom: 0;
+}
 .modal-body h1 {
   font-family: 'Source Sans Pro', 'Open Sans', helvetica, arial, tahoma, verdana, sans-serif;
   font-size: 20px;

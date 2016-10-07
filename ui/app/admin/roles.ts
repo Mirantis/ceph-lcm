@@ -35,7 +35,6 @@ export class RolesComponent {
   roles: Role[] = null;
   permissions: [PermissionGroup] = [] as [PermissionGroup];
   newRole: Role = new Role({data: {permissions: []}});
-  error: any;
 
   constructor(private data: DataService, private modal: Modal) {
     this.fetchData();
@@ -103,7 +102,6 @@ export class RolesComponent {
   }
 
   save() {
-    this.error = null;
     var savePromise: Promise<any>;
     if (this.newRole.id) {
       // Update role

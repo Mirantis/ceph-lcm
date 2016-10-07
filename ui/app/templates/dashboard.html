@@ -40,7 +40,9 @@
       <button class="close" aria-label="Close" (click)="dismissErrors()">
         <span aria-hidden="true">&times;</span>
       </button>
-      <p *ngFor="let error of errors"><strong>{{error.error}}:</strong> {{error.message}}</p>
+      <p *ngFor="let error of errors">
+        <strong>{{error.error}}:</strong> {{error.message}}
+      </p>
     </div>
     <router-outlet></router-outlet>
   </div>

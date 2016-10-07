@@ -17,7 +17,6 @@ export class UsersComponent {
   roles: Role[] = [];
   roleIds: roleIdsType = {};
   newUser: User = new User({});
-  error: any;
   shownUserId: string = null;
 
   constructor(private data: DataService, private modal: Modal) {
@@ -59,7 +58,6 @@ export class UsersComponent {
   }
 
   saveUser() {
-    this.error = null;
     var savePromise: Promise<any>;
     if (this.newUser.id) {
       // Update user

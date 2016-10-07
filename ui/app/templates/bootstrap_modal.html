@@ -7,6 +7,14 @@
         </button>
         <h4 class="modal-title" id="modalLabel">{{title}}</h4>
       </div>
+      <div class="modal-errors" *ngIf="errors && errors.length">
+        <button type="button" class="close" (click)="dismissErrors()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <p *ngFor="let error of errors">
+           <strong>{{error.error}}:</strong> {{error.message}}
+        </p>
+      </div>
       <ng-content></ng-content>
     </div>
   </div>
