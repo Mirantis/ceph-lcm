@@ -8,4 +8,8 @@ export class ErrorService {
   add(error: string, message: string) {
     this.errorHappened.emit({error, message});
   }
+
+  clear() {
+    this.errorHappened.emit();
+  }
 }

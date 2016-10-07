@@ -1,7 +1,4 @@
 <div class="modal-body">
-  <div class="alert alert-danger" role="alert" *ngIf="getValidationSummary()">
-    {{getValidationSummary()}}
-  </div>
   <form #newConfigurationForm="ngForm" [ngSwitch]="step">
 
     <template [ngSwitchCase]="1">
@@ -111,7 +108,7 @@
       </div>
     </template>
   </form>
-  <form #newConfigurationForm="ngForm" [ngSwitch]="step">
+  <form #editConfigurationForm="ngForm" [ngSwitch]="step">
     <template [ngSwitchCase]="4">
       <h1>Configuration</h1>
       <div class="form-group" [ngClass]="{'has-error': !isJSONValid()}">
@@ -149,7 +146,7 @@
     *ngIf="isSaveButtonShown()"
     class="btn btn-primary"
     (click)="save()"
-    [disabled]="!newConfigurationForm.form.valid || !areSomeServersSelected() || !isJSONValid()"
+    [disabled]="(step < 4 && !newConfigurationForm.form.valid) || (step === 4 && !editConfigurationForm.form.valid) || !areSomeServersSelected() || !isJSONValid()"
   >
     Save changes
   </button>

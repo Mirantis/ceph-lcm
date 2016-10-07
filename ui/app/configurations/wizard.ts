@@ -4,6 +4,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 import { Modal } from '../bootstrap';
 import { DataService } from '../services/data';
+import { ErrorService } from '../services/error';
 import { Playbook, Cluster, Server, PlaybookConfiguration } from '../models';
 
 var formatJSON = require('format-json');
@@ -20,19 +21,34 @@ export class WizardComponent {
   @Output() callback = new EventEmitter();
 
   newConfiguration: PlaybookConfiguration = new PlaybookConfiguration({data: {server_ids: []}});
-  error: any = null;
   jsonConfiguration: string;
   serversRequired: boolean = false;
 
-  constructor(private data: DataService, private modal: Modal) {
+  constructor(
+    private data: DataService,
+    private error: ErrorService,
+    private modal: Modal
+  ) {
+  }
+
+  validateServersStep() {
+    if (this.step === 3) {
+      // If switched to servers selection screen - make initial validation
+      this.getValidationSummary();
+    } else {
+      // Otherwize clear errors from the previous steps
+      this.error.clear();
+    }
   }
 
   forward() {
     this.step += 1;
+    this.validateServersStep();
   }
 
   backward() {
     this.step -= 1;
+    this.validateServersStep();
   }
 
   selectPlaybook(playbook: Playbook) {
@@ -63,6 +79,7 @@ export class WizardComponent {
   toggleSelectAll() {
     this.newConfiguration.data.server_ids = this.areAllServersSelected() ?
       [] : _.map(this.servers, 'id') as string[];
+    this.getValidationSummary();
   }
 
   // TODO: Use Server type here
@@ -70,6 +87,7 @@ export class WizardComponent {
     var server_ids = this.newConfiguration.data.server_ids;
     this.newConfiguration.data.server_ids = this.isServerSelected(server) ?
       _.without(server_ids, server.id) : server_ids.concat(server.id);
+    this.getValidationSummary();
   }
 
   isServerSelected(server: any) {
@@ -96,16 +114,15 @@ export class WizardComponent {
     return true;
   }
 
-  getValidationSummary(): string {
-    let summary: string[] = [];
+  getValidationSummary() {
+    this.error.clear();
     if (!this.areSomeServersSelected()) {
-      summary.push('Servers selection is required.');
+      this.error.add('Validation Error', 'Servers selection is required');
     }
-    return summary.join('');
   }
 
   save() {
-    this.error = null;
+    this.error.clear();
     var savePromise: Promise<PlaybookConfiguration>;
     if (this.newConfiguration.id) {
       // Update configuration
@@ -125,7 +142,8 @@ export class WizardComponent {
             this.modal.close();
           }
         }
-      ).catch(
+      )
+      .catch(
         (error: any) => this.data.handleResponseError(error)
       );
   }

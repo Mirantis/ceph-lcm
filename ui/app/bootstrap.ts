@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ErrorService } from './services/error';
 import * as jQuery from 'jquery';
+import * as _ from 'lodash';
 import 'bootstrap';
 
 @Component({
@@ -27,7 +28,11 @@ export class Modal {
   }
 
   addError(error: any) {
-    this.errors.push(error);
+    if (_.isEmpty(error)) {
+      this.errors = [];
+    } else {
+      this.errors.push(error);
+    }
   }
 
   dismissErrors() {
