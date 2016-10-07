@@ -17,7 +17,14 @@
   </head>
 
   <body>
-    <app>Cooking Shrimp...</app>
+    <app>
+      <div class="app loader row">
+        <div class="col-xs-12">
+          <i></i>
+          <p>Cooking the Shrimp...</p>
+        </div>
+      </div>
+    </app>
     <script>
       System.import('app').catch(function(err){ console.error(err); });
     </script>

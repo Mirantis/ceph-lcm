@@ -7717,6 +7717,9 @@ a.grid .grid-header .icon:focus {
     background-position: 2500px 0;
   }
 }
+.app.loader {
+  margin-top: 100px;
+}
 .loader {
   text-align: center;
 }
