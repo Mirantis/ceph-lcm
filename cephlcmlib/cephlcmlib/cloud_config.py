@@ -43,6 +43,7 @@ from __future__ import print_function
 
 import json
 import os
+import ssl
 import sys
 
 try:
@@ -69,8 +70,15 @@ headers = {{
 }}
 
 request = urllib2.Request({url!r}, data=data, headers=headers)
+request_kwargs = {{"timeout": {timeout}}}
+if sys.version_info >= (2, 7, 9):
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    request_kwargs["context"] = ctx
+
 try:
-    urllib2.urlopen(request, timeout={timeout}).read()
+    urllib2.urlopen(request, **request_kwargs).read()
 except Exception as exc:
     sys.exit(str(exc))
 
