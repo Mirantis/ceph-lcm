@@ -85,16 +85,12 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
         cluster_servers = server.ServerModel.cluster_servers(cluster.model_id)
         cluster_servers = {item._id: item for item in cluster_servers}
 
-        mons, osds = {}, {}
-        for item in cluster.configuration.state:
-            if item["role"] == "mons":
-                mons[item["server_id"]] = cluster_servers[item["server_id"]]
-            elif item["role"] == "osds":
-                osds[item["server_id"]] = cluster_servers[item["server_id"]]
-        for srv in servers:
-            osds[srv._id] = srv
+        mons = [
+            cluster_servers[item["server_id"]]
+            for item in cluster.configuration.state if item["role"] == "mons"
+        ]
 
-        return {"mons": list(mons.values()), "osds": list(osds.values())}
+        return {"mons": mons, "osds": servers}
 
     def get_dynamic_inventory(self):
         if not self.playbook_config:
