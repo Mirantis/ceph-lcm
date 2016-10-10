@@ -1,0 +1,196 @@
+---
+# Cluster purge
+
+
+- name: Stop Ceph services clusterwide
+  hosts: all
+  become: true
+  tasks:
+    - name: Stop Ceph if systemd
+      service:
+        name: ceph.target
+        enabled: no
+        state: stopped
+      when:
+        ansible_service_mgr == "systemd"
+
+
+- name: Clear OSDs
+  hosts: osds
+  become: true
+
+  handlers:
+    - name: restart machine
+      shell: |
+        sleep 2 && shutdown -r now "Ansible updates triggered"
+      async: 1
+      poll: 0
+      ignore_errors: true
+
+    - name: wait for server to boot
+      become: false
+      local_action: wait_for port=22 host={{ inventory_hostname }} state=started delay=10 timeout=500
+
+    - name: remove data
+      file:
+        path: /var/lib/ceph
+        state: absent
+
+  tasks:
+    - name: See if ceph-disk-created data partitions are present
+      shell: 'ls /dev/disk/by-partlabel | grep -q "ceph.*.data"'
+      failed_when: false
+      register: ceph_data_partlabels
+
+    - name: See if ceph-disk-created journal partitions are present
+      shell: 'ls /dev/disk/by-partlabel | grep -q "ceph.*.journal"'
+      failed_when: false
+      register: ceph_journal_partlabels
+
+    - name: Get Ceph journal partitions
+      shell: |
+        blkid | awk '/ceph journal/ { sub (":", "", $1); print $1 }'
+      when:
+        - ceph_journal_partlabels.rc == 0
+      failed_when: false
+      register: ceph_journal_partition_to_erase_path
+
+    - name: Get OSD data mount points
+      shell: "(grep /var/lib/ceph/osd /proc/mounts || echo -n) | awk '{ print $2  }'"
+      register: mounted_osd
+      changed_when: false
+
+    - name: drop all cache
+      shell: "sync && sleep 1 && echo 3 > /proc/sys/vm/drop_caches"
+
+    - name: umount osd data partition
+      shell: umount "{{ item }}"
+      with_items:
+        - "{{ mounted_osd.stdout_lines }}"
+
+    - name: remove osd mountpoint tree
+      file:
+        path: /var/lib/ceph/osd/
+        state: absent
+      register: remove_osd_mountpoints
+      ignore_errors: true
+
+    - name: See if ceph-disk is installed
+      shell: "which ceph-disk"
+      failed_when: false
+      register: ceph_disk_present
+
+    - name: Get Ceph disks
+      shell: |
+        ceph-disk list 2>&1 | awk '$2 == "ceph" {print $1}' | xargs -n 1 -r lsblk -no pkname | sort -u | sed 's?^?/dev/?'
+      register: ceph_disks_to_zap
+      when:
+        ceph_disk_present.rc == 0
+
+    - name: Zap OSD disks
+      command: ceph-disk zap "{{ item }}"
+      with_items:
+        - "{{ ceph_disks_to_zap.stdout_lines }}"
+      when:
+        ceph_disk_present.rc == 0 and ceph_disks_to_zap is defined
+
+    - name: is reboot needed
+      local_action: shell echo requesting reboot
+      become: false
+      notify:
+        - restart machine
+        - wait for server to boot
+        - remove data
+      when:
+        remove_osd_mountpoints.failed is defined
+
+
+- name: Remove ceph data
+  become: true
+  hosts: all
+  vars:
+    ceph_packages:
+      - ceph
+      - ceph-common
+      - ceph-fs-common
+      - ceph-fuse
+      - ceph-mds
+      - ceph-release
+      - ceph-radosgw
+    ceph_remaining_packages:
+      - libcephfs1
+      - librados2
+      - libradosstriper1
+      - librbd1
+      - python-cephfs
+      - python-rados
+      - python-rbd
+  tasks:
+    - name: Remove /var/lib/ceph
+      file:
+        path: /var/lib/ceph
+        state: absent
+
+    - name: purge ceph packages with yum
+      yum:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ ceph_packages }}"
+      when:
+        ansible_pkg_mgr == 'yum'
+
+    - name: purge ceph packages with dnf
+      dnf:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ ceph_packages }}"
+      when:
+        ansible_pkg_mgr == 'dnf'
+
+    - name: purge ceph packages with apt
+      apt:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ ceph_packages }}"
+      when:
+        ansible_pkg_mgr == 'apt'
+
+    - name: purge remaining ceph packages with yum
+      yum:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ ceph_remaining_packages }}"
+      when:
+        ansible_pkg_mgr == 'yum'
+
+    - name: purge remaining ceph packages with dnf
+      dnf:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ ceph_remaining_packages }}"
+      when:
+        ansible_pkg_mgr == 'dnf'
+
+    - name: purge remaining ceph packages with apt
+      apt:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ ceph_remaining_packages }}"
+      when:
+        ansible_pkg_mgr == 'apt'
+
+    - name: remove config
+      file:
+        path: /etc/ceph
+        state: absent
+
+    - name: remove from SysV
+      shell: "update-rc.d -f ceph remove"
+      when:
+        ansible_distribution == 'Ubuntu'
