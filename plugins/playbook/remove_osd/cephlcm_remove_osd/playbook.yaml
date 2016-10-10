@@ -1,0 +1,63 @@
+---
+# This playbook removes OSD host from cluster
+# mons group has to have only one host. osds group has hosts to purge.
+#
+# Example of inventory:
+#
+# [mons]
+# 10.10.0.2 ansible_user=ansible cluster=cluster
+#
+# [osds]
+# 10.10.0.4 ansible_user=ansible cluster=cluster
+
+- hosts: osds
+  become: true
+  tasks:
+    - set_fact: mon_host="{{ groups['mons'].0 }}"
+
+    - name: Get OSD numbers from monitor
+      command: ceph --cluster "{{ cluster }}" node ls osd
+      register: node_ls_osd
+      delegate_to: "{{ mon_host }}"
+
+    - set_fact: osd_numbers="{{ (node_ls_osd.stdout|trim|from_json)[ansible_nodename]|default([]) }}"
+
+    - name: Decrease weight of removing OSDs
+      command: ceph --cluster "{{ cluster }}" osd crush reweight "osd.{{ item }}" 0.0
+      with_items:
+        - "{{ osd_numbers }}"
+      delegate_to: "{{ mon_host }}"
+
+    - name: Set OSDs out of cluster
+      command: ceph --cluster "{{ cluster }}" osd out "{{ item }}"
+      with_items:
+        - "{{ osd_numbers }}"
+      delegate_to: "{{ mon_host }}"
+
+    # At this step we have to wait till cluster will rebalance
+    # TODO(Sergey Arkhipov): Probably it has to be implemented as ansible module
+
+    - name: Deactivate OSDs on host
+      command: ceph-disk deactivate --cluster "{{ cluster }}" --deactivate-by-id "{{ item }}" --mark-out
+      with_items:
+        - "{{ osd_numbers }}"
+
+    - name: Destroy OSDs
+      command: ceph-disk destroy --cluster "{{ cluster }}" --destroy-by-id "{{ item }}" --zap
+      with_items:
+        - "{{ osd_numbers }}"
+
+    - name: Remove OSDs from crush map
+      command: ceph --cluster "{{ cluster }}" osd crush remove "osd.{{ item }}"
+      with_items:
+        - "{{ osd_numbers }}"
+
+    - name: Delete auth data for OSDs
+      command: ceph --cluster "{{ cluster }}" auth del "osd.{{ item }}"
+      with_items:
+        - "{{ osd_numbers }}"
+
+    - name: Remove OSDs
+      command: ceph --cluster "{{ cluster }}" osd rm "osd.{{ item }}"
+      with_items:
+        - "{{ osd_numbers }}"
