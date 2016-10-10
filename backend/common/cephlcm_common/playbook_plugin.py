@@ -368,7 +368,9 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
             "cluster": cluster.name,
             "copy_admin_key": bool(self.config.get("copy_admin_key", False)),
             "public_network": str(self.get_public_network(servers)),
-            "os_tuning_params": []
+            "os_tuning_params": [],
+            "nfs_file_gw": False,
+            "nfs_obj_gw": False
         }
         if self.config["install"]["source"] == "stable":
             result["ceph_stable_release"] = self.config["install"]["release"]
