@@ -1,5 +1,5 @@
 max_open_files: 131072
-copy_admin_key: false
+copy_admin_key: true
 
 install:
   source: "stable"
