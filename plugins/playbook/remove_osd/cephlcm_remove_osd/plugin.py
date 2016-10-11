@@ -88,9 +88,3 @@ class RemoveOSD(playbook_plugin.CephAnsiblePlaybook):
             "mons": [monitor],
             "osds": servers
         }
-
-    def get_dynamic_inventory(self):
-        if not self.playbook_config:
-            raise exceptions.UnknownPlaybookConfiguration()
-
-        return self.playbook_config.configuration["inventory"]

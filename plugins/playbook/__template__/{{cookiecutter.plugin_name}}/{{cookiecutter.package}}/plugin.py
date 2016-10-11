@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Playbook plugin to purge cluster."""
+"""Playbook plugin for {{ cookiecutter.description }}."""
 
 
 from cephlcm_common import log
 from cephlcm_common import playbook_plugin
-from cephlcm_common.models import server
 
 
 DESCRIPTION = """\
-Purge whole Ceph cluster.
-
-This plugin purges whole Ceph cluster. It removes packages, all data,
-reformat Ceph devices.
+{{ cookiecutter.description }}
 """.strip()
 """Plugin description."""
 
@@ -19,25 +15,21 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class PurgeCluster(playbook_plugin.CephAnsiblePlaybook):
+class {{ cookiecutter.plugin_class_name }}(playbook_plugin.CephAnsiblePlaybook):
 
-    NAME = "Purge cluster"
+    NAME = "{{ cookiecutter.plugin_display_name }}"
     DESCRIPTION = DESCRIPTION
-    PUBLIC = True
-    REQUIRED_SERVER_LIST = False
+    PUBLIC = {{ cookiecutter.is_public }}
+    REQUIRED_SERVER_LIST = {{ cookiecutter.required_server_list }}
+
+    def on_pre_execute(self, task):
+        super().on_pre_execute(task)
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
         super().on_post_execute(task, exc_value, exc_type, exc_tb)
 
         if exc_value:
-            LOG.warning("Cannot purge cluster: %s (%s)", exc_value, exc_type)
             raise exc_value
-
-        playbook_config = self.get_playbook_configuration(task)
-        cluster = playbook_config.cluster
-        cluster.remove_servers(playbook_config.servers)
-
-        cluster.delete()
 
     def make_playbook_configuration(self, cluster, servers):
         global_vars = self.make_global_vars(cluster, servers)
@@ -46,7 +38,9 @@ class PurgeCluster(playbook_plugin.CephAnsiblePlaybook):
         return global_vars, inventory
 
     def make_global_vars(self, cluster, servers):
-        return {}
+        result = super().make_global_vars(cluster, servers)
+
+        return result
 
     def make_inventory(self, cluster, servers):
         groups = self.get_inventory_groups(cluster, servers)

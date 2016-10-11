@@ -61,3 +61,7 @@ class CannotLockServers(CephLCMError, ValueError):
 
 class CannotDeleteLockedServer(CephLCMError):
     """Exception raised on attempt to delete server which still locked."""
+
+
+class UnknownPlaybookConfiguration(CephLCMError):
+    """Exception raised if playbook configuration is unknown."""
