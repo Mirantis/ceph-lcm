@@ -6,8 +6,6 @@ from cephlcm_common import log
 from cephlcm_common import playbook_plugin
 from cephlcm_common.models import server
 
-from . import exceptions
-
 
 DESCRIPTION = """\
 Purge whole Ceph cluster.

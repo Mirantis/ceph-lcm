@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-import copy
 import uuid
 
 import cephlcm_api.wsgi as app
