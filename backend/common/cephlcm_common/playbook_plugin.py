@@ -23,6 +23,7 @@ except ImportError:
     import json
 
 from cephlcm_common import config
+from cephlcm_common import exceptions
 from cephlcm_common import log
 from cephlcm_common.models import task
 
@@ -391,6 +392,12 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
             result["max_open_files"] = self.config["max_open_files"]
 
         return result
+
+    def get_dynamic_inventory(self):
+        if not self.playbook_config:
+            raise exceptions.UnknownPlaybookConfiguration()
+
+        return self.playbook_config.configuration["inventory"]
 
 
 @functools.lru_cache()
