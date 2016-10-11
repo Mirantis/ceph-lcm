@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
-import {Component} from '@angular/core';
-import {AuthService}   from '../services/auth';
-import {ErrorService}   from '../services/error';
+import { Component } from '@angular/core';
+import { AuthService }   from '../services/auth';
+import { ErrorService }   from '../services/error';
 
 
 @Component({

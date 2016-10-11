@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
+import { AuthService } from '../services/auth';
 import { DataService } from '../services/data';
-
 import { Playbook } from '../models';
+import globals = require('../services/globals');
 
 import * as _ from 'lodash';
 
@@ -11,7 +12,7 @@ import * as _ from 'lodash';
 export class PlaybooksComponent {
   playbooks: Playbook[] = null;
 
-  constructor(private data: DataService) {
+  constructor(private auth: AuthService, private data: DataService) {
     this.fetchData();
   }
 
@@ -21,5 +22,13 @@ export class PlaybooksComponent {
         (playbooks: Playbook[]) => this.playbooks = playbooks,
         (error: any) => this.data.handleResponseError(error)
       );
+  }
+
+  isPlaybookPermitted(playbook: Playbook) {
+    if (!globals.loggedUserRole) {
+      return false;
+    }
+    var playbooksPermissions = _.find(globals.loggedUserRole.data.permissions, {name: 'playbook'});
+    return _.includes(playbooksPermissions.permissions, playbook.id);
   }
 }

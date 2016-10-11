@@ -41,7 +41,7 @@
             <div class="col-xs-3">Servers Required</div>
           </div>
 
-          <div class="grid-line" *ngFor="let playbook of playbooks">
+          <div class="grid-line" *ngFor="let playbook of getAllowedPlaybooks()">
             <div class="col-xs-1">
               <input
                 (click)="selectPlaybook(playbook)"

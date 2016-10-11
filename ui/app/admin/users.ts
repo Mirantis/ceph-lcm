@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Modal } from '../bootstrap';
+import { AuthService } from '../services/auth';
 import { DataService } from '../services/data';
 import { User, Role } from '../models';
 
@@ -19,7 +20,11 @@ export class UsersComponent {
   newUser: User = new User({});
   shownUserId: string = null;
 
-  constructor(private data: DataService, private modal: Modal) {
+  constructor(
+    private auth: AuthService,
+    private data: DataService,
+    private modal: Modal
+  ) {
     this.fetchData();
   }
 
@@ -61,7 +66,12 @@ export class UsersComponent {
     var savePromise: Promise<any>;
     if (this.newUser.id) {
       // Update user
-      savePromise = this.data.user().postUpdate(this.newUser.id, this.newUser);
+      savePromise = this.data.user().postUpdate(this.newUser.id, this.newUser)
+        .then(() => {
+          if (this.newUser.id === this.auth.loggedUser.id) {
+            this.auth.invalidateUser();
+          }
+        });
     } else {
       // Create new user
       savePromise = this.data.user().postCreate(this.newUser);

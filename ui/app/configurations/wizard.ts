@@ -6,6 +6,7 @@ import { Modal } from '../bootstrap';
 import { DataService } from '../services/data';
 import { ErrorService } from '../services/error';
 import { Playbook, Cluster, Server, PlaybookConfiguration } from '../models';
+import globals = require('../services/globals');
 
 var formatJSON = require('format-json');
 
@@ -49,6 +50,17 @@ export class WizardComponent {
   backward() {
     this.step -= 1;
     this.validateServersStep();
+  }
+
+  getAllowedPlaybooks(): Playbook[] {
+    if (!globals.loggedUserRole) {
+      return [];
+    }
+    var playbooksPermissions = _.find(globals.loggedUserRole.data.permissions, {name: 'playbook'});
+    return _.filter(
+      this.playbooks,
+      (playbook) => _.includes(playbooksPermissions.permissions, playbook.id)
+    );
   }
 
   selectPlaybook(playbook: Playbook) {
@@ -134,10 +146,15 @@ export class WizardComponent {
     }
     return savePromise
       .then(
-        (configuration: PlaybookConfiguration) => {
+        (configuration: Object) => {
           this.callback.emit();
           if (this.step !== 4) {
-            this.initForEditing(configuration);
+            // Seems jsdata returns the payload as a part of create response.
+            // Unneeded values should be removed.
+            let pureConfig = new PlaybookConfiguration(
+              _.omit(configuration, ['playbook_id', 'cluster_id', 'name', 'server_ids'])
+            );
+            this.initForEditing(pureConfig);
           } else {
             this.modal.close();
           }

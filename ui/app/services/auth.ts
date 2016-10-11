@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Router, CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
 import { SessionService } from './session';
 import { DataService } from './data';
-import { Token, User } from '../models';
+import { Token, User, Role } from '../models';
+import globals = require('./globals');
 
 import * as _ from 'lodash';
 
@@ -16,6 +17,7 @@ export class AuthService {
 
   redirectUrl: string;
   public loggedUser: User = null;
+  public loggedUserRole: Role = null;
 
   login(username: string, password: string): Promise<Token> {
     return this.data.token()
@@ -51,15 +53,23 @@ export class AuthService {
     return !_.isEmpty(this.session.getToken());
   }
 
-  getLoggedUser(): User {
-    if (this.isLoggedIn() && !this.loggedUser) {
+  getLoggedUser(force: boolean): User {
+    if (force || (this.isLoggedIn() && !this.loggedUser)) {
       this.data.user().find(this.session.getLoggedUserId())
         .then(
-          (user: User) => this.loggedUser = user,
+          (user: User) => {
+            this.loggedUser = user;
+            this.data.role().find(user.data.role_id)
+              .then((role: Role) => globals.loggedUserRole = role);
+          },
           (error: any) => this.data.handleResponseError(error)
         );
     }
     return this.loggedUser;
+  }
+
+  invalidateUser() {
+    this.getLoggedUser(true);
   }
 }
 

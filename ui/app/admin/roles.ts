@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { AuthService } from '../services/auth';
 import { DataService } from '../services/data';
 import { User, Role, PermissionGroup } from '../models';
 import { Modal } from '../bootstrap';
@@ -36,7 +37,11 @@ export class RolesComponent {
   permissions: [PermissionGroup] = [] as [PermissionGroup];
   newRole: Role = new Role({data: {permissions: []}});
 
-  constructor(private data: DataService, private modal: Modal) {
+  constructor(
+    private data: DataService,
+    private modal: Modal,
+    private auth: AuthService
+  ) {
     this.fetchData();
     // Permissions are not going to change
     this.data.permission().findAll({})
@@ -105,7 +110,8 @@ export class RolesComponent {
     var savePromise: Promise<any>;
     if (this.newRole.id) {
       // Update role
-      savePromise = this.data.role().postUpdate(this.newRole.id, this.newRole);
+      savePromise = this.data.role().postUpdate(this.newRole.id, this.newRole)
+        .then(() => this.auth.invalidateUser());
     } else {
       // Create new role
       savePromise = this.data.role().postCreate(this.newRole);
