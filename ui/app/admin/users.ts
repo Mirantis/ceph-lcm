@@ -65,12 +65,13 @@ export class UsersComponent {
   saveUser() {
     var savePromise: Promise<any>;
     if (this.newUser.id) {
-      // Update user
+      // Update existing user' data
       savePromise = this.data.user().postUpdate(this.newUser.id, this.newUser)
-        .then(() => {
+        .then((user: User) => {
           if (this.newUser.id === this.auth.loggedUser.id) {
             this.auth.invalidateUser();
           }
+          this.newUser = user;
         });
     } else {
       // Create new user
