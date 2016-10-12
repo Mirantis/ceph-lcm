@@ -24,7 +24,8 @@ setuptools.setup(
     package_data={
         "cephlcm_deploy_cluster": [
             "config.yaml",
-            "playbook.yaml"
+            "playbook.yaml",
+            "templates/*"
         ]
     },
     install_requires=[

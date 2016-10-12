@@ -37,62 +37,19 @@
         state: absent
 
   tasks:
-    - name: See if ceph-disk-created data partitions are present
-      shell: 'ls /dev/disk/by-partlabel | grep -q "ceph.*.data"'
-      failed_when: false
-      register: ceph_data_partlabels
-
-    - name: See if ceph-disk-created journal partitions are present
-      shell: 'ls /dev/disk/by-partlabel | grep -q "ceph.*.journal"'
-      failed_when: false
-      register: ceph_journal_partlabels
-
-    - name: Get Ceph journal partitions
-      shell: |
-        blkid | awk '/ceph journal/ { sub (":", "", $1); print $1 }'
-      when:
-        - ceph_journal_partlabels.rc == 0
-      failed_when: false
-      register: ceph_journal_partition_to_erase_path
-
-    - name: Get OSD data mount points
-      shell: "(grep /var/lib/ceph/osd /proc/mounts || echo -n) | awk '{ print $2  }'"
-      register: mounted_osd
-      changed_when: false
+    - set_fact: cluster_data="{{ ansible_local['ceph_%s'|format(cluster)] }}"
+    - set_fact: osd_data="{{ cluster_data.osd_tree[ansible_hostname] }}"
 
     - name: drop all cache
       shell: "sync && sleep 1 && echo 3 > /proc/sys/vm/drop_caches"
 
-    - name: umount osd data partition
-      shell: umount "{{ item }}"
-      with_items:
-        - "{{ mounted_osd.stdout_lines }}"
+    - name: Deactivate OSDs
+      command: ceph-disk deactivate --cluster "{{ cluster }}" --deactivate-by-id "{{ item.id }}" --mark-out
+      with_items: "{{ osd_data }}"
 
-    - name: remove osd mountpoint tree
-      file:
-        path: /var/lib/ceph/osd/
-        state: absent
-      register: remove_osd_mountpoints
-      ignore_errors: true
-
-    - name: See if ceph-disk is installed
-      shell: "which ceph-disk"
-      failed_when: false
-      register: ceph_disk_present
-
-    - name: Get Ceph disks
-      shell: |
-        ceph-disk list 2>&1 | awk '$2 == "ceph" {print $1}' | xargs -n 1 -r lsblk -no pkname | sort -u | sed 's?^?/dev/?'
-      register: ceph_disks_to_zap
-      when:
-        ceph_disk_present.rc == 0
-
-    - name: Zap OSD disks
-      command: ceph-disk zap "{{ item }}"
-      with_items:
-        - "{{ ceph_disks_to_zap.stdout_lines }}"
-      when:
-        ceph_disk_present.rc == 0 and ceph_disks_to_zap is defined
+    - name: Destroy OSDs
+      command: ceph-disk destroy --cluster "{{ cluster }}" --destroy-by-id "{{ item.id }}" --zap
+      with_items: "{{ osd_data }}"
 
     - name: is reboot needed
       local_action: shell echo requesting reboot

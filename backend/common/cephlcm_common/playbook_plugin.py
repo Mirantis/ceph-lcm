@@ -172,6 +172,9 @@ class Ansible(Base, metaclass=abc.ABCMeta):
 
     ANSIBLE_CMD = shutil.which("ansible")
     MODULE = None
+    BECOME = True
+    ONE_LINE = True
+    EXTRA_VARS = {}
 
     @abc.abstractmethod
     def compose_command(self, task):
@@ -183,6 +186,14 @@ class Ansible(Base, metaclass=abc.ABCMeta):
         cmdline = [self.ANSIBLE_CMD]
         cmdline.extend(["--inventory-file", DYNAMIC_INVENTORY_PATH])
         cmdline.extend(["--module-name", self.MODULE])
+
+        if self.ONE_LINE:
+            cmdline.append("--one-line")
+        if self.BECOME:
+            cmdline.append("--become")
+        for key, value in sorted(self.EXTRA_VARS.items()):
+            cmdline.extend(
+                ["--extra-vars", shlex.quote("{0}={1}".format(key, value))])
 
         extra = self.get_extra_vars(task)
         if extra:
@@ -198,6 +209,8 @@ class Playbook(Base, metaclass=abc.ABCMeta):
     PROCESS_STDOUT = subprocess.DEVNULL
     PROCESS_STDERR = subprocess.DEVNULL
     PROCESS_STDIN = subprocess.DEVNULL
+    BECOME = False
+    EXTRA_VARS = {}
 
     @property
     def playbook_config(self):
@@ -223,6 +236,12 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
         cmdline = [self.ANSIBLE_CMD]
         cmdline.extend(["--inventory-file", DYNAMIC_INVENTORY_PATH])
+
+        if self.BECOME:
+            cmdline.append("--become")
+        for key, value in sorted(self.EXTRA_VARS.items()):
+            cmdline.extend(
+                ["--extra-vars", shlex.quote("{0}={1}".format(key, value))])
 
         extra = self.get_extra_vars(task)
         if extra:

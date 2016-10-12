@@ -65,7 +65,7 @@ def test_compose_command(new_task, plugin):
     opts, args = getopt.getopt(
         cmdline[1:],
         ":m:i:t:",
-        ["inventory-file=", "module-name=", "tree="]
+        ["inventory-file=", "module-name=", "tree=", "become=", "one-line="]
     )
     opts = dict(opts)
 
