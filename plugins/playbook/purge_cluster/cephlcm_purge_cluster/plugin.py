@@ -46,7 +46,7 @@ class PurgeCluster(playbook_plugin.CephAnsiblePlaybook):
         return global_vars, inventory
 
     def make_global_vars(self, cluster, servers):
-        return {}
+        return {"cluster": cluster.name}
 
     def make_inventory(self, cluster, servers):
         groups = self.get_inventory_groups(cluster, servers)

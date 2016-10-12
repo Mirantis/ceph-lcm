@@ -77,7 +77,7 @@ make_output_directory:
 # -----------------------------------------------------------------------------
 
 build_ui: clean_ui npm_install
-	cd "$(ROOT_DIR)/ui" && ./node_modules/gulp/bin/gulp.js && rm -rf build/tmp
+	cd "$(ROOT_DIR)/ui" && npm run build
 
 npm_install:
 	cd "$(ROOT_DIR)/ui" && npm install
