@@ -16,7 +16,9 @@ RUN set -x \
     cron \
     python-dev \
     python-pip \
+    python3-twisted \
   && pip install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcm_monitoring*.whl \
+  && mkdir -p /www \
   && cat /cephlcm | crontab - \
   && mkfifo /var/log/cron.log \
   && rm -r /cephlcm /eggs /constraints.txt \
@@ -26,5 +28,8 @@ RUN set -x \
   && rm -r /var/lib/apt/lists/*
 
 
+EXPOSE 8000
+
+
 ENTRYPOINT ["/usr/bin/dumb-init", "-c", "--"]
-CMD ["sh", "-c", "cron && tail -F /var/log/cron.log"]
+CMD ["sh", "-c", "twistd -n web -p 8000 --path /www &; cron && tail -F /var/log/cron.log"]

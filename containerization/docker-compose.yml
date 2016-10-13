@@ -5,6 +5,7 @@ services:
     image: cephlcm-frontend
     links:
       - api
+      - cron
     ports:
       - "9999:80"
       - "10000:443"
