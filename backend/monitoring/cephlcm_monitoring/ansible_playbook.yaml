@@ -12,7 +12,6 @@
 #                               remote machines
 #    * random_string          - some string which is random (UUID is great choice).
 #                               it would be used as a part of remote tmp directory.
-#    * hosts                  - hostname to access
 
 
 - hosts: all
