@@ -4,8 +4,9 @@
 
 import abc
 import contextlib
-import copy
 import functools
+import ipaddress
+import operator
 import os
 import posixpath
 import shlex
@@ -14,7 +15,6 @@ import subprocess
 import sys
 import tempfile
 
-import netaddr
 import pkg_resources
 
 try:
@@ -280,14 +280,11 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
     @classmethod
     def get_public_network(cls, servers):
         networks = [cls.get_networks(srv)[srv.ip] for srv in servers]
-
         if not networks:
             raise ValueError(
-                "List of servers should contain at lease 1 element.")
-        if len(networks) == 1:
-            return networks[0]
+                "List of servers should contain at least 1 element.")
 
-        return netaddr.spanning_cidr(networks)
+        return spanning_network(networks)
 
     @classmethod
     def get_cluster_network(cls, servers):
@@ -314,10 +311,8 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
                 return public_network
 
         other_similar_networks.append(first_network)
-        if len(other_similar_networks) == 1:
-            return first_network
 
-        return netaddr.spanning_cidr(other_similar_networks)
+        return spanning_network(other_similar_networks)
 
     @classmethod
     def get_networks(cls, srv):
@@ -335,7 +330,8 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
                 interface["ipv4"]["network"],
                 interface["ipv4"]["netmask"]
             )
-            networks[interface["ipv4"]["address"]] = netaddr.IPNetwork(network)
+            networks[interface["ipv4"]["address"]] = ipaddress.ip_network(
+                network, strict=False)
 
         return networks
 
@@ -422,3 +418,21 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
 @functools.lru_cache()
 def load_config(filename):
     return config.yaml_load(filename)
+
+
+def spanning_network(networks):
+    if not networks:
+        raise ValueError("List of networks is empty")
+    if len(networks) == 1:
+        return networks[0]
+
+    sorter = operator.itemgetter("num_addresses")
+
+    while True:
+        networks = sorted(
+            ipaddress.collapse_addresses(networks), key=sorter, reverse=True)
+
+        if len(networks) == 1:
+            return networks[0]
+
+        networks[-1] = networks[-1].supernet()
