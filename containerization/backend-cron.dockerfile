@@ -30,6 +30,4 @@ RUN set -x \
 
 EXPOSE 8000
 
-
-ENTRYPOINT ["/usr/bin/dumb-init", "-c", "--"]
-CMD ["sh", "-c", "twistd -n web -p 8000 --path /www &; cron && tail -F /var/log/cron.log"]
+CMD ["sh", "-c", "twistd3 -n web -p 8000 --path /www & cron && tail -F /var/log/cron.log"]
