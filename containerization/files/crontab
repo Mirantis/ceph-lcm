@@ -1,2 +1,3 @@
 0 * * * * /usr/local/bin/cephlcm-cron-clean-expired-tokens > /var/log/cron.log 2>&1
 10 3 * * * /usr/local/bin/cephlcm-cron-clean-old-tasks > /var/log/cron.log 2>&1
+13 * * * * /usr/local/bin/cephlcm-collect-data > /var/log/cron.log 2>&1

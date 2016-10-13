@@ -1,7 +1,7 @@
 # vi: set ft=dockerfile :
 
 
-FROM cephlcm-base-plugins
+FROM cephlcm-controller
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 COPY output/eggs /eggs
@@ -14,14 +14,14 @@ RUN set -x \
   && apt-get install -y --no-install-recommends \
     gcc \
     cron \
-    python3-dev \
-    python3-pip \
-  && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcm_controller*.whl \
+    python-dev \
+    python-pip \
+  && pip install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcm_monitoring*.whl \
   && cat /cephlcm | crontab - \
   && mkfifo /var/log/cron.log \
   && rm -r /cephlcm /eggs /constraints.txt \
   && apt-get clean \
-  && apt-get purge -y gcc python3-dev python3-pip \
+  && apt-get purge -y gcc python-dev python-pip \
   && apt-get autoremove -y \
   && rm -r /var/lib/apt/lists/*
 
