@@ -8,7 +8,8 @@ import setuptools
 REQUIREMENTS = (
     "cephlcm_ansible",
     "PyMongo",
-    "PyYAML"
+    "PyYAML",
+    "ipaddr"
 )
 
 
