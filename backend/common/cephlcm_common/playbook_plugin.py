@@ -4,6 +4,7 @@
 
 import abc
 import contextlib
+import copy
 import functools
 import ipaddress
 import operator

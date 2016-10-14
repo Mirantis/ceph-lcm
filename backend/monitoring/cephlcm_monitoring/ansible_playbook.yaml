@@ -63,14 +63,19 @@
         flat: yes
 
 
+- hosts: localhost
+  gather_facts: false
 
-# - hosts: localhost
-#   gather_facts: false
-#   tasks:
-#     - set_fact: local_result="/tmp/{{ random_string }}/results.tar.gz"
+  handlers:
+    - name: remove_local_results
+      file: path="{{ local_result }}" state=absent
 
-#     - name: Ensure local static directory is created
-#       file: path="{{ local_static_directory }}" state=directory recurse=yes
+  tasks:
+    - set_fact: local_result="/tmp/{{ random_string }}/results.tar.gz"
 
-#     - name: Visualize cluster
-#       command: python "{{ visualizator_path }}" -w -g -o "{{ local_static_directory }}" "{{ local_result }}"
+    - name: Ensure local static directory is created
+      file: path="{{ local_static_directory }}" state=directory recurse=yes
+
+    - name: Visualize cluster
+      command: python "{{ visualizator_path }}" -w -g -o "{{ local_static_directory }}" "{{ local_result }}"
+      notify: remove_local_results

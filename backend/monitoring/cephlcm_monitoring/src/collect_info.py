@@ -57,7 +57,7 @@ SSH_OPTS += "-o ConnectTimeout={0} -l {1} -i {2}"
 def check_output_ssh(host, opts, cmd, no_retry=False, max_retry=3):
     logger.debug("SSH:%s: %r", host, cmd)
     while True:
-        ok, res = check_output("ssh {0} {1} {2}".format(SSH_OPTS, host, cmd), False)
+        ok, res = check_output("ssh {0} {1} -- sudo {2}".format(SSH_OPTS, host, cmd), False)
         if no_retry or res != "" or max_retry == 1:
             return ok, res
 

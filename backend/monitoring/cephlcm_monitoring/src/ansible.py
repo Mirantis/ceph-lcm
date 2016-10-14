@@ -118,6 +118,7 @@ def get_ansible_commandline(username, hostname, clustername):
         "-i", "{0},".format(hostname),
         "-e", get_extravar("random_string", str(uuid.uuid4())),
         "-e", get_extravar("collector_path", PATH_COLLECTOR),
+        "-e", get_extravar("visualizator_path", PATH_VISUALIZATOR),
         "-e", get_extravar("ssh_private_key_path", PATH_SSH_PRIVATE_KEY),
         "-e", get_extravar("cluster", clustername),
         "-e", get_extravar("local_static_directory",
