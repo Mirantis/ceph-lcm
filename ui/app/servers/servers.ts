@@ -18,8 +18,8 @@ export class ServersComponent {
     this.fetchData();
   }
 
-  fetchData() {
-    this.data.server().findAll({})
+  fetchData(filter?: Object) {
+    this.data.server().findAll({filter})
       .then((servers: Server[]) => this.servers = servers)
       .catch((error: any) => this.data.handleResponseError(error));
   }

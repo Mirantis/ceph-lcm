@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { AuthService } from '../services/auth';
 import { DataService } from '../services/data';
 import { User, Role, PermissionGroup } from '../models';
-import { Modal } from '../bootstrap';
+import { Modal } from '../directives';
 import * as _ from 'lodash';
 
 type rolesPermissionGroupsType = {[key: string]: string[]};

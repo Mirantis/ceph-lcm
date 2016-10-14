@@ -8,7 +8,7 @@ import { SessionService } from './session';
 import { ErrorService } from './error';
 import { Token, User, PermissionGroup, Role, Cluster,
   Playbook, PlaybookConfiguration, Server, Execution, ExecutionStep } from '../models';
-import { Modal } from '../bootstrap';
+import { Modal } from '../directives';
 
 type supportedMappers = 'auth' | 'user' | 'role' | 'permission' | 'cluster' |
   'playbook' | 'playbook_configuration' | 'server' | 'execution' | 'execution_step';
