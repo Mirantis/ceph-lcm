@@ -53,12 +53,12 @@ def new_task(public_playbook_name, configured_new_pcmodel, new_execution):
 
 
 def test_shutdown_callback(main_thread):
-    time.sleep(0.5)
+    time.sleep(1.5)
 
     assert main_thread.is_alive()
     mainloop.shutdown_callback()
 
-    time.sleep(0.5)
+    time.sleep(1.5)
     assert not main_thread.is_alive()
 
 

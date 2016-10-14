@@ -371,19 +371,23 @@ class Task(generic.Base):
         collection = cls.collection()
         stop_condition = stop_condition or threading.Event()
 
-        find_method = retryutils.mongo_retry()(collection.find)
+        find_method = retryutils.mongo_retry()(collection.find_one)
 
         try:
             while not stop_condition.is_set():
-                for document in find_method(query, sort=sortby):
-                    if stop_condition.is_set():
-                        raise StopIteration
-                    yield cls.make_task(document)
+                fetched_at = timeutils.current_unix_timestamp()
+                document = find_method(query, sort=sortby)
 
-                if exit_on_empty:
+                if stop_condition.is_set():
+                    raise StopIteration
+                if document:
+                    yield cls.make_task(document)
+                watch_again = timeutils.current_unix_timestamp()
+                if stop_condition.is_set():
                     raise StopIteration
 
-                stop_condition.wait(1)
+                if fetched_at != watch_again:
+                    stop_condition.wait(1)
         except pymongo.errors.OperationFailure as exc:
             LOG.exception("Cannot continue to listen to queue: %s", exc)
             raise exceptions.InternalDBError() from exc
