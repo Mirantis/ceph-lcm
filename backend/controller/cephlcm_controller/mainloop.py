@@ -88,9 +88,6 @@ def possible_to_process(tsk):
 
 def process_task(tsk):
     LOG.info("Start to process task %s", tsk._id)
-
-    tsk.start()
-
     TASK_POOL.submit(tsk)
 
 
