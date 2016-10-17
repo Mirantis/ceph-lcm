@@ -48,3 +48,21 @@ export class JSONString implements PipeTransform {
     return formatJSON.plain(value);
   }
 }
+
+@Pipe({name: 'index'})
+export class Index implements PipeTransform {
+  transform(value: Object, index: number = 0): any {
+    let values: Object[] = _.flatten([value]);
+    if (index >= values.length) {
+      index = 0;
+    }
+    return values[index];
+  }
+}
+
+@Pipe({name: 'deparametrize'})
+export class Deparametrize implements PipeTransform {
+  transform(value: string): string {
+    return _.upperFirst(value.toLowerCase()).split('_').join(' ');
+  }
+}

@@ -5,6 +5,7 @@
 </div>
 
 <filter
+  [criteria]="{state: ['error', 'operational', 'down']}"
   (onChange)="fetchData($event)"
 ></filter>
 

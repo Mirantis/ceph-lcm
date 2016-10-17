@@ -1,6 +1,6 @@
 <div class="col-xs-3">
   <div class="form-group">
-    <label class="control-label">{{name}}:</label>
+    <label class="control-label">{{name|deparametrize}}:</label>
     <select
       class="form-control"
       name="criterion"
@@ -8,7 +8,7 @@
       (ngModelChange)="onChange($event)"
     >
       <option></option>
-      <option *ngFor="let value of values">{{value}}</option>
+      <option *ngFor="let value of values" [value]="value|index:1">{{value|index}}</option>
     </select>
   </div>
 </div>

@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import { Record } from 'js-data';
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { Modal } from '../directives';
+import { Modal, Filter } from '../directives';
 import { DataService } from '../services/data';
 import { Cluster, Server, Playbook, PlaybookConfiguration, Execution } from '../models';
 import { WizardComponent } from './wizard';
@@ -18,9 +18,9 @@ export class ConfigurationsComponent {
   servers: Server[] = [];
   shownConfiguration: PlaybookConfiguration = null;
   configurationVersions: {[key: string]: PlaybookConfiguration[]} = {};
-  error: any;
   clone: PlaybookConfiguration = null;
   @ViewChild(WizardComponent) wizard: WizardComponent;
+  @ViewChild(Filter) filter: Filter;
 
   constructor(
     private data: DataService,
@@ -28,11 +28,20 @@ export class ConfigurationsComponent {
     private router: Router
   ) {
     this.fetchData();
+    this.data.playbook().findAll({})
+      .then((playbooks: Playbook[]) => {
+        this.playbooks = playbooks;
+      })
   }
 
-  fetchData(filter?: Object) {
-    console.log({filter});
-    this.data.configuration().findAll({filter})
+  getPlaybooksForFilter(): Object[] {
+    return _.map(this.playbooks, (playbook: Playbook) => {
+      return [playbook.name, playbook.id];
+    });
+  }
+
+  fetchData() {
+    this.data.configuration().findAll({filter: _.get(this.filter, 'query', {})})
       .then(
         (configurations: PlaybookConfiguration[]) => this.configurations = configurations,
         (error: any) => this.data.handleResponseError(error)

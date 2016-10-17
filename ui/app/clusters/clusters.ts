@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Modal } from '../directives';
+import { Component, ViewChild } from '@angular/core';
+import { Modal, Filter } from '../directives';
 import { DataService } from '../services/data';
 import { Cluster } from '../models';
 
@@ -11,13 +11,14 @@ import * as _ from 'lodash';
 export class ClustersComponent {
   clusters: Cluster[] = null;
   newCluster: Cluster = new Cluster({});
+  @ViewChild(Filter) filter: Filter;
 
   constructor(private data: DataService, private modal: Modal) {
     this.fetchData();
   }
 
-  fetchData(filter?: Object) {
-    this.data.cluster().findAll({filter})
+  fetchData() {
+    this.data.cluster().findAll({filter: _.get(this.filter, 'query', {})})
       .then(
         (clusters: Cluster[]) => this.clusters = clusters,
         (error: any) => this.data.handleResponseError(error)
