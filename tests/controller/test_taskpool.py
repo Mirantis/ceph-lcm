@@ -26,7 +26,6 @@ def create_task():
 
     tsk = task.ServerDiscoveryTask(server_id, host, username, initiator_id)
     tsk = tsk.create()
-    tsk = tsk.start()
 
     return tsk
 
@@ -49,7 +48,7 @@ def mocked_plugin():
 
 @pytest.yield_fixture
 def tpool():
-    tp = taskpool.TaskPool(1)
+    tp = taskpool.TaskPool(50)
     yield tp
     tp.stop()
 

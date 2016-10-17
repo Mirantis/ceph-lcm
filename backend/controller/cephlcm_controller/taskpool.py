@@ -7,6 +7,7 @@ import concurrent.futures
 import multiprocessing
 import os
 import platform
+import queue
 import threading
 import time
 
@@ -30,6 +31,7 @@ class TaskPool:
 
     def __init__(self, capacity=0):
         capacity = capacity or multiprocessing.cpu_count() * 2
+        self.task_queue = queue.Queue(capacity)
 
         self.pool = concurrent.futures.ThreadPoolExecutor(capacity)
         self.data = {}
@@ -64,6 +66,17 @@ class TaskPool:
                     "Removed finished task %s. Current active "
                     "tasks %d", tsk, len(self.data)
                 )
+
+            self.task_queue.get_nowait()
+            self.task_queue.task_done()
+
+        self.task_queue.put(True, block=True)
+        try:
+            tsk.start()
+        except Exception:
+            self.task_queue.get_nowait()
+            self.task_queue.task_done()
+            raise
 
         future = self.pool.submit(self.execute, tsk, stop_event)
         future.add_done_callback(done_callback)
@@ -118,12 +131,8 @@ class TaskPool:
                     ts.stop_event.set()
 
         LOG.debug("Waiting for all tasks to be cancelled.")
-        while True:
-            if self.data:
-                time.sleep(0.2)
-            else:
-                LOG.debug("All tasks were stopped.")
-                return
+        self.task_queue.join()
+        LOG.debug("All tasks were stopped.")
 
     def cancel(self, task_id):
         if self.global_stop_event.is_set():
