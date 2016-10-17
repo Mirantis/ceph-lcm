@@ -421,13 +421,13 @@ class Task(generic.Base):
                 document = find_method(query, sort=sortby)
 
                 if stop_condition.is_set():
-                    raise StopIteration
+                    raise StopIteration()
                 if document:
                     yield cls.make_task(document)
-                watch_again = timeutils.current_unix_timestamp()
-                if stop_condition.is_set():
-                    raise StopIteration
+                elif exit_on_empty:
+                    raise StopIteration()
 
+                watch_again = timeutils.current_unix_timestamp()
                 if fetched_at != watch_again:
                     stop_condition.wait(1)
         except pymongo.errors.OperationFailure as exc:
