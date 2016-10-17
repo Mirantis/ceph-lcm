@@ -73,7 +73,7 @@ class TaskPool:
         self.task_queue.put(True, block=True)
         try:
             tsk.start()
-        except:
+        except Exception:
             self.task_queue.get_nowait()
             self.task_queue.task_done()
             raise
