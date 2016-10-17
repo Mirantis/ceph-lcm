@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../services/auth';
 import { ErrorService } from '../services/error';
-import { Modal } from '../bootstrap';
+import { Modal } from '../directives';
 
 @Component({
   templateUrl: './app/templates/dashboard.html'

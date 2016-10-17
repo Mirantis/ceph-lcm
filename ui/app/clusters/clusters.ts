@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Modal } from '../bootstrap';
+import { Modal } from '../directives';
 import { DataService } from '../services/data';
 import { Cluster } from '../models';
 
@@ -16,8 +16,8 @@ export class ClustersComponent {
     this.fetchData();
   }
 
-  fetchData() {
-    this.data.cluster().findAll({})
+  fetchData(filter?: Object) {
+    this.data.cluster().findAll({filter})
       .then(
         (clusters: Cluster[]) => this.clusters = clusters,
         (error: any) => this.data.handleResponseError(error)

@@ -1,0 +1,26 @@
+<div class="filters">
+  <div class="row">
+    <form class="form-horizontal">
+      <div class="col-xs-2">
+        <div class="form-group">
+          <input
+            type="text"
+            class="form-control"
+            name="search"
+            placeholder="Search by Name"
+            [(ngModel)]="search"
+            (ngModelChange)="criterionUpdated($event)"
+          >
+        </div>
+      </div>
+      <div class="col-xs-{{getCriteriaOffset()}}" *ngIf="getCriteriaOffset()"></div>
+      <criterion
+        *ngFor="let criterion of criteria|keys"
+        [name]="criterion"
+        [values]="criteria[criterion]"
+        (updateHandler)="criterionUpdated($event)"
+      >
+      </criterion>
+    </form>
+  </div>
+</div>

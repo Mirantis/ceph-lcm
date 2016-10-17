@@ -9,8 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
+var forms_1 = require('@angular/forms');
 var platform_browser_1 = require('@angular/platform-browser');
-var bootstrap_1 = require('./bootstrap');
+var directives_1 = require('./directives');
 var pipes_1 = require('./pipes');
 var SharedModule = (function () {
     function SharedModule() {
@@ -18,18 +19,18 @@ var SharedModule = (function () {
     SharedModule = __decorate([
         core_1.NgModule({
             imports: [
-                platform_browser_1.BrowserModule
+                platform_browser_1.BrowserModule, forms_1.FormsModule
             ],
             declarations: [
-                bootstrap_1.Modal, bootstrap_1.Loader,
+                directives_1.Modal, directives_1.Loader, directives_1.Filter, directives_1.Criterion,
                 pipes_1.Keys, pipes_1.Key, pipes_1.TrimBy, pipes_1.DateTime, pipes_1.JSONString
             ],
             exports: [
-                bootstrap_1.Modal, bootstrap_1.Loader,
+                directives_1.Modal, directives_1.Loader, directives_1.Filter, directives_1.Criterion,
                 pipes_1.Keys, pipes_1.Key, pipes_1.TrimBy, pipes_1.DateTime, pipes_1.JSONString
             ],
             providers: [
-                bootstrap_1.Modal, bootstrap_1.Loader
+                directives_1.Modal, directives_1.Loader, directives_1.Filter, directives_1.Criterion
             ]
         }), 
         __metadata('design:paramtypes', [])

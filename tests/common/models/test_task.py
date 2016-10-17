@@ -15,12 +15,7 @@ def clean_tasks(pymongo_connection):
     task.Task.ensure_index()
 
 
-@pytest.mark.parametrize("task_type", (
-    [],
-    {},
-    "",
-    1,
-))
+@pytest.mark.parametrize("task_type", ([], {}, "", 1))
 def test_create_task_with_unknown_type(task_type, configure_model):
     with pytest.raises(ValueError):
         task.Task(task_type, "1")
@@ -40,9 +35,11 @@ def test_create_task_in_db(task_type, configure_model, pymongo_connection,
     assert new_task.time_cancelled == 0
     assert new_task.time_updated == 0
     assert new_task.time_failed == 0
+    assert new_task.time_bounced == 0
     assert new_task.execution_id == executor_id
     assert new_task.update_marker == ""
     assert new_task.executor_host == ""
+    assert new_task.bounced == 0
     assert new_task.executor_pid == 0
     assert new_task.data == {}
 
@@ -56,9 +53,11 @@ def test_create_task_in_db(task_type, configure_model, pymongo_connection,
     assert new_task.time_cancelled == 0
     assert new_task.time_updated == int(freeze_time.return_value)
     assert new_task.time_failed == 0
+    assert new_task.time_bounced == 0
     assert new_task.execution_id == executor_id
     assert new_task.update_marker != ""
     assert new_task.executor_host == ""
+    assert new_task.bounced == 0
     assert new_task.executor_pid == 0
     assert new_task.data == {}
 
@@ -75,6 +74,27 @@ def test_create_task_watchable(task_type, configure_model, no_sleep,
     new_task = task.Task(task_type, executor_id)
     new_task.create()
 
+    iterator = task.Task.watch(exit_on_empty=True)
+    assert new_task._id == next(iterator)._id
+
+
+@pytest.mark.parametrize("task_type", task.TaskType)
+def test_watch_after_bounce(task_type, freeze_time,
+                            configure_model, no_sleep, clean_tasks):
+    executor_id = pytest.faux.gen_uuid()
+    new_task = task.Task(task_type, executor_id)
+    new_task.create()
+
+    iterator = task.Task.watch(exit_on_empty=True)
+    assert new_task._id == next(iterator)._id
+    iterator = task.Task.watch(exit_on_empty=True)
+    assert new_task._id == next(iterator)._id
+
+    new_task.bounce()
+    iterator = task.Task.watch(exit_on_empty=True)
+    assert not list(iterator)
+
+    freeze_time.return_value += task.BOUNCE_TIMEOUT * 100
     iterator = task.Task.watch(exit_on_empty=True)
     assert new_task._id == next(iterator)._id
 
@@ -103,6 +123,33 @@ def test_restart_task(task_type, finish_action, configure_model, freeze_time):
     getattr(new_task, finish_action)()
     with pytest.raises(exceptions.CannotStartTaskError):
         new_task.start()
+
+
+@pytest.mark.parametrize("task_type", task.TaskType)
+def test_bounce_task(task_type, configure_model, pymongo_connection,
+                     freeze_time):
+    new_task = task.Task(task_type, pytest.faux.gen_uuid())
+    new_task.create()
+
+    new_task.bounce()
+
+    assert new_task.bounced == 1
+    assert int(freeze_time.return_value) + task.BOUNCE_TIMEOUT \
+        <= new_task.time_bounced \
+        <= int(freeze_time.return_value) + 2 * task.BOUNCE_TIMEOUT
+
+    new_task.bounce()
+
+    assert new_task.bounced == 2
+    assert int(freeze_time.return_value) + task.BOUNCE_TIMEOUT \
+        <= new_task.time_bounced \
+        <= int(freeze_time.return_value) + new_task.bounced \
+        * task.BOUNCE_TIMEOUT
+
+    db_task = pymongo_connection.db.task.find_one({"_id": new_task._id})
+    assert db_task
+
+    assert db_task == new_task.get_state()
 
 
 @pytest.mark.parametrize("task_type", task.TaskType)

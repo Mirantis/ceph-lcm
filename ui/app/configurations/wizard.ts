@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import { FormControl } from '@angular/forms';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
-import { Modal } from '../bootstrap';
+import { Modal } from '../directives';
 import { DataService } from '../services/data';
 import { ErrorService } from '../services/error';
 import { Playbook, Cluster, Server, PlaybookConfiguration } from '../models';

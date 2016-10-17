@@ -47,6 +47,10 @@ class CannotFailTask(CephLCMError):
     """Exception raised if it is impossible to fail such task."""
 
 
+class CannotBounceTaskError(CephLCMError):
+    """Exception raised if it is impossible to bounce task."""
+
+
 class CannotSetExecutorError(CephLCMError):
     """Exception raised if it is impossible to set executor data."""
 

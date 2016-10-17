@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Modal } from '../bootstrap';
+import { Modal } from '../directives';
 import { AuthService } from '../services/auth';
 import { DataService } from '../services/data';
 import { User, Role } from '../models';

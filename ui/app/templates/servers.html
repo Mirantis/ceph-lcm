@@ -4,60 +4,9 @@
   </div>
 </div>
 
-<!-- Filters -->
-
-<div class="filters">
-  <div class="row">
-
-    <div class="col-xs-2">
-      <div class="form-group">
-        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Search by Name">
-      </div>
-    </div>
-
-    <div class="col-xs-5"></div>
-
-    <div class="col-xs-5">
-
-      <div class="row">
-
-        <div class="col-xs-6">
-          <form class="form-horizontal">
-            <div class="form-group">
-              <label class="control-label">Group by:</label>
-              <select class="form-control">
-                <option>Playbook</option>
-                <option>Price</option>
-                <option>Money</option>
-                <option>Sex</option>
-                <option>Drugs</option>
-              </select>
-            </div>
-          </form>
-        </div>
-
-        <div class="col-xs-6">
-          <form class="form-horizontal">
-            <div class="form-group">
-              <label class="control-label">Sort by:</label>
-              <select class="form-control">
-                <option>Creation Date</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-              </select>
-            </div>
-          </form>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- Filters -->
+<filter
+  (onChange)="fetchData($event)"
+></filter>
 
 <div class="row" *ngIf="servers && servers.length">
   <div class="col-xs-12">

@@ -53,7 +53,7 @@ export class AuthService {
     return !_.isEmpty(this.session.getToken());
   }
 
-  getLoggedUser(force: boolean): User {
+  getLoggedUser(force: boolean = false): User {
     if (force || (this.isLoggedIn() && !this.loggedUser)) {
       this.data.user().find(this.session.getLoggedUserId())
         .then(
