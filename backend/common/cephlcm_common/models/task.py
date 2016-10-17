@@ -4,6 +4,7 @@
 
 import copy
 import enum
+import random
 import threading
 import uuid
 
@@ -29,10 +30,12 @@ TASK_TEMPLATE = {
         "updated": 0,
         "started": 0,
         "completed": 0,
+        "bounced": 0,
         "cancelled": 0,
         "failed": 0
     },
     "update_marker": "",
+    "bounced": 0,
     "executor": {
         "host": "",
         "pid": 0
@@ -44,6 +47,9 @@ TASK_TEMPLATE = {
 
 LOG = log.getLogger(__name__)
 """Logger."""
+
+BOUNCE_TIMEOUT = 5  # seconds
+"""Time when bounced task is out of fetch."""
 
 
 @enum.unique
@@ -119,6 +125,8 @@ class Task(generic.Base):
         self.time_cancelled = 0
         self.time_updated = 0
         self.time_failed = 0
+        self.time_bounced = 0
+        self.bounced = 0
         self.execution_id = execution_id
         self.update_marker = ""
         self.executor_host = ""
@@ -134,6 +142,14 @@ class Task(generic.Base):
     @property
     def id(self):
         return self._id
+
+    def new_time_bounce(self):
+        left_bound = timeutils.current_unix_timestamp() + BOUNCE_TIMEOUT
+        right_bound = left_bound + self.bounced * BOUNCE_TIMEOUT
+        bounce_time = random.triangular(left_bound, right_bound)
+        bounce_time = int(bounce_time)
+
+        return bounce_time
 
     def _update(self, query, setfields, exc):
         """Updates task in place.
@@ -194,9 +210,11 @@ class Task(generic.Base):
         template["time"]["cancelled"] = self.time_cancelled
         template["time"]["updated"] = self.time_updated
         template["time"]["failed"] = self.time_failed
+        template["time"]["bounced"] = self.time_bounced
         template["executor"]["host"] = self.executor_host
         template["executor"]["pid"] = self.executor_pid
         template["update_marker"] = self.update_marker
+        template["bounced"] = self.bounced
         template["error"] = self.error
         template["data"] = copy.deepcopy(self.data)
 
@@ -214,9 +232,11 @@ class Task(generic.Base):
         self.time_cancelled = state["time"]["cancelled"]
         self.time_updated = state["time"]["updated"]
         self.time_failed = state["time"]["failed"]
+        self.time_bounced = state["time"]["bounced"]
         self.executor_host = state["executor"]["host"]
         self.executor_pid = state["executor"]["pid"]
         self.update_marker = state["update_marker"]
+        self.bounced = state["bounced"]
         self.error = state["error"]
         self.data = copy.deepcopy(state["data"])
 
@@ -243,6 +263,24 @@ class Task(generic.Base):
         self.set_state(document)
 
         return self
+
+    def bounce(self):
+        """Bounce task.
+
+        This sets internal timer when task can be fetched next time."""
+
+        query = {
+            "time.failed": 0,
+            "time.completed": 0,
+            "time.cancelled": 0,
+            "time.started": 0
+        }
+        setfields = {
+            "time.bounced": self.new_time_bounce(),
+            "bounced": self.bounced + 1
+        }
+
+        return self._update(query, setfields, exceptions.CannotBounceTaskError)
 
     def start(self):
         """Starts task execution."""
@@ -365,9 +403,13 @@ class Task(generic.Base):
             "time.started": 0,
             "time.completed": 0,
             "time.cancelled": 0,
-            "time.failed": 0
+            "time.failed": 0,
+            "time.bounced": {"$lte": timeutils.current_unix_timestamp()}
         }
-        sortby = [("time.created", generic.SORT_ASC)]
+        sortby = [
+            ("time.bounced", generic.SORT_ASC),
+            ("time.created", generic.SORT_ASC)
+        ]
         collection = cls.collection()
         stop_condition = stop_condition or threading.Event()
 

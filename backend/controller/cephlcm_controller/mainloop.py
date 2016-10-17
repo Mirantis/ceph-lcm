@@ -41,6 +41,11 @@ def main():
                 "Fetched task %s (execution_id=%s, task_type=%s)",
                 tsk._id, tsk.execution_id, tsk.task_type
             )
+            try:
+                tsk.bounce()
+            except Exception as exc:
+                LOG.warning("Cannot bounce task %s. Skip. %s", tsk._id, exc)
+                continue
 
             if not possible_to_process(tsk):
                 LOG.info("Task %s is temporarily skipped.", tsk._id)
