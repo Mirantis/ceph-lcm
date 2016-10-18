@@ -9,7 +9,7 @@
 </div>
 
 <filter
-  [criteria]="{playbook: ['hello_world', 'create_cluster', 'remove_cluster']}"
+  [criteria]="{playbook_id: getPlaybooksForFilter()}"
   (onChange)="fetchData($event)"
 >
 </filter>

@@ -79,7 +79,7 @@ export class Filter {
     if (this.timeout) {
       window.clearTimeout(this.timeout);
     }
-    this.timeout = window.setTimeout(() => this.onChange.emit(this.query), 1000);
+    this.timeout = window.setTimeout(() => this.onChange.emit(), 1000);
   }
 }
 

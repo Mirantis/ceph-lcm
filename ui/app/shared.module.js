@@ -23,11 +23,11 @@ var SharedModule = (function () {
             ],
             declarations: [
                 directives_1.Modal, directives_1.Loader, directives_1.Filter, directives_1.Criterion,
-                pipes_1.Keys, pipes_1.Key, pipes_1.TrimBy, pipes_1.DateTime, pipes_1.JSONString
+                pipes_1.Keys, pipes_1.Key, pipes_1.TrimBy, pipes_1.DateTime, pipes_1.JSONString, pipes_1.Index, pipes_1.Deparametrize
             ],
             exports: [
                 directives_1.Modal, directives_1.Loader, directives_1.Filter, directives_1.Criterion,
-                pipes_1.Keys, pipes_1.Key, pipes_1.TrimBy, pipes_1.DateTime, pipes_1.JSONString
+                pipes_1.Keys, pipes_1.Key, pipes_1.TrimBy, pipes_1.DateTime, pipes_1.JSONString, pipes_1.Index, pipes_1.Deparametrize
             ],
             providers: [
                 directives_1.Modal, directives_1.Loader, directives_1.Filter, directives_1.Criterion
