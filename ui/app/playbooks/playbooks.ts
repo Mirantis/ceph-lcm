@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { AuthService } from '../services/auth';
-import { DataService } from '../services/data';
+import { DataService, pagedResult } from '../services/data';
 import { Playbook } from '../models';
+import { Pager } from '../directives';
 import globals = require('../services/globals');
 
 import * as _ from 'lodash';
@@ -11,15 +12,22 @@ import * as _ from 'lodash';
 })
 export class PlaybooksComponent {
   playbooks: Playbook[] = null;
+  @ViewChild(Pager) pager: Pager;
+  pagedData: pagedResult = {} as pagedResult;
 
   constructor(private auth: AuthService, private data: DataService) {
     this.fetchData();
   }
 
   fetchData() {
-    this.data.playbook().findAll({})
+    this.data.playbook().findAll({
+      page: _.get(this.pager, 'page', 1)
+    })
       .then(
-        (playbooks: Playbook[]) => this.playbooks = playbooks,
+        (playbooks: pagedResult) => {
+          this.playbooks = playbooks.items;
+          this.pagedData = playbooks;
+        },
         (error: any) => this.data.handleResponseError(error)
       );
   }

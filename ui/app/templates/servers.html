@@ -60,3 +60,6 @@
 <div *ngIf="servers && !servers.length" class="no-servers">
   You don't have any servers.
 </div>
+
+<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+

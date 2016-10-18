@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { AuthService } from '../services/auth';
-import { DataService } from '../services/data';
+import { DataService, pagedResult } from '../services/data';
 import { User, Role, PermissionGroup } from '../models';
 import { Modal } from '../directives';
 import * as _ from 'lodash';
@@ -46,7 +46,7 @@ export class RolesComponent {
     // Permissions are not going to change
     this.data.permission().findAll({})
       .then(
-        (permissions: [PermissionGroup]) => this.permissions = permissions,
+        (permissions: pagedResult) => this.permissions = permissions.items,
         (error: any) => this.data.handleResponseError(error)
       );
   }
@@ -54,7 +54,7 @@ export class RolesComponent {
   fetchData() {
     this.data.role().findAll({})
       .then(
-        (roles: Role[]) => this.roles = roles,
+        (roles: pagedResult) => this.roles = roles.items,
         (error: any) => this.data.handleResponseError(error)
       );
   }

@@ -86,3 +86,5 @@
     (callback)="refreshConfigurations()"
   ></wizard>
 </modal>
+
+<pager [pagingData]="pagedData" (onChange)="refreshConfigurations()"></pager>

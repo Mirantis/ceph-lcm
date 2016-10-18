@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Modal } from '../directives';
 import { AuthService } from '../services/auth';
-import { DataService } from '../services/data';
+import { DataService, pagedResult } from '../services/data';
 import { User, Role } from '../models';
 
 import * as _ from 'lodash';
@@ -31,13 +31,13 @@ export class UsersComponent {
   fetchData() {
     this.data.user().findAll({})
       .then(
-        (users: User[]) => this.users = users,
+        (users: pagedResult) => this.users = users.items,
         (error) => this.data.handleResponseError(error)
        );
     this.data.role().findAll({})
       .then(
-        (roles: Role[]) => {
-          this.roles = roles;
+        (roles: pagedResult) => {
+          this.roles = roles.items;
           this.roleIds = _.reduce(
             this.roles,
             (result: roleIdsType, role: Role) => {

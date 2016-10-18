@@ -27,6 +27,8 @@ export class AuthService {
           this.session.saveToken(token);
 
           this.loggedUser = token.data.user;
+          this.data.role().find(this.loggedUser.data.role_id)
+            .then((role: Role) => globals.loggedUserRole = role);
 
           var url = this.redirectUrl || '/';
           this.redirectUrl = null;

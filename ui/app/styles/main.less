@@ -660,3 +660,29 @@ label {
 @keyframes spin {
   100% { transform: rotate(360deg); }
 }
+
+// Pager
+nav {
+  text-align: center;
+  margin-top: 1px;
+
+  ul.pagination {
+    margin-top: 4px;
+
+    li {
+      a, a:hover {
+        background-color: transparent;
+        color: @base;
+        border-width: 0;
+      }
+
+      &.active {
+        a, a:hover {
+          background-color: transparent;
+          border-width: 0;
+          color: @shrimp;
+        }
+      }
+    }
+  }
+}

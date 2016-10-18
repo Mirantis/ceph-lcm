@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
-import { Modal, Filter } from '../directives';
-import { DataService } from '../services/data';
+import { Modal, Filter, Pager } from '../directives';
+import { DataService, pagedResult } from '../services/data';
 import { Cluster } from '../models';
 
 import * as _ from 'lodash';
@@ -12,15 +12,23 @@ export class ClustersComponent {
   clusters: Cluster[] = null;
   newCluster: Cluster = new Cluster({});
   @ViewChild(Filter) filter: Filter;
+  @ViewChild(Pager) pager: Pager;
+  pagedData: pagedResult = {} as pagedResult;
 
   constructor(private data: DataService, private modal: Modal) {
     this.fetchData();
   }
 
   fetchData() {
-    this.data.cluster().findAll({filter: _.get(this.filter, 'query', {})})
+    this.data.cluster().findAll({
+      filter: _.get(this.filter, 'query', {}),
+      page: _.get(this.pager, 'page', 1)
+    })
       .then(
-        (clusters: Cluster[]) => this.clusters = clusters,
+        (clusters: pagedResult) => {
+          this.clusters = clusters.items;
+          this.pagedData = clusters;
+        },
         (error: any) => this.data.handleResponseError(error)
       );
   }

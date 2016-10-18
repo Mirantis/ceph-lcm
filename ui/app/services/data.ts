@@ -13,6 +13,13 @@ import { Modal } from '../directives';
 type supportedMappers = 'auth' | 'user' | 'role' | 'permission' | 'cluster' |
   'playbook' | 'playbook_configuration' | 'server' | 'execution' | 'execution_step';
 
+export type pagedResult = {
+  items: [any],
+  page: number,
+  per_page: number,
+  total: number
+};
+
 declare module 'js-data' {
   interface Mapper {
     postCreate(props: Record, opts?: any): Promise<Record>;
@@ -141,11 +148,9 @@ export class DataService {
               }
             }
           ),
-          // afterFind: function(props: any, opts: any, result: any) {
-          //   return _.map(result.items, (item, index) => new (this.recordClass)(item));
-          // },
-          afterFindAll: function(props: any, opts: any, result: any) {
-            return _.map(result.items, (item, index) => new (this.recordClass)(item));
+          afterFindAll: function(props: any, opts: any, result: any): pagedResult {
+            result.items = _.map(result.items, (item, index) => new (this.recordClass)(item));
+            return result;
           },
           postCreate(props: any, opts: any = {}): Promise<Record> {
             // Only data: {} should be sent upon object creation
@@ -155,15 +160,17 @@ export class DataService {
             // All fields are expected on update
             return this.update(id, props);
           },
-          getVersions: function(id: string) {
+          getVersions: function(id: string): pagedResult {
             return this.findAll({}, {endpoint: name + '/' + id + '/version'});
           },
           getVersion: function(id: string, versionId: string) {
             return this.find(id, {suffix: '/version/' + versionId});
           },
-          getLogs: function(execution_id: string): Promise<ExecutionStep[]> {
+          getLogs: function(execution_id: string): Promise<pagedResult> {
             return this.findAll({}, {endpoint: name + '/' + execution_id + '/steps'})
-              .then((logs: Record[]) => logs as ExecutionStep[]);
+              .then((logs: pagedResult) => {
+                logs.items = logs.items as [ExecutionStep];
+              });
           }
         }
       );

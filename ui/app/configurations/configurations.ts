@@ -2,8 +2,8 @@ import * as _ from 'lodash';
 import { Record } from 'js-data';
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { Modal, Filter } from '../directives';
-import { DataService } from '../services/data';
+import { Modal, Filter, Pager } from '../directives';
+import { DataService, pagedResult } from '../services/data';
 import { Cluster, Server, Playbook, PlaybookConfiguration, Execution } from '../models';
 import { WizardComponent } from './wizard';
 
@@ -21,6 +21,8 @@ export class ConfigurationsComponent {
   clone: PlaybookConfiguration = null;
   @ViewChild(WizardComponent) wizard: WizardComponent;
   @ViewChild(Filter) filter: Filter;
+  @ViewChild(Pager) pager: Pager;
+  pagedData: pagedResult = {} as pagedResult;
 
   constructor(
     private data: DataService,
@@ -29,8 +31,8 @@ export class ConfigurationsComponent {
   ) {
     this.fetchData();
     this.data.playbook().findAll({})
-      .then((playbooks: Playbook[]) => {
-        this.playbooks = playbooks;
+      .then((playbooks: pagedResult) => {
+        this.playbooks = playbooks.items;
       })
   }
 
@@ -41,9 +43,15 @@ export class ConfigurationsComponent {
   }
 
   fetchData() {
-    this.data.configuration().findAll({filter: _.get(this.filter, 'query', {})})
+    this.data.configuration().findAll({
+      filter: _.get(this.filter, 'query', {}),
+      page: _.get(this.pager, 'page', 1)
+    })
       .then(
-        (configurations: PlaybookConfiguration[]) => this.configurations = configurations,
+        (configurations: pagedResult) => {
+          this.configurations = configurations.items;
+          this.pagedData = configurations;
+        },
         (error: any) => this.data.handleResponseError(error)
       );
   }
@@ -52,11 +60,11 @@ export class ConfigurationsComponent {
     this.clone = configuration;
     Promise.all([
       this.data.cluster().findAll({})
-        .then((clusters: Cluster[]) => this.clusters = clusters),
+        .then((clusters: pagedResult) => this.clusters = clusters.items),
       this.data.playbook().findAll({})
-        .then((playbooks: Playbook[]) => this.playbooks = playbooks),
+        .then((playbooks: pagedResult) => this.playbooks = playbooks.items),
       this.data.server().findAll({})
-        .then((servers: Server[]) => this.servers = servers)
+        .then((servers: pagedResult) => this.servers = servers.items)
     ]).catch((error: any) => this.data.handleResponseError(error));
     this.wizard.init(configuration);
     this.modal.show();
@@ -82,8 +90,8 @@ export class ConfigurationsComponent {
     if (!this.configurationVersions[configuration.id] || reread) {
       this.data.configuration().getVersions(configuration.id)
         .then(
-          (versions: PlaybookConfiguration[]) => {
-            this.configurationVersions[configuration.id] = versions;
+          (versions: pagedResult) => {
+            this.configurationVersions[configuration.id] = versions.items;
           },
           (error: any) => this.data.handleResponseError(error)
         );

@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { DataService } from '../services/data';
+import { DataService, pagedResult } from '../services/data';
 import { Execution } from '../models';
+import { Pager } from '../directives';
 
 
 @Component({
@@ -10,15 +11,22 @@ import { Execution } from '../models';
 })
 export class ExecutionsComponent {
   executions: Execution[] = null;
+  @ViewChild(Pager) pager: Pager;
+  pagedData: pagedResult = {} as pagedResult;
 
   constructor(private data: DataService, private router: Router) {
     this.fetchData();
   }
 
   fetchData() {
-    this.data.execution().findAll({})
+    this.data.execution().findAll({
+      page: _.get(this.pager, 'page', 1)
+    })
       .then(
-        (executions: Execution[]) => this.executions = executions,
+        (executions: pagedResult) => {
+          this.executions = executions.items;
+          this.pagedData = executions;
+        },
         (error: any) => this.data.handleResponseError(error)
       );
   }

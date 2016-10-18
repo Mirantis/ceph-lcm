@@ -65,3 +65,5 @@
       [disabled]="!newClusterForm.form.valid">Save changes</button>
   </div>
 </modal>
+
+<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>

@@ -7740,6 +7740,25 @@ a.grid .grid-header .icon:focus {
     transform: rotate(360deg);
   }
 }
+nav {
+  text-align: center;
+  margin-top: 1px;
+}
+nav ul.pagination {
+  margin-top: 4px;
+}
+nav ul.pagination li a,
+nav ul.pagination li a:hover {
+  background-color: transparent;
+  color: #5A7983;
+  border-width: 0;
+}
+nav ul.pagination li.active a,
+nav ul.pagination li.active a:hover {
+  background-color: transparent;
+  border-width: 0;
+  color: #FF634C;
+}
 a {
   cursor: pointer;
   cursor: hand;

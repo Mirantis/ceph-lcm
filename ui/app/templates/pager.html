@@ -1,0 +1,13 @@
+<nav
+  aria-label="Page navigation"
+  *ngIf="pagingData && pagingData.total > pagingData.per_page"
+>
+  <ul class="pagination">
+    <li
+      *ngFor="let pageNumber of getVisiblePages()"
+      [ngClass]="{active: pageNumber === pagingData.page}"
+    >
+      <a (click)="switchPage(pageNumber)">{{pageNumber}}</a>
+    </li>
+  </ul>
+</nav>

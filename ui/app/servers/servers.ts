@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
-import { DataService } from '../services/data';
-import { Filter } from '../directives';
+import { DataService, pagedResult } from '../services/data';
+import { Filter, Pager } from '../directives';
 import { Server } from '../models';
 
 import * as _ from 'lodash';
@@ -15,14 +15,22 @@ export class ServersComponent {
     ['name', 'fqdn', 'ip'], ['state', 'cluster_id']
   ];
   @ViewChild(Filter) filter: Filter;
+  @ViewChild(Pager) pager: Pager;
+  pagedData: pagedResult = {} as pagedResult;
 
   constructor(private data: DataService) {
     this.fetchData();
   }
 
   fetchData() {
-    this.data.server().findAll({filter: _.get(this.filter, 'query', {})})
-      .then((servers: Server[]) => this.servers = servers)
+    this.data.server().findAll({
+      filter: _.get(this.filter, 'query', {}),
+      page: _.get(this.pager, 'page', 1)
+    })
+      .then((servers: pagedResult) => {
+        this.servers = servers.items;
+        this.pagedData = servers;
+      })
       .catch((error: any) => this.data.handleResponseError(error));
   }
 

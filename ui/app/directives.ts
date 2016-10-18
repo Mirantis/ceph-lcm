@@ -98,3 +98,33 @@ export class Criterion {
     this.updateHandler.emit({name: this.name, value: newValue});
   }
 }
+
+// Pagination
+@Component({
+  selector: 'pager',
+  templateUrl: './app/templates/pager.html'
+})
+export class Pager {
+  visiblePages = 5;
+  page: number = 1;
+  @Input() pagingData: {total: number, per_page: number, page: number} = null;
+  @Output() onChange  = new EventEmitter();
+
+  getVisiblePages(): number[] {
+    let totalPages = Math.ceil(this.pagingData.total / this.pagingData.per_page);
+    let start = this.pagingData.page - Math.round(this.visiblePages / 2);
+    if (start < 1) {
+      start = 1;
+    };
+    let finish = start + this.visiblePages;
+    if (finish > totalPages) {
+      finish = totalPages;
+    }
+    return _.range(start, finish + 1);
+  }
+
+  switchPage(page: number) {
+    this.page = page;
+    this.onChange.emit();
+  }
+}
