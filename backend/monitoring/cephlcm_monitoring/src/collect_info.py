@@ -4,6 +4,7 @@ import time
 import json
 import uuid
 import Queue
+import pipes
 import shutil
 import socket
 import logging
@@ -55,9 +56,10 @@ SSH_OPTS += "-o ConnectTimeout={0} -l {1} -i {2}"
 
 
 def check_output_ssh(host, opts, cmd, no_retry=False, max_retry=3):
-    logger.debug("SSH:%s: %r", host, cmd)
+    cmd = pipes.quote(cmd)
+    logger.debug("SSH:%s: %s", host, cmd)
     while True:
-        ok, res = check_output("ssh {0} {1} -- sudo {2}".format(SSH_OPTS, host, cmd), False)
+        ok, res = check_output("ssh {0} {1} -- sudo -s -- {2}".format(SSH_OPTS, host, cmd), False)
         if no_retry or res != "" or max_retry == 1:
             return ok, res
 
@@ -76,9 +78,15 @@ def get_device_for_file(host, opts, fname):
     if dev_link == 'udev':
         dev_link = fname
 
-    abs_path_cmd = '\'path="{0}" ;'.format(dev_link)
-    abs_path_cmd += 'while [ -h "$path" ] ; do path=$(readlink "$path") ;'
-    abs_path_cmd += ' path=$(readlink -f "$path") ; done ; echo $path\''
+    abs_path_cmd = (
+        "set -e; "
+        'path="{0}"; '
+        'while [ -h "$path" ]; do'
+        '  path=$(readlink "$path"); '
+        '  path=$(readlink -f "$path"); '
+        "done; "
+        "echo $path;"
+    ).format(dev_link)
     ok, dev = check_output_ssh(host, opts, abs_path_cmd)
     assert ok
 
