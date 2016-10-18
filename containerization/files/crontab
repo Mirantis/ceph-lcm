@@ -1,2 +1,5 @@
+PATH=/bin:/usr/bin:/usr/local/bin
+
 0 * * * * /usr/local/bin/cephlcm-cron-clean-expired-tokens > /var/log/cron.log 2>&1
 10 3 * * * /usr/local/bin/cephlcm-cron-clean-old-tasks > /var/log/cron.log 2>&1
+*/10 * * * * flock -xn /usr/local/bin/cephlcm-collect-data timeout --foreground -k 3m 2m /usr/local/bin/cephlcm-collect-data > /var/log/cron.log 2>&1

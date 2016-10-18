@@ -21,7 +21,7 @@ endef
 # -----------------------------------------------------------------------------
 
 build_eggs: build_backend_eggs build_cephlcmlib_eggs build_cephlcmcli_eggs build_plugins_eggs
-build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs build_ansible_eggs
+build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs build_ansible_eggs build_monitoring_eggs
 build_plugins_eggs: build_alerts_eggs build_playbook_eggs
 build_alerts_eggs: build_email_eggs
 build_playbook_eggs: build_deploy_cluster_eggs build_helloworld_eggs build_server_discovery_eggs build_add_osd_eggs build_remove_osd_eggs build_purge_cluster_eggs
@@ -37,6 +37,9 @@ build_controller_eggs: clean_eggs make_egg_directory
 
 build_ansible_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/backend/ansible","$(EGGS_DIR)")
+
+build_monitoring_eggs: clean_eggs make_egg_directory
+	$(call build_egg,"$(ROOT_DIR)/backend/monitoring","$(EGGS_DIR)")
 
 build_cephlcmlib_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/cephlcmlib","$(EGGS_DIR)")

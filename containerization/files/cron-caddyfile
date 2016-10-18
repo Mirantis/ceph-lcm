@@ -1,0 +1,5 @@
+:8000
+browse
+errors
+root /www
+basicauth / root r00tme

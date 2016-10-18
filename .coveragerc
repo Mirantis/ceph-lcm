@@ -3,6 +3,8 @@ branch = True
 omit =
   tests/*
   */site-packages/*
+  backend/monitoring
+  backend/ansible
 source =
   backend/
   plugins/

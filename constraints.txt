@@ -21,14 +21,15 @@ flake8-polyfill==1.0.1
 flake8-quotes==0.8.1
 flake8-string-format==0.2.3
 Flask==0.11.1
+ipaddr==2.1.11
 ipdb==0.10.1
 ipython==5.1.0
 jsonschema==2.5.1
 lockfile==0.12.2
 mongomock==3.6.0
-netaddr==0.7.18
 pep8-naming==0.4.1
 pycodestyle==2.0.0
+pycparser!=2.15
 pymongo==3.3.0
 pytest==3.0.3
 pytest-cov==2.4.0

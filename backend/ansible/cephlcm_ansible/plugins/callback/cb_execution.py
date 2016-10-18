@@ -89,23 +89,27 @@ class CallbackModule(callback.CallbackBase):
     def __init__(self, display=None):
         super(CallbackModule, self).__init__(display)
 
-        self.execution_id = os.environ[ENV_EXECUTION_ID]
-        self.playbook = None
+        execution_id = os.getenv(ENV_EXECUTION_ID)
+        self.enabled = bool(execution_id)
 
-        self.db_client = pymongo.MongoClient(
-            os.environ[ENV_DB_URI],
-            maxPoolSize=30,
-            connect=False,
-            socketTimeoutMS=TIMEOUT,
-            connectTimeoutMS=TIMEOUT,
-            waitQueueTimeoutMS=TIMEOUT
-        )
-        database = self.db_client.get_default_database()
-        self.step_collection = database[STEP_COLLECTION_NAME]
-        self.server_collection = database[SERVER_COLLECTION_NAME]
+        if self.enabled:
+            self.execution_id = os.environ[ENV_EXECUTION_ID]
+            self.playbook = None
 
-        self.task_starts = {}
-        self.server_ids = {}
+            self.db_client = pymongo.MongoClient(
+                os.environ[ENV_DB_URI],
+                maxPoolSize=30,
+                connect=False,
+                socketTimeoutMS=TIMEOUT,
+                connectTimeoutMS=TIMEOUT,
+                waitQueueTimeoutMS=TIMEOUT
+            )
+            database = self.db_client.get_default_database()
+            self.step_collection = database[STEP_COLLECTION_NAME]
+            self.server_collection = database[SERVER_COLLECTION_NAME]
+
+            self.task_starts = {}
+            self.server_ids = {}
 
     def v2_playbook_on_play_start(self, play):
         self.playbook = play
@@ -137,6 +141,9 @@ class CallbackModule(callback.CallbackBase):
 
     def add_task_result(self, result_object, result_state):
         """Adds Ansible result to the database."""
+
+        if not self.enabled:
+            return
 
         playbook = self.playbook.name
         name = result_object._task.name or result_object._task.get_name()

@@ -1,6 +1,3 @@
-[submodule "ceph-ansible"]
-	path = plugins/playbook/deploy_cluster/cephlcm_deploy_cluster/playbooks
-	url = https://github.com/ceph/ceph-ansible.git
 [submodule "backend/ansible/cephlcm_ansible/ceph-ansible"]
 	path = backend/ansible/cephlcm_ansible/ceph-ansible
 	url = https://github.com/ceph/ceph-ansible.git

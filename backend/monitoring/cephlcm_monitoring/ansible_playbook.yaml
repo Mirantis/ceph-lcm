@@ -1,0 +1,81 @@
+---
+# This playbook has to be used to gather monitoring with custom Ceph
+# monitoring scripts:
+#    https://github.com/Mirantis/ceph-monitoring
+#
+# Playbook options are:
+#    * collector_path         - local path to the collect_info.py
+#    * visualizator_path      - local path to visualize_cluster.py
+#    * cluster                - cluster name to work with
+#    * local_static_directory - directory where static files should be saved into
+#    * ssh_private_key_path   - path to the SSH private key to use to access
+#                               remote machines
+#    * random_string          - some string which is random (UUID is great choice).
+#                               it would be used as a part of remote tmp directory.
+
+
+- hosts: all
+  gather_facts: false
+  force_handlers: true
+
+  handlers:
+    - name: remove_remote_directory
+      file: path="monitoring_{{ random_string }}" state=absent
+
+  tasks:
+    - set_fact: remote_directory_path="{{ 'monitoring_%s'|format(random_string) }}"
+    - set_fact: remote_collector_path="{{ remote_directory_path }}/collector.py"
+    - set_fact: remote_ssh_key="{{ remote_directory_path }}/ssh.pem"
+    - set_fact: remote_result_path="{{ remote_directory_path }}/results.tar.gz"
+    - set_fact: local_result_directory="/tmp/{{ random_string }}"
+    - set_fact: username="{{ username|default(ansible_user) }}"
+
+    - name: Create remote directory
+      run_once: true
+      notify: remove_remote_directory
+      file: path="{{ remote_directory_path }}" state=directory recurse=yes
+
+    - name: Upload collector
+      run_once: true
+      copy:
+        src: "{{ collector_path }}"
+        dest: "{{ remote_collector_path }}"
+        mode: 0770
+
+    - name: Upload private key
+      run_once: true
+      copy:
+        src: "{{ ssh_private_key_path }}"
+        dest: "{{ remote_ssh_key }}"
+        mode: 0600
+
+    - name: Run collector
+      run_once: true
+      become: true
+      shell: 'python "{{ remote_collector_path }}" --log-level DEBUG --conf "/etc/ceph/{{ cluster }}.conf" --key "/etc/ceph/{{ cluster }}.client.admin.keyring" --username "{{ username }}" --ssh-private-key "{{ remote_ssh_key }}" --result "$(pwd)/{{ remote_result_path }}"'
+
+    - name: Fetch result
+      run_once: true
+      become: true
+      fetch:
+        src: "{{ remote_result_path }}"
+        dest: "{{ local_result_directory }}/"
+        flat: yes
+
+
+- hosts: localhost
+  gather_facts: false
+
+  handlers:
+    - name: remove_local_results
+      file: path="{{ local_result }}" state=absent
+
+  tasks:
+    - set_fact: local_result="/tmp/{{ random_string }}/results.tar.gz"
+
+    - name: Ensure local static directory is created
+      file: path="{{ local_static_directory }}" state=directory recurse=yes
+
+    - name: Visualize cluster
+      command: python "{{ visualizator_path }}" -w -g -o "{{ local_static_directory }}" "{{ local_result }}"
+      notify: remove_local_results

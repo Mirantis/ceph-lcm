@@ -1,0 +1,2 @@
+include cephlcm_monitoring/ansible_playbook.yaml
+graft cephlcm_monitoring/html_js_css/*
