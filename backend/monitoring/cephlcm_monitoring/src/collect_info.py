@@ -52,14 +52,17 @@ def check_output(cmd, log=True):
 
 # This variable is updated from main function
 SSH_OPTS = "-o LogLevel=quiet -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "
-SSH_OPTS += "-o ConnectTimeout={0} -l {1} -i {2}"
+SSH_OPTS += "-o ConnectTimeout={0} -i {1}"
+
+USERNAME = "root"
 
 
 def check_output_ssh(host, opts, cmd, no_retry=False, max_retry=3):
     cmd = pipes.quote(cmd)
     logger.debug("SSH:%s: %s", host, cmd)
     while True:
-        ok, res = check_output("ssh {0} {1} -- sudo -s -- {2}".format(SSH_OPTS, host, cmd), False)
+        ok, res = check_output("ssh {0} {1}@{2} -- sudo -s -- {3}".format(
+            SSH_OPTS, USERNAME, host, cmd), False)
         if no_retry or res != "" or max_retry == 1:
             return ok, res
 
@@ -484,8 +487,8 @@ class CephPerformanceCollector(Collector):
 
         open(local_file, "w").write(performance_monitor_code)
         try:
-            scp_cmd = "scp {0} {1} {2}:{3}".format(SSH_OPTS, local_file,
-                                                   host, self.remote_file)
+            scp_cmd = "scp {0} {1} {2}@{3}:{4}".format(SSH_OPTS, local_file,
+                                                       USERNAME, host, self.remote_file)
 
             ok, _ = check_output(scp_cmd)
             assert ok
@@ -751,7 +754,7 @@ def get_sshable_hosts(hosts, thcount=32):
             socket.gethostbyname(host)
         except socket.gaierror:
             return None
-        ok, out = check_output(cmd + host + ' pwd')
+        ok, out = check_output("ssh {0} {1}@{2} -- pwd".format(SSH_OPTS, USERNAME, host))
         if ok:
             return host
         return None
@@ -783,8 +786,10 @@ def main(argv):
     logger_ready = True
 
     global SSH_OPTS
-    SSH_OPTS = SSH_OPTS.format(opts.ssh_conn_timeout, opts.username,
-                               opts.ssh_private_key)
+    SSH_OPTS = SSH_OPTS.format(opts.ssh_conn_timeout, opts.ssh_private_key)
+
+    global USERNAME
+    USERNAME = opts.username
 
     collector_settings = CollectSettings()
     map(collector_settings.disable, opts.disable)
