@@ -47,7 +47,7 @@
       copy:
         src: "{{ ssh_private_key_path }}"
         dest: "{{ remote_ssh_key }}"
-        mode: 0440
+        mode: 0600
 
     - name: Run collector
       run_once: true
