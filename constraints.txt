@@ -29,6 +29,7 @@ lockfile==0.12.2
 mongomock==3.6.0
 pep8-naming==0.4.1
 pycodestyle==2.0.0
+pycparser!=2.15
 pymongo==3.3.0
 pytest==3.0.3
 pytest-cov==2.4.0
