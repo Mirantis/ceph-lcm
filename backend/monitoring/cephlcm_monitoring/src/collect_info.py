@@ -253,6 +253,9 @@ class CephDataCollector(Collector):
             if '-i ' + str(osd_id) in line and 'ceph-osd' in line:
                 osd_running = True
                 break
+            elif '--id ' + str(osd_id) in line and 'ceph-osd' in line:
+                osd_running = True
+                break
         else:
             osd_running = False
             logger.warning("osd-{0} in node {1} is down.".format(osd_id, host) +
