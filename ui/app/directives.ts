@@ -74,7 +74,11 @@ export class Filter {
     if (typeof criterion === 'string') {
       this.query['name'] = {'regexp': criterion};
     } else {
-      this.query[criterion.name] = criterion.value;
+      if (criterion.value) {
+        this.query[criterion.name] = criterion.value;
+      } else {
+        _.unset(this.query, criterion.name);
+      }
     }
     if (this.timeout) {
       window.clearTimeout(this.timeout);
