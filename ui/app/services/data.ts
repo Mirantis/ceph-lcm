@@ -14,7 +14,7 @@ type supportedMappers = 'auth' | 'user' | 'role' | 'permission' | 'cluster' |
   'playbook' | 'playbook_configuration' | 'server' | 'execution' | 'execution_step';
 
 export type pagedResult = {
-  items: [any],
+  items: any[],
   page: number,
   per_page: number,
   total: number
@@ -26,7 +26,7 @@ declare module 'js-data' {
     postUpdate(id: string, props: Record, opts?: any): Promise<Record>;
     getVersion(): any;
     getVersions(versionId: string): any;
-    getLogs(executionId: string): Promise<ExecutionStep[]>;
+    getLogs(executionId: string, query?: Object): Promise<pagedResult>;
     [key: string]: any;
   }
 }
@@ -166,10 +166,11 @@ export class DataService {
           getVersion: function(id: string, versionId: string) {
             return this.find(id, {suffix: '/version/' + versionId});
           },
-          getLogs: function(execution_id: string): Promise<pagedResult> {
-            return this.findAll({}, {endpoint: name + '/' + execution_id + '/steps'})
+          getLogs: function(execution_id: string, query: any = {}): Promise<pagedResult> {
+            return this.findAll(query, {endpoint: name + '/' + execution_id + '/steps'})
               .then((logs: pagedResult) => {
-                logs.items = logs.items as [ExecutionStep];
+                logs.items = logs.items as ExecutionStep[];
+                return logs as pagedResult;
               });
           }
         }

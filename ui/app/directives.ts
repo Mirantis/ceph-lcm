@@ -95,11 +95,11 @@ export class Filter {
 export class Criterion {
   @Input() name: string = '';
   @Input() values: string[] = [];
-  @Output() updateHandler  = new EventEmitter();
+  @Output() onChange  = new EventEmitter();
   value: string = '';
 
-  onChange(newValue: Object) {
-    this.updateHandler.emit({name: this.name, value: newValue});
+  handleUpdate(newValue: Object) {
+    this.onChange.emit({name: this.name, value: newValue});
   }
 }
 
@@ -116,6 +116,9 @@ export class Pager {
 
   getVisiblePages(): number[] {
     let totalPages = Math.ceil(this.pagingData.total / this.pagingData.per_page);
+    if (this.page > totalPages) {
+      this.switchPage(1);
+    }
     let start = this.pagingData.page - Math.round(this.visiblePages / 2);
     if (start < 1) {
       start = 1;

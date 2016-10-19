@@ -405,6 +405,7 @@ label {
 .grid {
   background-color: @white;
   border: 1px solid @background - 50%;
+  margin: 0;
 
   .grid-header {
     button.btn-link {
@@ -433,6 +434,10 @@ label {
     height: 40px;
     overflow: hidden;
 
+    &.error, &.unreachable {
+      .text-danger;
+    }
+
     &.table-help {
       border-width: 0;
       margin-bottom: 0;
@@ -460,6 +465,11 @@ label {
 
     .name {
       font-weight: 600;
+    }
+
+    .state {
+      font-weight: 400;
+      text-transform: uppercase;
     }
 
     .parameter {

@@ -1,9 +1,10 @@
 import * as _ from 'lodash';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Record } from 'js-data';
-import { DataService } from '../services/data';
+import { DataService, pagedResult } from '../services/data';
 import { Execution, ExecutionStep } from '../models';
+import { Filter, Criterion, Pager } from '../directives';
 
 @Component({
   templateUrl: './app/templates/logs.html'
@@ -13,6 +14,9 @@ export class LogsComponent {
   steps: ExecutionStep[] = [];
   poller: NodeJS.Timer;
   stopPolling: boolean = false;
+  @ViewChild(Filter) filter: Filter;
+  @ViewChild(Pager) pager: Pager;
+  pagedData: pagedResult = {} as pagedResult;
 
   constructor (private data: DataService, private route: ActivatedRoute) {
     this.poller = setTimeout(() => this.fetchData(), 5000);
@@ -33,9 +37,15 @@ export class LogsComponent {
 
   fetchData() {
     if (this.execution) {
-      this.data.execution().getLogs(this.execution.id)
-        .then((steps: ExecutionStep[]) => {
-          this.steps = steps;
+      this.data.execution().getLogs(
+        this.execution.id, {
+          filter: _.get(this.filter, 'query', {}),
+          page: _.get(this.pager, 'page', 1)
+        }
+      )
+        .then((steps: pagedResult) => {
+          this.steps = steps.items;
+          this.pagedData = steps;
           if (!this.stopPolling) {
             this.poller = setTimeout(() => this.fetchData(), 5000);
           }

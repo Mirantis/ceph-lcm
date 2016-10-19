@@ -34,7 +34,7 @@ export class PermissionsGroup {
 })
 export class RolesComponent {
   roles: Role[] = null;
-  permissions: [PermissionGroup] = [] as [PermissionGroup];
+  permissions: PermissionGroup[] = [];
   newRole: Role = new Role({data: {permissions: []}});
 
   constructor(

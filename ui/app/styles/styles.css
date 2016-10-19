@@ -7465,6 +7465,7 @@ a.box > div.state.off:focus {
 .grid {
   background-color: #ffffff;
   border: 1px solid #acb0b2;
+  margin: 0;
 }
 .grid .grid-header button.btn-link {
   vertical-align: baseline;
@@ -7492,6 +7493,23 @@ a.grid .grid-header button.btn-link:focus {
   display: block;
   height: 40px;
   overflow: hidden;
+}
+.grid .grid-line.error,
+.grid .grid-header.error,
+.grid .grid-line.unreachable,
+.grid .grid-header.unreachable {
+  color: #a94442;
+  color: #FF634C;
+}
+a.grid .grid-line.error:hover,
+a.grid .grid-header.error:hover,
+a.grid .grid-line.unreachable:hover,
+a.grid .grid-header.unreachable:hover,
+a.grid .grid-line.error:focus,
+a.grid .grid-header.error:focus,
+a.grid .grid-line.unreachable:focus,
+a.grid .grid-header.unreachable:focus {
+  color: #843534;
 }
 .grid .grid-line.table-help,
 .grid .grid-header.table-help {
@@ -7532,6 +7550,11 @@ a.grid .grid-header .icon:focus {
 .grid .grid-line .name,
 .grid .grid-header .name {
   font-weight: 600;
+}
+.grid .grid-line .state,
+.grid .grid-header .state {
+  font-weight: 400;
+  text-transform: uppercase;
 }
 .grid .grid-line .parameter,
 .grid .grid-header .parameter {
