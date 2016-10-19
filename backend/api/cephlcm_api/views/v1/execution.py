@@ -215,4 +215,4 @@ class ExecutionStepsLog(generic.View):
         if not logfile:
             raise http_exceptions.NotFound()
 
-        return flask.send_file(logfile, mimetype="text/plain")
+        return flask.Response(logfile, mimetype="text/plain")
