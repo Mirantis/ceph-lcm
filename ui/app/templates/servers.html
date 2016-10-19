@@ -13,20 +13,24 @@
   <div class="col-xs-12">
 
     <div class="table-help">
-      <div class="col-xs-8">Server Name</div>
-      <div class="col-xs-4">Status</div>
+      <div class="col-xs-4">Server Name</div>
+      <div class="col-xs-2">IP</div>
+      <div class="col-xs-3">FQDN</div>
+      <div class="col-xs-3">Status</div>
     </div>
 
     <div
       class="box"
       [ngClass]="{open: server.id === shownServerId}"
       *ngFor="let server of servers">
-      <div class="col-xs-8 name">{{server.data.name}}</div>
-      <div class="col-xs-3 state" [ngClass]="server.data.state">
+      <div class="col-xs-4 name">{{server.data.name}}</div>
+      <div class="col-xs-2 name">{{server.data.ip}}</div>
+      <div class="col-xs-3 name">{{server.data.fqdn}}</div>
+      <div class="col-xs-2 state" [ngClass]="server.data.state">
         {{server.data.state}}
       </div>
       <div class="col-xs-1 action">
-        <a (click)="showVersions(server)">
+        <a (click)="showConfiguration(server)">
           <span
             class="glyphicon"
             [ngClass]="'glyphicon-triangle-' + (server.id === shownServerId ? 'bottom' : 'right')"
@@ -36,17 +40,19 @@
 
       <div class="bowels">
         <div class="col-xs-12">
-          <h3>Server Configuration Details</h3>
+          <h3>Server Facts</h3>
         </div>
 
         <div
           class="col-xs-6 server-details"
-          *ngFor="let details of configuration">
+          *ngFor="let details of getKeyHalfsets(server)">
           <div
             class="server-details-item"
             *ngFor="let detail of details">
-            <div class="name">{{detail}}</div>
-            <div class="parameter">{{server.data[detail]}}</div>
+            <div class="name" [title]="detail">{{detail}}</div>
+            <div class="parameter" [title]="server.data.facts[detail]|json">
+              {{server.data.facts[detail]|json}}
+            </div>
           </div>
 
         </div>

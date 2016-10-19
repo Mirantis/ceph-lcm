@@ -11,9 +11,6 @@ import * as _ from 'lodash';
 export class ServersComponent {
   servers: Server[] = null;
   shownServerId: string = null;
-  configuration: string[][] = [
-    ['name', 'fqdn', 'ip'], ['state', 'cluster_id']
-  ];
   @ViewChild(Filter) filter: Filter;
   @ViewChild(Pager) pager: Pager;
   pagedData: pagedResult = {} as pagedResult;
@@ -34,7 +31,12 @@ export class ServersComponent {
       .catch((error: any) => this.data.handleResponseError(error));
   }
 
-  showVersions(server: Server) {
+  getKeyHalfsets(server: Server) {
+    let keys = _.keys(server.data.facts).sort();
+    return _.chunk(keys, Math.ceil(keys.length / 2));
+  }
+
+  showConfiguration(server: Server) {
     this.shownServerId = this.shownServerId === server.id ?
       null : server.id;
   }

@@ -5,30 +5,17 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import functools
-
 import six
 import six.moves
 import yaml
 
 
-IP_FILENAME = "/tmp/__ip__"
-"""Temporary filename to store default IP address."""
-
-UUID_FILENAME = "/tmp/__uuid__"
-"""Temporary filename to store machine UUID."""
-
 PYTHON_SCRIPT_FILENAME = "/usr/share/server_discovery.py"
 """File where Python script is going to be placed."""
 
-PYTHON_MARKER_FILENAME = "/tmp/__server_discovery__"
-"""Marker filename for Pythons.
-
-Basically, we do not know if python2 or python3 were installed therefore
-we have to try both. To avoid 2 requests for server, we are going to
-use marker file. If one python succeed to run, then such file has to be
-created. It means that next python won't continue to work.
-"""
+SERVER_DISCOVERY_FILENAME = "/usr/share/server_discovery.sh"
+"""File where server discovery script (which should be executed by rc.local)
+has to be placed."""
 
 DEFAULT_USER = "ansible"
 """Default user for Ansible."""
@@ -36,13 +23,42 @@ DEFAULT_USER = "ansible"
 REQUEST_TIMEOUT = 5  # seconds
 """How long to wait for response from API."""
 
+SERVER_DISCOVERY_PROG = """\
+#!/bin/bash
+set -xe -o pipefail
+
+echo "Date $(date) | $(date -u) | $(date '+%s')"
+
+main() {{
+    local ip="$(get_local_ip)"
+    local hostid="$(get_local_hostid)"
+
+    python {python_script} "$ip" "$hostid"
+}}
+
+get_local_ip() {{
+    local remote_ipaddr="$(getent ahostsv4 "{url_host}" | head -n 1 | cut -f 1 -d ' ')"
+
+    ip route get "$remote_ipaddr" | head -n 1 | rev | cut -d ' ' -f 2 | rev
+}}
+
+get_local_hostid() {{
+    dmidecode | grep UUID | rev | cut -d ' ' -f 1 | rev
+}}
+
+main
+""" # NOQA
+"""Script that should be run in /etc/rc.local"""
+
+SERVER_DISCOVERY_LOGFILE = "/var/log/server_discovery.log"
+"""Logfile where output of SERVER_DISCOVERY_PROG has to be stored."""
+
 PYTHON_PROG = """\
 #-*- coding: utf-8 -*-
 
 from __future__ import print_function
 
 import json
-import os
 import ssl
 import sys
 
@@ -51,15 +67,10 @@ try:
 except ImportError:
     import urllib2
 
-try:
-    os.close(os.open({marker_filename!r}, os.O_CREAT | os.O_EXCL))
-except OSError:
-    sys.exit(0)
-
 data = {{
     "username": {username!r},
-    "host": open({ip_filename!r}).read().strip(),
-    "id": open({uuid_filename!r}).read().strip()
+    "host": sys.argv[1].lower().strip(),
+    "id": sys.argv[2].lower().strip()
 }}
 data = json.dumps(data).encode("utf-8")
 
@@ -119,14 +130,12 @@ def generate_cloud_config(url, server_discovery_token, public_key, username,
     if not url.startswith(("http://", "https://")):
         url = "http://{0}".format(url)
 
-    commands = get_commands(url)
     document = {
         "users": get_users(username, public_key),
         "packages": PACKAGES,
-        "bootcmd": commands,
         "write_files": get_files(url, server_discovery_token, username,
                                  timeout),
-        "runcmd": commands
+        "runcmd": get_commands(url)
     }
     cloud_config = yaml.dump(document, Dumper=ExplicitDumper,
                              indent=2, width=9999)
@@ -136,30 +145,29 @@ def generate_cloud_config(url, server_discovery_token, public_key, username,
 
 
 def get_files(url, server_discovery_token, username, timeout):
-    program = PYTHON_PROG.format(
+    python_program = PYTHON_PROG.format(
         username=username,
-        ip_filename=IP_FILENAME,
-        uuid_filename=UUID_FILENAME,
-        marker_filename=PYTHON_MARKER_FILENAME,
         url=url,
         token=server_discovery_token,
         timeout=timeout
     )
+    rc_local_program = SERVER_DISCOVERY_PROG.format(
+        url_host=get_hostname(url),
+        python_script=PYTHON_SCRIPT_FILENAME
+    )
+
     return [
         {
-            "content": YAMLLiteral(program),
+            "content": YAMLLiteral(python_program),
             "path": PYTHON_SCRIPT_FILENAME,
             "permissions": "0440"
+        },
+        {
+            "content": YAMLLiteral(rc_local_program),
+            "path": SERVER_DISCOVERY_FILENAME,
+            "permissions": "0550"
         }
     ]
-
-
-def bootcmd(func):
-    @functools.wraps(func)
-    def decorator(*args, **kwargs):
-        return ["sh", "-xc", func(*args, **kwargs)]
-
-    return decorator
 
 
 def get_users(username, public_key):
@@ -177,13 +185,9 @@ def get_users(username, public_key):
 def get_commands(url):
     command = [
         get_command_header(),
-        get_command_clean(),
-        get_command_uuid(),
-        get_command_ip(url)
-    ]
-    command += get_commands_notify()
-    command += [
-        get_command_clean(),
+        get_command_update_rc_local(),
+        get_command_enable_rc_local(),
+        get_command_run_script(),
         get_command_footer()
     ]
 
@@ -194,50 +198,38 @@ def get_command_header():
     return ["echo", "=== START CEPHLCM SERVER DISCOVERY ==="]
 
 
-def get_command_debug(url, server_discovery_token):
+def get_command_update_rc_local():
     return [
-        "echo",
-        "DISCOVERY DATA: URL={0!r}, TOKEN={1!r}".format(
-            url, server_discovery_token)
-    ]
-
-
-@bootcmd
-def get_command_uuid():
-    return (
-        "dmidecode | grep UUID | rev | cut -f1 -d' ' | rev | "
-        "tr '[[:upper:]]' '[[:lower:]]' {0}".format(
-            shell_redirect(UUID_FILENAME))
-    )
-
-
-@bootcmd
-def get_command_ip(url):
-    return (
-        "ip route get $(getent ahostsv4 '{0}' | head -n1 | cut -f1 -d' ') | "
-        "head -n1 | rev | cut -f2 -d' ' | rev {1}".format(
-            get_hostname(url), shell_redirect(IP_FILENAME)
+        "sh", "-xc", (
+            r"grep -q '{server_discovery_filename}' /etc/rc.local || "
+            r"sed -i 's?^exit 0?{server_discovery_filename} "
+            r">> {server_discovery_logfile} 2>\&1\nexit 0?' /etc/rc.local"
+        ).format(
+            server_discovery_filename=SERVER_DISCOVERY_FILENAME,
+            server_discovery_logfile=SERVER_DISCOVERY_LOGFILE
         )
-    )
-
-
-def get_commands_notify():
-    return [
-        ["python2", PYTHON_SCRIPT_FILENAME],
-        ["python3", PYTHON_SCRIPT_FILENAME],
     ]
 
 
-def get_command_clean():
-    return ["rm", "-f", UUID_FILENAME, IP_FILENAME, PYTHON_MARKER_FILENAME]
+def get_command_enable_rc_local():
+    return [
+        "sh", "-xc",
+        r"systemctl enable rc-local.service || true"
+    ]
+
+
+def get_command_run_script():
+    return [
+        "sh", "-xc",
+        r"{script} 2>&1 | tee -a {logfile}".format(
+            script=SERVER_DISCOVERY_FILENAME,
+            logfile=SERVER_DISCOVERY_LOGFILE
+        )
+    ]
 
 
 def get_command_footer():
     return ["echo", "=== FINISH CEPHLCM SERVER DISCOVERY ==="]
-
-
-def shell_redirect(filename):
-    return "| tr -d '[[:space:]]' | tee {0}".format(filename)
 
 
 def get_hostname(hostname):

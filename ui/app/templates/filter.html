@@ -18,7 +18,7 @@
         *ngFor="let criterion of criteria|keys"
         [name]="criterion"
         [values]="criteria[criterion]"
-        (updateHandler)="criterionUpdated($event)"
+        (onChange)="criterionUpdated($event)"
       >
       </criterion>
     </form>

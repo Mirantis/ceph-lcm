@@ -14,17 +14,36 @@
   </div>
 </div>
 
+<filter (onChange)="fetchData()"></filter>
+
 <div class="logs grid row" *ngIf="steps && steps.length">
   <div class="col-xs-12">
     <div class="grid-header">
+      <div class="col-xs-2 name">Time</div>
       <div class="col-xs-3 name">Name</div>
+      <div class="col-xs-3 name">Server ID</div>
+      <div class="col-xs-1 name">Result</div>
+      <div class="col-xs-3 name">Details</div>
     </div>
 
-    <div class="grid-line" *ngFor="let step of steps">
-      <div class="col-xs-3">{{step.data.name}}</div>
-      <div class="col-xs-9 json">{{step.data.error|json}}</div>>
+    <div
+      class="grid-line"
+      *ngFor="let step of steps"
+      [ngClass]="step.data.result"
+    >
+      <div class="col-xs-2">{{step.time_updated|date_time}}</div>
+      <div class="col-xs-3" [title]="step.data.name">
+        {{step.data.name}}
+      </div>
+      <div class="col-xs-3">{{step.data.server_id}}</div>
+      <div class="col-xs-1 state">{{step.data.result}}</div>
+      <div class="col-xs-3" [title]="step.data.error.msg">
+        {{step.data.error.msg}}
+      </div>
     </div>
   </div>
 </div>
 
 <div *ngIf="!steps || !steps.length">No execution logs found</div>
+
+<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>

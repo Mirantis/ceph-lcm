@@ -5,7 +5,7 @@
       class="form-control"
       name="criterion"
       [(ngModel)]="value"
-      (ngModelChange)="onChange($event)"
+      (ngModelChange)="handleUpdate($event)"
     >
       <option></option>
       <option *ngFor="let value of values" [value]="value|index:1">{{value|index}}</option>

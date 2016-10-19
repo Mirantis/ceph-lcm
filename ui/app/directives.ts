@@ -74,7 +74,11 @@ export class Filter {
     if (typeof criterion === 'string') {
       this.query['name'] = {'regexp': criterion};
     } else {
-      this.query[criterion.name] = criterion.value;
+      if (criterion.value) {
+        this.query[criterion.name] = criterion.value;
+      } else {
+        _.unset(this.query, criterion.name);
+      }
     }
     if (this.timeout) {
       window.clearTimeout(this.timeout);
@@ -91,11 +95,11 @@ export class Filter {
 export class Criterion {
   @Input() name: string = '';
   @Input() values: string[] = [];
-  @Output() updateHandler  = new EventEmitter();
+  @Output() onChange  = new EventEmitter();
   value: string = '';
 
-  onChange(newValue: Object) {
-    this.updateHandler.emit({name: this.name, value: newValue});
+  handleUpdate(newValue: Object) {
+    this.onChange.emit({name: this.name, value: newValue});
   }
 }
 
@@ -112,6 +116,9 @@ export class Pager {
 
   getVisiblePages(): number[] {
     let totalPages = Math.ceil(this.pagingData.total / this.pagingData.per_page);
+    if (this.page > totalPages) {
+      this.switchPage(1);
+    }
     let start = this.pagingData.page - Math.round(this.visiblePages / 2);
     if (start < 1) {
       start = 1;

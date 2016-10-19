@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 import { Modal } from '../directives';
@@ -24,6 +24,7 @@ export class WizardComponent {
   newConfiguration: PlaybookConfiguration = new PlaybookConfiguration({data: {server_ids: []}});
   jsonConfiguration: string;
   serversRequired: boolean = false;
+  readonly: boolean = false;
 
   constructor(
     private data: DataService,
@@ -74,8 +75,9 @@ export class WizardComponent {
     this.jsonConfiguration = formatJSON.plain(this.newConfiguration.data.configuration);
   }
 
-  init(configuration: PlaybookConfiguration = null) {
+  init(configuration: PlaybookConfiguration = null, readonly = false) {
     this.serversRequired = false;
+    this.readonly = readonly;
     if (configuration) {
       this.initForEditing(configuration);
     } else {
@@ -86,6 +88,14 @@ export class WizardComponent {
 
   isSaveButtonShown() {
     return this.step >= 3 || (this.step === 2 && !this.serversRequired);
+  }
+
+  isSaveButtonDisabled(newConfigurationForm: FormGroup, editConfigurationForm: FormGroup) {
+    return (this.step === 2 && !this.newConfiguration.data.playbook_id) ||
+      (this.step === 3 && !this.areSomeServersSelected()) ||
+      (this.step < 4 && !newConfigurationForm.valid) ||
+      (this.step === 4 && !editConfigurationForm.valid) ||
+      !this.isJSONValid();
   }
 
   toggleSelectAll() {
@@ -107,7 +117,7 @@ export class WizardComponent {
   }
 
   areSomeServersSelected() {
-    return this.step !== 3 || this.newConfiguration.data.server_ids.length;
+    return this.newConfiguration.data.server_ids.length;
   }
 
   areAllServersSelected() {
