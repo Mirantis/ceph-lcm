@@ -117,6 +117,7 @@
           rows="10"
           name="configuration"
           [(ngModel)]="jsonConfiguration"
+          [readonly]="readonly"
         ></textarea>
       </div>
     </template>
@@ -143,10 +144,10 @@
     Next
   </button>
   <button
-    *ngIf="isSaveButtonShown()"
+    *ngIf="isSaveButtonShown() && !readonly"
     class="btn btn-primary"
     (click)="save()"
-    [disabled]="(step < 4 && !newConfigurationForm.form.valid) || (step === 4 && !editConfigurationForm.form.valid) || !areSomeServersSelected() || !isJSONValid()"
+    [disabled]="isSaveButtonDisabled(newConfigurationForm, editConfigurationForm)"
   >
     Save changes
   </button>

@@ -56,17 +56,19 @@ export class ConfigurationsComponent {
       );
   }
 
-  editConfiguration(configuration: PlaybookConfiguration = null) {
+  editConfiguration(configuration: PlaybookConfiguration = null, readonly = false) {
     this.clone = configuration;
-    Promise.all([
-      this.data.cluster().findAll({})
-        .then((clusters: pagedResult) => this.clusters = clusters.items),
-      this.data.playbook().findAll({})
-        .then((playbooks: pagedResult) => this.playbooks = playbooks.items),
-      this.data.server().findAll({})
-        .then((servers: pagedResult) => this.servers = servers.items)
-    ]).catch((error: any) => this.data.handleResponseError(error));
-    this.wizard.init(configuration);
+    if (!configuration) {
+        Promise.all([
+          this.data.cluster().findAll({})
+            .then((clusters: pagedResult) => this.clusters = clusters.items),
+          this.data.playbook().findAll({})
+            .then((playbooks: pagedResult) => this.playbooks = playbooks.items),
+          this.data.server().findAll({})
+            .then((servers: pagedResult) => this.servers = servers.items)
+        ]).catch((error: any) => this.data.handleResponseError(error));
+    }
+    this.wizard.init(configuration, readonly);
     this.modal.show();
   }
 
