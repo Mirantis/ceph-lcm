@@ -2,13 +2,19 @@
 """This module has db connection class."""
 
 
+import gridfs
+import gridfs.errors
 import pymongo
 
 from cephlcm_common import config
+from cephlcm_common import log
 
 
 CONF = config.make_config()
 """Config."""
+
+LOG = log.getLogger(__name__)
+"""Logger."""
 
 
 class MongoDB:
@@ -36,3 +42,33 @@ class MongoDB:
     @property
     def db(self):
         return self.client[self.dbname]
+
+
+class FileStorage:
+
+    COLLECTION = "fs"
+
+    def __init__(self, db):
+        self.fs = gridfs.GridFS(db, collection=self.COLLECTION)
+
+    def delete(self, key):
+        self.fs.delete(key)
+
+    def __contains__(self, key):
+        return self.fs.exists(key)
+
+    def get(self, key):
+        try:
+            return self.fs.get(key)
+        except (gridfs.errors.CorruptGridFile, gridfs.errors.NoFile) as exc:
+            LOG.warning("Cannot find file %s in collection %s: %s",
+                        key, self.COLLECTION, exc)
+
+    def new_file(self, key, filename=None, content_type=None):
+        kwargs = {"_id": key}
+        if filename is not None:
+            kwargs["filename"] = filename
+        if content_type is not None:
+            kwargs["content_type"] = content_type
+
+        return self.fs.new_file(**kwargs)

@@ -6,6 +6,7 @@ import abc
 import contextlib
 import copy
 import functools
+import tempfile
 import ipaddress
 import operator
 import os

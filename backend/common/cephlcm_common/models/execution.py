@@ -8,6 +8,7 @@ configuration to execute and creates task for execution.
 
 import enum
 
+from cephlcm_common.models import db
 from cephlcm_common.models import generic
 from cephlcm_common.models import playbook_configuration
 from cephlcm_common.models import properties
@@ -23,12 +24,20 @@ class ExecutionState(enum.IntEnum):
     failed = 6
 
 
+class ExecutionLogStorage(db.FileStorage):
+    COLLECTION = "execution_log"
+
+
 class ExecutionModel(generic.Model):
     """This is a model of Execution."""
 
     MODEL_NAME = "execution"
     COLLECTION_NAME = "execution"
     DEFAULT_SORT_BY = [("time_created", generic.SORT_DESC)]
+
+    @classmethod
+    def log_storage(cls):
+        return ExecutionLogStorage(cls.database())
 
     def __init__(self):
         super().__init__()
@@ -37,6 +46,27 @@ class ExecutionModel(generic.Model):
         self.playbook_configuration_version = None
         self._playbook_configuration = None
         self.state = ExecutionState.created
+
+    @property
+    def logfile(self):
+        logfile = self.log_storage.get(self.execution_id)
+        if not logfile:
+            yield None
+        with logfile:
+            yield logfile
+
+    @property
+    def new_logfile(self):
+        storage = self.log_storage()
+        storage.delete(self.execution_id)
+
+        new_file = storage.new_file(
+            self.execution_id,
+            filename="{0}.log".format(self.execution_id),
+            content_type="text/plain"
+        )
+        with new_file:
+            yield new_file
 
     state = properties.ChoicesProperty("_state", ExecutionState)
 
