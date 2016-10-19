@@ -6,7 +6,6 @@ import abc
 import contextlib
 import copy
 import functools
-import tempfile
 import ipaddress
 import operator
 import os
@@ -27,6 +26,7 @@ except ImportError:
 from cephlcm_common import config
 from cephlcm_common import exceptions
 from cephlcm_common import log
+from cephlcm_common.models import execution
 from cephlcm_common.models import task
 
 
@@ -208,8 +208,8 @@ class Ansible(Base, metaclass=abc.ABCMeta):
 class Playbook(Base, metaclass=abc.ABCMeta):
 
     ANSIBLE_CMD = shutil.which("ansible-playbook")
-    PROCESS_STDOUT = subprocess.DEVNULL
-    PROCESS_STDERR = subprocess.DEVNULL
+    PROCESS_STDOUT = None
+    PROCESS_STDERR = subprocess.STDOUT
     PROCESS_STDIN = subprocess.DEVNULL
     BECOME = False
     EXTRA_VARS = {}
@@ -271,6 +271,26 @@ class Playbook(Base, metaclass=abc.ABCMeta):
             "global_vars": extra,
             "inventory": inventory
         }
+
+    def on_pre_execute(self, task):
+        self.PROCESS_STDOUT = tempfile.TemporaryFile()
+        super().on_pre_execute(task)
+
+    def on_post_execute(self, task, *exc_info):
+        self.PROCESS_STDOUT.seek(0)
+        try:
+            execution_model = execution.ExecutionModel.find_by_model_id(
+                task.execution_id
+            )
+            with execution_model.new_logfile as logfp:
+                shutil.copyfileobj(self.PROCESS_STDOUT, logfp)
+        except Exception as exc:
+            LOG.exception("Cannot save execution log of %s: %s",
+                          task.execution_id, exc)
+        finally:
+            self.PROCESS_STDOUT.close()
+
+        super().on_post_execute(task, *exc_info)
 
     @abc.abstractmethod
     def make_playbook_configuration(self, servers):
@@ -369,9 +389,11 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
 
     def on_pre_execute(self, task):
         self.fetchdir = tempfile.mkdtemp()
+        super().on_pre_execute(task)
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
         shutil.rmtree(self.fetchdir)
+        super().on_post_execute(task, exc_value, exc_type, exc_tb)
 
     def get_extra_vars(self, task):
         config = super().get_extra_vars(task)

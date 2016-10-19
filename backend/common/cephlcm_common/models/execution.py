@@ -6,6 +6,7 @@ configuration to execute and creates task for execution.
 """
 
 
+import contextlib
 import enum
 
 from cephlcm_common.models import db
@@ -48,21 +49,23 @@ class ExecutionModel(generic.Model):
         self.state = ExecutionState.created
 
     @property
+    @contextlib.contextmanager
     def logfile(self):
-        logfile = self.log_storage.get(self.execution_id)
+        logfile = self.log_storage.get(self.model_id)
         if not logfile:
             yield None
         with logfile:
             yield logfile
 
     @property
+    @contextlib.contextmanager
     def new_logfile(self):
         storage = self.log_storage()
-        storage.delete(self.execution_id)
+        storage.delete(self.model_id)
 
         new_file = storage.new_file(
-            self.execution_id,
-            filename="{0}.log".format(self.execution_id),
+            self.model_id,
+            filename="{0}.log".format(self.model_id),
             content_type="text/plain"
         )
         with new_file:
