@@ -82,6 +82,9 @@ class View(flask.views.MethodView):
     def dispatch_request(self, *args, **kwargs):
         response = super().dispatch_request(*args, **kwargs)
 
+        if isinstance(response, flask.Response):
+            return response
+
         try:
             response = self.prepare_response(response)
         except Exception as exc:

@@ -184,3 +184,35 @@ class ExecutionStepsView(generic.CRUDView):
         return execution_step.ExecutionStep.list_models(
             str(item_id), self.pagination
         )
+
+
+class ExecutionStepsLog(generic.View):
+
+    NAME = "execution_step_log"
+
+    decorators = [
+        auth.require_authorization("api", "view_execution"),
+        auth.require_authorization("api", "view_execution_steps"),
+        auth.require_authentication
+    ]
+
+    @classmethod
+    def register_to(cls, application):
+        main_endpoint = generic.make_endpoint(
+            ExecutionView.ENDPOINT,
+            "<{0}:item_id>".format(ExecutionView.PARAMETER_TYPE),
+            "log"
+        )
+
+        application.add_url_rule(
+            main_endpoint,
+            view_func=cls.as_view(cls.NAME), methods=["GET"]
+        )
+
+    @validators.with_model(execution.ExecutionModel)
+    def get(self, item_id, item):
+        logfile = item.logfile
+        if not logfile:
+            raise http_exceptions.NotFound()
+
+        return flask.send_file(logfile, mimetype="text/plain")

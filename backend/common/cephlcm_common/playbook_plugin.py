@@ -26,7 +26,6 @@ except ImportError:
 from cephlcm_common import config
 from cephlcm_common import exceptions
 from cephlcm_common import log
-from cephlcm_common.models import execution
 from cephlcm_common.models import task
 
 
@@ -277,6 +276,8 @@ class Playbook(Base, metaclass=abc.ABCMeta):
         super().on_pre_execute(task)
 
     def on_post_execute(self, task, *exc_info):
+        from cephlcm_common.models import execution
+
         self.PROCESS_STDOUT.seek(0)
         try:
             execution_model = execution.ExecutionModel.find_by_model_id(
