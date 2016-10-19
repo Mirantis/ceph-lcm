@@ -14,6 +14,7 @@ export class ClustersComponent {
   @ViewChild(Filter) filter: Filter;
   @ViewChild(Pager) pager: Pager;
   pagedData: pagedResult = {} as pagedResult;
+  shownClusterId: string = null;
 
   constructor(private data: DataService, private modal: Modal) {
     this.fetchData();
@@ -31,6 +32,16 @@ export class ClustersComponent {
         },
         (error: any) => this.data.handleResponseError(error)
       );
+  }
+
+  getKeyHalfsets(cluster: Cluster) {
+    let keys = _.keys(cluster.data.configuration).sort();
+    return _.chunk(keys, Math.ceil(keys.length / 2));
+  }
+
+  showConfig(cluster: Cluster) {
+    this.shownClusterId = this.shownClusterId === cluster.id ?
+      null : cluster.id;
   }
 
   editCluster(cluster: Cluster = null) {
