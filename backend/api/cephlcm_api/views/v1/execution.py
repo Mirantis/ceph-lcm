@@ -2,6 +2,9 @@
 """This module contains view for /v1/execution API."""
 
 
+import codecs
+import distutils.util
+
 import flask
 
 from cephlcm_api import auth
@@ -215,4 +218,19 @@ class ExecutionStepsLog(generic.View):
         if not logfile:
             raise http_exceptions.NotFound()
 
-        return flask.Response(logfile, mimetype="text/plain")
+        download = self.request_query.get("download", "no")
+        try:
+            download = distutils.util.strtobool(download)
+        except Exception:
+            download = False
+        request_json = self.request_headers.get("Accept")
+        request_json = request_json == "application/json"
+
+        if not download and request_json:
+            logfile = codecs.EncodedFile(logfile, "utf-8", errors="ignore")
+            return {"data": logfile.read()}
+
+        response = generic.fs_response(logfile, download)
+        response = response.make_conditional(flask.request.environ)
+
+        return response

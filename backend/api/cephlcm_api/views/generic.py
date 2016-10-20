@@ -4,6 +4,7 @@
 
 import posixpath
 
+import flask
 import flask.json
 import flask.views
 import werkzeug.exceptions
@@ -11,6 +12,11 @@ import werkzeug.exceptions
 from cephlcm_api import exceptions
 from cephlcm_api import pagination
 from cephlcm_common import log
+
+try:
+    import gridfs.grid_file as gridfile
+except ImportError:
+    gridfile = None
 
 
 LOG = log.getLogger(__name__)
@@ -55,6 +61,10 @@ class View(flask.views.MethodView):
         """Returns a dictionary with URL Query parameters."""
 
         return flask.request.args
+
+    @property
+    def request_headers(self):
+        return flask.request.headers
 
     @property
     def initiator_id(self):
@@ -285,3 +295,42 @@ def make_endpoint(*endpoint):
         url += "/"
 
     return url
+
+
+def fs_response(fileobj, download, mimetype=None, filename=None):
+    if gridfile is not None and isinstance(fileobj, gridfile.GridOut):
+        return gridfs_response(fileobj, download)
+
+    send_file_kwargs = {}
+    if mimetype is not None:
+        send_file_kwargs["mimetype"] = mimetype
+    if download:
+        send_file_kwargs["as_attachment"] = True
+        if filename is not None:
+            send_file_kwargs["attachment_filename"] = filename
+
+    return flask.send_file(fileobj, **send_file_kwargs)
+
+
+def gridfs_response(fileobj, download):
+    data = fileobj_generator(fileobj)
+    headers = {}
+
+    if download:
+        headers = {
+            "Content-Disposition": "attachment; filename=\"{0}\"".format(
+                fileobj.filename
+            )
+        }
+
+    response = flask.Response(data, mimetype=fileobj.content_type,
+                              headers=headers)
+    response.set_etag(fileobj.md5)
+
+    return response
+
+
+def fileobj_generator(fileobj):
+    with fileobj:
+        for chunk in fileobj:
+            yield chunk
