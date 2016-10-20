@@ -3,6 +3,7 @@
 
 
 import posixpath
+import time
 
 import flask
 import flask.json
@@ -297,9 +298,10 @@ def make_endpoint(*endpoint):
     return url
 
 
-def fs_response(fileobj, download, mimetype=None, filename=None):
+def fs_response(fileobj, download, mimetype=None, filename=None,
+                cache_for=None):
     if gridfile is not None and isinstance(fileobj, gridfile.GridOut):
-        return gridfs_response(fileobj, download)
+        return gridfs_response(fileobj, download, cache_for)
 
     send_file_kwargs = {}
     if mimetype is not None:
@@ -308,24 +310,31 @@ def fs_response(fileobj, download, mimetype=None, filename=None):
         send_file_kwargs["as_attachment"] = True
         if filename is not None:
             send_file_kwargs["attachment_filename"] = filename
+    if cache_for:
+        send_file_kwargs["cache_timeout"] = cache_for
 
     return flask.send_file(fileobj, **send_file_kwargs)
 
 
-def gridfs_response(fileobj, download):
+def gridfs_response(fileobj, download, cache_for=None):
     data = fileobj_generator(fileobj)
-    headers = {}
+
+    response = flask.Response(data, mimetype=fileobj.content_type)
+    response.set_etag(fileobj.md5)
 
     if download:
-        headers = {
-            "Content-Disposition": "attachment; filename=\"{0}\"".format(
-                fileobj.filename
-            )
-        }
+        response.headers.add(
+            "Content-Disposition", "attachment", filename=fileobj.filename)
 
-    response = flask.Response(data, mimetype=fileobj.content_type,
-                              headers=headers)
-    response.set_etag(fileobj.md5)
+    if cache_for is not None:
+        response.cache_control.public = False
+        response.cache_control.private = True
+        response.cache_control.no_store = True
+        if not cache_for:
+            response.cache_control.no_cache = True
+        else:
+            response.cache_control.max_age = cache_for
+            response.expires = int(time.time() + cache_for)
 
     return response
 

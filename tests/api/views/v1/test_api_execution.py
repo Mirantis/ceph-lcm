@@ -283,7 +283,7 @@ def test_get_execution_plain_text_log(download, sudo_client,
 
     if download:
         assert response.headers["Content-Disposition"] == \
-            "attachment; filename=\"filename.log\""
+            "attachment; filename=filename.log"
     else:
         assert "Content-Disposition" not in response.headers
 
@@ -308,6 +308,6 @@ def test_get_execution_json_log(download, sudo_client,
 
     if download:
         assert response.headers["Content-Disposition"] == \
-            "attachment; filename=\"filename.log\""
+            "attachment; filename=filename.log"
     else:
         assert "Content-Disposition" not in response.headers

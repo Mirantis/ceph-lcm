@@ -28,6 +28,15 @@ def set_global_request_id():
     flask.g.request_id = str(uuid.uuid4())
 
 
+def set_cache_control(response):
+    if not (200 <= response.status_code <= 299):
+        return response
+
+    response.headers.setdefault("Cache-Control", "private, no-store, no-cache")
+
+    return response
+
+
 def error_to_json(error):
     """Converts all errors into proper JSONable exceptions.
 
@@ -63,6 +72,7 @@ def register_handlers(application):
     """This function registers required handlers for application."""
 
     application.before_request(set_global_request_id)
+    application.after_request(set_cache_control)
 
     for error_code in werkzeug.exceptions.default_exceptions:
         application.register_error_handler(error_code, error_to_json)

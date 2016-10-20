@@ -33,6 +33,9 @@ POST_SCHEMA = {
 POST_SCHEMA = validators.create_data_schema(POST_SCHEMA, True)
 """Schema for creating new execution."""
 
+LOG_CACHE_TIMEOUT = 60 * 60 * 24 * 30  # 1 month, almost immutable though
+"""Timeout to cache execution log on client side."""
+
 LOG = log.getLogger(__name__)
 """Logger."""
 
@@ -235,7 +238,8 @@ class ExecutionStepsLog(generic.View):
             logfile = codecs.EncodedFile(logfile, "utf-8", errors="ignore")
             return {"data": logfile.read()}
 
-        response = generic.fs_response(logfile, download)
+        response = generic.fs_response(logfile, download,
+                                       cache_for=LOG_CACHE_TIMEOUT)
         response = response.make_conditional(flask.request.environ)
 
         return response
