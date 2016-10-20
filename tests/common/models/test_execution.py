@@ -67,3 +67,23 @@ def test_api_response(state, new_pcmodel, new_execution):
             "state": state.name
         }
     }
+
+
+def test_getting_logfile(new_execution, execution_log_storage):
+    new_execution.logfile
+
+    execution_log_storage.get.assert_called_once_with(new_execution.model_id)
+
+
+def test_create_logfile(new_execution, execution_log_storage):
+    new_execution.new_logfile.write("1")
+
+    execution_log_storage.delete.assert_called_once_with(
+        new_execution.model_id
+    )
+    execution_log_storage.new_file.assert_called_once_with(
+        new_execution.model_id,
+        filename="{0}.log".format(new_execution.model_id),
+        content_type="text/plain"
+    )
+    execution_log_storage.new_file().write.assert_called_once_with("1")

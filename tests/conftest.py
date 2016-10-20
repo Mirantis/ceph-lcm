@@ -209,3 +209,15 @@ def new_role(configure_model, freeze_time):
 @pytest.fixture
 def new_execution(new_pcmodel):
     return execution.ExecutionModel.create(new_pcmodel, pytest.faux.gen_uuid())
+
+
+@pytest.fixture
+def execution_log_storage(monkeypatch):
+    storage = mock.MagicMock()
+    storage_class = mock.MagicMock(return_value=storage)
+    monkeypatch.setattr(
+        "cephlcm_common.models.execution.ExecutionLogStorage",
+        storage_class
+    )
+
+    return storage
