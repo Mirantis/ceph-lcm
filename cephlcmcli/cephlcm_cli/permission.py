@@ -5,8 +5,8 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from cephlcm_cli import main
 from cephlcm_cli import decorators
+from cephlcm_cli import main
 
 
 @main.cli_group

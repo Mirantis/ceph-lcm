@@ -10,8 +10,8 @@ from cephlcm_common import log
 from cephlcm_common import timeutils
 from cephlcm_common.models import db
 from cephlcm_common.models import generic
-from cephlcm_common.models import token
 from cephlcm_common.models import task
+from cephlcm_common.models import token
 
 
 CONF = config.make_controller_config()

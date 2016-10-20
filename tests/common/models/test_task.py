@@ -5,8 +5,8 @@
 import pytest
 
 from cephlcm_common import exceptions
-from cephlcm_common.models import task
 from cephlcm_common.models import execution
+from cephlcm_common.models import task
 
 
 @pytest.fixture

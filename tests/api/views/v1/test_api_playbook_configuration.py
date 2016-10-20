@@ -5,8 +5,8 @@
 import pytest
 
 from cephlcm_common import plugins
-from cephlcm_common.models import server
 from cephlcm_common.models import playbook_configuration
+from cephlcm_common.models import server
 
 
 @pytest.fixture
