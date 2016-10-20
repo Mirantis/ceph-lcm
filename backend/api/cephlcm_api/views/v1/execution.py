@@ -223,8 +223,13 @@ class ExecutionStepsLog(generic.View):
             download = distutils.util.strtobool(download)
         except Exception:
             download = False
-        request_json = self.request_headers.get("Accept")
-        request_json = request_json == "application/json"
+
+        request_json = False
+        for header in "Accept", "Content-Type":
+            header = self.request_headers.get(header) or ""
+            if header == "application/json":
+                request_json = True
+                break
 
         if not download and request_json:
             logfile = codecs.EncodedFile(logfile, "utf-8", errors="ignore")

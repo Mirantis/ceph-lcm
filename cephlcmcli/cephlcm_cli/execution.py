@@ -75,3 +75,19 @@ def steps(execution_id, query_params, client):
     """Get execution steps for a certain execution."""
 
     return client.get_execution_steps(execution_id, **query_params)
+
+
+@click.argument("execution-id", type=click.UUID)
+@decorators.command(execution)
+@click.pass_context
+def log(ctx, execution_id, client):
+    """Get execution log (plain text from ansible-playbook) for a certain
+    execution."""
+
+    response = client.get_execution_log(execution_id,
+                                        headers={"Content-Type": "text/plain"})
+
+    if ctx.obj["no_pager"]:
+        click.echo(response)
+    else:
+        click.echo_via_pager(response)

@@ -61,7 +61,11 @@ def json_response(func):
         if isinstance(response, dict):
             return response
         if response.ok:
-            return response.json()
+            content_type = response.headers.get("Content-Type")
+            content_type = content_type or "application/json"
+            if content_type == "application/json":
+                return response.json()
+            return response.text
 
         raise exceptions.CephLCMAPIError(response)
 
@@ -332,6 +336,14 @@ class V1Client(Client):
     def get_execution_steps(self, execution_id, query_params, **kwargs):
         url = self._make_url("/v1/execution/{0}/steps/".format(execution_id))
         return self._session.get(url, params=query_params, **kwargs)
+
+    def get_execution_log(self, execution_id, **kwargs):
+        kwargs.setdefault("headers", {}).setdefault(
+            "Content-Type", "application/json"
+        )
+        url = self._make_url("/v1/execution/{0}/log/".format(execution_id))
+
+        return self._session.get(url, **kwargs)
 
     @inject_pagination_params
     def get_playbook_configurations(self, query_params, **kwargs):
