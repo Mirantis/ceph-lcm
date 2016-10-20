@@ -112,11 +112,11 @@ class Base(metaclass=abc.ABCMeta):
 
             commandline = self.compose_command(task)
             env = self.get_environment_variables(task)
+            copypaste_command = printable_commandline(commandline, env)
 
             LOG.info("Execute %s for %s",
-                     subprocess.list2cmdline(commandline), self.entry_point)
-            LOG.debug("Commandline: \"%s\"",
-                      self.make_copypaste_commandline(commandline, env))
+                     printable_commandline(commandline), self.entry_point)
+            LOG.debug("Commandline: \"%s\"", copypaste_command)
 
             all_env = copy.deepcopy(os.environ)
             all_env.update(env)
@@ -138,14 +138,7 @@ class Base(metaclass=abc.ABCMeta):
                      self.entry_point)
 
         LOG.info("Finish execute %s for %s",
-                 subprocess.list2cmdline(commandline), self.entry_point)
-
-    def make_copypaste_commandline(self, commandline, env):
-        env_string = " ".join(
-            "{0}={1}".format(k, shlex.quote(v)) for k, v in env.items())
-        commandline = subprocess.list2cmdline(commandline)
-
-        return "{0} {1}".format(env_string, commandline)
+                 printable_commandline(commandline), self.entry_point)
 
     def run(self, commandline, env):
         return subprocess.Popen(
@@ -278,6 +271,16 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
     def on_post_execute(self, task, *exc_info):
         from cephlcm_common.models import execution
+
+        commandline = self.compose_command(task)
+        env = self.get_environment_variables(task)
+        header = printable_commandline(commandline, env)
+        header_length = min(len(header), 80)
+        header_top = " Ansible commandline ".center(header_length, "=")
+        header = "\n\n{0}\n{1}\n{2}\n".format(
+            header_top, header, "=" * header_length
+        )
+        self.PROCESS_STDOUT.write(header.encode("utf-8"))
 
         self.PROCESS_STDOUT.seek(0)
         try:
@@ -462,3 +465,13 @@ def spanning_network(networks):
             return networks[0]
 
         networks[-1] = networks[-1].supernet()
+
+
+def printable_commandline(commandline, env=None):
+    env = env or {}
+
+    result = ["{0}={1}".format(k, v) for k, v in sorted(env.items())]
+    result.extend(commandline)
+    result = " ".join(shlex.quote(item) for item in result)
+
+    return result
