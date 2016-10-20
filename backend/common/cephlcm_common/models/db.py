@@ -64,11 +64,16 @@ class FileStorage:
             LOG.warning("Cannot find file %s in collection %s: %s",
                         key, self.COLLECTION, exc)
 
-    def new_file(self, key, filename=None, content_type=None):
+    def new_file(self, key, filename=None, content_type=None,
+                 chunk_size_bytes=None):
         kwargs = {"_id": key}
         if filename is not None:
             kwargs["filename"] = filename
         if content_type is not None:
             kwargs["content_type"] = content_type
+        if chunk_size_bytes is not None:
+            kwargs["chunk_size"] = chunk_size_bytes
+        else:
+            kwargs["chunk_size"] = CONF["db"]["gridfs_chunk_size_in_bytes"]
 
         return self.fs.new_file(**kwargs)
