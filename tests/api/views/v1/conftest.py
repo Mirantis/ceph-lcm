@@ -43,6 +43,10 @@ class JsonApiClient(flask.testing.FlaskClient):
         if data is not None and not kwargs.get("content_type"):
             kwargs["data"] = flask.json.dumps(data)
             kwargs["content_type"] = "application/json"
+            kwargs.setdefault("headers", {})["Accept"] = "application/json"
+        if data is None and kwargs.get("content_type"):
+            kwargs["content_type"] = kwargs["content_type"]
+            kwargs.setdefault("headers", {})["Accept"] = kwargs["content_type"]
 
         if self.auth_token:
             self.install_token(kwargs)

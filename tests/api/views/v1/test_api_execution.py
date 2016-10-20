@@ -2,8 +2,10 @@
 """Tests for /v1/execution API endpoint."""
 
 
+import hashlib
 import unittest.mock
 
+import gridfs.grid_file
 import pytest
 
 from cephlcm_common.models import execution
@@ -42,6 +44,26 @@ def mock_task_class(monkeypatch):
     monkeypatch.setattr(task, "PlaybookPluginTask", mocked)
 
     return mocked
+
+
+@pytest.fixture
+def new_execution_with_logfile(new_execution, execution_log_storage):
+    def side_effect(model_id):
+        if model_id != new_execution.model_id:
+            return None
+
+        mock = unittest.mock.MagicMock(spec=gridfs.grid_file.GridOut)
+        mock.read.side_effect = b"LOG", b""
+        mock.__iter__.return_value = [b"LOG"]
+        mock.content_type = "text/plain"
+        mock.filename = "filename.log"
+        mock.md5 = hashlib.md5(b"LOG").hexdigest()
+
+        return mock
+
+    execution_log_storage.get.side_effect = side_effect
+
+    return new_execution
 
 
 def create_execution_step(execution_id, srv, state):
@@ -224,3 +246,68 @@ def test_get_execution_steps(state, sudo_client, new_server,
                for item in resp.json["items"])
     assert all((item["data"]["result"] == state.name)
                for item in resp.json["items"])
+
+
+def test_get_execution_log_fail(sudo_client, client_v1, normal_user,
+                                new_execution_with_logfile):
+    response = client_v1.get(
+        "/v1/execution/{0}/log/".format(new_execution_with_logfile.model_id))
+    assert response.status_code == 401
+    assert response.json["error"] == "Unauthorized"
+
+    client_v1.login(normal_user.login, "qwerty")
+    response = client_v1.get(
+        "/v1/execution/{0}/log/".format(new_execution_with_logfile.model_id))
+    assert response.status_code == 403
+    assert response.json["error"] == "Forbidden"
+
+    response = sudo_client.get(
+        "/v1/execution/{0}/log/".format(new_execution_with_logfile.model_id))
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize("download", (True, False))
+def test_get_execution_plain_text_log(download, sudo_client,
+                                      new_execution_with_logfile):
+    query = "?download=yes" if download else ""
+    response = sudo_client.get(
+        "/v1/execution/{0}/log/{1}".format(
+            new_execution_with_logfile.model_id, query))
+
+    assert response.status_code == 200
+    assert response.headers.get("Content-Type").startswith("text/plain")
+    assert response.headers.get("ETag") == "\"{0}\"".format(
+        hashlib.md5(b"LOG").hexdigest()
+    )
+    assert response.data == b"LOG"
+
+    if download:
+        assert response.headers["Content-Disposition"] == \
+            "attachment; filename=\"filename.log\""
+    else:
+        assert "Content-Disposition" not in response.headers
+
+
+@pytest.mark.parametrize("download", (False,))
+def test_get_execution_json_log(download, sudo_client,
+                                new_execution_with_logfile):
+    query = "?download=yes" if download else ""
+    response = sudo_client.get(
+        "/v1/execution/{0}/log/{1}".format(
+            new_execution_with_logfile.model_id, query),
+        content_type="application/json"
+    )
+
+    assert response.status_code == 200
+    if download:
+        assert response.headers.get("Content-Type").startswith("text/plain")
+    else:
+        assert response.headers.get("Content-Type").startswith(
+            "application/json")
+    assert response.json == {"data": "LOG"}
+
+    if download:
+        assert response.headers["Content-Disposition"] == \
+            "attachment; filename=\"filename.log\""
+    else:
+        assert "Content-Disposition" not in response.headers
