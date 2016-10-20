@@ -236,6 +236,7 @@ class Playbook(Base, metaclass=abc.ABCMeta):
             raise RuntimeError("'ansible-playbook' cannot be found in PATH")
 
         cmdline = [self.ANSIBLE_CMD]
+        cmdline.append("-vvv")  # this is required to make logfile usable
         cmdline.extend(["--inventory-file", DYNAMIC_INVENTORY_PATH])
 
         if self.BECOME:
