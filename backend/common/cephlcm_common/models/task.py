@@ -428,7 +428,7 @@ class Task(generic.Base):
                     raise StopIteration()
 
                 watch_again = timeutils.current_unix_timestamp()
-                if fetched_at != watch_again:
+                if fetched_at == watch_again:
                     stop_condition.wait(1)
         except pymongo.errors.OperationFailure as exc:
             LOG.exception("Cannot continue to listen to queue: %s", exc)
