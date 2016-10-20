@@ -17,6 +17,7 @@ export class LogsComponent {
   @ViewChild(Filter) filter: Filter;
   @ViewChild(Pager) pager: Pager;
   pagedData: pagedResult = {} as pagedResult;
+  logFileDownloading = false;
 
   constructor (private data: DataService, private route: ActivatedRoute) {
     this.poller = setTimeout(() => this.fetchData(), 5000);
@@ -33,6 +34,14 @@ export class LogsComponent {
 
   ngOnDestroy() {
     this.stopPolling = true;
+  }
+
+  saveLogFile() {
+    if (this.execution) {
+      this.data.downloadExecutionLog(this.execution.id)
+        .done(() => this.logFileDownloading = false);
+      this.logFileDownloading = true;
+    }
   }
 
   fetchData() {

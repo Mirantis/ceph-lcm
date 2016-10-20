@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as $ from 'jquery';
 
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -45,8 +46,10 @@ export class DataService {
   store = new DataStore();
 
   // FIXME: to be moved to configuration
-  //adapter = new HttpAdapter({basePath: 'http://private-3509f-cephlcmswaggerapi.apiary-mock.com/v1'});
-  adapter = new HttpAdapter({basePath: 'http://localhost:9999/v1'});
+  //basePath = 'http://private-3509f-cephlcmswaggerapi.apiary-mock.com/v1';
+  basePath = 'http://localhost:9999/v1';
+
+  adapter = new HttpAdapter({basePath: this.basePath});
   mappers: {[key: string]: Mapper} = {};
 
   token(): Mapper {return this.getMapper('auth', Token)}
@@ -204,5 +207,18 @@ export class DataService {
       errorMessage = (<Error>error).message;
     }
     this.error.add(errorCode, errorMessage);
+  }
+
+  downloadExecutionLog(executionId: string): JQueryXHR {
+    let url = this.basePath + '/execution/' + executionId + '/log/?download=yes';
+    return $.ajax({
+      url,
+      headers: {
+        Authorization: this.session.getToken()
+      },
+      success: function(result) {
+        window.location.href = 'data:application/octet-stream,' + encodeURIComponent(result);
+      }
+    });
   }
 }

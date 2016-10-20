@@ -7782,6 +7782,11 @@ nav ul.pagination li.active a:hover {
   border-width: 0;
   color: #FF634C;
 }
+iframe#downloader {
+  display: none;
+  width: 0px;
+  height: 0px;
+}
 a {
   cursor: pointer;
   cursor: hand;

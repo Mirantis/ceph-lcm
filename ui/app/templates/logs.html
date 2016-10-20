@@ -8,7 +8,20 @@
       </h2>
     </div>
     <div class="col-xs-3 main-button">
-      <button type="button" class="btn btn-primary">Refresh
+      <button
+        type="button"
+        class="btn btn-default"
+        (click)="saveLogFile()"
+        [disabled]="logFileDownloading"
+      >
+        Download
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="fetchData()"
+      >
+        Refresh
       </button>
     </div>
   </div>
