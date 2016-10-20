@@ -2,6 +2,9 @@
 """This module contains view for /v1/execution API."""
 
 
+import codecs
+import distutils.util
+
 import flask
 
 from cephlcm_api import auth
@@ -184,3 +187,50 @@ class ExecutionStepsView(generic.CRUDView):
         return execution_step.ExecutionStep.list_models(
             str(item_id), self.pagination
         )
+
+
+class ExecutionStepsLog(generic.View):
+
+    NAME = "execution_step_log"
+
+    decorators = [
+        auth.require_authorization("api", "view_execution"),
+        auth.require_authorization("api", "view_execution_steps"),
+        auth.require_authentication
+    ]
+
+    @classmethod
+    def register_to(cls, application):
+        main_endpoint = generic.make_endpoint(
+            ExecutionView.ENDPOINT,
+            "<{0}:item_id>".format(ExecutionView.PARAMETER_TYPE),
+            "log"
+        )
+
+        application.add_url_rule(
+            main_endpoint,
+            view_func=cls.as_view(cls.NAME), methods=["GET"]
+        )
+
+    @validators.with_model(execution.ExecutionModel)
+    def get(self, item_id, item):
+        logfile = item.logfile
+        if not logfile:
+            raise http_exceptions.NotFound()
+
+        download = self.request_query.get("download", "no")
+        try:
+            download = distutils.util.strtobool(download)
+        except Exception:
+            download = False
+        request_json = self.request_headers.get("Accept")
+        request_json = request_json == "application/json"
+
+        if not download and request_json:
+            logfile = codecs.EncodedFile(logfile, "utf-8", errors="ignore")
+            return {"data": logfile.read()}
+
+        response = generic.fs_response(logfile, download)
+        response = response.make_conditional(flask.request.environ)
+
+        return response
