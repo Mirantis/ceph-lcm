@@ -60,6 +60,7 @@ db:
   connect_timeout: 5000  # ms, 5 seconds
   socket_timeout: 5000  # ms, 5 seconds
   pool_size: 50
+  gridfs_chunk_size_in_bytes: 261120  # 255 kilobytes
 
 
 plugins:
