@@ -381,7 +381,7 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
 
         for name in srv.facts["ansible_interfaces"]:
             interface = srv.facts["ansible_{0}".format(name)]
-            addr = interface["ipv4"]["address"]
+            addr = ipaddress.ip_address(interface["ipv4"]["address"])
             if addr in public_network:
                 return interface["device"]
 
@@ -455,7 +455,7 @@ def spanning_network(networks):
     if len(networks) == 1:
         return networks[0]
 
-    sorter = operator.itemgetter("num_addresses")
+    sorter = operator.attrgetter("num_addresses")
 
     while True:
         networks = sorted(
