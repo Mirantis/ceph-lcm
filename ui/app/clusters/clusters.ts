@@ -4,6 +4,7 @@ import { DataService, pagedResult } from '../services/data';
 import { Cluster } from '../models';
 
 import * as _ from 'lodash';
+import * as $ from 'jquery';
 
 @Component({
   templateUrl: './app/templates/clusters.html'
@@ -15,6 +16,7 @@ export class ClustersComponent {
   @ViewChild(Pager) pager: Pager;
   pagedData: pagedResult = {} as pagedResult;
   shownClusterId: string = null;
+  shownServers: Object = {};
 
   constructor(private data: DataService, private modal: Modal) {
     this.fetchData();
@@ -34,6 +36,11 @@ export class ClustersComponent {
       );
   }
 
+  getSize(cluster: Cluster): number {
+    let allRoles = _.concat([], ..._.values(cluster.data.configuration) as Object[][]);
+    return _.uniq(_.map(allRoles, 'server_id')).length;
+  }
+
   getKeyHalfsets(cluster: Cluster) {
     let keys = _.keys(cluster.data.configuration).sort();
     return _.chunk(keys, Math.ceil(keys.length / 2));
@@ -42,6 +49,14 @@ export class ClustersComponent {
   showConfig(cluster: Cluster) {
     this.shownClusterId = this.shownClusterId === cluster.id ?
       null : cluster.id;
+  }
+
+  areServersShown(cluster: Cluster, details: string): boolean {
+    return _.get(this.shownServers, details, false);
+  }
+
+  showServers(cluster: Cluster, details: string) {
+    this.shownServers[details] = true;
   }
 
   editCluster(cluster: Cluster = null) {

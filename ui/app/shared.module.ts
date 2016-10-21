@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { Modal, Loader, Filter, Criterion, Pager } from './directives';
-import { Key, Keys, TrimBy, DateTime, JSONString, Index, Deparametrize } from './pipes';
+import { Key, Keys, TrimBy, DateTime, JSONString, Index, Deparametrize, Deprefix } from './pipes';
 
 @NgModule({
   imports: [
@@ -11,11 +11,11 @@ import { Key, Keys, TrimBy, DateTime, JSONString, Index, Deparametrize } from '.
   ],
   declarations: [
     Modal, Loader, Filter, Criterion, Pager,
-    Keys, Key, TrimBy, DateTime, JSONString, Index, Deparametrize
+    Keys, Key, TrimBy, DateTime, JSONString, Index, Deparametrize, Deprefix
   ],
   exports: [
     Modal, Loader, Filter, Criterion, Pager,
-    Keys, Key, TrimBy, DateTime, JSONString, Index, Deparametrize
+    Keys, Key, TrimBy, DateTime, JSONString, Index, Deparametrize, Deprefix
   ],
   providers: [
     Modal, Loader, Filter, Criterion, Pager

@@ -109,8 +109,8 @@ export class UsersComponent {
     if (!this.userVersions[user.id] || reread) {
       this.data.user().getVersions(user.id)
         .then(
-          (versions: User[]) => {
-            this.userVersions[user.id] = versions;
+          (versions: pagedResult) => {
+            this.userVersions[user.id] = versions.items;
           },
           (error: any) => this.data.handleResponseError(error)
         );

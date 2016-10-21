@@ -7141,8 +7141,7 @@ a:hover > .glyphicon {
   margin-right: auto;
 }
 .main > .alert {
-  margin-top: 15px;
-  margin-bottom: 0;
+  margin: 15px 0 0 0;
 }
 .form-control {
   border-color: #7897a1;
@@ -7434,13 +7433,34 @@ a.box > div.state.off:focus {
 }
 .box .bowels .server-details {
   margin-bottom: 20px;
+  padding: 0 30px;
+}
+.box .bowels .server-details:nth-child(1) {
+  padding-right: 0px;
 }
 .box .bowels .server-details .server-details-item {
-  height: 32px;
+  min-height: 32px;
   border-top: 1px solid #c0c4c6;
 }
 .box .bowels .server-details .server-details-item:hover {
   background-color: #f2f6f8;
+}
+.box .bowels .server-details .server-details-item.scrollable {
+  max-height: 81px;
+}
+.box .bowels .server-details .server-details-item.scrollable .parameter {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  max-height: 80px;
+  overflow: auto;
+  height: auto;
+}
+.box .bowels .server-details .server-details-item.scrollable .parameter ul {
+  margin: 5px 0 0 0;
+}
+.box .bowels .server-details .server-details-item.scrollable .parameter ul li {
+  list-style: none;
+  line-height: 20px;
 }
 .box .bowels .server-details .server-details-item .name {
   display: block;

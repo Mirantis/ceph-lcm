@@ -66,3 +66,10 @@ export class Deparametrize implements PipeTransform {
     return _.upperFirst(value.toLowerCase()).split('_').join(' ');
   }
 }
+
+@Pipe({name: 'deprefix'})
+export class Deprefix implements PipeTransform {
+  transform(value: string, prefix: string): string {
+    return _.compact(value.replace(prefix, '').split('_')).join(' ');
+  }
+}

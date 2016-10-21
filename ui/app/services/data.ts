@@ -195,16 +195,23 @@ export class DataService {
     var errorCode = 'Error';
     var errorMessage = '';
 
-    if (error && error.response) {
-      if (error.response.status === 401) {
-        this.session.removeToken();
-        this.modal.close();
-        this.router.navigate(['/login']);
+    console.log(error);
+
+    if (error) {
+      if (error.response) {
+        if (error.response.status === 401) {
+          this.session.removeToken();
+          this.modal.close();
+          this.router.navigate(['/login']);
+        }
+        errorCode = error.response.data.error || error.response.status;
+        errorMessage = error.response.data.message || error.response.statusText;
+      } else if (error.responseJSON) {
+        errorCode = error.responseJSON.error;
+        errorMessage = error.responseJSON.message;
+      } else {
+        errorMessage = (<Error>error).message;
       }
-      errorCode = error.response.data.error || error.response.status;
-      errorMessage = error.response.data.message || error.response.statusText;
-    } else {
-      errorMessage = (<Error>error).message;
     }
     this.error.add(errorCode, errorMessage);
   }

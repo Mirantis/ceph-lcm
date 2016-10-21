@@ -13,7 +13,8 @@
   <div class="col-xs-12">
 
     <div class="table-help">
-      <div class="col-xs-12">Cluster Name</div>
+      <div class="col-xs-10">Cluster Name</div>
+      <div class="col-xs-2">Servers</div>
     </div>
 
     <div
@@ -21,12 +22,13 @@
       *ngFor="let cluster of clusters"
       [ngClass]="{open: cluster.id === shownClusterId}"
     >
-      <div class="col-xs-11 name">
+      <div class="col-xs-10 name">
         {{cluster.data.name}}
         <a (click)="editCluster(cluster)">
           <span class="glyphicon edit-icon"></span>
         </a>
       </div>
+      <div class="col-xs-1 name">{{getSize(cluster)}}</div>
       <div class="col-xs-1 action">
         <a (click)="showConfig(cluster)">
           <span
@@ -45,12 +47,23 @@
           class="col-xs-6 server-details"
           *ngFor="let details of getKeyHalfsets(cluster)">
           <div
-            class="server-details-item"
+            class="server-details-item row"
+            [ngClass]="{scrollable: areServersShown(cluster, detail)}"
             *ngFor="let detail of details"
           >
-            <div class="name" [title]="detail">{{detail}}</div>
-            <div class="parameter" [title]="cluster.data.configuration[detail]|json">
-              {{cluster.data.configuration[detail]|json}}
+            <div class="col-xs-4 name" [title]="detail">{{detail}}</div>
+            <div class="col-xs-8 parameter">
+              <a
+                *ngIf="!areServersShown(cluster, detail)"
+                (click)="showServers(cluster, detail)"
+              >
+                {{ '{...}' }}
+              </a>
+              <ul *ngIf="areServersShown(cluster, detail)">
+                <li *ngFor="let server of cluster.data.configuration[detail]">
+                  {{server.server_id}}
+                </li>
+              </ul>
             </div>
           </div>
 

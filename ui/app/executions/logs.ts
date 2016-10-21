@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Record } from 'js-data';
+import { ErrorService } from '../services/error';
 import { DataService, pagedResult } from '../services/data';
 import { Execution, ExecutionStep } from '../models';
 import { Filter, Criterion, Pager } from '../directives';
@@ -19,7 +20,11 @@ export class LogsComponent {
   pagedData: pagedResult = {} as pagedResult;
   logFileDownloading = false;
 
-  constructor (private data: DataService, private route: ActivatedRoute) {
+  constructor (
+    private data: DataService,
+    private error: ErrorService,
+    private route: ActivatedRoute
+  ) {
     this.poller = setTimeout(() => this.fetchData(), 5000);
   }
 
@@ -39,7 +44,8 @@ export class LogsComponent {
   saveLogFile() {
     if (this.execution) {
       this.data.downloadExecutionLog(this.execution.id)
-        .done(() => this.logFileDownloading = false);
+        .done(() => this.logFileDownloading = false)
+        .fail((error: any) => this.data.handleResponseError(error));
       this.logFileDownloading = true;
     }
   }

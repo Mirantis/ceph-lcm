@@ -61,8 +61,7 @@ a {
   margin-right: auto;
 
   & > .alert {
-    margin-top: 15px;
-    margin-bottom: 0;
+    margin: 15px 0 0 0;
   }
 }
 
@@ -367,12 +366,35 @@ label {
 
     .server-details {
       margin-bottom: 20px;
+      padding: 0 30px;
+
+      &:nth-child(1) {
+        padding-right: 0px;
+      }
 
       .server-details-item {
-        height: 32px;
+        min-height: 32px;
         border-top: 1px solid @background - 30%;
         &:hover {
           background-color: @background + 20%;
+        }
+
+        &.scrollable {
+          max-height: 81px;
+          .parameter {
+            overflow-x: hidden;
+            overflow-y: scroll;
+            max-height: 80px;
+            overflow: auto;
+            height: auto;
+            ul {
+              margin: 5px 0 0 0;
+              li {
+                list-style: none;
+                line-height: 20px;
+              }
+            }
+          }
         }
 
         .name {
