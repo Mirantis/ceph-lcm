@@ -2,7 +2,7 @@
 # Cluster purge
 
 
-- name: Stop Ceph services clusterwide
+- name: Stop Ceph services clusterwide (exluding mons)
   hosts: all
   become: true
   tasks:
@@ -12,12 +12,13 @@
         enabled: no
         state: stopped
       when:
-        ansible_service_mgr == "systemd"
+        ansible_service_mgr == "systemd" and "mons" not in group_names
 
 
 - name: Clear OSDs
   hosts: osds
   become: true
+  gather_facts: false
 
   handlers:
     - name: restart machine
@@ -62,9 +63,24 @@
         remove_osd_mountpoints.failed is defined
 
 
+# Please be noticed that monitors should be stopped last
+- name: Stop Ceph mongs
+  hosts: mons
+  become: true
+  tasks:
+    - name: Stop Ceph if systemd
+      service:
+        name: ceph.target
+        enabled: no
+        state: stopped
+      when:
+        ansible_service_mgr == "systemd"
+
+
 - name: Remove ceph data
   become: true
   hosts: all
+  gather_facts: false
   vars:
     ceph_packages:
       - ceph
@@ -151,3 +167,8 @@
       shell: "update-rc.d -f ceph remove"
       when:
         ansible_distribution == 'Ubuntu'
+
+    - name: Remove ceph fact
+      file:
+        path: "/etc/ansible/facts.d/ceph_{{ cluster }}.fact"
+        state: absent
