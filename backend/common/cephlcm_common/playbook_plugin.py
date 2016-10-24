@@ -352,6 +352,8 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
                 continue
             if not interface["active"] or interface["type"] == "loopback":
                 continue
+            if not interface.get("ipv4"):
+                continue
 
             network = "{0}/{1}".format(
                 interface["ipv4"]["network"],
