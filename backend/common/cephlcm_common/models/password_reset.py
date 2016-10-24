@@ -6,6 +6,7 @@ import base64
 import os
 
 from cephlcm_common import config
+from cephlcm_common import exceptions
 from cephlcm_common import log
 from cephlcm_common import passwords
 from cephlcm_common import timeutils
@@ -81,13 +82,11 @@ class PasswordReset(generic.Base):
         self.delete()
 
         if self.expires_at < timeutils.current_unix_timestamp():
-            # TODO(Sergey Arkhipov): Put proper exception here
-            raise Exception("Cannot consume expired token.")
+            raise exceptions.PasswordResetExpiredError
 
         user_model = user.UserModel.find_by_model_id(self.user_id)
-        if not user_model:
-            # TODO(Sergey Arkhipov): Put proper exception here
-            raise Exception("Unknown user model")
+        if not user_model or user_model.time_deleted:
+            raise exceptions.PasswordResetUnknownUser
 
         user_model.password_hash = passwords.hash_password(new_password)
         user_model.save()

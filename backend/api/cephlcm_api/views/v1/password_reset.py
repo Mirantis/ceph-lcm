@@ -5,6 +5,7 @@
 from cephlcm_api import exceptions as http_exceptions
 from cephlcm_api import validators
 from cephlcm_api.views import generic
+from cephlcm_common import exceptions as base_exceptions
 from cephlcm_common import log
 from cephlcm_common.models import password_reset
 from cephlcm_common.models import user
@@ -83,7 +84,10 @@ class PasswordReset(generic.View):
         except Exception as exc:
             LOG.warning("Failed attempt to reset password for user %s: %s",
                         reset_model.user_id, exc)
-            # TODO(Sergey Arkhipov): Raise proper exception here
-            raise http_exceptions.BadRequest()
+            if isinstance(exc, base_exceptions.PasswordResetExpiredError):
+                message = "Token is expired"
+            else:
+                message = "Invalid user {0}".format(reset_model.user_id)
+            raise http_exceptions.BadRequest(message)
         else:
             LOG.info("Password for user %s was reset.", reset_model.user_id)
