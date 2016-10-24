@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 
 import click
 
+from cephlcm_cli import decorators
 from cephlcm_cli import utils
 import cephlcmlib
 
@@ -117,6 +118,15 @@ def cli(ctx, url, login, password, no_verify, ssl_certificate, debug,
     utils.configure_logging(debug)
 
     ctx.call_on_close(ctx.obj["client"].logout)
+
+
+@cli.command()
+@decorators.with_client
+@decorators.format_output
+def info(client):
+    """Request information about remove CephLCM installation."""
+
+    return client.get_info()
 
 
 def cli_group(func):
