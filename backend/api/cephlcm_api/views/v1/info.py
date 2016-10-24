@@ -8,6 +8,7 @@ import datetime
 import pkg_resources
 
 from cephlcm_api.views import generic
+from cephlcm_common import timeutils
 
 
 class InfoView(generic.ModelView):
@@ -19,7 +20,8 @@ class InfoView(generic.ModelView):
         return {
             "time": {
                 "local": datetime.datetime.now().isoformat(),
-                "utc": datetime.datetime.utcnow().isoformat()
+                "utc": datetime.datetime.utcnow().isoformat(),
+                "unix": timeutils.current_unix_timestamp()
             },
             "version": pkg_resources.get_distribution("cephlcm_api").version
         }
