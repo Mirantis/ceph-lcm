@@ -14,7 +14,7 @@ from cephlcm_common.models import user
 
 
 NEW_PASSWORD_RESET_SCHEMA = validators.create_data_schema({
-    "user_id": {"$ref": "#/definitions/uuid4"}
+    "login": {"$ref": "#/definitions/non_empty_string"}
 }, mandatory=True)
 """JSON Schema of reseting new password."""
 
@@ -77,17 +77,17 @@ class PasswordReset(generic.View):
 
     @validators.require_schema(NEW_PASSWORD_RESET_SCHEMA)
     def post_new_password_reset(self):
-        user_id = self.request_json["user_id"]
-        user_model = user.UserModel.find_by_model_id(user_id)
+        login = self.request_json["login"]
+        user_model = user.UserModel.find_by_login(login)
 
         if not user_model:
-            raise http_exceptions.UnknownUserError(user_id)
+            raise http_exceptions.UnknownUserError(login)
         if user_model.time_deleted:
             raise http_exceptions.CannotUpdateDeletedModel()
 
-        reset_model = password_reset.PasswordReset.create(user_id)
+        reset_model = password_reset.PasswordReset.create(user_model.model_id)
 
-        LOG.info("Requested password reset for %s", user_id)
+        LOG.info("Requested password reset for %s", login)
         notify_user(reset_model._id, user_model.email)
 
         return {"message": "Password reset was requested."}

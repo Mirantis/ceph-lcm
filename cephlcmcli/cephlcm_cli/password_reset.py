@@ -16,12 +16,12 @@ def password_reset():
     """Password reset subcommands"""
 
 
-@click.argument("user-id", type=click.UUID)
+@click.argument("login")
 @decorators.command(password_reset)
-def reset(client, user_id):
-    """Request password reset for user with given ID."""
+def reset(client, login):
+    """Request password reset for user with given login."""
 
-    return client.request_password_reset(str(user_id))
+    return client.request_password_reset(login)
 
 
 @click.argument("password-reset-token")

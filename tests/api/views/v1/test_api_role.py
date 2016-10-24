@@ -83,7 +83,9 @@ def test_api_create_model(client_v1, sudo_client_v1, valid_request,
     assert response.json["model"] == "role"
     assert response.json["version"] == 1
     assert response.json["data"]["name"] == valid_request["name"]
-    assert response.json["data"]["permissions"] == valid_request["permissions"]
+    assert sorted(response.json["data"]["permissions"],
+                  key=lambda el: el["name"]) == sorted(
+                      valid_request["permissions"], key=lambda el: el["name"])
 
 
 @pytest.mark.parametrize("name", (1, {}, [], None))

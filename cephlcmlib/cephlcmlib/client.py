@@ -530,9 +530,9 @@ class V1Client(Client):
         return self._session.get(url, **kwargs)
 
     @no_auth
-    def request_password_reset(self, user_id, **kwargs):
+    def request_password_reset(self, login, **kwargs):
         url = self._make_url("/v1/password_reset/")
-        payload = {"user_id": user_id}
+        payload = {"login": login}
         return self._session.post(url, json=payload, **kwargs)
 
     @no_auth

@@ -3,7 +3,6 @@
 
 
 import unittest.mock as mock
-import uuid
 
 import pytest
 
@@ -16,7 +15,7 @@ CONF = config.make_config()
 
 @pytest.fixture
 def mock_pwreset_id(monkeypatch):
-    mocked = mock.MagicMock(return_value=str(uuid.uuid4()))
+    mocked = mock.MagicMock(return_value=pytest.faux.gen_uuid())
     password_reset.PasswordReset.generate_new_id = mocked
 
     return mocked()
@@ -29,13 +28,13 @@ def clean_collection(configure_model, pymongo_connection):
 
 def test_request_password_reset(client_v1, new_user, freeze_time):
     response = client_v1.post("/v1/password_reset/",
-                              data={"user_id": new_user.model_id})
+                              data={"login": new_user.login})
     assert response.status_code == 200
     assert response.json
 
 
 def test_check_pw_good_not(mock_pwreset_id, client_v1, new_user, freeze_time):
-    client_v1.post("/v1/password_reset/", data={"user_id": new_user.model_id})
+    client_v1.post("/v1/password_reset/", data={"login": new_user.login})
 
     response = client_v1.get("/v1/password_reset/{0}/".format(mock_pwreset_id))
     assert response.status_code == 200
@@ -50,9 +49,9 @@ def test_check_pw_good_not(mock_pwreset_id, client_v1, new_user, freeze_time):
 
 
 def test_unknown_user(mock_pwreset_id, client_v1, freeze_time):
-    fake_user_id = pytest.faux.gen_uuid()
+    unknown_login = pytest.faux.gen_alphanumeric()
     response = client_v1.post("/v1/password_reset/",
-                              data={"user_id": fake_user_id})
+                              data={"login": unknown_login})
 
     assert response.status_code == 400
     assert response.json
@@ -60,7 +59,7 @@ def test_unknown_user(mock_pwreset_id, client_v1, freeze_time):
 
 def test_deleted_user(mock_pwreset_id, client_v1, new_user):
     response = client_v1.post("/v1/password_reset/",
-                              data={"user_id": new_user.model_id})
+                              data={"login": new_user.login})
     assert response.status_code == 200
 
     new_user.delete()
@@ -75,7 +74,7 @@ def test_deleted_user(mock_pwreset_id, client_v1, new_user):
 def test_reset_password(mock_pwreset_id, client_v1, new_user,
                         freeze_time, email):
     response = client_v1.post("/v1/password_reset/",
-                              data={"user_id": new_user.model_id})
+                              data={"login": new_user.login})
     assert response.status_code == 200
     assert response.json
 
