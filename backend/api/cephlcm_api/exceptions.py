@@ -102,6 +102,13 @@ class CannotUpdateManagedFieldsError(BadRequest):
     description = "It is forbidden to update automanaged fields."
 
 
+class UnknownUserError(BadRequest):
+    description = "Unknown user with ID {0}"
+
+    def __init__(self, user_id):
+        super().__init__(self.description.format(user_id))
+
+
 class CannotUpdateDeletedModel(BadRequest):
     """Exception which is raised if you are trying to update deleted model."""
 
