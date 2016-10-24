@@ -15,7 +15,8 @@ def test_access_ok(sudo_client_v1):
 
     assert response.status_code == 200
     assert isinstance(response.json["items"], list)
-    assert pset.make_api_structure() == response.json["items"]
+    assert sorted(pset.make_api_structure(), key=lambda el: el["name"]) \
+        == sorted(response.json["items"], key=lambda el: el["name"])
 
 
 def test_access_authentication(client_v1):

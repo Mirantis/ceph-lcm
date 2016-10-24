@@ -22,6 +22,11 @@ def mock_pwreset_id(monkeypatch):
     return mocked()
 
 
+@pytest.fixture(autouse=True)
+def clean_collection(configure_model, pymongo_connection):
+    pymongo_connection.db.password_reset.remove({})
+
+
 def test_request_password_reset(client_v1, new_user, freeze_time):
     response = client_v1.post("/v1/password_reset/",
                               data={"user_id": new_user.model_id})

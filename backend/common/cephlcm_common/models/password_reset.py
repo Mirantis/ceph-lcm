@@ -9,6 +9,7 @@ from cephlcm_common import config
 from cephlcm_common import exceptions
 from cephlcm_common import log
 from cephlcm_common import passwords
+from cephlcm_common import retryutils
 from cephlcm_common import timeutils
 from cephlcm_common.models import generic
 from cephlcm_common.models import token
@@ -41,14 +42,17 @@ class PasswordReset(generic.Base):
     def create(cls, user_id, ttl=None):
         ttl = ttl or CONF["common"]["password_reset_ttl_in_seconds"]
         expires_at = timeutils.current_unix_timestamp() + ttl
-
         new_password_reset = cls()
-        new_password_reset._id = cls.generate_new_id()
         new_password_reset.user_id = user_id
         new_password_reset.expires_at = expires_at
-        new_password_reset.save()
 
-        return new_password_reset
+        def create(model):
+            model._id = model.generate_new_id()
+            model.save()
+
+            return model
+
+        return retryutils.simple_retry()(create)(new_password_reset)
 
     @classmethod
     def get(cls, token):
