@@ -5,6 +5,8 @@
 from cephlcm_api import exceptions as http_exceptions
 from cephlcm_api import validators
 from cephlcm_api.views import generic
+from cephlcm_common import config
+from cephlcm_common import emailutils
 from cephlcm_common import exceptions as base_exceptions
 from cephlcm_common import log
 from cephlcm_common.models import password_reset
@@ -20,6 +22,22 @@ UPDATE_PASSWORD_SCHEMA = validators.create_data_schema({
     "password": {"$ref": "#/definitions/non_empty_string"}
 }, mandatory=True)
 """JSON Schema of updateing for new password."""
+
+PASSWORD_MESSAGE = """\
+Hi,
+
+We've got the request to reset your password. To reset just follow this
+URL:
+{url}
+
+This URL will be avaialble for next 24 hours.
+
+If you didn't request password reset, just ignore this message.
+"""
+"""Message sent on password resetting."""
+
+CONF = config.make_api_config()
+"""Config."""
 
 LOG = log.getLogger(__name__)
 """Logger."""
@@ -67,9 +85,10 @@ class PasswordReset(generic.View):
         if user_model.time_deleted:
             raise http_exceptions.CannotUpdateDeletedModel()
 
-        password_reset.PasswordReset.create(user_id)
+        reset_model = password_reset.PasswordReset.create(user_id)
 
         LOG.info("Requested password reset for %s", user_id)
+        notify_user(reset_model._id, user_model.email)
 
         return {"message": "Password reset was requested."}
 
@@ -91,3 +110,14 @@ class PasswordReset(generic.View):
             raise http_exceptions.BadRequest(message)
         else:
             LOG.info("Password for user %s was reset.", reset_model.user_id)
+
+
+def notify_user(token_id, email):
+    url = CONF["api"]["reset_password_url"].format(reset_token=token_id)
+    message = PASSWORD_MESSAGE.format(url=url)
+
+    emailutils.send(
+        to=[email],
+        subject="Password reset for CephLCM",
+        text_body=message
+    )

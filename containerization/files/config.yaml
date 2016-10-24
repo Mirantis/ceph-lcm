@@ -26,6 +26,7 @@ api:
   json_as_ascii: false
   pagination_per_page: 25
   server_discovery_token: "26758c32-3421-4f3d-9603-e4b5337e7ecc"
+  reset_password_url: "http://127.0.0.1/password_reset/{reset_token}/"
   token:
     ttl_in_seconds: 1800
   logging:
