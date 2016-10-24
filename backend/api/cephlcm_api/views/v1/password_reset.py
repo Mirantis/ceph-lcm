@@ -111,6 +111,8 @@ class PasswordReset(generic.View):
         else:
             LOG.info("Password for user %s was reset.", reset_model.user_id)
 
+        return {"message": "Password has been reset"}
+
 
 def notify_user(token_id, email):
     url = CONF["api"]["reset_password_url"].format(reset_token=token_id)

@@ -11,6 +11,7 @@ from cephlcm_common import log
 from cephlcm_common import passwords
 from cephlcm_common import timeutils
 from cephlcm_common.models import generic
+from cephlcm_common.models import token
 from cephlcm_common.models import user
 
 
@@ -90,6 +91,8 @@ class PasswordReset(generic.Base):
 
         user_model.password_hash = passwords.hash_password(new_password)
         user_model.save()
+
+        token.TokenModel.collection().remove({"user_id": user_model.model_id})
 
     def save(self):
         db_template = {
