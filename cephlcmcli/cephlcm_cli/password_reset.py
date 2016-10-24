@@ -21,7 +21,7 @@ def password_reset():
 def reset(client, user_id):
     """Request password reset for user with given ID."""
 
-    return client.request_password_reset(user_id)
+    return client.request_password_reset(str(user_id))
 
 
 @click.argument("password-reset-token")

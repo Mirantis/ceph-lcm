@@ -24,13 +24,13 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 )
 @click.option(
     "--login", "-l",
-    required=True,
+    default="",
     envvar="CEPHLCM_LOGIN",
     help="Login to access CephLCM."
 )
 @click.option(
     "--password", "-p",
-    required=True,
+    default="",
     envvar="CEPHLCM_PASSWORD",
     help="Password to access CephLCM."
 )
