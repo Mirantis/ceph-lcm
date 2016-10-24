@@ -48,15 +48,6 @@ def test_get_expired_token_model(reset_token, freeze_time):
     assert password_reset.PasswordReset.get(reset_token._id) is None
 
 
-def test_clean_expired(clean_collection, reset_token, freeze_time,
-                       pymongo_connection):
-    collection = pymongo_connection.db.password_reset
-    freeze_time.return_value = 1 + reset_token.expires_at
-
-    password_reset.PasswordReset.clean_expired()
-    assert collection.find({}).count() == 0
-
-
 def test_consume_delete_expired(reset_token, freeze_time, pymongo_connection):
     collection = pymongo_connection.db.password_reset
 

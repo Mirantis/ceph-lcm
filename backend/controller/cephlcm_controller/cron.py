@@ -10,6 +10,7 @@ from cephlcm_common import log
 from cephlcm_common import timeutils
 from cephlcm_common.models import db
 from cephlcm_common.models import generic
+from cephlcm_common.models import password_reset
 from cephlcm_common.models import task
 from cephlcm_common.models import token
 
@@ -69,4 +70,20 @@ def clean_old_tasks():
     LOG.info(
         "Clean old tasks. Removed all tasks pre %d (%s). Cleaned %d tasks.",
         old_limit, time.ctime(old_limit), result.deleted_count
+    )
+
+
+@configure
+def clean_expired_password_resets():
+    """This function swipes expired password reset tokens from DB."""
+
+    timestamp = timeutils.current_unix_timestamp()
+    result = password_reset.PasswordReset.collection().delete_many(
+        {"expires_at": {"$lt": timestamp}}
+    )
+
+    LOG.info(
+        "Clean expired password reset tokens. Removed all tokens pre %d (%s). "
+        "Cleaned %d tokens.",
+        timestamp, time.ctime(timestamp), result.deleted_count
     )

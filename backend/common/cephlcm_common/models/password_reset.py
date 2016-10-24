@@ -70,12 +70,6 @@ class PasswordReset(generic.Base):
 
         return instance
 
-    @classmethod
-    def clean_expired(cls):
-        return cls.collection().remove(
-            {"expires_at": {"$lt": timeutils.current_unix_timestamp()}}
-        )
-
     def __init__(self):
         super().__init__()
 
