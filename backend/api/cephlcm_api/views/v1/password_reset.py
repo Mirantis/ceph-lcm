@@ -27,10 +27,10 @@ PASSWORD_MESSAGE = """\
 Hi,
 
 We've got the request to reset your password. To reset just follow this
-URL:
+URL, it will be avaialble for next 24 hours:
 {url}
 
-This URL will be avaialble for next 24 hours.
+Your password reset token is "{token}".
 
 If you didn't request password reset, just ignore this message.
 """
@@ -116,7 +116,7 @@ class PasswordReset(generic.View):
 
 def notify_user(token_id, email):
     url = CONF["api"]["reset_password_url"].format(reset_token=token_id)
-    message = PASSWORD_MESSAGE.format(url=url)
+    message = PASSWORD_MESSAGE.format(url=url, token=token_id)
 
     emailutils.send(
         to=[email],
