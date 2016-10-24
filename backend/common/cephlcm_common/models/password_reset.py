@@ -66,7 +66,7 @@ class PasswordReset(generic.Base):
         return instance
 
     @classmethod
-    def clean(cls):
+    def clean_expired(cls):
         return cls.collection().remove(
             {"expires_at": {"$lt": timeutils.current_unix_timestamp()}}
         )
