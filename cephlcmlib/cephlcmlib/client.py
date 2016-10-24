@@ -114,6 +114,17 @@ def inject_pagination_params(func):
     return decorator
 
 
+def no_auth(func):
+    """Injects mark that no authentication should be performed."""
+
+    @six.wraps(func)
+    def decorator(*args, **kwargs):
+        kwargs["auth"] = auth.no_auth
+        return func(*args, **kwargs)
+
+    return decorator
+
+
 def wrap_errors(func):
     """Catches and logs all errors.
 
@@ -512,3 +523,25 @@ class V1Client(Client):
     def get_playbooks(self, **kwargs):
         url = self._make_url("/v1/playbook/")
         return self._session.get(url, **kwargs)
+
+    @no_auth
+    def get_info(self, **kwargs):
+        url = self._make_url("/v1/info/")
+        return self._session.get(url, **kwargs)
+
+    @no_auth
+    def request_password_reset(self, user_id, **kwargs):
+        url = self._make_url("/v1/password_reset/")
+        payload = {"user_id": user_id}
+        return self._session.post(url, json=payload, **kwargs)
+
+    @no_auth
+    def peek_password_reset(self, reset_token, **kwargs):
+        url = self._make_url("/v1/password_reset/{0}/".format(reset_token))
+        return self._session.get(url, **kwargs)
+
+    @no_auth
+    def reset_password(self, reset_token, new_password, **kwargs):
+        url = self._make_url("/v1/password_reset/{0}/".format(reset_token))
+        payload = {"password": new_password}
+        return self._session.post(url, json=payload, **kwargs)
