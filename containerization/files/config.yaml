@@ -4,6 +4,7 @@ common:
   password_length: 10
   # Please set to 12 in production.
   bcrypt_rounds: 12
+  password_reset_ttl_in_seconds: 86400  # 1 day
   email:
     enabled: false
     from: "noreply@mirantis.com"
