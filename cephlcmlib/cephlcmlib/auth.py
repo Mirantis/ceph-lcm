@@ -44,3 +44,9 @@ class V1Auth(requests.auth.AuthBase):
 
         with self.token_lock:
             self.token = None
+
+
+def no_auth(request):
+    """Do not do any authentication for request."""
+
+    return request

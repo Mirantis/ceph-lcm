@@ -69,3 +69,11 @@ class CannotDeleteLockedServer(CephLCMError):
 
 class UnknownPlaybookConfiguration(CephLCMError):
     """Exception raised if playbook configuration is unknown."""
+
+
+class PasswordResetExpiredError(CephLCMError):
+    """Exception raised if password reset token was expired."""
+
+
+class PasswordResetUnknownUser(CephLCMError):
+    """Exception raised if no valid user for password resetting is found."""

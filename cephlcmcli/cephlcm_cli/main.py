@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 
 import click
 
+from cephlcm_cli import decorators
 from cephlcm_cli import utils
 import cephlcmlib
 
@@ -24,13 +25,13 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 )
 @click.option(
     "--login", "-l",
-    required=True,
+    default="",
     envvar="CEPHLCM_LOGIN",
     help="Login to access CephLCM."
 )
 @click.option(
     "--password", "-p",
-    required=True,
+    default="",
     envvar="CEPHLCM_PASSWORD",
     help="Password to access CephLCM."
 )
@@ -117,6 +118,15 @@ def cli(ctx, url, login, password, no_verify, ssl_certificate, debug,
     utils.configure_logging(debug)
 
     ctx.call_on_close(ctx.obj["client"].logout)
+
+
+@cli.command()
+@decorators.with_client
+@decorators.format_output
+def info(client):
+    """Request information about remove CephLCM installation."""
+
+    return client.get_info()
 
 
 def cli_group(func):
