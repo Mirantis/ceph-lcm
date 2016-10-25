@@ -404,9 +404,10 @@ class Task(generic.Base):
             "time.completed": 0,
             "time.cancelled": 0,
             "time.failed": 0,
-            "time.bounced": {"$lte": timeutils.current_unix_timestamp()}
+            "time.bounced": {"$lte": 0}
         }
         sortby = [
+            ("bounced", generic.SORT_DESC),
             ("time.bounced", generic.SORT_ASC),
             ("time.created", generic.SORT_ASC)
         ]
@@ -418,6 +419,7 @@ class Task(generic.Base):
         try:
             while not stop_condition.is_set():
                 fetched_at = timeutils.current_unix_timestamp()
+                query["time.bounced"]["$lte"] = fetched_at
                 document = find_method(query, sort=sortby)
 
                 if stop_condition.is_set():
