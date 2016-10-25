@@ -11,8 +11,8 @@ COPY output/eggs /eggs
 
 
 RUN set -x \
-  && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcmlib*.whl \
-  && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcm_cli*.whl \
+  && pip3 install --no-cache-dir --disable-pip-version-check /eggs/cephlcmlib*.whl \
+  && pip3 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_cli*.whl \
   && touch /etc/cephlcm.sh \
   && chmod 0755 /usr/bin/cephlcm-cli \
   && rm -r /constraints.txt /eggs

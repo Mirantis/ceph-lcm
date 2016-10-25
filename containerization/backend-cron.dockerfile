@@ -18,7 +18,7 @@ RUN set -x \
     gcc \
     python-dev \
     python-pip \
-  && pip install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcm_monitoring*.whl \
+  && pip install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_monitoring*.whl \
   && curl --silent --show-error --fail --location \
     --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
     "https://caddyserver.com/download/build?os=linux&arch=amd64&features=" | \

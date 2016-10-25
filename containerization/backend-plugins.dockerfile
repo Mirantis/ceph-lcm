@@ -15,7 +15,7 @@ RUN set -x \
     gcc \
     python3-dev \
     python3-pip \
-  && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt /eggs/cephlcm_plugin_playbook*.whl \
+  && pip3 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_plugin_playbook*.whl \
   && rm -r /eggs /constraints.txt \
   && apt-get clean \
   && apt-get purge -y python3-dev python3-pip gcc \
