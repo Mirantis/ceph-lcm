@@ -328,7 +328,7 @@ with app.application.app_context():
         )
         user.UserModel.make_user(
             "root",
-            "r00tme",
+            "root",
             "root@localhost",
             "Root user",
             role_model.model_id
