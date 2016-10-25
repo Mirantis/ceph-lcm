@@ -1,8 +1,9 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
 import { ErrorService } from './services/error';
 import * as jQuery from 'jquery';
 import * as _ from 'lodash';
 import 'bootstrap';
+import globals = require('./services/globals');
 
 // Bootstrap modal methods
 @Component({
@@ -133,5 +134,29 @@ export class Pager {
   switchPage(page: number) {
     this.page = page;
     this.onChange.emit();
+  }
+}
+
+// Long data view
+@Component({
+  selector: 'longdata',
+  template: `<a (click)="expand()" *ngIf="isCollapsed()">{{'{...}'}}</a><span *ngIf="!isCollapsed()"><ng-content></ng-content></span>`
+})
+export class LongData {
+  @Input() key: string;
+  @Input() max: number = 50;
+  @Input() data: Object = '';
+  length: number = 0;
+
+  ngOnInit() {
+    this.length = JSON.stringify(this.data).length;
+  }
+
+  isCollapsed(): boolean {
+    return this.length > this.max && _.get(globals.tempStorage, this.key, true);
+  }
+
+  expand() {
+    globals.tempStorage[this.key] = false;
   }
 }

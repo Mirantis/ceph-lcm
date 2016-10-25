@@ -1,3 +1,5 @@
-import { User, Role } from '../models';
+import { Role } from '../models';
 
 export var loggedUserRole: Role = null;
+
+export var tempStorage: {[key: string]: Object} = {};

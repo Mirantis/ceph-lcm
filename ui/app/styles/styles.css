@@ -7435,8 +7435,8 @@ a.box > div.state.off:focus {
   margin-bottom: 20px;
   padding: 0 30px;
 }
-.box .bowels .server-details:nth-child(1) {
-  padding-right: 0px;
+.box .bowels .server-details:nth-child(2) {
+  padding-right: 15px;
 }
 .box .bowels .server-details .server-details-item {
   min-height: 32px;
@@ -7478,6 +7478,19 @@ a.box > div.state.off:focus {
   height: 30px;
   padding: 0px;
   overflow: hidden;
+}
+.box .bowels .server-details .server-details-item .json {
+  font-family: monospace;
+  white-space: pre-wrap;
+  text-align: left;
+  font-size: 12px;
+  line-height: 14px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.box .bowels .server-details .server-details-item .json a {
+  color: #5A7983;
+  float: right;
 }
 .box .bowels .server-details .server-details-item:last-child {
   border-bottom: 1px solid #c0c4c6;

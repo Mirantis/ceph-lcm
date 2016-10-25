@@ -47,24 +47,11 @@
           class="col-xs-6 server-details"
           *ngFor="let details of getKeyHalfsets(cluster)">
           <div
-            class="server-details-item row"
-            [ngClass]="{scrollable: areServersShown(cluster, detail)}"
+            class="server-details-item row scrollable"
             *ngFor="let detail of details"
           >
             <div class="col-xs-4 name" [title]="detail">{{detail}}</div>
-            <div class="col-xs-8 parameter">
-              <a
-                *ngIf="!areServersShown(cluster, detail)"
-                (click)="showServers(cluster, detail)"
-              >
-                {{ '{...}' }}
-              </a>
-              <ul *ngIf="areServersShown(cluster, detail)">
-                <li *ngFor="let server of cluster.data.configuration[detail]">
-                  {{server.server_id}}
-                </li>
-              </ul>
-            </div>
+            <div class="col-xs-8 json parameter"><longdata [key]="cluster.id + '_' + detail" [data]="cluster.data.configuration[detail]">{{cluster.data.configuration[detail]|json}}</longdata></div>
           </div>
 
         </div>

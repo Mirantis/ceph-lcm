@@ -16,7 +16,6 @@ export class ClustersComponent {
   @ViewChild(Pager) pager: Pager;
   pagedData: pagedResult = {} as pagedResult;
   shownClusterId: string = null;
-  shownServers: Object = {};
 
   constructor(private data: DataService, private modal: Modal) {
     this.fetchData();
@@ -49,14 +48,6 @@ export class ClustersComponent {
   showConfig(cluster: Cluster) {
     this.shownClusterId = this.shownClusterId === cluster.id ?
       null : cluster.id;
-  }
-
-  areServersShown(cluster: Cluster, details: string): boolean {
-    return _.get(this.shownServers, details, false);
-  }
-
-  showServers(cluster: Cluster, details: string) {
-    this.shownServers[details] = true;
   }
 
   editCluster(cluster: Cluster = null) {

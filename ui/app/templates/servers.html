@@ -47,12 +47,10 @@
           class="col-xs-6 server-details"
           *ngFor="let details of getKeyHalfsets(server)">
           <div
-            class="server-details-item row"
+            class="server-details-item row scrollable"
             *ngFor="let detail of details">
             <div class="col-xs-4 name" [title]="detail">{{detail|deprefix:'ansible'}}</div>
-            <div class="col-xs-8 parameter" [title]="server.data.facts[detail]|json">
-              {{server.data.facts[detail]|json}}
-            </div>
+            <div class="col-xs-8 json parameter"><longdata [key]="server.id + '_' + detail" [data]="server.data.facts[detail]">{{server.data.facts[detail]|json}}</longdata></div>
           </div>
 
         </div>
