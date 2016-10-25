@@ -6,7 +6,6 @@ MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
 COPY output/eggs /eggs
-COPY constraints.txt /constraints.txt
 COPY ansible_ssh_keyfile.pem /root/.ssh/id_rsa
 
 
@@ -27,7 +26,7 @@ RUN set -x \
   && pip2 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_ansible*.whl \
   && pip3 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_controller*.whl \
   && /usr/local/bin/cephlcm-ansible-deploy-config \
-  && rm -r /eggs /constraints.txt \
+  && rm -r /eggs \
   && chmod 700 /root/.ssh/ \
   && chmod 600 /root/.ssh/id_rsa \
   && apt-get clean \

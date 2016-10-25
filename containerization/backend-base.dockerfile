@@ -14,6 +14,7 @@ COPY containerization/files/sources.list /etc/apt/sources.list
 RUN set -x \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
+    libffi6 \
     libpython3.5 \
     libyaml-0-2 \
     python3.5 \
@@ -29,7 +30,6 @@ RUN set -x \
 
 
 COPY output/eggs /eggs
-COPY constraints.txt /constraints.txt
 COPY containerization/files/config.yaml /etc/cephlcm/config.yaml
 
 
@@ -37,6 +37,7 @@ RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
       gcc \
+      libffi-dev \
       libyaml-dev \
       python3-dev \
       python3-pip \
@@ -44,8 +45,8 @@ RUN set -x \
     && pip3 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_common*.whl \
     && pip3 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_plugin_server_discovery*.whl \
     && pip3 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_plugin_alerts*.whl \
-    && rm -r /eggs /constraints.txt \
+    && rm -r /eggs \
     && apt-get clean \
-    && apt-get purge -y libyaml-dev gcc python3-dev python3-pip \
+    && apt-get purge -y libffi-dev libyaml-dev gcc python3-dev python3-pip \
     && apt-get autoremove -y \
     && rm -r /var/lib/apt/lists/*

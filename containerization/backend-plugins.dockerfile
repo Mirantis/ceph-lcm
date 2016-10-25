@@ -6,7 +6,6 @@ MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
 COPY output/eggs /eggs
-COPY constraints.txt /constraints.txt
 
 
 RUN set -x \
@@ -16,7 +15,7 @@ RUN set -x \
     python3-dev \
     python3-pip \
   && pip3 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_plugin_playbook*.whl \
-  && rm -r /eggs /constraints.txt \
+  && rm -r /eggs \
   && apt-get clean \
   && apt-get purge -y python3-dev python3-pip gcc \
   && apt-get autoremove -y \

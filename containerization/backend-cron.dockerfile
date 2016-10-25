@@ -5,7 +5,6 @@ FROM cephlcm-controller
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 COPY output/eggs /eggs
-COPY constraints.txt /constraints.txt
 COPY containerization/files/crontab /cephlcm
 COPY containerization/files/cron-caddyfile /etc/caddy/config
 
@@ -27,7 +26,7 @@ RUN set -x \
   && mkdir -p /www \
   && cat /cephlcm | crontab - \
   && mkfifo /var/log/cron.log \
-  && rm -r /cephlcm /eggs /constraints.txt \
+  && rm -r /cephlcm /eggs \
   && apt-get clean \
   && apt-get purge -y gcc python-dev python-pip curl \
   && apt-get autoremove -y \

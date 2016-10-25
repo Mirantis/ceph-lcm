@@ -15,6 +15,7 @@ RUN set -x \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
     gcc \
+    libffi-dev \
     libpcre3 \
     libpcre3-dev \
     python3-dev \
@@ -24,7 +25,7 @@ RUN set -x \
   && chmod 0755 /usr/local/bin/cephlcm-api \
   && rm -r /eggs /constraints.txt \
   && apt-get clean \
-  && apt-get purge -y libpcre3-dev python3-dev python3-pip gcc \
+  && apt-get purge -y libffi-dev libpcre3-dev python3-dev python3-pip gcc \
   && apt-get autoremove -y \
   && rm -r /var/lib/apt/lists/*
 
