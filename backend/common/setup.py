@@ -9,6 +9,7 @@ REQUIREMENTS = (
     "pymongo",
     "PyYAML",
     "simplejson"
+    "argon2_cffi"
 )
 
 

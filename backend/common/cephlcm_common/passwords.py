@@ -2,10 +2,13 @@
 """Password related utilities."""
 
 
+import functools
 import os
 import string
+import warnings
 
-import bcrypt
+import argon2
+import argon2.exceptions
 
 from cephlcm_common import config
 
@@ -17,40 +20,65 @@ PASSWORD_LETTERS = string.printable.strip()
 """A set of letters to use for password generation."""
 
 
+def hide_argon2_warning(func):
+    @functools.wraps(func)
+    def decorator(*args, **kwargs):
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            return func(*args, **kwargs)
+
+    return decorator
+
+
+@functools.lru_cache(2)
+def get_password_hasher(time_cost=None, memory_cost=None, parallelism=None,
+                        hash_len=None, salt_len=None):
+    """This function creates correct password hasher."""
+
+    conf = CONF["common"]["password"]
+    time_cost = time_cost or conf["time_cost"]
+    memory_cost = memory_cost or conf["memory_cost"]
+    parallelism = parallelism or conf["parallelism"]
+    hash_len = hash_len or conf["hash_len"]
+    salt_len = salt_len or conf["salt_len"]
+
+    return argon2.PasswordHasher(
+        time_cost=time_cost,
+        memory_cost=memory_cost,
+        parallelism=parallelism,
+        hash_len=hash_len,
+        salt_len=salt_len
+    )
+
+
+@hide_argon2_warning
 def hash_password(password):
     """This function creates secure password hash from the given password."""
 
-    salt = bcrypt.gensalt(CONF["common"]["bcrypt_rounds"])
-    if isinstance(password, str):
-        password = password.encode("utf-8")
-    hashed = bcrypt.hashpw(password, salt)
+    hasher = get_password_hasher()
 
-    return hashed
+    return hasher.hash(password)
 
 
+@hide_argon2_warning
 def compare_passwords(password, suspected_hash):
     """This function checks if password matches known hash."""
 
-    if isinstance(password, str):
-        password = password.encode("utf-8")
-    if isinstance(suspected_hash, str):
-        suspected_hash = suspected_hash.encode("utf-8")
+    hasher = get_password_hasher()
 
-    return bcrypt.checkpw(password, suspected_hash)
+    try:
+        return hasher.verify(suspected_hash, password)
+    except argon2.exceptions.Argon2Error as exc:
+        return False
 
 
 def generate_password(length=None):
     """Generates secure password of given length."""
 
-    length = length or CONF["common"]["password_length"]
+    length = length or CONF["common"]["password"]["length"]
+    randomness = (
+        PASSWORD_LETTERS[abs(byte % len(PASSWORD_LETTERS))]
+        for byte in os.urandom(length)
+    )
 
-    return "".join(random_password_character() for _ in range(length))
-
-
-def random_password_character():
-    """Generates random character for the password."""
-
-    randomness = os.urandom(1)
-    charpos = ord(randomness) % len(PASSWORD_LETTERS)
-
-    return PASSWORD_LETTERS[charpos]
+    return "".join(randomness)

@@ -25,5 +25,5 @@ def test_password_hashing(password):
 def test_generate_password():
     password = passwords.generate_password()
 
-    assert len(password) == CONF["common"]["password_length"]
+    assert len(password) == CONF["common"]["password"]["length"]
     assert all(c in passwords.PASSWORD_LETTERS for c in password)

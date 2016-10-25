@@ -6,7 +6,6 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "bcrypt",
     "cephlcm-common==0.1.0a0",
     "Flask",
     "jsonschema"

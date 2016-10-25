@@ -10,9 +10,30 @@
 
 
 common:
-  password_length: 10
-  # Please set to 12 in production.
-  bcrypt_rounds: 4
+  # Argon2 is used for hashing passwords. You may consider it as a next
+  # generation of bcrypt which has no flaw in parallelism. It also
+  # has the same idea as scrypt: memory matters.
+  #
+  # https://www.cryptolux.org/images/0/0d/Argon2.pdf
+  # https://eprint.iacr.org/2016/104.pdf
+  #
+  # For parameter tuning, please check following:
+  # http://argon2-cffi.readthedocs.io/en/stable/parameters.html
+  #
+  # Default settings are too low (to make tests fast, mostly)
+  # I recommend following settings for production
+  #   - time_cost: 10
+  #   - memory_cost: 2048
+  #   - parallelism: 3
+  #   - hash_len: 32
+  #   - salt_len: 16
+  password:
+    length: 10
+    time_cost: 1
+    memory_cost: 512
+    parallelism: 2
+    hash_len: 16
+    salt_len: 16
   password_reset_ttl_in_seconds: 86400  # 1 day
   email:
     enabled: false

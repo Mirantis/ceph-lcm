@@ -6,6 +6,7 @@ import uuid
 
 import cephlcm_api.wsgi as app
 
+from cephlcm_common import passwords
 from cephlcm_common.models import role
 from cephlcm_common.models import server
 from cephlcm_common.models import user
@@ -316,7 +317,8 @@ def make_server(name, server_ip):
 
 
 with app.application.app_context():
-    if not user.UserModel.find_by_login("root"):
+    user_model = user.UserModel.find_by_login("root")
+    if not user_model:
         role_model = role.RoleModel.make_role(
             "wheel",
             [
@@ -331,6 +333,9 @@ with app.application.app_context():
             "Root user",
             role_model.model_id
         )
+    elif not passwords.compare_passwords("root", user_model.password_hash):
+        user_model.password_hash = passwords.hash_password("root")
+        user_model.save()
 
     make_server("FAKE_1", "10.100.100.10")
     make_server("FAKE_2", "10.100.100.11")

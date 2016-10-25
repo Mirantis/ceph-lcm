@@ -5,8 +5,8 @@
 
 ansible==2.1.2.0
 ansible-lint==3.3.3
+argon2_cffi==16.2.0
 bandit==1.1.0
-bcrypt==3.1.1
 click==6.6
 fauxfactory==2.0.9
 flake8==3.0.4

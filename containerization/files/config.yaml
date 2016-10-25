@@ -1,9 +1,13 @@
 ---
 
 common:
-  password_length: 10
-  # Please set to 12 in production.
-  bcrypt_rounds: 12
+  password:
+    length: 10
+    time_cost: 10
+    memory_cost: 2048
+    parallelism: 3
+    hash_len: 32
+    salt_len: 16
   password_reset_ttl_in_seconds: 86400  # 1 day
   email:
     enabled: false
