@@ -6,9 +6,9 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "cephlcm-common==0.1.0a0",
-    "python-daemon",
-    "lockfile"
+    "cephlcm-common>=0.1,<0.2",
+    "python-daemon>=2.1,<2.2",
+    "lockfile>=0.12,<0.13"
 )
 
 
@@ -16,7 +16,7 @@ setuptools.setup(
     name="cephlcm-controller",
     description="Ceph Lifecycle Management controller service",
     long_description="",  # TODO
-    version="0.1.0a0",
+    version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

@@ -6,10 +6,10 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "pymongo",
-    "PyYAML",
-    "simplejson"
-    "argon2_cffi"
+    "pymongo>=3.3,<3.4",
+    "PyYAML>=3.10,<4",
+    "simplejson>=3.8,<4"
+    "argon2_cffi>=16.2,<17"
 )
 
 
@@ -17,7 +17,7 @@ setuptools.setup(
     name="cephlcm-common",
     description="Ceph Lifecycle Management common package",
     long_description="",  # TODO
-    version="0.1.0a0",
+    version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

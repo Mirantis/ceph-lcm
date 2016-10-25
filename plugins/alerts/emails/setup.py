@@ -6,7 +6,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "cephlcm-common==0.1.0a0",
+    "cephlcm-common==0.1.0",
 )
 
 
@@ -14,7 +14,7 @@ setuptools.setup(
     name="cephlcm-plugin-alerts",
     description="Ceph Lifecycle Management email alerts plugin",
     long_description="",  # TODO
-    version="0.1.0a0",
+    version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

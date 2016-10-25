@@ -6,9 +6,9 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "requests[socks]",
-    "six",
-    "PyYAML"
+    "requests[socks]>=2.11,<2.12",
+    "six>=1.10",
+    "PyYAML>3.10,<4"
 )
 
 
@@ -16,7 +16,7 @@ setuptools.setup(
     name="cephlcmlib",
     description="Ceph Lifecycle Management client library",
     long_description="",  # TODO
-    version="0.1.0a0",
+    version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

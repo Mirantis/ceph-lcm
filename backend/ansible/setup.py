@@ -6,8 +6,8 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "ansible",
-    "pymongo"
+    "ansible>=2.1,<2.2",
+    "pymongo>=3.3,<3.4"
 )
 
 
@@ -15,7 +15,7 @@ setuptools.setup(
     name="cephlcm-ansible",
     description="Ceph Lifecycle Management Ansible files",
     long_description="",  # TODO
-    version="0.1.0a0",
+    version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

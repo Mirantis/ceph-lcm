@@ -9,7 +9,7 @@ import setuptools
 setuptools.setup(
     name="cephlcm-plugin-playbook-purge-cluster",
     description="Purge cluster plugin for CephLCM",
-    version="0.1.0a0",
+    version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
@@ -28,7 +28,7 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "cephlcm_common"
+        "cephlcm_common>=0.1,<0.2"
     ],
     zip_safe=False
 )

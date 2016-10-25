@@ -6,9 +6,9 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "cephlcmlib==0.1.0a0",
-    "click",
-    "six"
+    "cephlcmlib==0.1.0",
+    "click>=6,<7",
+    "six>1.10"
 )
 
 
@@ -16,7 +16,7 @@ setuptools.setup(
     name="cephlcm-cli",
     description="Ceph Lifecycle Management CLI",
     long_description="",  # TODO
-    version="0.1.0a0",
+    version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

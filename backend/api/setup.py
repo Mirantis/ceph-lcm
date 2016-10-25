@@ -6,9 +6,9 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "cephlcm-common==0.1.0a0",
-    "Flask",
-    "jsonschema"
+    "cephlcm-common>=0.1,<0.2",
+    "Flask>=0.11,<0.12",
+    "jsonschema>=2.5,<2.6"
 )
 
 
@@ -16,7 +16,7 @@ setuptools.setup(
     name="cephlcm-api",
     description="Ceph Lifecycle Management API service",
     long_description="",  # TODO
-    version="0.1.0a0",
+    version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",
