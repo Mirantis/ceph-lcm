@@ -21,7 +21,7 @@ DATA_SCHEMA = {
                 "type": "object",
                 "required": ["server_id", "version"],
                 "properties": {
-                    "server_id": {"$ref": "#/definitions/uuid4"},
+                    "server_id": {"$ref": "#/definitions/dmidecode_uuid"},
                     "version": {"$ref": "#/definitions/positive_integer"}
                 }
             }

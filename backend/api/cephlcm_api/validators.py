@@ -71,6 +71,12 @@ JSONSCHEMA_DEFINITIONS = {
             "$"
         )
     },
+    "dmidecode_uuid_array": {
+        "type": "array",
+        "items": {
+            "$ref": "#/definitions/dmidecode_uuid"
+        }
+    },
     "hostname": {
         "type": "string",
         "format": "hostname"

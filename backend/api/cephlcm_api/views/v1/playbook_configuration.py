@@ -32,7 +32,7 @@ POST_SCHEMA = {
     "name": {"$ref": "#/definitions/non_empty_string"},
     "cluster_id": {"$ref": "#/definitions/uuid4"},
     "playbook_id": {"$ref": "#/definitions/non_empty_string"},
-    "server_ids": {"$ref": "#/definitions/uuid4_array"}
+    "server_ids": {"$ref": "#/definitions/dmidecode_uuid_array"}
 }
 POST_SCHEMA = validators.create_data_schema(POST_SCHEMA, True)
 """Schema for the creating new playbook configuration."""
