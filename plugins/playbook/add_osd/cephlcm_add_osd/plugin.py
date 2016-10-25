@@ -5,6 +5,7 @@
 import pkg_resources
 
 from cephlcm_common import log
+from cephlcm_common import networkutils
 from cephlcm_common import playbook_plugin
 from cephlcm_common.models import server
 
@@ -78,7 +79,7 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
 
                 hostvars = inventory["_meta"]["hostvars"].setdefault(
                     srv.ip, {})
-                hostvars["monitor_interface"] = self.get_public_network_if(
+                hostvars["monitor_interface"] = networkutils.get_public_network_if(  # NOQA
                     all_servers, srv)
                 hostvars["devices"] = self.get_devices(srv)
                 hostvars["ansible_user"] = srv.username
