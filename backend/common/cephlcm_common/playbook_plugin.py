@@ -383,11 +383,10 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
 
         for name in srv.facts["ansible_interfaces"]:
             interface = srv.facts["ansible_{0}".format(name)]
-            interface = interface.get("ipv4")
-            if not interface:
+            if not interface.get("ipv4"):
                 continue
 
-            addr = ipaddress.ip_address(interface["address"])
+            addr = ipaddress.ip_address(interface["ipv4"]["address"])
             if addr in public_network:
                 return interface["device"]
 
