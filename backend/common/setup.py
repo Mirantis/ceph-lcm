@@ -31,7 +31,8 @@ setuptools.setup(
     include_package_data=True,
     package_data={
         "cephlcm_common": [
-            "configs/**",
+            "facts/**",
+            "configs/**"
         ]
     },
     classifiers=(

@@ -98,7 +98,7 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
         result["journal_collocation"] = self.config["journal"]["collocation"]
         result["journal_size"] = self.config["journal"]["size"]
         result["ceph_facts_template"] = pkg_resources.resource_filename(
-            "cephlcm_deploy_cluster", "templates/ceph_facts_module.py.j2")
+            "cephlcm_common", "facts/ceph_facts_module.py.j2")
 
         return result
 
