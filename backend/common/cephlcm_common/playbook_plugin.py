@@ -6,10 +6,7 @@ import abc
 import contextlib
 import copy
 import functools
-import ipaddress
-import operator
 import os
-import posixpath
 import shlex
 import shutil
 import subprocess
@@ -304,19 +301,6 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
 
 class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
-
-    @classmethod
-    def get_devices(cls, srv):
-        mounts = {mount["device"] for mount in srv.facts["ansible_mounts"]}
-        mounts = {posixpath.basename(mount) for mount in mounts}
-
-        devices = []
-        for name, data in srv.facts["ansible_devices"].items():
-            partitions = set(data["partitions"])
-            if not partitions or not (partitions & mounts):
-                devices.append(posixpath.join("/", "dev", name))
-
-        return devices
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
