@@ -81,7 +81,7 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
                 hostvars = inventory["_meta"]["hostvars"].setdefault(
                     srv.ip, {})
                 hostvars["monitor_interface"] = networkutils.get_public_network_if(  # NOQA
-                    all_servers, srv)
+                    srv, all_servers)
                 hostvars["devices"] = diskutils.get_devices(srv)
                 hostvars["ansible_user"] = srv.username
 

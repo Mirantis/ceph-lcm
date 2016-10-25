@@ -111,7 +111,7 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
         for srv in servers:
             hostvars = inventory["_meta"]["hostvars"].setdefault(srv.ip, {})
             hostvars["monitor_interface"] = networkutils.get_public_network_if(
-                servers, srv)
+                srv, servers)
             hostvars["devices"] = diskutils.get_devices(srv)
             hostvars["ansible_user"] = srv.username
 

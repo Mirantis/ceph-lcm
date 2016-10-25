@@ -72,11 +72,10 @@ def get_public_network_if(server, all_servers):
 
     for name in server.facts["ansible_interfaces"]:
         interface = server.facts["ansible_{0}".format(name)]
-        interface = interface.get("ipv4")
-        if not interface:
+        if not interface.get("ipv4"):
             continue
 
-        addr = interface["address"]
+        addr = interface["ipv4"]["address"]
         addr = ipaddress.ip_address(addr)
         if addr in public_network:
             return interface["device"]
