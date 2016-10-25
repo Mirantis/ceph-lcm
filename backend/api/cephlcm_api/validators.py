@@ -53,6 +53,24 @@ JSONSCHEMA_DEFINITIONS = {
             "$"
         )
     },
+    # in ideal world there should be no need in that type
+    # but in real world server discovery exploded on UUID
+    # C9FE8583-3F39-37B8-F651-B93268FA7FB3
+    #                ^
+    #                |
+    #             This is real world UUID, not RFC like.
+    "dmidecode_uuid": {
+        "type": "string",
+        "pattern": (
+            "^"
+            "[0-9a-fA-F]{8}-"
+            "[0-9a-fA-F]{4}-"
+            "[0-9a-fA-F]{4}-"
+            "[0-9a-fA-F]{4}-"
+            "[0-9a-fA-F]{12}"
+            "$"
+        )
+    },
     "hostname": {
         "type": "string",
         "format": "hostname"

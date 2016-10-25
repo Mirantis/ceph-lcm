@@ -140,6 +140,24 @@ def test_post_server_server_discovery_token(client_v1, pymongo_connection):
     assert found_task
 
 
+@pytest.mark.parametrize("hostid", (
+    "C9FE8583-3F39-37B8-F651-B93268FA7FB3",
+    "c9fe8583-3f39-37b8-f651-b93268fa7fb3"
+))
+def test_post_reallife_uuid(client_v1, hostid, freeze_time):
+    request = {
+        "id": pytest.faux.gen_uuid(),
+        "host": pytest.faux.gen_alphanumeric(),
+        "username": pytest.faux.gen_alpha()
+    }
+
+    conf = config.make_api_config()
+    client_v1.auth_token = conf["api"]["server_discovery_token"]
+    response = client_v1.post("/v1/server/", data=request)
+    assert response.status_code == 200
+    assert response.json == {}
+
+
 def test_update_server(sudo_client_v1, new_server, client_v1, normal_user):
     response = sudo_client_v1.get(
         "/v1/server/{0}/".format(new_server.model_id))

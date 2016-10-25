@@ -36,13 +36,14 @@ SERVER_DISCOVERY_DATA_SCHEMA = {
         {"$ref": "#/definitions/ip"}
     ]},
     "username": {"$ref": "#/definitions/non_empty_string"},
-    "id": {"$ref": "#/definitions/uuid4"}
+    "id": {"$ref": "#/definitions/dmidecode_uuid"}
 }
 """Data schema for the server discovery."""
 
 MODEL_SCHEMA = validators.create_model_schema(
     server.ServerModel.MODEL_NAME, DATA_SCHEMA
 )
+MODEL_SCHEMA["properties"]["id"] = {"$ref": "#/definitions/dmidecode_uuid"}
 """Schema for the model with optional data fields."""
 
 SERVER_DISCOVERY_SCHEMA = validators.create_data_schema(
