@@ -20,8 +20,8 @@ RUN set -x \
     python3.5 \
     python3-setuptools \
     wget \
-  && wget --no-check-certificate https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64.deb \
-  && dpkg -i dumb-init_1.1.3_amd64.deb \
+  && wget --no-check-certificate https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64.deb \
+  && dpkg -i dumb-init_1.2.0_amd64.deb \
   && rm dumb-init_*.deb \
   && apt-get clean \
   && apt-get purge -y wget \
