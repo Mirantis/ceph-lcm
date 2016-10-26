@@ -1,6 +1,7 @@
 ROOT_DIR   := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 OUTPUT_DIR := $(ROOT_DIR)/output
 EGGS_DIR   := $(OUTPUT_DIR)/eggs
+IMAGES_DIR := $(OUTPUT_DIR)/images
 
 CONTAINER_API_NAME        := cephlcm-api
 CONTAINER_API_ROOTED_NAME := cephlcm-api-rooted
@@ -16,6 +17,10 @@ CONTAINER_PLUGINS_NAME    := cephlcm-base-plugins
 
 define build_egg
     cd $(1) && rm -rf dist && python setup.py bdist_wheel && cp dist/* $(2) && rm -rf dist build
+endef
+
+define dump_image
+    docker save "$(1)" | bzip2 -c -9 > "$(2)/$(1).tar.bz2"
 endef
 
 # -----------------------------------------------------------------------------
@@ -74,6 +79,9 @@ clean_eggs:
 make_egg_directory: make_output_directory
 	mkdir -p "$(EGGS_DIR)" || true
 
+make_image_directory: make_output_directory
+	mkdir -p "$(IMAGES_DIR)" || true
+
 make_output_directory:
 	mkdir -p "$(OUTPUT_DIR)" || true
 
@@ -120,6 +128,32 @@ build_container_base: build_eggs
 
 build_container_plugins: build_container_base
 	docker build -f "$(ROOT_DIR)/containerization/backend-plugins.dockerfile" --tag $(CONTAINER_PLUGINS_NAME) --rm "$(ROOT_DIR)"
+
+# -----------------------------------------------------------------------------
+
+
+dump_images: dump_image_api dump_image_api_rooted dump_image_controller dump_image_frontend dump_image_db dump_image_cron
+
+dump_image_api: make_image_directory
+	$(call dump_image,$(CONTAINER_API_NAME),$(IMAGES_DIR))
+
+dump_image_api_rooted: make_image_directory
+	$(call dump_image,$(CONTAINER_API_ROOTED_NAME),$(IMAGES_DIR))
+
+dump_image_controller: make_image_directory
+	$(call dump_image,$(CONTAINER_CONTROLLER_NAME),$(IMAGES_DIR))
+
+dump_image_frontend: make_image_directory
+	$(call dump_image,$(CONTAINER_FRONTEND_NAME),$(IMAGES_DIR))
+
+dump_image_db: make_image_directory
+	$(call dump_image,$(CONTAINER_DB_NAME),$(IMAGES_DIR))
+
+dump_image_cron: make_image_directory
+	$(call dump_image,$(CONTAINER_CRON_NAME),$(IMAGES_DIR))
+
+# -----------------------------------------------------------------------------
+
 
 copy_example_keys:
 	cp "$(ROOT_DIR)/containerization/files/ansible_ssh_keyfile.pem" "$(ROOT_DIR)" && \
