@@ -30,7 +30,7 @@ RUN set -x \
 
 
 COPY output/eggs /eggs
-COPY containerization/files/config.yaml /etc/cephlcm/config.yaml
+COPY config.yaml /etc/cephlcm/config.yaml
 
 
 RUN set -x \

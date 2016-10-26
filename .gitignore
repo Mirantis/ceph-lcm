@@ -75,3 +75,4 @@ ansible_ssh_keyfile.pem*
 ssl.key
 ssl.crt
 ssl-dhparam.pem
+config.yaml
