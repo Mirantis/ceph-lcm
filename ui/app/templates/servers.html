@@ -9,6 +9,8 @@
   (onChange)="fetchData($event)"
 ></filter>
 
+<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+
 <div class="row" *ngIf="servers && servers.length">
   <div class="col-xs-12">
 

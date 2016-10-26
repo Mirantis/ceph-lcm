@@ -19,6 +19,7 @@ export class UsersComponent {
   roleIds: roleIdsType = {};
   newUser: User = new User({});
   shownUserId: string = null;
+  pagedData: pagedResult = {} as pagedResult;
 
   constructor(
     private auth: AuthService,
@@ -31,7 +32,10 @@ export class UsersComponent {
   fetchData() {
     this.data.user().findAll({})
       .then(
-        (users: pagedResult) => this.users = users.items,
+        (users: pagedResult) => {
+          this.users = users.items;
+          this.pagedData = users;
+        },
         (error) => this.data.handleResponseError(error)
        );
     this.data.role().findAll({})

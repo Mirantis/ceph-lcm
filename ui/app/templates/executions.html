@@ -10,6 +10,8 @@
   You don't have any executions.
 </div>
 
+<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+
 <div class="executions row" *ngIf="executions && executions.length">
   <div class="col-xs-12">
 

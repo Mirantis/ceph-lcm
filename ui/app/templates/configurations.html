@@ -14,6 +14,8 @@
 >
 </filter>
 
+<pager [pagingData]="pagedData" (onChange)="refreshConfigurations()"></pager>
+
 <div class="configurations row" *ngIf="configurations && configurations.length">
   <div class="col-xs-12">
     <div class="table-help">
@@ -71,6 +73,8 @@
   </div>
 </div>
 
+<pager [pagingData]="pagedData" (onChange)="refreshConfigurations()"></pager>
+
 <loader *ngIf="!configurations"></loader>
 
 <div *ngIf="configurations && !configurations.length" class="no-configurations">
@@ -85,5 +89,3 @@
     (callback)="refreshConfigurations()"
   ></wizard>
 </modal>
-
-<pager [pagingData]="pagedData" (onChange)="refreshConfigurations()"></pager>

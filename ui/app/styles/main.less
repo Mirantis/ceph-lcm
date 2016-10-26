@@ -417,16 +417,18 @@ label {
         }
 
         .json {
-          .mono();
           white-space: pre-wrap;
           text-align: left;
-          font-size: 12px;
           line-height: 14px;
           padding-top: 8px;
           padding-bottom: 8px;
           a {
             color: @base;
             float: right;
+          }
+          span {
+            .mono();
+            font-size: 12px;
           }
         }
 

@@ -7480,10 +7480,8 @@ a.box > div.state.off:focus {
   overflow: hidden;
 }
 .box .bowels .server-details .server-details-item .json {
-  font-family: monospace;
   white-space: pre-wrap;
   text-align: left;
-  font-size: 12px;
   line-height: 14px;
   padding-top: 8px;
   padding-bottom: 8px;
@@ -7491,6 +7489,10 @@ a.box > div.state.off:focus {
 .box .bowels .server-details .server-details-item .json a {
   color: #5A7983;
   float: right;
+}
+.box .bowels .server-details .server-details-item .json span {
+  font-family: monospace;
+  font-size: 12px;
 }
 .box .bowels .server-details .server-details-item:last-child {
   border-bottom: 1px solid #c0c4c6;

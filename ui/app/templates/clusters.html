@@ -9,6 +9,8 @@
 
 <filter (onChange)="fetchData()"></filter>
 
+<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+
 <div class="row" *ngIf="clusters && clusters.length">
   <div class="col-xs-12">
 
@@ -60,6 +62,8 @@
   </div>
 </div>
 
+<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+
 <loader *ngIf="!clusters"></loader>
 
 <div *ngIf="clusters && !clusters.length" class="no-clusters">
@@ -92,5 +96,3 @@
       [disabled]="!newClusterForm.form.valid">Save changes</button>
   </div>
 </modal>
-
-<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>

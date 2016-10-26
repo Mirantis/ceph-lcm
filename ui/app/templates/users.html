@@ -9,6 +9,8 @@
   </div>
 </div>
 
+<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+
 <div class="row" *ngIf="users && users.length">
   <div class="col-xs-12">
 
@@ -136,6 +138,8 @@
     </div>
   </div>
 </div>
+
+<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
 
 <loader *ngIf="!users"></loader>
 
