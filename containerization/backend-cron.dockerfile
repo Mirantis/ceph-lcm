@@ -15,9 +15,12 @@ RUN set -x \
     cron \
     curl \
     gcc \
+    python3-dev \
+    python3-pip \
     python-dev \
     python-pip \
   && pip install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_monitoring*.whl \
+  && pip3 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_migration*.whl \
   && curl --silent --show-error --fail --location \
     --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
     "https://caddyserver.com/download/build?os=linux&arch=amd64&features=" | \
@@ -28,11 +31,11 @@ RUN set -x \
   && mkfifo /var/log/cron.log \
   && rm -r /cephlcm /eggs \
   && apt-get clean \
-  && apt-get purge -y gcc python-dev python-pip curl \
+  && apt-get purge -y gcc python3-dev python3-pip python-dev python-pip curl \
   && apt-get autoremove -y \
   && rm -r /var/lib/apt/lists/*
 
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "caddy -conf '/etc/caddy/config' & cron && tail -F /var/log/cron.log"]
+CMD ["sh", "-c", "cephlcm-migrations apply && caddy -conf '/etc/caddy/config' & cron && tail -F /var/log/cron.log"]

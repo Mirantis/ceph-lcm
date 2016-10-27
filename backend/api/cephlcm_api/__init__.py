@@ -31,12 +31,3 @@ def create_application():
     log.configure_logging(CONF.logging_config)
 
     return application
-
-
-def index_db():
-    """Ensures DB indexes are created."""
-
-    application = create_application()
-
-    with application.app_context():
-        generic_model.ensure_indexes()

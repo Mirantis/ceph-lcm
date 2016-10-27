@@ -33,4 +33,4 @@ RUN set -x \
 EXPOSE 8000
 
 ENTRYPOINT ["/usr/bin/dumb-init", "-c", "--"]
-CMD ["cephlcm-api"]
+CMD ["uwsgi", "/etc/cephlcm-api-uwsgi.ini"]
