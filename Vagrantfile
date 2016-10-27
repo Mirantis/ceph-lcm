@@ -8,12 +8,6 @@ CLOUD_CONFIG_USERNAME = "ansible"
 CLOUD_CONFIG_URL = "10.0.0.10:5000"
 CLOUD_CONFIG_KEY = "~/.ssh/id_rsa.pub"
 CLOUD_CONFIG_TOKEN = "26758c32-3421-4f3d-9603-e4b5337e7ecc"
-CLOUD_CONFIG_GEN = File.dirname(__FILE__) + "/cephlcmlib/cephlcmlib/cli/cloud_config.py"
-CLOUD_CONFIG_FILE = `./devenv/vagrant-cloud-config.py #{CLOUD_CONFIG_USERNAME} #{CLOUD_CONFIG_URL} #{CLOUD_CONFIG_KEY} #{CLOUD_CONFIG_TOKEN}`
-
-at_exit do
-  File.delete CLOUD_CONFIG_FILE
-end
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -89,9 +83,23 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         s.inline = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
       end
 
+      cloud_config_file = ""
+      if Vagrant.has_plugin?("vagrant-host-shell")
+        cloud_config_file = `./devenv/vagrant-cloud-config.py #{CLOUD_CONFIG_USERNAME} #{CLOUD_CONFIG_URL} #{CLOUD_CONFIG_KEY} #{CLOUD_CONFIG_TOKEN}`
+        at_exit do
+          File.delete cloud_config_file
+        end
+
+        client.vm.provision :host_shell do |host_shell|
+          host_shell.inline = "ansible-galaxy install -r devenv/requirements.yaml -p devenv/galaxy"
+        end
+      else
+        abort "You have to install vagrant-host-shell plugin to continue"
+      end
+
       client.vm.provision "copy-cloud-config",
         type: "file",
-        source: CLOUD_CONFIG_FILE,
+        source: cloud_config_file,
         destination: "/tmp/user-data"
       client.vm.provision "cloud-init", type: "shell" do |s|
         s.privileged = true
