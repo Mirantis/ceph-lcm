@@ -6,8 +6,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    #"cephlcm-common>=0.1,<0.2",
-    "cephlcm-common",
+    "cephlcm-common>=0.1,<0.2",
 )
 
 
@@ -26,6 +25,12 @@ setuptools.setup(
     python_requires=">=3.4",
     install_requires=REQUIREMENTS,
     zip_safe=False,
+    include_package_data=True,
+    package_data={
+        "cephlcm_migration": [
+            "scripts/*"
+        ]
+    },
     entry_points={
         "console_scripts": ["cephlcm-migrations = cephlcm_migration.cli:main"]
     },
