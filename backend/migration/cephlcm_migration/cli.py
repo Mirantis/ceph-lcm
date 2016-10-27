@@ -155,6 +155,7 @@ def apply_migration(migration, *, ok=True):
 def get_options():
     parser = argparse.ArgumentParser(
         description="Run migrations again CephLCM database.")
+    parser.set_defaults(callback=lambda el: parser.print_help())
     subparsers = parser.add_subparsers()
 
     list_parser = subparsers.add_parser(
