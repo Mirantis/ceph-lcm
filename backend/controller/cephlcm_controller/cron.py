@@ -2,14 +2,12 @@
 """Different endpoints should be used as a cron scripts."""
 
 
-import functools
 import time
 
+from cephlcm_common import cliutils
 from cephlcm_common import config
 from cephlcm_common import log
 from cephlcm_common import timeutils
-from cephlcm_common.models import db
-from cephlcm_common.models import generic
 from cephlcm_common.models import password_reset
 from cephlcm_common.models import task
 from cephlcm_common.models import token
@@ -22,18 +20,7 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-def configure(func):
-    @functools.wraps(func)
-    def decorator(*args, **kwargs):
-        log.configure_logging(CONF.logging_config)
-        generic.configure_models(db.MongoDB())
-
-        return func(*args, **kwargs)
-
-    return decorator
-
-
-@configure
+@cliutils.configure
 def clean_expired_tokens():
     """This function swipe out expired tokens from DB."""
 
@@ -50,7 +37,7 @@ def clean_expired_tokens():
     )
 
 
-@configure
+@cliutils.configure
 def clean_old_tasks():
     """This function removes old finished tasks from database."""
 
@@ -73,7 +60,7 @@ def clean_old_tasks():
     )
 
 
-@configure
+@cliutils.configure
 def clean_expired_password_resets():
     """This function swipes expired password reset tokens from DB."""
 

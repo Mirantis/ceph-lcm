@@ -42,17 +42,16 @@ class MigrationScript(generic.Base):
         return instance
 
     @classmethod
-    def what_to_execute(cls, script_names):
-        query = {
-            "_id": {"$in": script_names},
-            "state": MigrationState.ok.name
-        }
-        documents = cls.collection().find(query, ["_id"])
-        documents = {doc["_id"] for doc in documents}
+    def find(cls):
+        documents = []
+        sorter = [("_id", generic.SORT_ASC)]
 
-        to_execute = set(script_names) - documents
+        for item in cls.collection().find({}, sort=sorter):
+            instance = cls()
+            instance.update_from_db_document(item)
+            documents.append(instance)
 
-        return sorted(to_execute)
+        return documents
 
     def __init__(self):
         self._id = ""
@@ -65,7 +64,7 @@ class MigrationScript(generic.Base):
     def save(self):
         template = {
             "_id": self._id,
-            "state": MigrationState.name,
+            "state": self.state.name,
             "script_hash": self.script_hash,
             "time_executed": self.time_executed,
             "stdout": self.stdout,
