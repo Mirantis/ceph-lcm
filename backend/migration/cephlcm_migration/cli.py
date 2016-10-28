@@ -63,24 +63,24 @@ def list_callback(options):
             print(name)
 
 
+@lock.synchronized("applying_migrations", timeout=60)
 def apply_callback(options):
-    with lock.with_autoprolong_lock("applying_migrations", timeout=60):
-        migrations = get_migrations_to_apply(options)
-        if not migrations:
-            LOG.info("No migration are required to be applied.")
-            return
+    migrations = get_migrations_to_apply(options)
+    if not migrations:
+        LOG.info("No migration are required to be applied.")
+        return
 
-        for migration in migrations:
-            LOG.info("Run migration %s", migration.name)
+    for migration in migrations:
+        LOG.info("Run migration %s", migration.name)
 
-            try:
-                migration.run()
-            except Exception:
-                ok = False
-            else:
-                ok = True
+        try:
+            migration.run()
+        except Exception:
+            ok = False
+        else:
+            ok = True
 
-            apply_migration(migration, ok=ok)
+        apply_migration(migration, ok=ok)
 
 
 def show_callback(options):

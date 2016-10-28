@@ -223,3 +223,5 @@ def test_auto_prolong_mongo_lock(monkeypatch, lock_collection):
     assert db_model
     assert db_model["locker"] is None
     assert db_model["expired_at"] == 0
+
+    assert not lock1.prolonger_thread.is_alive()
