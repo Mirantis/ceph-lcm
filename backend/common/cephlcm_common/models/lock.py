@@ -7,6 +7,7 @@ This project is not exceptional.
 
 
 import contextlib
+import functools
 import threading
 import time
 import uuid
@@ -16,6 +17,7 @@ import pymongo.errors
 
 from cephlcm_common import exceptions
 from cephlcm_common import log
+from cephlcm_common import retryutils
 from cephlcm_common import timeutils
 from cephlcm_common.models import generic
 
@@ -46,6 +48,9 @@ class BaseMongoLock(generic.Base):
         self.lockname = lockname
         self.lock_id = str(uuid.uuid4())
         self.acquired = False
+        self.find_method = retryutils.mongo_retry()(
+            self.collection().find_one_and_update
+        )
 
     def acquire(self, *, block=True, timeout=None, force=False):
         if timeout is not None:
@@ -80,7 +85,7 @@ class BaseMongoLock(generic.Base):
             query["expired_at"] = {"$lte": current_time}
 
         try:
-            self.collection().find_one_and_update(
+            self.find_method(
                 query,
                 {
                     "$set": {
@@ -108,7 +113,7 @@ class BaseMongoLock(generic.Base):
         if not force:
             query["locker"] = self.lock_id
 
-        res = self.collection().find_one_and_update(
+        res = self.find_method(
             query, {"$set": {"expired_at": 0, "locker": None}},
             return_document=pymongo.ReturnDocument.AFTER
         )
@@ -131,7 +136,7 @@ class BaseMongoLock(generic.Base):
 
         time_to_update = timeutils.current_unix_timestamp() + \
             self.DEFAULT_PROLONG_TIMEOUT
-        result = self.collection().find_one_and_update(
+        result = self.find_method(
             query, {"$set": {"expired_at": time_to_update}},
             return_document=pymongo.ReturnDocument.AFTER
         )
@@ -155,21 +160,32 @@ class AutoProlongMongoLock(BaseMongoLock):
 
     def acquire(self, *, block=True, timeout=None, force=False):
         def prolonger():
-            LOG.debug(
-                "Prolong thread for locker %s of lock %s has been started.",
-                self.lockname, self.lock_id
-            )
-
+            thread = threading.current_thread()
             sleep_timeout = self.DEFAULT_PROLONG_TIMEOUT / 2
+
+            LOG.debug(
+                "Prolong thread for locker %s of lock %s has been started. "
+                "Thread %s, ident %s",
+                self.lockname, self.lock_id, thread.name, thread.ident
+            )
 
             self.stop_event.wait(sleep_timeout)
             while not self.stop_event.is_set():
-                self.prolong(force)
+                try:
+                    self.prolong(force)
+                except Exception as exc:
+                    LOG.exception(
+                        "Exception during prolonging of lock %s by locker "
+                        "%s (prolonger thread %s, id=%d)",
+                        self.lockname, self.lock_id,
+                        thread.name, thread.ident
+                    )
                 self.stop_event.wait(sleep_timeout)
 
             LOG.debug(
-                "Prolong thread for locker %s of lock %s has been stopped.",
-                self.lockname, self.lock_id
+                "Prolong thread for locker %s of lock %s has been stopped. "
+                "Thread %s, ident %s",
+                self.lockname, self.lock_id, thread.name, thread.ident
             )
 
         response = super().acquire(block=block, timeout=timeout, force=force)
@@ -220,3 +236,14 @@ def with_autoprolong_lock(lockname, force=False, block=True, timeout=None):
     )
     with generator as lock:
         yield lock
+
+
+def synchronized(lockname, force=False, block=True, timeout=None):
+    def outer_decorator(func):
+        @functools.wraps(func)
+        def inner_decorator(*args, **kwargs):
+            with with_autoprolong_lock(lockname, force, block, timeout):
+                return func(*args, **kwargs)
+
+        return inner_decorator
+    return outer_decorator

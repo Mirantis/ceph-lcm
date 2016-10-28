@@ -87,8 +87,8 @@ def exp_sleep_time(min_sleep, max_sleep, attempts, attempt):
     if attempt < 1:
         raise ValueError("Incorrect attempt: {0}".format(attempts))
     if attempt > attempts:
-        raise ValueError("attempt {0} > attempts {1}".format(attempt,
-                                                             attempts))
+        raise ValueError("attempt {0} > attempts {1}".format(
+            attempt, attempts))
 
     # y = a + b * e^x
     b = (max_sleep - min_sleep) / (math.exp(attempts) - math.e)

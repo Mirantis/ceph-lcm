@@ -2,9 +2,12 @@
 """Tests for cephlcm.common.models.lock."""
 
 
+import time
+
 import pytest
 
 from cephlcm_common import exceptions
+from cephlcm_common import timeutils
 from cephlcm_common.models import lock
 
 
@@ -186,3 +189,37 @@ def test_force_prolong_lock(lock_collection, freeze_time):
     assert db_model["locker"] == lock1.lock_id
     assert db_model["expired_at"] == int(freeze_time.return_value) + \
         lock.BaseMongoLock.DEFAULT_PROLONG_TIMEOUT
+
+
+def test_auto_prolong_mongo_lock(monkeypatch, lock_collection):
+    monkeypatch.setattr(lock.BaseMongoLock, "DEFAULT_PROLONG_TIMEOUT", 1)
+    monkeypatch.setattr(lock.AutoProlongMongoLock,
+                        "DEFAULT_PROLONG_TIMEOUT", 1)
+
+    lockname = pytest.faux.gen_alphanumeric()
+    lock1 = lock.AutoProlongMongoLock(lockname)
+
+    initial_time = timeutils.current_unix_timestamp()
+    lock1.acquire()
+    time.sleep(lock.AutoProlongMongoLock.DEFAULT_PROLONG_TIMEOUT + 1)
+
+    db_model = lock_collection.find_one({"_id": lockname})
+    assert db_model
+    assert db_model["locker"] == lock1.lock_id
+    assert db_model["expired_at"] > initial_time + \
+        lock.AutoProlongMongoLock.DEFAULT_PROLONG_TIMEOUT
+
+    time2 = db_model["expired_at"]
+    time.sleep(lock.AutoProlongMongoLock.DEFAULT_PROLONG_TIMEOUT + 1)
+
+    db_model = lock_collection.find_one({"_id": lockname})
+    assert db_model
+    assert db_model["locker"] == lock1.lock_id
+    assert db_model["expired_at"] > time2
+
+    lock1.release()
+
+    db_model = lock_collection.find_one({"_id": lockname})
+    assert db_model
+    assert db_model["locker"] is None
+    assert db_model["expired_at"] == 0
