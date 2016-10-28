@@ -7,6 +7,7 @@ import setuptools
 
 REQUIREMENTS = (
     "cephlcm-common>=0.1,<0.2",
+    "cephlcm-migrations>=0.1,<0.2",
     "Flask>=0.11,<0.12",
     "jsonschema>=2.5,<2.6"
 )

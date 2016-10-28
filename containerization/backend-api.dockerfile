@@ -20,6 +20,7 @@ RUN set -x \
     python3-dev \
     python3-pip \
   && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt uwsgi \
+  && pip3 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_migrations*.whl \
   && pip3 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_api*.whl \
   && rm -r /eggs /constraints.txt \
   && apt-get clean \
@@ -31,4 +32,4 @@ RUN set -x \
 EXPOSE 8000
 
 ENTRYPOINT ["/usr/bin/dumb-init", "-c", "--"]
-CMD ["uwsgi", "/etc/cephlcm-api-uwsgi.ini"]
+CMD ["sh", "-c", "cephlcm-migrations apply && uwsgi /etc/cephlcm-api-uwsgi.ini"]
