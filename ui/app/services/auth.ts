@@ -6,6 +6,7 @@ import { Token, User, Role } from '../models';
 import globals = require('./globals');
 
 import * as _ from 'lodash';
+import * as $ from 'jquery';
 
 @Injectable()
 export class AuthService {
@@ -73,8 +74,19 @@ export class AuthService {
   invalidateUser() {
     this.getLoggedUser(true);
   }
-}
 
+  resetPassword(login: string): JQueryXHR {
+    return this.data.postJSON('password_reset', {login});
+  }
+
+  checkPasswordResetToken(resetToken: string): JQueryXHR {
+    return $.ajax(this.data.basePath + '/password_reset/' + resetToken);
+  }
+
+  updatePassword(resetToken: string, password: string): JQueryXHR {
+    return this.data.postJSON('password_reset/' + resetToken, {password});
+  }
+}
 
 @Injectable()
 export class LoggedIn implements CanActivate {

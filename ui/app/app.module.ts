@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app';
-import { LoginComponent, DashboardComponent }  from './dashboard/index';
+import { LoginComponent, DashboardComponent, PasswordResetComponent }  from './dashboard/index';
 import { PageNotFoundComponent } from './404';
 
 import { AdminModule } from './admin/admin.module';
@@ -25,6 +25,7 @@ import { appRoutingProviders, routing } from './app.routes';
   declarations: [
     AppComponent,
     LoginComponent,
+    PasswordResetComponent,
     DashboardComponent,
     PageNotFoundComponent,
   ],

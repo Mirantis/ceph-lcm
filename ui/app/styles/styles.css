@@ -7708,6 +7708,14 @@ a.grid .grid-header .icon:focus {
   margin-right: auto;
   margin-left: auto;
 }
+.login-box .legend {
+  width: 250px;
+  margin: 0 auto 20px;
+}
+.login-box .legend h1 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
 .login-box .logo-box {
   height: 200px;
   padding-top: 30px;
@@ -7757,9 +7765,13 @@ a.grid .grid-header .icon:focus {
   width: 40%;
   margin-left: auto;
   margin-right: auto;
+  text-align: center;
 }
 .login-box .login-button button {
   width: 100%;
+}
+.login-box .login-button p {
+  margin-top: 10px;
 }
 .copyrights {
   text-align: center;

@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router';
 import { LoggedIn } from '../services/auth';
 import { LoginComponent } from './login';
+import { PasswordResetComponent } from './password_reset';
 import { DashboardComponent } from './dashboard';
 
 export const dashboardRoutes: Routes = [
-  {path: 'dashboard', component: DashboardComponent, canActivate: [LoggedIn]},
-  {path: 'login', component: LoginComponent}
+  {path: 'login', component: LoginComponent},
+  {path: 'password_reset', component: PasswordResetComponent},
+  {path: 'password_reset/:reset_token', component: PasswordResetComponent}
 ];
