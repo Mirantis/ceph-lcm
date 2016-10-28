@@ -7,15 +7,12 @@ import setuptools
 
 REQUIREMENTS = (
     "cephlcm-common>=0.1,<0.2",
-    "cephlcm-migrations>=0.1,<0.2",
-    "Flask>=0.11,<0.12",
-    "jsonschema>=2.5,<2.6"
 )
 
 
 setuptools.setup(
-    name="cephlcm-api",
-    description="Ceph Lifecycle Management API service",
+    name="cephlcm-migrations",
+    description="Ceph Lifecycle Management migration scripts",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -27,7 +24,16 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     python_requires=">=3.4",
     install_requires=REQUIREMENTS,
-    zip_safe=True,
+    zip_safe=False,
+    include_package_data=True,
+    package_data={
+        "cephlcm_migration": [
+            "scripts/*"
+        ]
+    },
+    entry_points={
+        "console_scripts": ["cephlcm-migrations = cephlcm_migration.cli:main"]
+    },
     classifiers=(
         "Intended Audience :: Information Technology",
         "Intended Audience :: System Administrators",

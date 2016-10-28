@@ -4,7 +4,6 @@ EGGS_DIR   := $(OUTPUT_DIR)/eggs
 IMAGES_DIR := $(OUTPUT_DIR)/images
 
 CONTAINER_API_NAME        := cephlcm-api
-CONTAINER_API_ROOTED_NAME := cephlcm-api-rooted
 CONTAINER_BASE_NAME       := cephlcm-base
 CONTAINER_CLI_NAME        := cephlcm-cli
 CONTAINER_CONTROLLER_NAME := cephlcm-controller
@@ -26,7 +25,7 @@ endef
 # -----------------------------------------------------------------------------
 
 build_eggs: build_backend_eggs build_cephlcmlib_eggs build_cephlcmcli_eggs build_plugins_eggs
-build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs build_ansible_eggs build_monitoring_eggs
+build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs build_ansible_eggs build_monitoring_eggs build_migration_eggs
 build_plugins_eggs: build_alerts_eggs build_playbook_eggs
 build_alerts_eggs: build_email_eggs
 build_playbook_eggs: build_deploy_cluster_eggs build_helloworld_eggs build_server_discovery_eggs build_add_osd_eggs build_remove_osd_eggs build_purge_cluster_eggs
@@ -45,6 +44,9 @@ build_ansible_eggs: clean_eggs make_egg_directory
 
 build_monitoring_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/backend/monitoring","$(EGGS_DIR)")
+
+build_migration_eggs: clean_eggs make_egg_directory
+	$(call build_egg,"$(ROOT_DIR)/backend/migration","$(EGGS_DIR)")
 
 build_cephlcmlib_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/cephlcmlib","$(EGGS_DIR)")
@@ -99,14 +101,11 @@ clean_ui:
 # -----------------------------------------------------------------------------
 
 
-build_containers: build_container_api build_container_api_rooted build_container_controller build_container_frontend build_container_db build_container_cron
+build_containers: build_container_api build_container_controller build_container_frontend build_container_db build_container_cron
 build_containers_dev: copy_example_keys build_containers
 
 build_container_api: build_container_plugins
 	docker build -f "$(ROOT_DIR)/containerization/backend-api.dockerfile" --tag $(CONTAINER_API_NAME) --rm "$(ROOT_DIR)"
-
-build_container_api_rooted: build_container_api
-	docker build -f "$(ROOT_DIR)/containerization/backend-api-rooted.dockerfile" --tag $(CONTAINER_API_ROOTED_NAME) --rm "$(ROOT_DIR)"
 
 build_container_controller: build_container_plugins
 	docker build -f "$(ROOT_DIR)/containerization/backend-controller.dockerfile" --tag $(CONTAINER_CONTROLLER_NAME) --rm "$(ROOT_DIR)"
@@ -132,13 +131,10 @@ build_container_plugins: build_container_base
 # -----------------------------------------------------------------------------
 
 
-dump_images: dump_image_api dump_image_api_rooted dump_image_controller dump_image_frontend dump_image_db dump_image_cron
+dump_images: dump_image_api dump_image_controller dump_image_frontend dump_image_db dump_image_cron
 
 dump_image_api: make_image_directory
 	$(call dump_image,$(CONTAINER_API_NAME),$(IMAGES_DIR))
-
-dump_image_api_rooted: make_image_directory
-	$(call dump_image,$(CONTAINER_API_ROOTED_NAME),$(IMAGES_DIR))
 
 dump_image_controller: make_image_directory
 	$(call dump_image,$(CONTAINER_CONTROLLER_NAME),$(IMAGES_DIR))

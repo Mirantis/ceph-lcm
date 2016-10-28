@@ -337,8 +337,7 @@ class Model(Base, metaclass=abc.ABCMeta):
 
     @classmethod
     def ensure_index(cls):
-        # super().ensure_index()
-        super(Model, cls).ensure_index()
+        super().ensure_index()
 
         if not cls.COLLECTION_NAME:
             return
