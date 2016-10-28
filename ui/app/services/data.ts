@@ -191,11 +191,19 @@ export class DataService {
     return mapper;
   }
 
+  postJSON(endpoint: string, data: Object): JQueryXHR {
+    return $.ajax({
+      type: 'POST',
+      url: this.basePath + '/' + endpoint,
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      data: JSON.stringify(data)
+    });
+  }
+
   handleResponseError(error: any): void {
     var errorCode = 'Error';
     var errorMessage = '';
-
-    console.log(error);
 
     if (error) {
       if (error.response) {

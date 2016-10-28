@@ -1,5 +1,5 @@
 <div class="login-background">
-  <form (ngSubmit)='login()' #loginForm='ngForm'>
+  <form (ngSubmit)="login()" #loginForm="ngForm" *ngIf="!reset">
     <div class="login-box">
       <div class="logo-box">
         <div class="logo"></div>
@@ -11,7 +11,7 @@
           name="username"
           class="form-control login-input"
           placeholder="Login"
-          [(ngModel)]='username'
+          [(ngModel)]="username"
         >
         <div class="pass-icon"><i class="glyphicon password-icon"></i></div>
         <input
@@ -19,7 +19,7 @@
           name="password"
           class="form-control"
           placeholder="Password"
-          [(ngModel)]='password'
+          [(ngModel)]="password"
         >
       </div>
       <div class="login-error-message text-danger" *ngIf="loginError">
@@ -30,10 +30,103 @@
         <button
           type="submit"
           class="btn btn-primary"
-          [disabled]='!loginForm.form.valid'
+          [disabled]="!loginForm.form.valid"
         >
           Login
         </button>
+        <p>
+          <a [routerLink]="['/password_reset']">Reset password</a>
+        </p>
+      </div>
+    </div>
+  </form>
+
+  <form #resetForm="ngForm" *ngIf="reset && !resetToken">
+    <div class="login-box">
+      <div class="logo-box">
+        <div class="logo"></div>
+      </div>
+
+      <div class="legend">
+        <p>Please submit your login to get password resetting instructions via email.</p>
+      </div>
+
+      <div class="form-group">
+        <div class="login-icon"><i class="glyphicon user-icon"></i></div>
+        <input
+          type="text"
+          name="username"
+          class="form-control login-input"
+          placeholder="Login"
+          [(ngModel)]="username"
+        >
+      </div>
+      <div
+        class="login-error-message text-danger"
+        [ngClass]="getErrorClass()"
+        *ngIf="loginError"
+      >
+        {{getErrorMessage()}}
+      </div>
+
+      <div class="login-button">
+        <button
+          class="btn btn-primary"
+          [disabled]="!username"
+          (click)="resetPassword()"
+        >
+          Reset password
+        </button>
+        <p>
+          <a [routerLink]="['/login']">Return to login</a>
+        </p>
+      </div>
+    </div>
+  </form>
+
+  <form #newPasswordForm="ngForm" *ngIf="reset && resetToken">
+    <div class="login-box">
+      <div class="logo-box">
+        <div class="logo"></div>
+      </div>
+      <div class="form-group">
+        <div class="login-icon"><i class="glyphicon password-icon"></i></div>
+        <input
+          type="password"
+          name="password"
+          class="form-control"
+          placeholder="Password"
+          [(ngModel)]='password'
+        >
+        <div class="pass-icon"><i class="glyphicon password-icon"></i></div>
+        <input
+          type="password"
+          name="password"
+          class="form-control"
+          placeholder="Password confirmation"
+          [(ngModel)]="passwordConfirmation"
+        >
+      </div>
+      <div
+        class="login-error-message text-danger"
+        [ngClass]="getErrorClass()"
+        *ngIf="loginError"
+      >
+        {{getErrorMessage()}}
+      </div>
+
+      <div class="login-button">
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="!password || password !== passwordConfirmation"
+          (click)="updatePassword()"
+        >
+          Update Password
+        </button>
+        <p>
+          <a [routerLink]="['/login']">Return to login</a>
+        </p>
       </div>
     </div>
   </form>
