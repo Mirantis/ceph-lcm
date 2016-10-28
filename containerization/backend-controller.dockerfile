@@ -23,8 +23,8 @@ RUN set -x \
     python-dev \
     python-pip \
     python-setuptools \
-  && pip2 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_ansible*.whl \
-  && pip3 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_controller*.whl \
+  && pip2 install --compile --no-cache-dir --disable-pip-version-check /eggs/cephlcm_ansible*.whl \
+  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/cephlcm_controller*.whl \
   && /usr/local/bin/cephlcm-ansible-deploy-config \
   && rm -r /eggs \
   && chmod 700 /root/.ssh/ \

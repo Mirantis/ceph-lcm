@@ -19,9 +19,9 @@ RUN set -x \
     libpcre3-dev \
     python3-dev \
     python3-pip \
-  && pip3 install --no-cache-dir --disable-pip-version-check -c /constraints.txt uwsgi \
-  && pip3 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_migrations*.whl \
-  && pip3 install --no-cache-dir --disable-pip-version-check /eggs/cephlcm_api*.whl \
+  && pip3 install --compile --no-cache-dir --disable-pip-version-check -c /constraints.txt uwsgi \
+  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/cephlcm_migrations*.whl \
+  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/cephlcm_api*.whl \
   && rm -r /eggs /constraints.txt \
   && apt-get clean \
   && apt-get purge -y libffi-dev libpcre3-dev python3-dev python3-pip gcc \
