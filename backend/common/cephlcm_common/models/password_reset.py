@@ -2,8 +2,10 @@
 """Password reset model."""
 
 
-import base64
+import itertools
+import math
 import os
+import string
 
 from cephlcm_common import config
 from cephlcm_common import exceptions
@@ -25,18 +27,38 @@ LOG = log.getLogger(__name__)
 ENTROPY_BYTES = 64
 """How much entropy should be used to generate unique ID."""
 
+ID_ALPHABET = string.ascii_letters + string.digits
+"""Alphabet which will be used to generate password reset token."""
+
 
 class PasswordReset(generic.Base):
 
     COLLECTION_NAME = "password_reset"
+    ID_GROUPS = 5
 
     @classmethod
     def generate_new_id(cls):
-        random_bytes = os.urandom(ENTROPY_BYTES)
-        new_id = base64.urlsafe_b64encode(random_bytes)
-        new_id = new_id.decode("utf-8")
+        new_id = "".join(
+            ID_ALPHABET[byte % len(ID_ALPHABET)]
+            for byte in os.urandom(ENTROPY_BYTES)
+        )
+        new_id = cls.prettify_id(new_id)
 
         return new_id
+
+    @classmethod
+    def prettify_id(cls, id_string):
+        """
+        sdkfljhasdflkdafshgkldsfgkldsf -> sdfsad-fsdafdsfag-asdasdgadfg-sdfsdaf
+        """
+
+        characters_per_group = len(id_string) / cls.ID_GROUPS
+        characters_per_group = int(math.ceil(characters_per_group))
+        iterator = [iter(id_string)] * characters_per_group
+        iterator = itertools.zip_longest(*iterator, fillvalue="")
+        substrings = ["".join(item) for item in iterator]
+
+        return "-".join(substrings)
 
     @classmethod
     def create(cls, user_id, ttl=None):
