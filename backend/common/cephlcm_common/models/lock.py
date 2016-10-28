@@ -1,0 +1,207 @@
+# -*- coding: utf-8 -*-
+"""Each project which use MongoDB eventually comes to custom
+in-house implementation of it's own MongoLock.
+
+This project is not exceptional.
+"""
+
+
+import contextlib
+import threading
+import time
+import uuid
+
+import pymongo
+
+from cephlcm_common import exceptions
+from cephlcm_common import log
+from cephlcm_common import timeutils
+from cephlcm_common.models import generic
+
+
+LOG = log.getLogger(__name__)
+"""Logger."""
+
+
+class BaseMongoLock(generic.Base):
+
+    COLLECTION_NAME = "lock"
+    DEFAULT_PROLONG_TIMEOUT = 10  # seconds
+
+    @classmethod
+    def ensure_index(cls):
+        super().ensure_index()
+
+        cls.collection().create_index(
+            [
+                ("_id", generic.SORT_ASC),
+                ("locker", generic.SORT_ASC)
+            ],
+            name="index_unique_locker",
+            unique=True
+        )
+
+    def __init__(self, lockname):
+        self.lockname = lockname
+        self.lock_id = str(uuid.uuid4())
+        self.acquired = False
+
+    def acquire(self, *, block=True, timeout=None, force=False):
+        if timeout is not None:
+            timeout = abs(timeout)
+
+        if force or not block:
+            return self.try_to_acquire(force)
+
+        if not timeout:
+            while True:
+                try:
+                    return self.try_to_acquire()
+                except exceptions.MongoLockCannotAcquire:
+                    time.sleep(0.5)
+
+        current_time = timeutils.current_unix_timestamp()
+        stop_at = current_time + timeout
+        while current_time <= stop_at:
+            try:
+                return self.try_to_acquire()
+            except exceptions.MongoLockCannotAcquire:
+                time.sleep(0.5)
+
+        raise exceptions.MongoLockCannotAcquire()
+
+    def try_to_acquire(self, force=False):
+        current_time = timeutils.current_unix_timestamp()
+        query = {"_id": self.lockname}
+        if not force:
+            query["locker"] = None
+            query["expired_at"] = {"$lte": current_time}
+
+        result = self.collection().find_one_and_update(
+            query,
+            {
+                "$set": {
+                    "locker": self.lock_id,
+                    "expired_at": current_time + self.DEFAULT_PROLONG_TIMEOUT
+                }
+            },
+            upsert=True,
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+        if not result:
+            raise exceptions.MongoLockCannotAcquire()
+
+        return result
+
+    def release(self, force=False):
+        LOG.debug("Try to release lock %s by locker %s.",
+                  self.lockname, self.lock_id)
+
+        query = {"_id": self.lockname}
+        if not force:
+            query["locker"] = self.lock_id
+
+        res = self.collection().find_one_and_update(
+            query, {"$set": {"expired_at": 0, "locker": None}},
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+        if not res or res["expired_at"] != 0 or res["locker"] is not None:
+            LOG.warning("Cannot release lock %s: %s", self.lockname, res)
+            raise exceptions.MongoLockCannotRelease()
+
+        self.acquired = False
+        LOG.debug("Lock %s was released by locker %s.",
+                  self.lockname, self.lock_id)
+
+    def prolong(self, force=False):
+        if not self.acquired:
+            LOG.debug("Lock %s was not acquired by locker %s yet.",
+                      self.lockname, self.lock_id)
+            return
+
+        query = {"_id": self.lockname}
+        if not force:
+            query["locker"] = self.lock_id
+
+        time_to_update = timeutils.current_unix_timestamp() + \
+            self.DEFAULT_PROLONG_TIMEOUT
+        result = self.collection().find_one_and_update(
+            query, {"$set": {"expired_at": time_to_update}},
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+
+        if not result or result["expired_at"] != time_to_update:
+            LOG.warning("Cannot prolong mongo lock %s: %s",
+                        self.lockname, result)
+            raise exceptions.MongoLockCannotProlong()
+
+        LOG.debug("Lock %s was proloned by locker %s.",
+                  self.lockname, self.lock_id)
+
+
+class AutoProlongMongoLock(BaseMongoLock):
+
+    def __init__(self, lockname):
+        super().__init__(lockname)
+
+        self.prolonger_thread = None
+        self.stop_event = threading.Event()
+
+    def acquire(self, *, block=True, timeout=None, force=False):
+        def prolonger():
+            sleep_timeout = self.DEFAULT_PROLONG_TIMEOUT / 2
+
+            self.stop_event.wait(sleep_timeout)
+            while not self.stop_event.is_set():
+                self.prolong(force)
+                self.stop_event.wait(sleep_timeout)
+
+        response = super().acquire(block=block, timeout=timeout, force=force)
+        self.prolonger_thread = threading.Thread(
+            target=prolonger,
+            name="MongoLock prolonger {0} for {1}".format(
+                self.lock_id, self.lockname),
+            daemon=True
+        )
+        self.prolonger_thread.start()
+
+        return response
+
+    def release(self, force=True):
+        self.stop_event.set()
+        response = super().release(force)
+        self.prolonger_thread.join()
+
+        return response
+
+
+@contextlib.contextmanager
+def with_mongolock_class(lock_cls, lockname, force=False, block=True,
+                         timeout=None):
+    lock = lock_cls(lockname)
+
+    lock.acquire(block=block, timeout=timeout, force=force)
+    try:
+        yield lock
+    finally:
+        lock.release(force)
+
+
+@contextlib.contextmanager
+def with_base_lock(lockname, force=False, block=True, timeout=None):
+    generator = with_mongolock_class(
+        BaseMongoLock, lockname,
+        force=force, block=block, timeout=timeout
+    )
+    with generator as lock:
+        yield lock
+
+
+@contextlib.contextmanager
+def with_autoprolong_lock(lockname, force=False, block=True, timeout=None):
+    generator = with_mongolock_class(
+        AutoProlongMongoLock, lockname,
+        force=force, block=block, timeout=timeout
+    )
+    with generator as lock:
+        yield lock

@@ -77,3 +77,15 @@ class PasswordResetExpiredError(CephLCMError):
 
 class PasswordResetUnknownUser(CephLCMError):
     """Exception raised if no valid user for password resetting is found."""
+
+
+class MongoLockCannotAcquire(CephLCMError):
+    """Exception raised is it is not possible to acquire mongo lock."""
+
+
+class MongoLockCannotProlong(CephLCMError):
+    """Exception raised if it is not possible to prolong mongo lock."""
+
+
+class MongoLockCannotRelease(CephLCMError):
+    """Exception raised if it is not possible to release mongo lock."""
