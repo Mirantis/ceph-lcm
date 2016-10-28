@@ -35,6 +35,11 @@ setuptools.setup(
             "configs/**"
         ]
     },
+    entry_points={
+        "console_scripts": [
+            "cephlcm-lock = cephlcm_common.cliutils:mongolock_cli"
+        ]
+    },
     classifiers=(
         "Intended Audience :: Information Technology",
         "Intended Audience :: System Administrators",
