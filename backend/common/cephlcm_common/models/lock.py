@@ -12,6 +12,7 @@ import time
 import uuid
 
 import pymongo
+import pymongo.errors
 
 from cephlcm_common import exceptions
 from cephlcm_common import log
@@ -63,6 +64,7 @@ class BaseMongoLock(generic.Base):
         current_time = timeutils.current_unix_timestamp()
         stop_at = current_time + timeout
         while current_time <= stop_at:
+            current_time = timeutils.current_unix_timestamp()
             try:
                 return self.try_to_acquire()
             except exceptions.MongoLockCannotAcquire:
@@ -77,21 +79,26 @@ class BaseMongoLock(generic.Base):
             query["locker"] = None
             query["expired_at"] = {"$lte": current_time}
 
-        result = self.collection().find_one_and_update(
-            query,
-            {
-                "$set": {
-                    "locker": self.lock_id,
-                    "expired_at": current_time + self.DEFAULT_PROLONG_TIMEOUT
-                }
-            },
-            upsert=True,
-            return_document=pymongo.ReturnDocument.AFTER
-        )
-        if not result:
-            raise exceptions.MongoLockCannotAcquire()
+        try:
+            self.collection().find_one_and_update(
+                query,
+                {
+                    "$set": {
+                        "locker": self.lock_id,
+                        "expired_at": current_time +
+                        self.DEFAULT_PROLONG_TIMEOUT
+                    }
+                },
+                upsert=True,
+                return_document=pymongo.ReturnDocument.BEFORE
+            )
+        except pymongo.errors.PyMongoError as exc:
+            raise exceptions.MongoLockCannotAcquire() from exc
 
-        return result
+        LOG.debug("Lock %s was acquire by locker %s",
+                  self.lockname, self.lock_id)
+
+        self.acquired = True
 
     def release(self, force=False):
         LOG.debug("Try to release lock %s by locker %s.",
@@ -114,10 +121,9 @@ class BaseMongoLock(generic.Base):
                   self.lockname, self.lock_id)
 
     def prolong(self, force=False):
-        if not self.acquired:
-            LOG.debug("Lock %s was not acquired by locker %s yet.",
-                      self.lockname, self.lock_id)
-            return
+        if not self.acquired and not force:
+            LOG.warning("Cannot prolong mongo lock %s", self.lockname)
+            raise exceptions.MongoLockCannotProlong()
 
         query = {"_id": self.lockname}
         if not force:
@@ -149,12 +155,22 @@ class AutoProlongMongoLock(BaseMongoLock):
 
     def acquire(self, *, block=True, timeout=None, force=False):
         def prolonger():
+            LOG.debug(
+                "Prolong thread for locker %s of lock %s has been started.",
+                self.lockname, self.lock_id
+            )
+
             sleep_timeout = self.DEFAULT_PROLONG_TIMEOUT / 2
 
             self.stop_event.wait(sleep_timeout)
             while not self.stop_event.is_set():
                 self.prolong(force)
                 self.stop_event.wait(sleep_timeout)
+
+            LOG.debug(
+                "Prolong thread for locker %s of lock %s has been stopped.",
+                self.lockname, self.lock_id
+            )
 
         response = super().acquire(block=block, timeout=timeout, force=force)
         self.prolonger_thread = threading.Thread(
@@ -169,10 +185,9 @@ class AutoProlongMongoLock(BaseMongoLock):
 
     def release(self, force=True):
         self.stop_event.set()
-        response = super().release(force)
         self.prolonger_thread.join()
 
-        return response
+        return super().release(force)
 
 
 @contextlib.contextmanager
