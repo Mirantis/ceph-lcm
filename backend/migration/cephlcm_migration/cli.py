@@ -11,6 +11,7 @@ import pkg_resources
 from cephlcm_migration import migrators
 from cephlcm_common import cliutils
 from cephlcm_common import log
+from cephlcm_common.models import lock
 from cephlcm_common.models import migration_script
 
 
@@ -22,7 +23,6 @@ SHA1 of script: {script_hash}
 
 -- Stdout:
 {stdout}
-
 -- Stderr:
 {stderr}
 """.strip()
@@ -64,22 +64,23 @@ def list_callback(options):
 
 
 def apply_callback(options):
-    migrations = get_migrations_to_apply(options)
-    if not migrations:
-        LOG.info("No migration are required to be applied.")
-        return
+    with lock.with_autoprolong_lock("applying_migrations", timeout=60):
+        migrations = get_migrations_to_apply(options)
+        if not migrations:
+            LOG.info("No migration are required to be applied.")
+            return
 
-    for migration in migrations:
-        LOG.info("Run migration %s", migration.name)
+        for migration in migrations:
+            LOG.info("Run migration %s", migration.name)
 
-        try:
-            migration.run()
-        except Exception:
-            ok = False
-        else:
-            ok = True
+            try:
+                migration.run()
+            except Exception:
+                ok = False
+            else:
+                ok = True
 
-        apply_migration(migration, ok=ok)
+            apply_migration(migration, ok=ok)
 
 
 def show_callback(options):
