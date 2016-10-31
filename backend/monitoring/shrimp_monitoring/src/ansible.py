@@ -30,7 +30,7 @@ else:
 
 
 ANSIBLE_PLAYBOOK = pkg_resources.resource_filename(
-    "cephlcm_monitoring", "ansible_playbook.yaml")
+    "shrimp_monitoring", "ansible_playbook.yaml")
 
 PATH_HOMEDIR = os.path.expanduser("~")
 
@@ -100,7 +100,7 @@ def get_db_client():
     if hasattr(get_db_client, "cached"):
         return get_db_client.cached
 
-    with open("/etc/cephlcm/config.yaml", "rt") as yamlfp:
+    with open("/etc/shrimp/config.yaml", "rt") as yamlfp:
         config = yaml.load(yamlfp)
 
     client = pymongo.MongoClient(config["db"]["uri"])

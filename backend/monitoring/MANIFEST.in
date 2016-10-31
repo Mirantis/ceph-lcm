@@ -1,2 +1,2 @@
-include cephlcm_monitoring/ansible_playbook.yaml
-graft cephlcm_monitoring/html_js_css/*
+include shrimp_monitoring/ansible_playbook.yaml
+graft shrimp_monitoring/html_js_css/*

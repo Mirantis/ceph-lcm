@@ -6,7 +6,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "cephlcm_ansible==0.1.0",
+    "shrimp-ansible==0.1.0",
     "PyMongo[tls]>=3.3,<3.4",
     "PyYAML>=3.11,<5",
     "ipaddr>=2.1,<2.2"
@@ -14,8 +14,8 @@ REQUIREMENTS = (
 
 
 setuptools.setup(
-    name="cephlcm-monitoring",
-    description="Custom monitoring plugin for CephLCM",
+    name="shrimp-monitoring",
+    description="Custom monitoring plugin for Shrimp",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -29,14 +29,14 @@ setuptools.setup(
     install_requires=REQUIREMENTS,
     include_package_data=True,
     package_data={
-        "cephlcm_monitoring": [
+        "shrimp_monitoring": [
             "ansible_playbook.yaml",
             "html_js_css/*"
         ]
     },
     entry_points={
         "console_scripts": [
-            "cephlcm-collect-data = cephlcm_monitoring.src.ansible:main"
+            "cephlcm-collect-data = shrimp_monitoring.src.ansible:main"
         ]
     },
     zip_safe=True,
