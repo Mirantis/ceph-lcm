@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Email alerting plugin for CephLCM."""
+"""Email alerting plugin for Shrimp."""
 
 
 import datetime

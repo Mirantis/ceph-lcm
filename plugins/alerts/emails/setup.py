@@ -11,8 +11,8 @@ REQUIREMENTS = (
 
 
 setuptools.setup(
-    name="cephlcm-plugin-alerts",
-    description="Ceph Lifecycle Management email alerts plugin",
+    name="shrimp-plugin-alerts",
+    description="Shrimp email alerts plugin",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -26,9 +26,7 @@ setuptools.setup(
     install_requires=REQUIREMENTS,
     zip_safe=False,
     entry_points={
-        "cephlcm.alerts": [
-            "email = cephlcm_email_alerts.email:alert"
-        ]
+        "shrimp.alerts": ["email = shrimp_email_alerts.email:alert"]
     },
     classifiers=(
         "Intended Audience :: Information Technology",
