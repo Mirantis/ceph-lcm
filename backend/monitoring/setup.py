@@ -7,7 +7,7 @@ import setuptools
 
 REQUIREMENTS = (
     "cephlcm_ansible==0.1.0",
-    "PyMongo>=3.3,<3.4",
+    "PyMongo[tls]>=3.3,<3.4",
     "PyYAML>=3.11,<5",
     "ipaddr>=2.1,<2.2"
 )
