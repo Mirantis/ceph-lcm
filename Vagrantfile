@@ -15,7 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.forward_agent   = true
 
   config.vm.define "devbox", primary: true do |devbox|
-    devbox.vm.hostname = "cephlcm"
+    devbox.vm.hostname = "shrimp"
     devbox.vm.network "private_network", ip: "10.0.0.10"
     devbox.vm.synced_folder ".", "/vagrant",
       type: "nfs",

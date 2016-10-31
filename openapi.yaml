@@ -1,4 +1,4 @@
-# OpenAPI (Swagger 2.0) YAML file for CephLCM API
+# OpenAPI (Swagger 2.0) YAML file for Shrimp API
 swagger: "2.0"
 
 ################################################################################
@@ -6,16 +6,16 @@ swagger: "2.0"
 ################################################################################
 info:
   version: "0.0.0"
-  title: CephLCM API
+  title: Shrimp API
   description: |
-    CephLCM API accepts and responds using data models. Each entity, manageable
+    Shrimp API accepts and responds using data models. Each entity, manageable
     by API, is presented by JSON model in a standard way.
 
     Api has some simple concepts:
 
     # Model
 
-    CephLCM uses unified JSON representation for each model:
+    Shrimp uses unified JSON representation for each model:
 
     ```json
     {
@@ -46,7 +46,7 @@ info:
 
     This brings several concepts up:
 
-      1. CephLCM does not do updates in place, it creates new versions. By
+      1. Shrimp does not do updates in place, it creates new versions. By
          default latest version is always used. But it is always possible
          to fetch whole story of model progression
       2. ID of the model is the ID of whole model set. Versions are
@@ -221,7 +221,7 @@ info:
 
     # Authentication
 
-    CephLCM uses classical way of authentication with API token: on calling
+    Shrimp uses classical way of authentication with API token: on calling
     `/auth/` endpoint, user get's token model:
 
     ```json
@@ -243,7 +243,7 @@ info:
 
     * `user_id` is ID of authenticated user
     * `id` is a token string used for further authentication
-    * `expires_at` is a UNIX timestamp when CephLCM API is going to revoke
+    * `expires_at` is a UNIX timestamp when Shrimp API is going to revoke
       token.
 
     So usage is simple: put `id` (in example, it is
@@ -370,7 +370,7 @@ paths:
   # ****************************************************************************
   /auth/:
     post:
-      summary: Authenicate in CephLCM
+      summary: Authenicate in Shrimp
       description: |
         Returns `Token` model. ID of token is an API key user has to use further
         for `Authorization` header. `expires_at` fields set a UNIX timestamp
@@ -399,7 +399,7 @@ paths:
           schema:
             $ref: "#/definitions/Token"
     delete:
-      summary: Logout from CephLCM
+      summary: Logout from Shrimp
       description: |
         To logout one has to invoke such method being logged in. It means
         that `Authorization` header has to have correct token string.
@@ -477,7 +477,7 @@ paths:
       security:
         - token: []
       description: |
-        This method creates new user in CephLCM.
+        This method creates new user in Shrimp.
 
         Please use valid email. User password will be sent to that email.
       parameters:
@@ -714,7 +714,7 @@ paths:
       security:
         - token: []
       description: |
-        This method creates new `Role` model in CephLCM.
+        This method creates new `Role` model in Shrimp.
       parameters:
         - name: Role data
           in: body
@@ -943,7 +943,7 @@ paths:
       security:
         - token: []
       description: |
-        This method creates new `Server` model in CephLCM.
+        This method creates new `Server` model in Shrimp.
       parameters:
         - name: Server data
           in: body
@@ -1170,7 +1170,7 @@ paths:
       security:
         - token: []
       description: |
-        This method creates new `Cluster` model in CephLCM.
+        This method creates new `Cluster` model in Shrimp.
       parameters:
         - name: Cluster data
           in: body
@@ -1396,7 +1396,7 @@ paths:
       security:
         - token: []
       description: |
-        This method creates new `PlaybookConfiguration` model in CephLCM.
+        This method creates new `PlaybookConfiguration` model in Shrimp.
       parameters:
         - name: Playbook configuration data
           in: body
@@ -1631,7 +1631,7 @@ paths:
       security:
         - token: []
       description: |
-        This method creates new `Execution` model in CephLCM.
+        This method creates new `Execution` model in Shrimp.
       parameters:
         - name: Execution data. Mostly playbook configuration.
           in: body

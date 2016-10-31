@@ -1,5 +1,5 @@
 ---
-# Install Pythons in Pyenv and create CephLCM virtualenv
+# Install Pythons in Pyenv and create Shrimp virtualenv
 
 
 - name: Install Pythons
@@ -9,14 +9,13 @@
     # -s flags for pyenv install tells that it skips if nothing to do
     - skip_ansible_lint
 
-- name: Check if CephLCM virtualenv exists
-  stat: path="{{ pyenv_root }}/versions/cephlcm"
-  register: cephlcm_virtualenv
+- name: Check if Shrimp virtualenv exists
+  stat: path="{{ pyenv_root }}/versions/shrimp"
+  register: shrimp_virtualenv
 
-
-- name: Create CephLCM virtualenv
-  command: bash -ic "pyenv virtualenv {{ cephlcm_python }} {{ venv }}"
-  when: not cephlcm_virtualenv.stat.exists
+- name: Create Shrimp virtualenv
+  command: bash -ic "pyenv virtualenv {{ shrimp_python }} {{ venv }}"
+  when: not shrimp_virtualenv.stat.exists
 
 - name: Install requirements in PyEnv virtualenv
   command: bash -ic "pyenv activate {{ venv }} && pip install -r {{ item }} -c constraints.txt"
@@ -36,6 +35,7 @@
     - backend/common
     - backend/api
     - backend/controller
+    - backend/migration
     - plugins/alerts/emails
     - plugins/playbook/server_discovery
     - plugins/playbook/playbook_helloworld

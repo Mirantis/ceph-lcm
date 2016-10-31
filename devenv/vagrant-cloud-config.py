@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Cloud config generator for Vagrant-based environment.
-"""
+"""Cloud config generator for Vagrant-based environment."""
 
 
 from __future__ import print_function

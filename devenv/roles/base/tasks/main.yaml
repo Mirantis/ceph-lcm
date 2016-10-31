@@ -1,5 +1,5 @@
 ---
-# Base tasks for CephLCM development provision
+# Base tasks for Shrimp development provision
 
 
 - include: apt.yaml

@@ -4,13 +4,13 @@ EGGS_DIR   := $(OUTPUT_DIR)/eggs
 IMAGES_DIR := $(OUTPUT_DIR)/images
 
 CONTAINER_API_NAME        := shrimp-api
-CONTAINER_BASE_NAME       := cephlcm-base
+CONTAINER_BASE_NAME       := shrimp-base
 CONTAINER_CLI_NAME        := shrimp-cli
 CONTAINER_CONTROLLER_NAME := shrimp-controller
-CONTAINER_CRON_NAME       := cephlcm-cron
-CONTAINER_DB_NAME         := cephlcm-db
-CONTAINER_FRONTEND_NAME   := cephlcm-frontend
-CONTAINER_PLUGINS_NAME    := cephlcm-base-plugins
+CONTAINER_CRON_NAME       := shrimp-cron
+CONTAINER_DB_NAME         := shrimp-db
+CONTAINER_FRONTEND_NAME   := shrimp-frontend
+CONTAINER_PLUGINS_NAME    := shrimp-base-plugins
 
 # -----------------------------------------------------------------------------
 

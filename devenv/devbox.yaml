@@ -18,4 +18,4 @@
     - role: mongodb
       in_memory: true
     - role: sarkhipov
-      when: lookup("env", "LCMDEV") == "sarkhipov"
+      when: lookup("env", "DEV") == "sarkhipov"
