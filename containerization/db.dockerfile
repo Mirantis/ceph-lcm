@@ -6,6 +6,7 @@ MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
 COPY containerization/files/mongod.conf /etc/mongod.conf
+COPY mongodb.pem /certs/mongodb.pem
 
 
 CMD ["--config", "/etc/mongod.conf"]
