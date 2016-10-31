@@ -12,7 +12,6 @@ COPY output/eggs /eggs
 RUN set -x \
   && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimplib*.whl \
   && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_cli*.whl \
-  && touch /etc/cephlcm.sh \
   && chmod 0755 /usr/bin/shrimp-cli \
   && rm -r /eggs
 

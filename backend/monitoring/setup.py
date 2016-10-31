@@ -36,7 +36,7 @@ setuptools.setup(
     },
     entry_points={
         "console_scripts": [
-            "cephlcm-collect-data = shrimp_monitoring.src.ansible:main"
+            "shrimp-collect-data = shrimp_monitoring.src.ansible:main"
         ]
     },
     zip_safe=True,

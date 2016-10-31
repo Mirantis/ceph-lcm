@@ -30,7 +30,7 @@ RUN set -x \
 
 
 COPY output/eggs /eggs
-COPY config.yaml /etc/cephlcm/config.yaml
+COPY config.yaml /etc/shrimp/config.yaml
 
 
 RUN set -x \
@@ -43,8 +43,8 @@ RUN set -x \
       python3-pip \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimplib*.whl \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_common*.whl \
-    && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/cephlcm_plugin_server_discovery*.whl \
-    && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/cephlcm_plugin_alerts*.whl \
+    && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_plugin_server_discovery*.whl \
+    && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_plugin_alerts*.whl \
     && rm -r /eggs \
     && apt-get clean \
     && apt-get purge -y libffi-dev libyaml-dev gcc python3-dev python3-pip \

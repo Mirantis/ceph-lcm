@@ -1,7 +1,7 @@
 # vi: set ft=dockerfile :
 
 
-FROM cephlcm-base-plugins
+FROM shrimp-base-plugins
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 

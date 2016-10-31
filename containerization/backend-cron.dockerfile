@@ -5,7 +5,7 @@ FROM shrimp-controller
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 COPY output/eggs /eggs
-COPY containerization/files/crontab /cephlcm
+COPY containerization/files/crontab /shrimp
 COPY containerization/files/cron-caddyfile /etc/caddy/config
 
 
@@ -24,9 +24,9 @@ RUN set -x \
     tar --no-same-owner -C /usr/bin/ -xz caddy \
   && chmod 0755 /usr/bin/caddy \
   && mkdir -p /www \
-  && cat /cephlcm | crontab - \
+  && cat /shrimp | crontab - \
   && mkfifo /var/log/cron.log \
-  && rm -r /cephlcm /eggs \
+  && rm -r /shrimp /eggs \
   && apt-get clean \
   && apt-get purge -y gcc python-dev python-pip curl \
   && apt-get autoremove -y \
