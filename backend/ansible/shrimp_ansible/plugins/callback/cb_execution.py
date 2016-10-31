@@ -2,7 +2,7 @@
 """Ansible callback plugin to generate execution steps.
 
 This plugin is executed by Ansible so it has to be Python2 plugin.
-Unfortunately, it means that cephlcm and this plugin will be installed
+Unfortunately, it means that shrimp and this plugin will be installed
 in different site-packages so it is not possible to share code easily.
 
 Main problem is configuration. Since we cannot share code, we have to
@@ -68,10 +68,10 @@ STEP_COLLECTION_NAME = "execution_step"
 SERVER_COLLECTION_NAME = "server"
 """Name of the collection with servers in MongoDB."""
 
-ENV_EXECUTION_ID = "CEPHLCM_EXECUTION_ID"
+ENV_EXECUTION_ID = "SHRIMP_EXECUTION_ID"
 """Environment variable for execuiton ID."""
 
-ENV_DB_URI = "CEPHLCM_DB_URI"
+ENV_DB_URI = "SHRIMP_DB_URI"
 """Environment variable for DB URI."""
 
 LOG = logging.getLogger("ansible logger")

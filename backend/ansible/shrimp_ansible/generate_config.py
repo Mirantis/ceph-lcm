@@ -44,13 +44,13 @@ CONFIG_OPTIONS = {
     "callback_plugins": PathList(
         [
             posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "callback"),
-            pkg_resources.resource_filename("cephlcm_ansible",
+            pkg_resources.resource_filename("shrimp_ansible",
                                             "plugins/callback")
         ]),
     "action_plugins": PathList(
         [
             posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "action"),
-            pkg_resources.resource_filename("cephlcm_ansible",
+            pkg_resources.resource_filename("shrimp_ansible",
                                             "ceph-ansible/plugins/actions")
         ]),
     "connection_plugins": PathList(
@@ -63,7 +63,7 @@ CONFIG_OPTIONS = {
         [posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "filter")]),
     "roles_path": PathList(
         [
-            pkg_resources.resource_filename("cephlcm_ansible",
+            pkg_resources.resource_filename("shrimp_ansible",
                                             "ceph-ansible/roles")
         ]
     ),
