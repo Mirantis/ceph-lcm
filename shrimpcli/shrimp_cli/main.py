@@ -112,8 +112,8 @@ def cli(ctx, url, login, password, no_verify, ssl_certificate, debug,
         "format": output_format,
         "no_pager": no_pager,
         "client": shrimplib.Client(url, login, password,
-                                    timeout=timeout, verify=not no_verify,
-                                    certificate_file=ssl_certificate)
+                                   timeout=timeout, verify=not no_verify,
+                                   certificate_file=ssl_certificate)
     }
     utils.configure_logging(debug)
 
