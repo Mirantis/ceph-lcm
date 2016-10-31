@@ -6,7 +6,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "cephlcm-common>=0.1,<0.2",
+    "shrimp-common>=0.1,<0.2",
     "python-daemon>=2.1,<2.2",
     "lockfile>=0.12,<0.13"
 )

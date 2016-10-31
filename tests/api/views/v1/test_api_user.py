@@ -14,7 +14,7 @@ from shrimp_common.models import user
 @pytest.fixture
 def new_password_message(monkeypatch):
     monkeypatch.setattr(
-        "cephlcm_api.views.v1.user.NEW_PASSWORD_MESSAGE",
+        "shrimp_api.views.v1.user.NEW_PASSWORD_MESSAGE",
         "{password}"
     )
 

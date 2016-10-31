@@ -7,7 +7,7 @@ import datetime
 
 import pkg_resources
 
-from cephlcm_api.views import generic
+from shrimp_api.views import generic
 from shrimp_common import timeutils
 
 
@@ -23,5 +23,5 @@ class InfoView(generic.ModelView):
                 "utc": datetime.datetime.utcnow().isoformat(),
                 "unix": timeutils.current_unix_timestamp()
             },
-            "version": pkg_resources.get_distribution("cephlcm_api").version
+            "version": pkg_resources.get_distribution("shrimp_api").version
         }

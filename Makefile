@@ -3,7 +3,7 @@ OUTPUT_DIR := $(ROOT_DIR)/output
 EGGS_DIR   := $(OUTPUT_DIR)/eggs
 IMAGES_DIR := $(OUTPUT_DIR)/images
 
-CONTAINER_API_NAME        := cephlcm-api
+CONTAINER_API_NAME        := shrimp-api
 CONTAINER_BASE_NAME       := cephlcm-base
 CONTAINER_CLI_NAME        := cephlcm-cli
 CONTAINER_CONTROLLER_NAME := cephlcm-controller

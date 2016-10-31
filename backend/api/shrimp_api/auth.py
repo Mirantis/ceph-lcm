@@ -10,7 +10,7 @@ import functools
 
 import flask
 
-from cephlcm_api import exceptions
+from shrimp_api import exceptions
 from shrimp_common import log
 from shrimp_common import passwords
 from shrimp_common.models import role

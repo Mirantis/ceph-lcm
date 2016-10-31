@@ -2,9 +2,9 @@
 """Implementation of password reset API."""
 
 
-from cephlcm_api import exceptions as http_exceptions
-from cephlcm_api import validators
-from cephlcm_api.views import generic
+from shrimp_api import exceptions as http_exceptions
+from shrimp_api import validators
+from shrimp_api.views import generic
 from shrimp_common import config
 from shrimp_common import emailutils
 from shrimp_common import exceptions as base_exceptions
@@ -120,6 +120,6 @@ def notify_user(token_id, email):
 
     emailutils.send(
         to=[email],
-        subject="Password reset for CephLCM",
+        subject="Password reset for Shrimp",
         text_body=message
     )

@@ -6,7 +6,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "cephlcm-common>=0.1,<0.2",
+    "shrimp-common>=0.1,<0.2",
 )
 
 

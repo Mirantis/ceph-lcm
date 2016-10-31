@@ -6,7 +6,7 @@ import functools
 
 import jsonschema
 
-from cephlcm_api import exceptions
+from shrimp_api import exceptions
 from shrimp_common import log
 
 

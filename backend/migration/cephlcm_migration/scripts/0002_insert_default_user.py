@@ -5,7 +5,7 @@ This migration applies default user 'root'
 """
 
 
-from cephlcm_api import wsgi
+from shrimp_api import wsgi
 from shrimp_common.models import db
 from shrimp_common.models import generic
 from shrimp_common.models import role

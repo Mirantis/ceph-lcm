@@ -4,9 +4,9 @@
 
 import flask
 
-from cephlcm_api import config as app_config
-from cephlcm_api import handlers
-from cephlcm_api import views
+from shrimp_api import config as app_config
+from shrimp_api import handlers
+from shrimp_api import views
 from shrimp_common import config as base_config
 from shrimp_common import log
 from shrimp_common.models import db

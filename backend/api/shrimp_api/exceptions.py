@@ -9,7 +9,7 @@ from werkzeug import exceptions
 from shrimp_common import exceptions as app_exceptions
 
 
-class CephLCMJSONMixin(app_exceptions.CephLCMError, exceptions.HTTPException):
+class ShrimpJSONMixin(app_exceptions.ShrimpError, exceptions.HTTPException):
     """Basic JSON mixin for the werkzeug exceptions.
 
     Basic werkzeug exceptions return an HTML. This mixin
@@ -44,36 +44,36 @@ class CephLCMJSONMixin(app_exceptions.CephLCMError, exceptions.HTTPException):
         return [("Content-Type", "application/json")]
 
 
-class BadRequest(CephLCMJSONMixin, exceptions.BadRequest):
+class BadRequest(ShrimpJSONMixin, exceptions.BadRequest):
     pass
 
 
-class Unauthorized(CephLCMJSONMixin, exceptions.Unauthorized):
+class Unauthorized(ShrimpJSONMixin, exceptions.Unauthorized):
     pass
 
 
-class Forbidden(CephLCMJSONMixin, exceptions.Forbidden):
+class Forbidden(ShrimpJSONMixin, exceptions.Forbidden):
     pass
 
 
-class NotFound(CephLCMJSONMixin, exceptions.NotFound):
+class NotFound(ShrimpJSONMixin, exceptions.NotFound):
     pass
 
 
-class MethodNotAllowed(CephLCMJSONMixin, exceptions.MethodNotAllowed):
+class MethodNotAllowed(ShrimpJSONMixin, exceptions.MethodNotAllowed):
 
     def get_headers(self, environ=None):
-        headers = CephLCMJSONMixin.get_headers(self, environ)
+        headers = ShrimpJSONMixin.get_headers(self, environ)
         headers.extend(exceptions.MethodNotAllowed.get_headers(self, environ))
 
         return headers
 
 
-class NotAcceptable(CephLCMJSONMixin, exceptions.NotAcceptable):
+class NotAcceptable(ShrimpJSONMixin, exceptions.NotAcceptable):
     pass
 
 
-class InternalServerError(CephLCMJSONMixin, exceptions.InternalServerError):
+class InternalServerError(ShrimpJSONMixin, exceptions.InternalServerError):
     pass
 
 

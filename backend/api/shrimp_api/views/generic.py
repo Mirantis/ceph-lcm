@@ -10,8 +10,8 @@ import flask.json
 import flask.views
 import werkzeug.exceptions
 
-from cephlcm_api import exceptions
-from cephlcm_api import pagination
+from shrimp_api import exceptions
+from shrimp_api import pagination
 from shrimp_common import log
 
 try:
@@ -25,7 +25,7 @@ LOG = log.getLogger(__name__)
 
 
 class View(flask.views.MethodView):
-    """A generic view for ceph-lcm.
+    """A generic view for shrimp.
 
     This has a small set of routines, required for each view. Also,
     it provides several utility methods for view registration and
@@ -112,7 +112,7 @@ class View(flask.views.MethodView):
 
 
 class ModelView(View):
-    """A model view for ceph-lcm.
+    """A model view for shrimp.
 
     This is still a rather generic view with some routines, related
     to response building. It converts data to model-based response

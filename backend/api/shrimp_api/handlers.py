@@ -13,7 +13,7 @@ import flask
 import six
 import werkzeug.exceptions
 
-from cephlcm_api import exceptions
+from shrimp_api import exceptions
 from shrimp_common import log
 from shrimp_common import plugins
 
@@ -40,16 +40,16 @@ def set_cache_control(response):
 def error_to_json(error):
     """Converts all errors into proper JSONable exceptions.
 
-    This is required because by contract CephLCM API is JSON API
+    This is required because by contract Shrimp API is JSON API
     and not JSON data will break their APIs. This catch-em-all
     error handler is required to fullfil a contract on JSON API.
     """
 
-    if isinstance(error, exceptions.CephLCMJSONMixin):
+    if isinstance(error, exceptions.ShrimpJSONMixin):
         return error.get_response()
 
     if isinstance(error, werkzeug.exceptions.HTTPException):
-        json_error = exceptions.CephLCMJSONMixin()
+        json_error = exceptions.ShrimpJSONMixin()
 
         json_error.code = error.code
         json_error.description = error.description

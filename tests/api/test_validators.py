@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm_api.validators."""
+"""Tests for shrimp_api.validators."""
 
 
 import unittest.mock as mock
@@ -7,8 +7,8 @@ import uuid
 
 import pytest
 
-from cephlcm_api import exceptions
-from cephlcm_api import validators
+from shrimp_api import exceptions
+from shrimp_api import validators
 
 
 def dummy_function(self):

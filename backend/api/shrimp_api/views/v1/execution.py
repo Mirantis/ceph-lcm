@@ -7,10 +7,10 @@ import distutils.util
 
 import flask
 
-from cephlcm_api import auth
-from cephlcm_api import exceptions as http_exceptions
-from cephlcm_api import validators
-from cephlcm_api.views import generic
+from shrimp_api import auth
+from shrimp_api import exceptions as http_exceptions
+from shrimp_api import validators
+from shrimp_api.views import generic
 from shrimp_common import exceptions as base_exceptions
 from shrimp_common import log
 from shrimp_common.models import execution

@@ -10,7 +10,7 @@ services:
       - "9999:80"
       - "10000:443"
   api:
-    image: cephlcm-api
+    image: shrimp-api
     links:
       - database
   controller:

@@ -5,7 +5,7 @@
 import flask.testing
 import pytest
 
-import cephlcm_api
+import shrimp_api
 from shrimp_common.models import user
 
 
@@ -62,7 +62,7 @@ class JsonApiClient(flask.testing.FlaskClient):
 
 @pytest.yield_fixture
 def app(configure_model):
-    application = cephlcm_api.create_application()
+    application = shrimp_api.create_application()
     application.testing = True
     application.test_client_class = JsonApiClient
 

@@ -4,17 +4,17 @@
 
 import flask
 
-from cephlcm_api.views.v1 import auth
-from cephlcm_api.views.v1 import cluster
-from cephlcm_api.views.v1 import execution
-from cephlcm_api.views.v1 import info
-from cephlcm_api.views.v1 import password_reset
-from cephlcm_api.views.v1 import permission
-from cephlcm_api.views.v1 import playbook
-from cephlcm_api.views.v1 import playbook_configuration
-from cephlcm_api.views.v1 import role
-from cephlcm_api.views.v1 import server
-from cephlcm_api.views.v1 import user
+from shrimp_api.views.v1 import auth
+from shrimp_api.views.v1 import cluster
+from shrimp_api.views.v1 import execution
+from shrimp_api.views.v1 import info
+from shrimp_api.views.v1 import password_reset
+from shrimp_api.views.v1 import permission
+from shrimp_api.views.v1 import playbook
+from shrimp_api.views.v1 import playbook_configuration
+from shrimp_api.views.v1 import role
+from shrimp_api.views.v1 import server
+from shrimp_api.views.v1 import user
 
 
 BLUEPRINT_NAME = "ApiV1"

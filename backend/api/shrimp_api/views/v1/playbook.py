@@ -2,8 +2,8 @@
 """Small API to list playbooks plugins available in application."""
 
 
-from cephlcm_api import auth
-from cephlcm_api.views import generic
+from shrimp_api import auth
+from shrimp_api.views import generic
 from shrimp_common import plugins
 
 

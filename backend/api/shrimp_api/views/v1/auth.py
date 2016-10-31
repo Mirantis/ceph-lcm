@@ -4,10 +4,10 @@
 
 import flask
 
-from cephlcm_api import auth
-from cephlcm_api import exceptions
-from cephlcm_api import validators
-from cephlcm_api.views import generic
+from shrimp_api import auth
+from shrimp_api import exceptions
+from shrimp_api import validators
+from shrimp_api.views import generic
 from shrimp_common import log
 
 

@@ -8,7 +8,7 @@ import uuid
 import mongomock
 import pytest
 
-import cephlcm_api
+import shrimp_api
 from shrimp_common import emailutils
 from shrimp_common import log
 from shrimp_common.models import cluster
@@ -49,7 +49,7 @@ def freeze_time(request):
 
 @pytest.fixture(scope="session", autouse=True)
 def configure_logging():
-    log.configure_logging(cephlcm_api.CONF.logging_config)
+    log.configure_logging(shrimp_api.CONF.logging_config)
 
 
 @pytest.yield_fixture(scope="module")

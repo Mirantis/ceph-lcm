@@ -2,7 +2,7 @@
 """This module has instance of WSGI application."""
 
 
-import cephlcm_api
+import shrimp_api
 
 
-app = application = cephlcm_api.create_application()
+app = application = shrimp_api.create_application()

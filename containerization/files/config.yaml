@@ -23,7 +23,7 @@ common:
 api:
   debug: false
   testing: false
-  logger_name: "cephlcm.cephlcm_api.wsgi"
+  logger_name: "cephlcm.shrimp_api.wsgi"
   logger_handler_policy: "never"
   json_sort_keys: faluse
   jsonify_prettyprint_regular: false
