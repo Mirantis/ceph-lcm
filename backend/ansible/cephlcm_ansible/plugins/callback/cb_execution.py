@@ -15,10 +15,12 @@ DB information into this plugin.
 
 import logging
 import os
+import ssl
 import time
 
 import ansible.plugins.callback as callback
 import pymongo
+import pymongo.uri_parser
 
 
 STEP_TEMPLATE = {
@@ -79,6 +81,24 @@ TIMEOUT = 3 * 1000
 """Default timeout for MongoDB operations."""
 
 
+def get_mongoclient():
+    uri = os.environ[ENV_DB_URI]
+    parsed = pymongo.uri_parser.parse_uri(uri)
+    kwargs = {
+        "maxPoolSize": 30,
+        "connect": False,
+        "socketTimeoutMS": TIMEOUT,
+        "connectTimeoutMS": TIMEOUT,
+        "waitQueueTimeoutMS": TIMEOUT
+    }
+
+    if parsed["options"].get("ssl"):
+        kwargs["ssl"] = True
+        kwargs["ssl_cert_reqs"] = ssl.CERT_NONE
+
+    return pymongo.MongoClient(uri, **kwargs)
+
+
 class CallbackModule(callback.CallbackBase):
 
     CALLBACK_VERSION = 2.0
@@ -92,24 +112,18 @@ class CallbackModule(callback.CallbackBase):
         execution_id = os.getenv(ENV_EXECUTION_ID)
         self.enabled = bool(execution_id)
 
-        if self.enabled:
-            self.execution_id = os.environ[ENV_EXECUTION_ID]
-            self.playbook = None
+        if not self.enabled:
+            return
 
-            self.db_client = pymongo.MongoClient(
-                os.environ[ENV_DB_URI],
-                maxPoolSize=30,
-                connect=False,
-                socketTimeoutMS=TIMEOUT,
-                connectTimeoutMS=TIMEOUT,
-                waitQueueTimeoutMS=TIMEOUT
-            )
-            database = self.db_client.get_default_database()
-            self.step_collection = database[STEP_COLLECTION_NAME]
-            self.server_collection = database[SERVER_COLLECTION_NAME]
+        self.execution_id = os.environ[ENV_EXECUTION_ID]
+        self.playbook = None
+        self.db_client = get_mongoclient()
+        database = self.db_client.get_default_database()
+        self.step_collection = database[STEP_COLLECTION_NAME]
+        self.server_collection = database[SERVER_COLLECTION_NAME]
 
-            self.task_starts = {}
-            self.server_ids = {}
+        self.task_starts = {}
+        self.server_ids = {}
 
     def v2_playbook_on_play_start(self, play):
         self.playbook = play

@@ -2,9 +2,12 @@
 """This module has db connection class."""
 
 
+import ssl
+
 import gridfs
 import gridfs.errors
 import pymongo
+import pymongo.uri_parser
 
 from cephlcm_common import config
 from cephlcm_common import log
@@ -32,10 +35,18 @@ class MongoDB:
         pool_size = pool_size if pool_size is not None \
             else CONF["db"]["pool_size"]
 
-        self.client = pymongo.MongoClient(
-            uri, connect=connect, socketTimeoutMS=socket_timeout,
-            connectTimeoutMS=connect_timeout, maxPoolSize=pool_size
-        )
+        mongo_parsed = pymongo.uri_parser.parse_uri(uri)
+        mongo_kwargs = {
+            "connect": connect,
+            "socketTimeoutMS": socket_timeout,
+            "connectTimeoutMS": connect_timeout,
+            "maxPoolSize": pool_size
+        }
+        if mongo_parsed["options"].get("ssl"):
+            mongo_kwargs["ssl"] = True
+            mongo_kwargs["ssl_cert_reqs"] = ssl.CERT_NONE
+
+        self.client = pymongo.MongoClient(uri, **mongo_kwargs)
         self.dbname = self.client.get_default_database()
         self.dbname = self.dbname.name if self.dbname else "cephlcm"
 
