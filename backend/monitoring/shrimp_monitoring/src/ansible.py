@@ -6,12 +6,14 @@ import logging
 import os
 import os.path
 import random
+import ssl
 import subprocess
 import sys
 import uuid
 
 import pkg_resources
 import pymongo
+import pymongo.uri_parser
 import yaml
 
 
@@ -103,7 +105,13 @@ def get_db_client():
     with open("/etc/shrimp/config.yaml", "rt") as yamlfp:
         config = yaml.load(yamlfp)
 
-    client = pymongo.MongoClient(config["db"]["uri"])
+    parsed = pymongo.uri_parser.parse_uri(config["db"]["uri"])
+    kwargs = {}
+    if parsed["options"].get("ssl"):
+        kwargs["ssl"] = True
+        kwargs["ssl_cert_reqs"] = ssl.CERT_NONE
+
+    client = pymongo.MongoClient(config["db"]["uri"], **kwargs)
     client = client.get_default_database()
 
     get_db_client.cached = client
