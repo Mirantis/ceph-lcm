@@ -7,22 +7,22 @@ import setuptools
 
 
 setuptools.setup(
-    name="cephlcm-plugin-server-discovery",
-    description="Server discovery plugin for CephLCM",
+    name="shrimp-plugin-server-discovery",
+    description="Server discovery plugin for Shrimp",
     version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
     packages=setuptools.find_packages(),
     entry_points={
-        "cephlcm.playbooks": [
-            "server_discovery = cephlcm_server_discovery.plugin:ServerDiscovery"  # NOQA
+        "shrimp.playbooks": [
+            "server_discovery = shrimp_server_discovery.plugin:ServerDiscovery"
         ]
     },
     python_requires=">= 3.4",
     include_package_data=True,
     package_data={
-        "cephlcm_server_discovery": [
+        "shrimp_server_discovery": [
             "config.yaml",
         ]
     },

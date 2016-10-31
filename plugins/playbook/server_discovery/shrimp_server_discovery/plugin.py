@@ -21,10 +21,10 @@ from shrimp_common.models import server
 
 
 DESCRIPTION = """
-Plugin to register server into CephLCM.
+Plugin to register server into Shrimp.
 
 Basically, server should send only limited information about self into
-CephLCM. All other verification and discovery should be done by CephLCM
+Shrimp. All other verification and discovery should be done by Shrimp
 controller service using Ansible. This involves collecting of facts and
 verification that host is accesible.
 
