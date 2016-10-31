@@ -12,10 +12,10 @@ is no need in explicit enumeration).
 
 import copy
 
-from cephlcm_common import plugins
-from cephlcm_common.models import generic
-from cephlcm_common.models import properties
-from cephlcm_common.models import server
+from shrimp_common import plugins
+from shrimp_common.models import generic
+from shrimp_common.models import properties
+from shrimp_common.models import server
 
 
 class PlaybookConfigurationModel(generic.Model):
@@ -39,7 +39,7 @@ class PlaybookConfigurationModel(generic.Model):
     )
 
     cluster = properties.ModelProperty(
-        "cephlcm_common.models.cluster.ClusterModel",
+        "shrimp_common.models.cluster.ClusterModel",
         "cluster_id"
     )
 

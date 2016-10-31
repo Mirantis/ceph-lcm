@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-"""This module contains tests for cephlcm_common.models.user."""
+"""This module contains tests for shrimp_common.models.user."""
 
 
 import pytest
 
-from cephlcm_common import exceptions
-from cephlcm_common import passwords
-from cephlcm_common.models import token
-from cephlcm_common.models import user
+from shrimp_common import exceptions
+from shrimp_common import passwords
+from shrimp_common.models import token
+from shrimp_common.models import user
 
 
 def test_create_new_user(configure_model, pymongo_connection, freeze_time):

@@ -2,7 +2,7 @@
 """Simple KV storage."""
 
 
-from cephlcm_common.models import generic
+from shrimp_common.models import generic
 
 
 class KV(generic.Base):

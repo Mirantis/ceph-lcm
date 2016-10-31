@@ -9,8 +9,8 @@ update database, apply new schema or rework data.
 
 import enum
 
-from cephlcm_common import timeutils
-from cephlcm_common.models import generic
+from shrimp_common import timeutils
+from shrimp_common.models import generic
 
 
 @enum.unique

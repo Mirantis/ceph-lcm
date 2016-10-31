@@ -4,9 +4,9 @@
 
 import collections
 
-from cephlcm_common import exceptions
-from cephlcm_common import plugins
-from cephlcm_common.models import generic
+from shrimp_common import exceptions
+from shrimp_common import plugins
+from shrimp_common.models import generic
 
 
 class PermissionSet:
@@ -54,7 +54,7 @@ class RoleModel(generic.Model):
     """This is a model for the role.
 
     Role is a model which has a list of permissions for
-    user in CephLCM.
+    user in Shrimp.
     """
 
     MODEL_NAME = "role"
@@ -118,7 +118,7 @@ class RoleModel(generic.Model):
         return models
 
     def delete(self, initiator_id=None):
-        from cephlcm_common.models import user
+        from shrimp_common.models import user
 
         user.UserModel.check_revoke_role(self.model_id, initiator_id)
         super().delete()

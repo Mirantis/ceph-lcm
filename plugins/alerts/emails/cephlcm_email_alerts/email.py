@@ -6,9 +6,9 @@ import datetime
 import pprint
 import traceback
 
-from cephlcm_common import config
-from cephlcm_common import emailutils
-from cephlcm_common import log
+from shrimp_common import config
+from shrimp_common import emailutils
+from shrimp_common import log
 
 
 UNMANAGED_TEXT_MESSAGE = """

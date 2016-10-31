@@ -6,9 +6,9 @@ This migration applies default 'wheel' role.
 
 
 from cephlcm_api import wsgi
-from cephlcm_common.models import db
-from cephlcm_common.models import generic
-from cephlcm_common.models import role
+from shrimp_common.models import db
+from shrimp_common.models import generic
+from shrimp_common.models import role
 
 
 with wsgi.application.app_context():

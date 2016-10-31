@@ -4,7 +4,7 @@
 
 from cephlcm_api import auth
 from cephlcm_api.views import generic
-from cephlcm_common import plugins
+from shrimp_common import plugins
 
 
 class PlaybookView(generic.ModelView):

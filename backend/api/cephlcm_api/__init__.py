@@ -7,10 +7,10 @@ import flask
 from cephlcm_api import config as app_config
 from cephlcm_api import handlers
 from cephlcm_api import views
-from cephlcm_common import config as base_config
-from cephlcm_common import log
-from cephlcm_common.models import db
-from cephlcm_common.models import generic as generic_model
+from shrimp_common import config as base_config
+from shrimp_common import log
+from shrimp_common.models import db
+from shrimp_common.models import generic as generic_model
 
 
 CONF = base_config.make_api_config()

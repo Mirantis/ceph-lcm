@@ -20,11 +20,11 @@ try:
 except ImportError:
     import json
 
-from cephlcm_common import config
-from cephlcm_common import exceptions
-from cephlcm_common import log
-from cephlcm_common import networkutils
-from cephlcm_common.models import task
+from shrimp_common import config
+from shrimp_common import exceptions
+from shrimp_common import log
+from shrimp_common import networkutils
+from shrimp_common.models import task
 
 
 CONF = config.make_config()
@@ -33,11 +33,11 @@ CONF = config.make_config()
 LOG = log.getLogger(__name__)
 """Logger."""
 
-ENV_ENTRY_POINT = "CEPHLCM_ENTRYPOINT"
-ENV_TASK_ID = "CEPHLCM_TASK_ID"
-ENV_EXECUTION_ID = "CEPHLCM_EXECUTION_ID"
-ENV_DB_URI = "CEPHLCM_DB_URI"
-DYNAMIC_INVENTORY_PATH = shutil.which("cephlcm-inventory")
+ENV_ENTRY_POINT = "SHRIMP_ENTRYPOINT"
+ENV_TASK_ID = "SHRIMP_TASK_ID"
+ENV_EXECUTION_ID = "SHRIMP_EXECUTION_ID"
+ENV_DB_URI = "SHRIMP_DB_URI"
+DYNAMIC_INVENTORY_PATH = shutil.which("shrimp-inventory")
 
 
 class Base(metaclass=abc.ABCMeta):
@@ -213,7 +213,7 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
     @functools.lru_cache()
     def get_playbook_configuration(self, task):
-        from cephlcm_common.models import playbook_configuration
+        from shrimp_common.models import playbook_configuration
 
         if not task:
             return None
@@ -268,7 +268,7 @@ class Playbook(Base, metaclass=abc.ABCMeta):
         super().on_pre_execute(task)
 
     def on_post_execute(self, task, *exc_info):
-        from cephlcm_common.models import execution
+        from shrimp_common.models import execution
 
         commandline = self.compose_command(task)
         env = self.get_environment_variables(task)

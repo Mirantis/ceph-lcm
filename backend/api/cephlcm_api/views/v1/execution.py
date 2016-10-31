@@ -11,12 +11,12 @@ from cephlcm_api import auth
 from cephlcm_api import exceptions as http_exceptions
 from cephlcm_api import validators
 from cephlcm_api.views import generic
-from cephlcm_common import exceptions as base_exceptions
-from cephlcm_common import log
-from cephlcm_common.models import execution
-from cephlcm_common.models import execution_step
-from cephlcm_common.models import playbook_configuration
-from cephlcm_common.models import task
+from shrimp_common import exceptions as base_exceptions
+from shrimp_common import log
+from shrimp_common.models import execution
+from shrimp_common.models import execution_step
+from shrimp_common.models import playbook_configuration
+from shrimp_common.models import task
 
 
 POST_SCHEMA = {

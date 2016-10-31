@@ -8,8 +8,8 @@ import re
 import flask.json
 import jsonschema
 
-from cephlcm_common import config
-from cephlcm_common import log
+from shrimp_common import config
+from shrimp_common import log
 
 
 FILTER_SCHEMA = {

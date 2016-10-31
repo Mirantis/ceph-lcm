@@ -12,13 +12,13 @@ import bson.objectid
 import pymongo
 import pymongo.errors
 
-from cephlcm_common import exceptions
-from cephlcm_common import log
-from cephlcm_common import retryutils
-from cephlcm_common import timeutils
-from cephlcm_common.models import generic
-from cephlcm_common.models import properties
-from cephlcm_common.models import server
+from shrimp_common import exceptions
+from shrimp_common import log
+from shrimp_common import retryutils
+from shrimp_common import timeutils
+from shrimp_common.models import generic
+from shrimp_common.models import properties
+from shrimp_common.models import server
 
 
 TASK_TEMPLATE = {
@@ -192,7 +192,7 @@ class Task(generic.Base):
         )
 
     def get_execution(self):
-        from cephlcm_common.models import execution
+        from shrimp_common.models import execution
 
         return execution.ExecutionModel.find_by_model_id(self.execution_id)
 
@@ -464,14 +464,14 @@ class PlaybookPluginTask(Task):
         server.ServerModel.unlock_servers(execution_model.servers)
 
     def start(self):
-        from cephlcm_common.models import execution
+        from shrimp_common.models import execution
 
         super().start()
         exmodel = self.get_execution()
         self.set_execution_state(exmodel, execution.ExecutionState.started)
 
     def cancel(self):
-        from cephlcm_common.models import execution
+        from shrimp_common.models import execution
 
         super().cancel()
         exmodel = self.get_execution()
@@ -479,7 +479,7 @@ class PlaybookPluginTask(Task):
         self.unlock_servers(exmodel)
 
     def complete(self):
-        from cephlcm_common.models import execution
+        from shrimp_common.models import execution
 
         super().complete()
         exmodel = self.get_execution()
@@ -487,7 +487,7 @@ class PlaybookPluginTask(Task):
         self.unlock_servers(exmodel)
 
     def fail(self, error_message="Internal error"):
-        from cephlcm_common.models import execution
+        from shrimp_common.models import execution
 
         super().fail(error_message)
         exmodel = self.get_execution()

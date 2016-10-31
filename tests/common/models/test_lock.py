@@ -6,9 +6,9 @@ import time
 
 import pytest
 
-from cephlcm_common import exceptions
-from cephlcm_common import timeutils
-from cephlcm_common.models import lock
+from shrimp_common import exceptions
+from shrimp_common import timeutils
+from shrimp_common.models import lock
 
 
 @pytest.fixture

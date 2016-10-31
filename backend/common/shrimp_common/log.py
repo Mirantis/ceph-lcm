@@ -30,7 +30,7 @@ else:
 
 
 def getLogger(name):  # NOQA
-    return logging.getLogger("cephlcm." + name)
+    return logging.getLogger("shrimp." + name)
 
 
 configure_logging = logging.config.dictConfig

@@ -4,7 +4,7 @@
 
 import pytest
 
-from cephlcm_common.models import user
+from shrimp_common.models import user
 
 
 def make_user(login, password):

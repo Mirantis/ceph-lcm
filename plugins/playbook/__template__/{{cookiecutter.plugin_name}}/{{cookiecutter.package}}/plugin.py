@@ -2,8 +2,8 @@
 """Playbook plugin for {{ cookiecutter.description }}."""
 
 
-from cephlcm_common import log
-from cephlcm_common import playbook_plugin
+from shrimp_common import log
+from shrimp_common import playbook_plugin
 
 
 DESCRIPTION = """\

@@ -8,7 +8,7 @@ import datetime
 import pkg_resources
 
 from cephlcm_api.views import generic
-from cephlcm_common import timeutils
+from shrimp_common import timeutils
 
 
 class InfoView(generic.ModelView):

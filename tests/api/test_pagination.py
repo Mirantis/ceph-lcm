@@ -7,7 +7,7 @@ import json
 import pytest
 
 from cephlcm_api import pagination
-from cephlcm_common import config
+from shrimp_common import config
 
 
 CONF = config.make_api_config()

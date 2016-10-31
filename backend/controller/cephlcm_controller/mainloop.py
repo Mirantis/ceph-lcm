@@ -7,11 +7,11 @@ import os
 import sys
 import threading
 
-from cephlcm_common import config
-from cephlcm_common import log
-from cephlcm_common.models import execution
-from cephlcm_common.models import server
-from cephlcm_common.models import task
+from shrimp_common import config
+from shrimp_common import log
+from shrimp_common.models import execution
+from shrimp_common.models import server
+from shrimp_common.models import task
 from cephlcm_controller import taskpool
 
 

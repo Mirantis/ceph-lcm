@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm_common.models.cluster."""
+"""Tests for shrimp_common.models.cluster."""
 
 
 import pytest
 
-from cephlcm_common import exceptions
-from cephlcm_common.models import cluster
-from cephlcm_common.models import server
+from shrimp_common import exceptions
+from shrimp_common.models import cluster
+from shrimp_common.models import server
 
 
 def create_server():

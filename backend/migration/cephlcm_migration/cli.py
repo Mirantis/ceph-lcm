@@ -9,10 +9,10 @@ import time
 import pkg_resources
 
 from cephlcm_migration import migrators
-from cephlcm_common import cliutils
-from cephlcm_common import log
-from cephlcm_common.models import lock
-from cephlcm_common.models import migration_script
+from shrimp_common import cliutils
+from shrimp_common import log
+from shrimp_common.models import lock
+from shrimp_common.models import migration_script
 
 
 MIGRATION_SHOW_TEMPLATE = """

@@ -7,7 +7,7 @@ import functools
 import jsonschema
 
 from cephlcm_api import exceptions
-from cephlcm_common import log
+from shrimp_common import log
 
 
 JSONSCHEMA_DEFINITIONS = {

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""This module contains configuration routines for CephLCM."""
+"""This module contains configuration routines for Shrimp."""
 
 
 import functools
@@ -26,11 +26,11 @@ USER_CONFIG_HOME = os.getenv(
 """User config directory according to XDG specification."""
 
 CONFIG_FILES = (
-    "cephlcm.yaml",
-    os.path.join(USER_CONFIG_HOME, "config.yaml"),
-    os.path.join(HOME, ".cephlcm.yaml"),
-    os.path.join("/", "etc", "cephlcm", "config.yaml"),
-    pkg_resources.resource_filename("cephlcm_common", "configs/defaults.yaml")
+    "shrimp.yaml",
+    os.path.join(USER_CONFIG_HOME, "shrimp.yaml"),
+    os.path.join(HOME, ".shrimp.yaml"),
+    os.path.join("/", "etc", "shrimp", "config.yaml"),
+    pkg_resources.resource_filename("shrimp_common", "configs/defaults.yaml")
 )
 """A list of config files in order to load/parse them."""
 
@@ -73,7 +73,7 @@ class ApiConfig(Config):
     def logging_config(self):
         config = super().logging_config
         config["loggers"] = {
-            "cephlcm": self["api"]["logging"]
+            "shrimp": self["api"]["logging"]
         }
 
         return config
@@ -85,7 +85,7 @@ class ControllerConfig(Config):
     def logging_config(self):
         config = super().logging_config
         config["loggers"] = {
-            "cephlcm": self["controller"]["logging"]
+            "shrimp": self["controller"]["logging"]
         }
 
         return config

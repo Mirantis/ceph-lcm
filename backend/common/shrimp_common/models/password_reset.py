@@ -7,15 +7,15 @@ import math
 import os
 import string
 
-from cephlcm_common import config
-from cephlcm_common import exceptions
-from cephlcm_common import log
-from cephlcm_common import passwords
-from cephlcm_common import retryutils
-from cephlcm_common import timeutils
-from cephlcm_common.models import generic
-from cephlcm_common.models import token
-from cephlcm_common.models import user
+from shrimp_common import config
+from shrimp_common import exceptions
+from shrimp_common import log
+from shrimp_common import passwords
+from shrimp_common import retryutils
+from shrimp_common import timeutils
+from shrimp_common.models import generic
+from shrimp_common.models import token
+from shrimp_common.models import user
 
 
 CONF = config.make_config()

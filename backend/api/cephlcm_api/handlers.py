@@ -14,8 +14,8 @@ import six
 import werkzeug.exceptions
 
 from cephlcm_api import exceptions
-from cephlcm_common import log
-from cephlcm_common import plugins
+from shrimp_common import log
+from shrimp_common import plugins
 
 
 LOG = log.getLogger(__name__)

@@ -13,12 +13,12 @@ try:
 except ImportError:
     import json
 
-from cephlcm_common import config
-from cephlcm_common import log
-from cephlcm_common import playbook_plugin
-from cephlcm_common import plugins
-from cephlcm_common.models import db
-from cephlcm_common.models import generic
+from shrimp_common import config
+from shrimp_common import log
+from shrimp_common import playbook_plugin
+from shrimp_common import plugins
+from shrimp_common.models import db
+from shrimp_common.models import generic
 from cephlcm_controller import exceptions
 
 

@@ -12,7 +12,7 @@ import werkzeug.exceptions
 
 from cephlcm_api import exceptions
 from cephlcm_api import pagination
-from cephlcm_common import log
+from shrimp_common import log
 
 try:
     import gridfs.grid_file as gridfile

@@ -9,9 +9,9 @@ import shutil
 
 import pytest
 
-from cephlcm_common import playbook_plugin
-from cephlcm_common import plugins
-from cephlcm_common.models import task
+from shrimp_common import playbook_plugin
+from shrimp_common import plugins
+from shrimp_common.models import task
 
 
 @pytest.fixture

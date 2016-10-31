@@ -6,15 +6,15 @@ import functools
 
 import pkg_resources
 
-from cephlcm_common import config
-from cephlcm_common import log
-from cephlcm_common import playbook_plugin
+from shrimp_common import config
+from shrimp_common import log
+from shrimp_common import playbook_plugin
 
 
-NS_ALERT = "cephlcm.alerts"
+NS_ALERT = "shrimp.alerts"
 """Namespace for alert plugins to use."""
 
-NS_PLAYBOOKS = "cephlcm.playbooks"
+NS_PLAYBOOKS = "shrimp.playbooks"
 """Namespace for playbook plugins to use."""
 
 CONF = config.make_config()

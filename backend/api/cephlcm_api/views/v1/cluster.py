@@ -6,9 +6,9 @@ from cephlcm_api import auth
 from cephlcm_api import exceptions as http_exceptions
 from cephlcm_api import validators
 from cephlcm_api.views import generic
-from cephlcm_common import exceptions as base_exceptions
-from cephlcm_common import log
-from cephlcm_common.models import cluster
+from shrimp_common import exceptions as base_exceptions
+from shrimp_common import log
+from shrimp_common.models import cluster
 
 
 DATA_SCHEMA = {

@@ -7,9 +7,9 @@ import time
 
 import pytest
 
-from cephlcm_common.models import execution
-from cephlcm_common.models import server
-from cephlcm_common.models import task
+from shrimp_common.models import execution
+from shrimp_common.models import server
+from shrimp_common.models import task
 from cephlcm_controller import mainloop
 
 

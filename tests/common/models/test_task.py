@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Test for cephlcm_common.models.task."""
+"""Test for shrimp_common.models.task."""
 
 
 import pytest
 
-from cephlcm_common import exceptions
-from cephlcm_common.models import execution
-from cephlcm_common.models import task
+from shrimp_common import exceptions
+from shrimp_common.models import execution
+from shrimp_common.models import task
 
 
 @pytest.fixture

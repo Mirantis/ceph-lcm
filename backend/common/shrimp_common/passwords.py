@@ -10,7 +10,7 @@ import warnings
 import argon2
 import argon2.exceptions
 
-from cephlcm_common import config
+from shrimp_common import config
 
 
 CONF = config.make_config()

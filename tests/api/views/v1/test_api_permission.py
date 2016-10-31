@@ -2,7 +2,7 @@
 """Tests for /v1/permission API."""
 
 
-from cephlcm_common.models import role
+from shrimp_common.models import role
 
 
 def test_access_ok(sudo_client_v1):

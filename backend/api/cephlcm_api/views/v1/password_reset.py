@@ -5,12 +5,12 @@
 from cephlcm_api import exceptions as http_exceptions
 from cephlcm_api import validators
 from cephlcm_api.views import generic
-from cephlcm_common import config
-from cephlcm_common import emailutils
-from cephlcm_common import exceptions as base_exceptions
-from cephlcm_common import log
-from cephlcm_common.models import password_reset
-from cephlcm_common.models import user
+from shrimp_common import config
+from shrimp_common import emailutils
+from shrimp_common import exceptions as base_exceptions
+from shrimp_common import log
+from shrimp_common.models import password_reset
+from shrimp_common.models import user
 
 
 NEW_PASSWORD_RESET_SCHEMA = validators.create_data_schema({

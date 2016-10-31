@@ -10,9 +10,9 @@ result and, possibly, messages.
 
 import enum
 
-from cephlcm_common import wrappers
-from cephlcm_common.models import generic
-from cephlcm_common.models import properties
+from shrimp_common import wrappers
+from shrimp_common.models import generic
+from shrimp_common.models import properties
 
 
 @enum.unique

@@ -6,7 +6,7 @@ import flask.testing
 import pytest
 
 import cephlcm_api
-from cephlcm_common.models import user
+from shrimp_common.models import user
 
 
 class JsonApiClient(flask.testing.FlaskClient):

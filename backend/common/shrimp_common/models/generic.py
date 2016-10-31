@@ -36,11 +36,11 @@ import bson.objectid
 import pymongo
 import pymongo.errors
 
-from cephlcm_common import exceptions
-from cephlcm_common import log
-from cephlcm_common import timeutils
-from cephlcm_common import wrappers
-from cephlcm_common.models import properties
+from shrimp_common import exceptions
+from shrimp_common import log
+from shrimp_common import timeutils
+from shrimp_common import wrappers
+from shrimp_common.models import properties
 
 
 MODEL_DB_STRUCTURE = {
@@ -221,7 +221,7 @@ class Model(Base, metaclass=abc.ABCMeta):
         self._id = None
 
     initiator = properties.ModelProperty(
-        "cephlcm_common.models.user.UserModel",
+        "shrimp_common.models.user.UserModel",
         "initiator_id"
     )
 

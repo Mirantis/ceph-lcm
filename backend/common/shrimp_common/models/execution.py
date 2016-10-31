@@ -8,10 +8,10 @@ configuration to execute and creates task for execution.
 
 import enum
 
-from cephlcm_common.models import db
-from cephlcm_common.models import generic
-from cephlcm_common.models import playbook_configuration
-from cephlcm_common.models import properties
+from shrimp_common.models import db
+from shrimp_common.models import generic
+from shrimp_common.models import playbook_configuration
+from shrimp_common.models import properties
 
 
 @enum.unique

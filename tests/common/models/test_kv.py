@@ -4,7 +4,7 @@
 
 import pytest
 
-from cephlcm_common.models import kv
+from shrimp_common.models import kv
 
 
 def test_upsert_create(configure_model):

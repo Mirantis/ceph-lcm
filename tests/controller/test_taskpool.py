@@ -9,8 +9,8 @@ import unittest.mock
 
 import pytest
 
-from cephlcm_common import config
-from cephlcm_common.models import task
+from shrimp_common import config
+from shrimp_common.models import task
 from cephlcm_controller import taskpool
 
 
@@ -32,7 +32,7 @@ def create_task():
 
 @pytest.yield_fixture
 def mocked_plugin():
-    patch = unittest.mock.patch("cephlcm_common.plugins.get_playbook_plugins")
+    patch = unittest.mock.patch("shrimp_common.plugins.get_playbook_plugins")
     with patch as ptch:
         plugin = unittest.mock.MagicMock()
 

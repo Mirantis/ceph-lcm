@@ -6,11 +6,11 @@ import argparse
 import functools
 import pty
 
-from cephlcm_common import config
-from cephlcm_common import log
-from cephlcm_common.models import db
-from cephlcm_common.models import generic
-from cephlcm_common.models import lock
+from shrimp_common import config
+from shrimp_common import log
+from shrimp_common.models import db
+from shrimp_common.models import generic
+from shrimp_common.models import lock
 
 
 CONF = config.make_config()

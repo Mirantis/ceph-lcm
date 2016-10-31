@@ -15,11 +15,11 @@ import uuid
 import pymongo
 import pymongo.errors
 
-from cephlcm_common import exceptions
-from cephlcm_common import log
-from cephlcm_common import retryutils
-from cephlcm_common import timeutils
-from cephlcm_common.models import generic
+from shrimp_common import exceptions
+from shrimp_common import log
+from shrimp_common import retryutils
+from shrimp_common import timeutils
+from shrimp_common.models import generic
 
 
 LOG = log.getLogger(__name__)

@@ -27,7 +27,7 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "cephlcm_common>=0.1,<0.2"
+        "shrimp_common>=0.1,<0.2"
     ],
     zip_safe=False
 )

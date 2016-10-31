@@ -7,7 +7,7 @@ import os
 import struct
 import time
 
-from cephlcm_common.models import kv
+from shrimp_common.models import kv
 
 
 class MonitorSecret(kv.KV):

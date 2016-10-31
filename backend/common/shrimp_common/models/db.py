@@ -9,8 +9,8 @@ import gridfs.errors
 import pymongo
 import pymongo.uri_parser
 
-from cephlcm_common import config
-from cephlcm_common import log
+from shrimp_common import config
+from shrimp_common import log
 
 
 CONF = config.make_config()
@@ -48,7 +48,7 @@ class MongoDB:
 
         self.client = pymongo.MongoClient(uri, **mongo_kwargs)
         self.dbname = self.client.get_default_database()
-        self.dbname = self.dbname.name if self.dbname else "cephlcm"
+        self.dbname = self.dbname.name if self.dbname else "shrimp"
 
     @property
     def db(self):

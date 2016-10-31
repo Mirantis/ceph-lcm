@@ -7,15 +7,15 @@ import os
 
 import pytest
 
-from cephlcm_common import playbook_plugin
-from cephlcm_common.models import task
+from shrimp_common import playbook_plugin
+from shrimp_common.models import task
 from cephlcm_controller import exceptions
 from cephlcm_controller import inventory
 
 
 @pytest.fixture()
 def mocked_configure(monkeypatch, configure_model, pymongo_connection):
-    monkeypatch.setattr("cephlcm_common.models.db.MongoDB",
+    monkeypatch.setattr("shrimp_common.models.db.MongoDB",
                         lambda: pymongo_connection)
 
 

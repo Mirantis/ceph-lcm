@@ -4,13 +4,13 @@
 
 import time
 
-from cephlcm_common import cliutils
-from cephlcm_common import config
-from cephlcm_common import log
-from cephlcm_common import timeutils
-from cephlcm_common.models import password_reset
-from cephlcm_common.models import task
-from cephlcm_common.models import token
+from shrimp_common import cliutils
+from shrimp_common import config
+from shrimp_common import log
+from shrimp_common import timeutils
+from shrimp_common.models import password_reset
+from shrimp_common.models import task
+from shrimp_common.models import token
 
 
 CONF = config.make_controller_config()

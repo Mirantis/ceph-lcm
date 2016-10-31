@@ -9,10 +9,10 @@ using API. It has to be created after Ansible playbook invocation.
 import enum
 import uuid
 
-from cephlcm_common import exceptions
-from cephlcm_common import retryutils
-from cephlcm_common.models import generic
-from cephlcm_common.models import properties
+from shrimp_common import exceptions
+from shrimp_common import retryutils
+from shrimp_common.models import generic
+from shrimp_common.models import properties
 
 
 @enum.unique
@@ -26,7 +26,7 @@ class ServerState(enum.IntEnum):
 class ServerModel(generic.Model):
     """This is a model for the server.
 
-    Server is a model, which presents physical servers in CephLCM.
+    Server is a model, which presents physical servers in Shrimp.
     Servers are grouped into clusters. Please remember, that
     it is forbidden to create the model using API, it has to
     be created using Ansible playbook invocation.
@@ -50,7 +50,7 @@ class ServerModel(generic.Model):
         self.lock = None
 
     _cluster = properties.ModelProperty(
-        "cephlcm_common.models.cluster.ClusterModel",
+        "shrimp_common.models.cluster.ClusterModel",
         "cluster_id"
     )
 

@@ -4,7 +4,7 @@
 
 import pytest
 
-from cephlcm_common.models import cluster
+from shrimp_common.models import cluster
 
 
 @pytest.fixture

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""This are the basic exceptions for Ceph LCM tool."""
+"""This are the basic exceptions for Shrimp tool."""
 
 
-class CephLCMError(Exception):
-    """Basic exception for Ceph LCM tool."""
+class ShrimpError(Exception):
+    """Basic exception for Shrimp tool."""
 
     def __init__(self, message=""):
         message = message or getattr(self, "description", None) \
@@ -11,81 +11,81 @@ class CephLCMError(Exception):
         super().__init__(message)
 
 
-class CannotUpdateDeletedModel(CephLCMError):
+class CannotUpdateDeletedModel(ShrimpError):
     """Exception which is raised if you are trying to update deleted model."""
 
 
-class UniqueConstraintViolationError(CephLCMError):
+class UniqueConstraintViolationError(ShrimpError):
     """Exception which is raised if db operation violates unique constraint."""
 
 
-class CannotDeleteRoleWithActiveUsers(CephLCMError):
+class CannotDeleteRoleWithActiveUsers(ShrimpError):
     """Exception raised on attempt to delete role with active users."""
 
 
-class CannotDeleteClusterWithServers(CephLCMError):
+class CannotDeleteClusterWithServers(ShrimpError):
     """Exception raised on attempt to delete cluster with servers."""
 
 
-class CannotDeleteServerInCluster(CephLCMError):
+class CannotDeleteServerInCluster(ShrimpError):
     """Exception raised on attempt ot delete server which still in cluster."""
 
 
-class CannotStartTaskError(CephLCMError):
+class CannotStartTaskError(ShrimpError):
     """Exception raised if it is impossible to start such task."""
 
 
-class CannotCancelTaskError(CephLCMError):
+class CannotCancelTaskError(ShrimpError):
     """Exception raised if it is impossible to cancel such task."""
 
 
-class CannotCompleteTaskError(CephLCMError):
+class CannotCompleteTaskError(ShrimpError):
     """Exception raised if it is impossible to complete such task."""
 
 
-class CannotFailTask(CephLCMError):
+class CannotFailTask(ShrimpError):
     """Exception raised if it is impossible to fail such task."""
 
 
-class CannotBounceTaskError(CephLCMError):
+class CannotBounceTaskError(ShrimpError):
     """Exception raised if it is impossible to bounce task."""
 
 
-class CannotSetExecutorError(CephLCMError):
+class CannotSetExecutorError(ShrimpError):
     """Exception raised if it is impossible to set executor data."""
 
 
-class InternalDBError(CephLCMError):
+class InternalDBError(ShrimpError):
     """Exception raised if it is impossible to complete DB request."""
 
 
-class CannotLockServers(CephLCMError, ValueError):
+class CannotLockServers(ShrimpError, ValueError):
     """Exception raised if it is impossible to lock all servers."""
 
 
-class CannotDeleteLockedServer(CephLCMError):
+class CannotDeleteLockedServer(ShrimpError):
     """Exception raised on attempt to delete server which still locked."""
 
 
-class UnknownPlaybookConfiguration(CephLCMError):
+class UnknownPlaybookConfiguration(ShrimpError):
     """Exception raised if playbook configuration is unknown."""
 
 
-class PasswordResetExpiredError(CephLCMError):
+class PasswordResetExpiredError(ShrimpError):
     """Exception raised if password reset token was expired."""
 
 
-class PasswordResetUnknownUser(CephLCMError):
+class PasswordResetUnknownUser(ShrimpError):
     """Exception raised if no valid user for password resetting is found."""
 
 
-class MongoLockCannotAcquire(CephLCMError):
+class MongoLockCannotAcquire(ShrimpError):
     """Exception raised is it is not possible to acquire mongo lock."""
 
 
-class MongoLockCannotProlong(CephLCMError):
+class MongoLockCannotProlong(ShrimpError):
     """Exception raised if it is not possible to prolong mongo lock."""
 
 
-class MongoLockCannotRelease(CephLCMError):
+class MongoLockCannotRelease(ShrimpError):
     """Exception raised if it is not possible to release mongo lock."""

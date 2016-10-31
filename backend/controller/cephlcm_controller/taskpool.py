@@ -11,10 +11,10 @@ import queue
 import threading
 import time
 
-from cephlcm_common import config
-from cephlcm_common import log
-from cephlcm_common import plugins
-from cephlcm_common.models import task
+from shrimp_common import config
+from shrimp_common import log
+from shrimp_common import plugins
+from shrimp_common.models import task
 
 
 TaskState = collections.namedtuple("TaskState", ["future", "stop_event"])

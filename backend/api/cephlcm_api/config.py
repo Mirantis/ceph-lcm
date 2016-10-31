@@ -2,7 +2,7 @@
 """This module has routines to configure API."""
 
 
-from cephlcm_common import config
+from shrimp_common import config
 
 
 CONF = config.make_api_config()

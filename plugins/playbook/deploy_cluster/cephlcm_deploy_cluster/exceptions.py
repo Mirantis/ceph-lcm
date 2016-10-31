@@ -2,7 +2,7 @@
 """Exceptions for deploy cluster playbook."""
 
 
-from cephlcm_common import exceptions as base_exceptions
+from shrimp_common import exceptions as base_exceptions
 
 
 class ClusterDeployError(base_exceptions.CephLCMError):

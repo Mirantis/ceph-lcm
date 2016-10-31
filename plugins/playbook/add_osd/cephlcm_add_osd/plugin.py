@@ -4,11 +4,11 @@
 
 import pkg_resources
 
-from cephlcm_common import diskutils
-from cephlcm_common import log
-from cephlcm_common import networkutils
-from cephlcm_common import playbook_plugin
-from cephlcm_common.models import server
+from shrimp_common import diskutils
+from shrimp_common import log
+from shrimp_common import networkutils
+from shrimp_common import playbook_plugin
+from shrimp_common.models import server
 
 from . import exceptions
 
@@ -65,7 +65,7 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
         result["journal_collocation"] = self.config["journal"]["collocation"]
         result["journal_size"] = self.config["journal"]["size"]
         result["ceph_facts_template"] = pkg_resources.resource_filename(
-            "cephlcm_common", "facts/ceph_facts_module.py.j2")
+            "shrimp_common", "facts/ceph_facts_module.py.j2")
 
         return result
 

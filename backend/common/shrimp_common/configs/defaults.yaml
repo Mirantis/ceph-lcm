@@ -1,11 +1,11 @@
 ---
-# This is a default config for CephLCM tool
+# This is a default config for Shrimp tool
 #
 # Load order is:
-# - /etc/cephlcm/config.toml
-# - $HOME/.config/cephlcm/config.toml (or $XDG_CONFIG_HOME/cephlcm/config.toml)
-# - ~/.cephlcm.toml
-# - $(pwd)/cephlcm.toml
+# - /etc/shrimp/config.toml
+# - $HOME/.config/shrimp/config.toml (or $XDG_CONFIG_HOME/shrimp/config.toml)
+# - ~/.shrimp.toml
+# - $(pwd)/shrimp.toml
 # - This file
 
 
@@ -49,7 +49,7 @@ common:
 api:
   debug: false
   testing: false
-  logger_name: "cephlcm.cephlcm_api.wsgi"
+  logger_name: "shrimp.shrimp_api.wsgi"
   logger_handler_policy: "never"
   json_sort_keys: true
   jsonify_prettyprint_regular: true
@@ -67,7 +67,7 @@ api:
 
 
 controller:
-  pidfile: "/tmp/cephlcm-controller.pid"
+  pidfile: "/tmp/shrimp-controller.pid"
   daemon: false
   timeout: 60
   ansible_config: "/vagrant/ansible.cfg"
