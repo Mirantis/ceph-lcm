@@ -71,9 +71,9 @@ def test_compose_command(new_task, plugin):
 
     assert args == ["new"]
     if "--inventory-file" in opts:
-        assert opts["--inventory-file"] == shutil.which("cephlcm-inventory")
+        assert opts["--inventory-file"] == shutil.which("shrimp-inventory")
     else:
-        assert opts["-i"] == shutil.which("cephlcm-inventory")
+        assert opts["-i"] == shutil.which("shrimp-inventory")
     if "--module-name" in opts:
         assert opts["--module-name"] == plugin.MODULE
     else:

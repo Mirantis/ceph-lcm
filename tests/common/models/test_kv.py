@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm.models.kv."""
+"""Tests for shrimp_common.models.kv."""
 
 
 import pytest

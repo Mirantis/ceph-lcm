@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm.models.password_reset."""
+"""Tests for shrimp_common.models.password_reset."""
 
 
 import pytest

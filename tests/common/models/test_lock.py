@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm.common.models.lock."""
+"""Tests for shrimp_common.models.lock."""
 
 
 import time
