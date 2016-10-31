@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Custom parameter types used in CephLCM CLI."""
+"""Custom parameter types used in Shrimp CLI."""
 
 
 from __future__ import absolute_import
@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 
 import click.types
 
-from cephlcm_cli import utils
+from shrimp_cli import utils
 
 
 class CSVParamType(click.types.ParamType):

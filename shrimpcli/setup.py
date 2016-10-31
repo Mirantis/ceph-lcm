@@ -13,8 +13,8 @@ REQUIREMENTS = (
 
 
 setuptools.setup(
-    name="cephlcm-cli",
-    description="Ceph Lifecycle Management CLI",
+    name="shrimp-cli",
+    description="Shrimp CLI",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -29,7 +29,7 @@ setuptools.setup(
     zip_safe=False,
     entry_points={
         "console_scripts": [
-            "cephlcm = cephlcm_cli.main:cli"
+            "shrimp = shrimp_cli.main:cli"
         ]
     },
     classifiers=(

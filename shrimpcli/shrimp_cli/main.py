@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""This module contains a definitions for cephlcm CLI."""
+"""This module contains a definitions for Shrimp CLI."""
 
 
 from __future__ import absolute_import
@@ -7,8 +7,8 @@ from __future__ import unicode_literals
 
 import click
 
-from cephlcm_cli import decorators
-from cephlcm_cli import utils
+from shrimp_cli import decorators
+from shrimp_cli import utils
 import shrimplib
 
 
@@ -20,50 +20,50 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 @click.option(
     "--url", "-u",
     required=True,
-    envvar="CEPHLCM_URL",
-    help="Base URL for CephLCM."
+    envvar="SHRIMP_URL",
+    help="Base URL for Shrimp."
 )
 @click.option(
     "--login", "-l",
     default="",
-    envvar="CEPHLCM_LOGIN",
-    help="Login to access CephLCM."
+    envvar="SHRIMP_LOGIN",
+    help="Login to access Shrimp."
 )
 @click.option(
     "--password", "-p",
     default="",
-    envvar="CEPHLCM_PASSWORD",
-    help="Password to access CephLCM."
+    envvar="SHRIMP_PASSWORD",
+    help="Password to access Shrimp."
 )
 @click.option(
     "--timeout", "-t",
-    envvar="CEPHLCM_TIMEOUT",
+    envvar="SHRIMP_TIMEOUT",
     type=int,
     default=None,
     help="Timeout to access API. No timeout by default."
 )
 @click.option(
     "--no-verify", "-k",
-    envvar="CEPHLCM_NO_VERIFY",
+    envvar="SHRIMP_NO_VERIFY",
     is_flag=True,
     help="Do not verify SSL certificates."
 )
 @click.option(
     "--ssl-certificate", "-s",
-    envvar="CEPHLCM_SSL_CERTIFICATE",
+    envvar="SHRIMP_SSL_CERTIFICATE",
     default=None,
     type=click.File(lazy=False)
 )
 @click.option(
     "--debug", "-d",
     is_flag=True,
-    envvar="CEPHLCM_DEBUG",
+    envvar="SHRIMP_DEBUG",
     help="Run in debug mode."
 )
 @click.option(
     "--no-pager", "-n",
     is_flag=True,
-    envvar="CEPHLCM_NO_PAGER",
+    envvar="SHRIMP_NO_PAGER",
     help="Do not use pager for output."
 )
 @click.option(
@@ -75,9 +75,9 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 @click.pass_context
 def cli(ctx, url, login, password, no_verify, ssl_certificate, debug,
         timeout, no_pager, output_format):
-    """cephlcm command line tool.
+    """Shrimp command line tool.
 
-    With this CLI it is possible to access all API endpoints of CephLCM.
+    With this CLI it is possible to access all API endpoints of Shrimp.
     To do so, you have to provide some common configuration settings:
     URL, login and password to access.
 
@@ -85,18 +85,18 @@ def cli(ctx, url, login, password, no_verify, ssl_certificate, debug,
     but if you want, you can set environment variables:
 
     \b
-        - CEPHLCM_URL             - this environment variable sets URL to
-                                    access.
-        - CEPHLCM_LOGIN           - this environment variable sets login.
-        - CEPHLCM_PASSWORD        - this environment variable sets password.
-        - CEPHLCM_TIMEOUT         - this environment variable sets timeout.
-        - CEPHLCM_NO_VERIFY       - this environment variable removes SSL
-                                    certificate verification.
-        - CEPHLCM_SSL_CERTIFICATE - this environment variable sets a path
-                                    to SSL client certificate.
-        - CEPHLCM_DEBUG           - this environment variable sets debug mode.
-        - CEPHLCM_NO_PAGER        - this environment variable removes pager
-                                    support.
+        - SHRIMP_URL             - this environment variable sets URL to
+                                   access.
+        - SHRIMP_LOGIN           - this environment variable sets login.
+        - SHRIMP_PASSWORD        - this environment variable sets password.
+        - SHRIMP_TIMEOUT         - this environment variable sets timeout.
+        - SHRIMP_NO_VERIFY       - this environment variable removes SSL
+                                   certificate verification.
+        - SHRIMP_SSL_CERTIFICATE - this environment variable sets a path
+                                   to SSL client certificate.
+        - SHRIMP_DEBUG           - this environment variable sets debug mode.
+        - SHRIMP_NO_PAGER        - this environment variable removes pager
+                                   support.
     """
 
     if ssl_certificate:
@@ -124,7 +124,7 @@ def cli(ctx, url, login, password, no_verify, ssl_certificate, debug,
 @decorators.with_client
 @decorators.format_output
 def info(client):
-    """Request information about remove CephLCM installation."""
+    """Request information about remove Shrimp installation."""
 
     return client.get_info()
 

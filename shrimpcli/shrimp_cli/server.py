@@ -7,9 +7,9 @@ from __future__ import unicode_literals
 
 import click
 
-from cephlcm_cli import decorators
-from cephlcm_cli import main
-from cephlcm_cli import utils
+from shrimp_cli import decorators
+from shrimp_cli import main
+from shrimp_cli import utils
 
 
 @main.cli_group
@@ -54,7 +54,7 @@ def get_version(server_id, version, client):
 @click.argument("server-id")
 @decorators.command(server)
 def create(server_id, hostname, username, client):
-    """Creates new server in CephLCM."""
+    """Creates new server in Shrimp."""
 
     return client.create_server(server_id, hostname, username)
 
@@ -82,10 +82,10 @@ def update(server_id, name, model, client):
 @click.argument("server-id")
 @decorators.command(server)
 def delete(server_id, client):
-    """Deletes server from CephLCM.
+    """Deletes server from Shrimp.
 
     Please be notices that *actually* there is no deletion in common
-    sense. CephLCM archives item. It won't be active after but still all
+    sense. Shrimp archives item. It won't be active after but still all
     history will be accessible.
     """
 

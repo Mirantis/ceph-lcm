@@ -10,8 +10,8 @@ import os
 import click
 import six
 
-from cephlcm_cli import param_types
-from cephlcm_cli import utils
+from shrimp_cli import param_types
+from shrimp_cli import utils
 from shrimplib import exceptions
 
 
@@ -23,9 +23,9 @@ def catch_errors(func):
     def decorator(ctx, *args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except exceptions.CephLCMAPIError as exc:
+        except exceptions.ShrimpAPIError as exc:
             utils.format_output_json(ctx, exc.json, True)
-        except exceptions.CephLCMError as exc:
+        except exceptions.ShrimpError as exc:
             click.echo(six.text_type(exc), err=True)
         finally:
             ctx.close()

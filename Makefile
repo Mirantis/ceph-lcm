@@ -5,7 +5,7 @@ IMAGES_DIR := $(OUTPUT_DIR)/images
 
 CONTAINER_API_NAME        := shrimp-api
 CONTAINER_BASE_NAME       := cephlcm-base
-CONTAINER_CLI_NAME        := cephlcm-cli
+CONTAINER_CLI_NAME        := shrimp-cli
 CONTAINER_CONTROLLER_NAME := shrimp-controller
 CONTAINER_CRON_NAME       := cephlcm-cron
 CONTAINER_DB_NAME         := cephlcm-db
@@ -24,7 +24,7 @@ endef
 
 # -----------------------------------------------------------------------------
 
-build_eggs: build_backend_eggs build_shrimplib_eggs build_cephlcmcli_eggs build_plugins_eggs
+build_eggs: build_backend_eggs build_shrimplib_eggs build_shrimpcli_eggs build_plugins_eggs
 build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs build_ansible_eggs build_monitoring_eggs build_migration_eggs
 build_plugins_eggs: build_alerts_eggs build_playbook_eggs
 build_alerts_eggs: build_email_eggs
@@ -51,8 +51,8 @@ build_migration_eggs: clean_eggs make_egg_directory
 build_shrimplib_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/shrimplib","$(EGGS_DIR)")
 
-build_cephlcmcli_eggs: clean_eggs make_egg_directory
-	$(call build_egg,"$(ROOT_DIR)/cephlcmcli","$(EGGS_DIR)")
+build_shrimpcli_eggs: clean_eggs make_egg_directory
+	$(call build_egg,"$(ROOT_DIR)/shrimpcli","$(EGGS_DIR)")
 
 build_email_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/plugins/alerts/emails","$(EGGS_DIR)")

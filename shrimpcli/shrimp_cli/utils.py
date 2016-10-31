@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Various utils for CephLCM CLI."""
+"""Various utils for Shrimp CLI."""
 
 
 from __future__ import absolute_import

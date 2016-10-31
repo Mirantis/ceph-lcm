@@ -7,9 +7,9 @@ from __future__ import unicode_literals
 
 import click
 
-from cephlcm_cli import decorators
-from cephlcm_cli import main
-from cephlcm_cli import param_types
+from shrimp_cli import decorators
+from shrimp_cli import main
+from shrimp_cli import param_types
 
 
 @main.cli_group
@@ -71,10 +71,10 @@ def create(name, playbook, cluster_id, server_ids, client):
 @click.argument("playbook_configuration-id", type=click.UUID)
 @decorators.command(playbook_configuration)
 def delete(playbook_configuration_id, client):
-    """Deletes playbook configuration in CephLCM
+    """Deletes playbook configuration in Shrimp.
 
     Please be notices that *actually* there is no deletion in common
-    sense. CephLCM archives item. It won't be active after but still all
+    sense. Shrimp archives item. It won't be active after but still all
     history will be accessible.
     """
 

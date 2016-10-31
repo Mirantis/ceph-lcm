@@ -7,10 +7,10 @@ from __future__ import unicode_literals
 
 import click
 
-from cephlcm_cli import decorators
-from cephlcm_cli import main
-from cephlcm_cli import param_types
-from cephlcm_cli import utils
+from shrimp_cli import decorators
+from shrimp_cli import main
+from shrimp_cli import param_types
+from shrimp_cli import utils
 
 
 def permissions_to_dict(permissions):
@@ -76,7 +76,7 @@ def get_version(role_id, version, client):
     help="Comma-separated list of playbook permissions."
 )
 def create(name, api_permissions, playbook_permissions, client):
-    """Create new role in CephLCM."""
+    """Create new role in Shrimp."""
 
     permissions = {
         "api": api_permissions,
@@ -128,10 +128,10 @@ def update(role_id, name, api_permissions, playbook_permissions, model,
 @click.argument("role-id", type=click.UUID)
 @decorators.command(role)
 def delete(role_id, client):
-    """Deletes role from CephLCM.
+    """Deletes role from Shrimp.
 
     Please be notices that *actually* there is no deletion in common
-    sense. CephLCM archives user. It won't be active after but still all
+    sense. Shrimp archives user. It won't be active after but still all
     history will be accessible.
     """
 

@@ -7,8 +7,8 @@ from __future__ import unicode_literals
 
 import click
 
-from cephlcm_cli import decorators
-from cephlcm_cli import main
+from shrimp_cli import decorators
+from shrimp_cli import main
 
 
 @main.cli_group
@@ -61,7 +61,7 @@ def create(playbook_configuration_id, playbook_configuration_version, client):
 @click.argument("execution-id", type=click.UUID)
 @decorators.command(execution)
 def cancel(execution_id, client):
-    """Cancel execution in CephLCM.
+    """Cancel execution in Shrimp.
 
     Please be noticed that canceling may take time.
     """

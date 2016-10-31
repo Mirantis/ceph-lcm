@@ -7,9 +7,9 @@ from __future__ import unicode_literals
 
 import click
 
-from cephlcm_cli import decorators
-from cephlcm_cli import main
-from cephlcm_cli import utils
+from shrimp_cli import decorators
+from shrimp_cli import main
+from shrimp_cli import utils
 
 
 @main.cli_group
@@ -52,7 +52,7 @@ def get_version(cluster_id, version, client):
 @click.argument("name")
 @decorators.command(cluster)
 def create(name, client):
-    """Creates new cluster in CephLCM."""
+    """Creates new cluster in Shrimp."""
 
     return client.create_cluster(name)
 
@@ -80,10 +80,10 @@ def update(cluster_id, name, model, client):
 @click.argument("cluster-id", type=click.UUID)
 @decorators.command(cluster)
 def delete(cluster_id, client):
-    """Deletes cluster from CephLCM.
+    """Deletes cluster from Shrimp.
 
     Please be notices that *actually* there is no deletion in common
-    sense. CephLCM archives user. It won't be active after but still all
+    sense. Shrimp archives user. It won't be active after but still all
     history will be accessible.
     """
 
