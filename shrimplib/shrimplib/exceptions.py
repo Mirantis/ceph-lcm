@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Exceptions raised in cephlcmlib."""
+"""Exceptions raised in shrimplib."""
 
 
 from __future__ import absolute_import
@@ -9,8 +9,8 @@ import six
 
 
 @six.python_2_unicode_compatible
-class CephLCMError(Exception):
-    """Common error, raised in cephlcmlib."""
+class ShrimpError(Exception):
+    """Common error, raised in shrimplib."""
 
     def __init__(self, exc):
         self.exception = exc
@@ -23,7 +23,7 @@ class CephLCMError(Exception):
 
 
 @six.python_2_unicode_compatible
-class CephLCMAPIError(CephLCMError):
+class ShrimpAPIError(ShrimpError):
     """Common error in API."""
 
     def __init__(self, response):

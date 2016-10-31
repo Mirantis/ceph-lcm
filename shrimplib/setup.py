@@ -13,8 +13,8 @@ REQUIREMENTS = (
 
 
 setuptools.setup(
-    name="cephlcmlib",
-    description="Ceph Lifecycle Management client library",
+    name="shrimplib",
+    description="Shrimp client library",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",

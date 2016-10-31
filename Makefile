@@ -24,7 +24,7 @@ endef
 
 # -----------------------------------------------------------------------------
 
-build_eggs: build_backend_eggs build_cephlcmlib_eggs build_cephlcmcli_eggs build_plugins_eggs
+build_eggs: build_backend_eggs build_shrimplib_eggs build_cephlcmcli_eggs build_plugins_eggs
 build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs build_ansible_eggs build_monitoring_eggs build_migration_eggs
 build_plugins_eggs: build_alerts_eggs build_playbook_eggs
 build_alerts_eggs: build_email_eggs
@@ -48,8 +48,8 @@ build_monitoring_eggs: clean_eggs make_egg_directory
 build_migration_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/backend/migration","$(EGGS_DIR)")
 
-build_cephlcmlib_eggs: clean_eggs make_egg_directory
-	$(call build_egg,"$(ROOT_DIR)/cephlcmlib","$(EGGS_DIR)")
+build_shrimplib_eggs: clean_eggs make_egg_directory
+	$(call build_egg,"$(ROOT_DIR)/shrimplib","$(EGGS_DIR)")
 
 build_cephlcmcli_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/cephlcmcli","$(EGGS_DIR)")

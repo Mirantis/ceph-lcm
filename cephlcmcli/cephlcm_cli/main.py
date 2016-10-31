@@ -9,7 +9,7 @@ import click
 
 from cephlcm_cli import decorators
 from cephlcm_cli import utils
-import cephlcmlib
+import shrimplib
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
@@ -111,7 +111,7 @@ def cli(ctx, url, login, password, no_verify, ssl_certificate, debug,
         "timeout": timeout,
         "format": output_format,
         "no_pager": no_pager,
-        "client": cephlcmlib.Client(url, login, password,
+        "client": shrimplib.Client(url, login, password,
                                     timeout=timeout, verify=not no_verify,
                                     certificate_file=ssl_certificate)
     }

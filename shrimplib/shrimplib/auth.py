@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Custom authentication for cephlcmlib."""
+"""Custom authentication for shrimplib."""
 
 
 from __future__ import absolute_import
@@ -12,7 +12,7 @@ import requests.auth
 
 
 class V1Auth(requests.auth.AuthBase):
-    """Request authentication provider for CephLCM API V1."""
+    """Request authentication provider for Shrimp API V1."""
 
     AUTH_URL = "/v1/auth/"
     """URL of authentication."""

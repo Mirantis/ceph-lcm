@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 import click
 
 from cephlcm_cli import main
-from cephlcmlib import cloud_config
+from shrimplib import cloud_config
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])

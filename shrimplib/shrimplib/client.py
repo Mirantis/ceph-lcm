@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Client for the CephLCM API."""
+"""Client for the Shrimp API."""
 
 
 from __future__ import absolute_import
@@ -15,8 +15,8 @@ import requests
 import requests.adapters
 import six
 
-from cephlcmlib import auth
-from cephlcmlib import exceptions
+from shrimplib import auth
+from shrimplib import exceptions
 
 try:
     import simplejson as json
@@ -27,7 +27,7 @@ except ImportError:
 LOG = logging.getLogger(__name__)
 """Logger."""
 
-VERSION = pkg_resources.get_distribution("cephlcmlib").version
+VERSION = pkg_resources.get_distribution("shrimplib").version
 """Package version."""
 
 
@@ -67,7 +67,7 @@ def json_response(func):
                 return response.json()
             return response.text
 
-        raise exceptions.CephLCMAPIError(response)
+        raise exceptions.ShrimpAPIError(response)
 
     return decorator
 
@@ -128,7 +128,7 @@ def no_auth(func):
 def wrap_errors(func):
     """Catches and logs all errors.
 
-    Also wraps all possible errors into CephLCMError class.
+    Also wraps all possible errors into ShrimpAPIError class.
     """
 
     @six.wraps(func)
@@ -136,13 +136,13 @@ def wrap_errors(func):
         try:
             return func(*args, **kwargs)
         except Exception as exc:
-            if isinstance(exc, exceptions.CephLCMError):
+            if isinstance(exc, exceptions.ShrimpError):
                 LOG.error("Error on access to API: %s", exc)
                 raise
 
-            LOG.exception("Exception in cephlcmlib: %s", exc)
+            LOG.exception("Exception in shrimplib: %s", exc)
 
-            raise exceptions.CephLCMError(exc)
+            raise exceptions.ShrimpAPIError(exc)
 
     return decorator
 
@@ -168,7 +168,7 @@ def client_metaclass(name, bases, attrs):
 
 class HTTPAdapter(requests.adapters.HTTPAdapter):
 
-    USER_AGENT = "cephlcmlib/{0}".format(VERSION)
+    USER_AGENT = "shrimplib/{0}".format(VERSION)
 
     def add_headers(self, request, **kwargs):
         request.headers["User-Agent"] = self.USER_AGENT
@@ -232,7 +232,7 @@ class Client(object):
         raise NotImplementedError()
 
     def __str__(self):
-        return "CephLCMAPI: url={0!r}, login={1!r}, password={2!r}".format(
+        return "ShrimpAPI: url={0!r}, login={1!r}, password={2!r}".format(
             self._url, self._login, "*" * len(self._password)
         )
 

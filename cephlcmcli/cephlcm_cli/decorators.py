@@ -12,7 +12,7 @@ import six
 
 from cephlcm_cli import param_types
 from cephlcm_cli import utils
-from cephlcmlib import exceptions
+from shrimplib import exceptions
 
 
 def catch_errors(func):

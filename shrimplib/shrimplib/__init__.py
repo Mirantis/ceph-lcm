@@ -5,7 +5,7 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from cephlcmlib.client import V1Client
+from shrimplib.client import V1Client
 
 
 Client = V1Client
