@@ -41,7 +41,7 @@ api:
 
 
 controller:
-  pidfile: "/tmp/cephlcm-controller.pid"
+  pidfile: "/tmp/shrimp-controller.pid"
   daemon: false
   timeout: 60
   ansible_config: "/etc/ansible/ansible.cfg"

@@ -1,7 +1,7 @@
 # vi: set ft=dockerfile :
 
 
-FROM cephlcm-controller
+FROM shrimp-controller
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 COPY output/eggs /eggs

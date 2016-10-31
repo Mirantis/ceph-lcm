@@ -30,13 +30,13 @@ def task_watch(request):
 
 @pytest.fixture
 def mainloop_process_task(request):
-    return have_mocked(request, "cephlcm_controller.mainloop.process_task")
+    return have_mocked(request, "shrimp_controller.mainloop.process_task")
 
 
 @pytest.fixture
 def mainloop_possible_to_process(request):
     mocked = have_mocked(request,
-                         "cephlcm_controller.mainloop.possible_to_process")
+                         "shrimp_controller.mainloop.possible_to_process")
     mocked.return_value = True
 
     return mocked

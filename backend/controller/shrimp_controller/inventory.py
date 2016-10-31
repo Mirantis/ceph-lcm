@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Dynamic inventory for CephLCM."""
+"""Dynamic inventory for Shrimp."""
 
 
 import argparse
@@ -19,7 +19,7 @@ from shrimp_common import playbook_plugin
 from shrimp_common import plugins
 from shrimp_common.models import db
 from shrimp_common.models import generic
-from cephlcm_controller import exceptions
+from shrimp_controller import exceptions
 
 
 CONF = config.make_controller_config()
@@ -110,7 +110,7 @@ def get_options():
     """Parses options."""
 
     parser = argparse.ArgumentParser(
-        description="Dynamic inventory for CephLCM")
+        description="Dynamic inventory for Shrimp.")
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(

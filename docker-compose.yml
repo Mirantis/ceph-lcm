@@ -14,7 +14,7 @@ services:
     links:
       - database
   controller:
-    image: cephlcm-controller
+    image: shrimp-controller
     links:
       - database
   database:

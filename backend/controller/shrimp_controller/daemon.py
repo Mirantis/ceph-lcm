@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Daemon process of the CephLCM controller."""
+"""Daemon process of the Shrimp controller."""
 
 
 import argparse
@@ -14,7 +14,7 @@ from shrimp_common import config
 from shrimp_common import log
 from shrimp_common.models import db
 from shrimp_common.models import generic
-from cephlcm_controller import mainloop
+from shrimp_controller import mainloop
 
 
 CONF = config.make_controller_config()
@@ -58,7 +58,7 @@ def main_script(options, set_shutdown=True):
 
 def get_options():
     parser = argparse.ArgumentParser(
-        description="CephLCM controller"
+        description="Shrimp controller"
     )
 
     parser.add_argument(

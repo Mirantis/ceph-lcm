@@ -12,7 +12,7 @@ from shrimp_common import log
 from shrimp_common.models import execution
 from shrimp_common.models import server
 from shrimp_common.models import task
-from cephlcm_controller import taskpool
+from shrimp_controller import taskpool
 
 
 CONF = config.make_controller_config()

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm_controller.mainloop"""
+"""Tests for shrimp_controller.mainloop"""
 
 
 import threading
@@ -10,7 +10,7 @@ import pytest
 from shrimp_common.models import execution
 from shrimp_common.models import server
 from shrimp_common.models import task
-from cephlcm_controller import mainloop
+from shrimp_controller import mainloop
 
 
 @pytest.fixture

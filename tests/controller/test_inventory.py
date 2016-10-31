@@ -9,8 +9,8 @@ import pytest
 
 from shrimp_common import playbook_plugin
 from shrimp_common.models import task
-from cephlcm_controller import exceptions
-from cephlcm_controller import inventory
+from shrimp_controller import exceptions
+from shrimp_controller import inventory
 
 
 @pytest.fixture()
