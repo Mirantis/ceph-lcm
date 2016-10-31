@@ -157,4 +157,5 @@ copy_example_keys:
 	cp "$(ROOT_DIR)/containerization/files/nginx-selfsigned.crt" "$(ROOT_DIR)/ssl.crt" && \
 	cp "$(ROOT_DIR)/containerization/files/nginx-dhparam.pem" "$(ROOT_DIR)/ssl-dhparam.pem" && \
 	cp "$(ROOT_DIR)/containerization/files/config.yaml" "$(ROOT_DIR)/config.yaml" && \
+	cp "$(ROOT_DIR)/containerization/files/mongodb.pem" "$(ROOT_DIR)/mongodb.pem" && \
 	chmod 0600 "$(ROOT_DIR)/ansible_ssh_keyfile.pem"
