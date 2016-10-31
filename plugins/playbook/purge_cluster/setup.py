@@ -7,22 +7,22 @@ import setuptools
 
 
 setuptools.setup(
-    name="cephlcm-plugin-playbook-purge-cluster",
-    description="Purge cluster plugin for CephLCM",
+    name="shrimp-plugin-playbook-purge-cluster",
+    description="Purge cluster plugin for Shrimp",
     version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
     packages=setuptools.find_packages(),
     entry_points={
-        "cephlcm.playbooks": [
-            "purge_cluster = cephlcm_purge_cluster.plugin:PurgeCluster"
+        "shrimp.playbooks": [
+            "purge_cluster = shrimp_purge_cluster.plugin:PurgeCluster"
         ]
     },
     python_requires=">= 3.4",
     include_package_data=True,
     package_data={
-        "cephlcm_purge_cluster": [
+        "shrimp_purge_cluster": [
             "config.yaml",
             "playbook.yaml"
         ]
