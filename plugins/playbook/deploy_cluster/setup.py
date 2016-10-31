@@ -7,22 +7,22 @@ import setuptools
 
 
 setuptools.setup(
-    name="cephlcm-plugin-playbook-deploy-cluster",
-    description="Deploy cluster plugin for CephLCM",
+    name="shrimp-plugin-playbook-deploy-cluster",
+    description="Deploy cluster plugin for Shrimp",
     version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
     packages=setuptools.find_packages(),
     entry_points={
-        "cephlcm.playbooks": [
-            "cluster_deploy = cephlcm_deploy_cluster.plugin:DeployCluster"  # NOQA
+        "shrimp.playbooks": [
+            "cluster_deploy = shrimp_deploy_cluster.plugin:DeployCluster"  # NOQA
         ]
     },
     python_requires=">= 3.4",
     include_package_data=True,
     package_data={
-        "cephlcm_deploy_cluster": [
+        "shrimp_deploy_cluster": [
             "config.yaml",
             "playbook.yaml",
             "templates/*"

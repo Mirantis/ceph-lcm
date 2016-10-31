@@ -5,8 +5,8 @@
 from shrimp_common import exceptions as base_exceptions
 
 
-class ClusterDeployError(base_exceptions.CephLCMError):
-    """Exception family, specific for CephLCM plugin for cluster deployment."""
+class ClusterDeployError(base_exceptions.ShrimpError):
+    """Exception family, specific for Shrimp plugin for cluster deployment."""
 
 
 class SecretWasNotFound(ClusterDeployError):
