@@ -8,7 +8,7 @@ import time
 
 import pkg_resources
 
-from cephlcm_migration import migrators
+from shrimp_migration import migrators
 from shrimp_common import cliutils
 from shrimp_common import log
 from shrimp_common.models import lock
@@ -29,7 +29,7 @@ SHA1 of script: {script_hash}
 """Template to display for migration.show"""
 
 DIRECTORY = pkg_resources.resource_filename(
-    "cephlcm_migration", "scripts")
+    "shrimp_migration", "scripts")
 """Directory where migration scripts are placed."""
 
 LOG = log.getLogger(__name__)
@@ -155,7 +155,7 @@ def apply_migration(migration, *, ok=True):
 
 def get_options():
     parser = argparse.ArgumentParser(
-        description="Run migrations again CephLCM database.")
+        description="Run migrations again Shrimp database.")
     parser.set_defaults(callback=lambda el: parser.print_help())
     subparsers = parser.add_subparsers()
 

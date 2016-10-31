@@ -20,7 +20,7 @@ RUN set -x \
     python3-dev \
     python3-pip \
   && pip3 install --compile --no-cache-dir --disable-pip-version-check -c /constraints.txt uwsgi \
-  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/cephlcm_migrations*.whl \
+  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_migrations*.whl \
   && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_api*.whl \
   && rm -r /eggs /constraints.txt \
   && apt-get clean \
