@@ -49,7 +49,12 @@ class BadRequest(ShrimpJSONMixin, exceptions.BadRequest):
 
 
 class Unauthorized(ShrimpJSONMixin, exceptions.Unauthorized):
-    pass
+
+    def get_headers(self, environ=None):
+        headers = super().get_headers(environ=environ)
+        headers.append(("WWW-Authenticate", "Token realm=\"Application\""))
+
+        return headers
 
 
 class Forbidden(ShrimpJSONMixin, exceptions.Forbidden):
