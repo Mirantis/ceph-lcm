@@ -93,7 +93,7 @@ build_ui: clean_ui npm_install
 	cd "$(ROOT_DIR)/ui" && npm run build
 
 npm_install:
-	cd "$(ROOT_DIR)/ui" && npm install
+	cd "$(ROOT_DIR)/ui" && npm install && npm run typings install
 
 clean_ui:
 	rm -rf "$(ROOT_DIR)/ui/build"
