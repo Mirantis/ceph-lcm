@@ -33,16 +33,8 @@ gulp.task('bundle:libs', function () {
     .pipe(gulp.dest('build/tmp/js'));
 });
 
-// Fix typings for jquery
-gulp.task('modify:typings', function () {
-  return gulp.src('typings/globals/jquery/index.d.ts')
-  .pipe(replace('export = $;', 'export = jQuery;'))
-  .pipe(replace('declare var $: JQueryStatic;', ''))
-  .pipe(gulp.dest('typings/globals/jquery'));
-});
-
 // Compile TypeScript into javascript
-gulp.task('compile:ts', ['modify:typings'], function () {
+gulp.task('compile:ts', function () {
   return tsProject.src()
   .pipe(tsProject())
   .js.pipe(gulp.dest('./'));

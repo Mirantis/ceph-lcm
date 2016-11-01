@@ -25,7 +25,8 @@
 
     'jquery': 'npm:jquery',
     'bootstrap': 'npm:bootstrap',
-    'format-json': 'npm:format-json'
+    'format-json': 'npm:format-json',
+    'file-saver': 'npm:file-saver'
   };
 
   var packages = {
@@ -57,6 +58,9 @@
     },
     'format-json': {
       main: 'index.js'
+    },
+    'file-saver': {
+      main: 'FileSaver.js'
     }
   };
 

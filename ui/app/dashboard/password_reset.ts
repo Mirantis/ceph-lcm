@@ -58,7 +58,8 @@ export class PasswordResetComponent extends LoginComponent {
     this.auth.updatePassword(this.resetToken, this.password)
       .then(
         (data: any) => {
-          this.loginError = {error: '', message: 'Password reset instructions have been sent'};
+          this.loginError = {error: '', message: 'Password has been saved'};
+          this.router.navigate(['/login']);
         },
         (error: any) => {
           this.loginError = error.responseJSON;
