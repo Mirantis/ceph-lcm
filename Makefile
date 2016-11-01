@@ -3,14 +3,14 @@ OUTPUT_DIR := $(ROOT_DIR)/output
 EGGS_DIR   := $(OUTPUT_DIR)/eggs
 IMAGES_DIR := $(OUTPUT_DIR)/images
 
-CONTAINER_API_NAME        := cephlcm-api
-CONTAINER_BASE_NAME       := cephlcm-base
-CONTAINER_CLI_NAME        := cephlcm-cli
-CONTAINER_CONTROLLER_NAME := cephlcm-controller
-CONTAINER_CRON_NAME       := cephlcm-cron
-CONTAINER_DB_NAME         := cephlcm-db
-CONTAINER_FRONTEND_NAME   := cephlcm-frontend
-CONTAINER_PLUGINS_NAME    := cephlcm-base-plugins
+CONTAINER_API_NAME        := shrimp-api
+CONTAINER_BASE_NAME       := shrimp-base
+CONTAINER_CLI_NAME        := shrimp-cli
+CONTAINER_CONTROLLER_NAME := shrimp-controller
+CONTAINER_CRON_NAME       := shrimp-cron
+CONTAINER_DB_NAME         := shrimp-db
+CONTAINER_FRONTEND_NAME   := shrimp-frontend
+CONTAINER_PLUGINS_NAME    := shrimp-base-plugins
 
 # -----------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ endef
 
 # -----------------------------------------------------------------------------
 
-build_eggs: build_backend_eggs build_cephlcmlib_eggs build_cephlcmcli_eggs build_plugins_eggs
+build_eggs: build_backend_eggs build_shrimplib_eggs build_shrimpcli_eggs build_plugins_eggs
 build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs build_ansible_eggs build_monitoring_eggs build_migration_eggs
 build_plugins_eggs: build_alerts_eggs build_playbook_eggs
 build_alerts_eggs: build_email_eggs
@@ -48,11 +48,11 @@ build_monitoring_eggs: clean_eggs make_egg_directory
 build_migration_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/backend/migration","$(EGGS_DIR)")
 
-build_cephlcmlib_eggs: clean_eggs make_egg_directory
-	$(call build_egg,"$(ROOT_DIR)/cephlcmlib","$(EGGS_DIR)")
+build_shrimplib_eggs: clean_eggs make_egg_directory
+	$(call build_egg,"$(ROOT_DIR)/shrimplib","$(EGGS_DIR)")
 
-build_cephlcmcli_eggs: clean_eggs make_egg_directory
-	$(call build_egg,"$(ROOT_DIR)/cephlcmcli","$(EGGS_DIR)")
+build_shrimpcli_eggs: clean_eggs make_egg_directory
+	$(call build_egg,"$(ROOT_DIR)/shrimpcli","$(EGGS_DIR)")
 
 build_email_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/plugins/alerts/emails","$(EGGS_DIR)")
@@ -93,7 +93,7 @@ build_ui: clean_ui npm_install
 	cd "$(ROOT_DIR)/ui" && npm run build
 
 npm_install:
-	cd "$(ROOT_DIR)/ui" && npm install
+	cd "$(ROOT_DIR)/ui" && npm install && npm run typings install
 
 clean_ui:
 	rm -rf "$(ROOT_DIR)/ui/build"

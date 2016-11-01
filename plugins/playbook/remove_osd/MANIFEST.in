@@ -1,2 +1,2 @@
-include cephlcm_remove_osd/config.yaml
-include cephlcm_remove_osd/playbook.yaml
+include shrimp_remove_osd/config.yaml
+include shrimp_remove_osd/playbook.yaml

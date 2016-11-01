@@ -1,2 +1,2 @@
-include cephlcm_purge_cluster/config.yaml
-include cephlcm_purge_cluster/playbook.yaml
+include shrimp_purge_cluster/config.yaml
+include shrimp_purge_cluster/playbook.yaml

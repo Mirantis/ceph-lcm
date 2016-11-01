@@ -12,8 +12,8 @@ REQUIREMENTS = (
 
 
 setuptools.setup(
-    name="cephlcm-ansible",
-    description="Ceph Lifecycle Management Ansible files",
+    name="shrimp-ansible",
+    description="Shrimp Ansible files",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -28,7 +28,7 @@ setuptools.setup(
     zip_safe=False,
     include_package_data=True,
     package_data={
-        "cephlcm_ansible": [
+        "shrimp_ansible": [
             "ceph-ansible/LICENSE",
             "ceph-ansible/library",
             "ceph-ansible/plugins",
@@ -38,7 +38,7 @@ setuptools.setup(
     },
     entry_points={
         "console_scripts": [
-            "cephlcm-ansible-deploy-config = cephlcm_ansible.generate_config:write_config"  # NOQA
+            "shrimp-ansible-deploy-config = shrimp_ansible.generate_config:write_config"  # NOQA
         ]
     },
     classifiers=(
@@ -46,8 +46,6 @@ setuptools.setup(
         "Intended Audience :: System Administrators",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5"
+        "Programming Language :: Python :: 2.7"
     )
 )

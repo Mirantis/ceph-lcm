@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm_common.models.execution."""
+"""Tests for shrimp_common.models.execution."""
 
 
 import pytest
 
-from cephlcm_common.models import execution
+from shrimp_common.models import execution
 
 
 def test_create(new_execution, new_pcmodel, pymongo_connection):

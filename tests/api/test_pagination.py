@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm_api.pagination."""
+"""Tests for shrimp_api.pagination."""
 
 
 import json
 
 import pytest
 
-from cephlcm_api import pagination
-from cephlcm_common import config
+from shrimp_api import pagination
+from shrimp_common import config
 
 
 CONF = config.make_api_config()

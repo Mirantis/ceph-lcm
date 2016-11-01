@@ -6,14 +6,14 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "cephlcm-common>=0.1,<0.2",
+    "shrimp-common>=0.1,<0.2",
     "python-daemon>=2.1,<2.2",
     "lockfile>=0.12,<0.13"
 )
 
 
 setuptools.setup(
-    name="cephlcm-controller",
+    name="shrimp-controller",
     description="Ceph Lifecycle Management controller service",
     long_description="",  # TODO
     version="0.1.0",
@@ -29,11 +29,11 @@ setuptools.setup(
     zip_safe=False,
     entry_points={
         "console_scripts": [
-            "cephlcm-controller = cephlcm_controller.daemon:main",
-            "cephlcm-inventory = cephlcm_controller.inventory:main",
-            "cephlcm-cron-clean-expired-tokens = cephlcm_controller.cron:clean_expired_tokens",  # NOQA
-            "cephlcm-cron-clean-old-tasks = cephlcm_controller.cron:clean_old_tasks",  # NOQA
-            "cephlcm-cron-clean-old-pwtokens = cephlcm_controller.cron:clean_expired_password_resets"  # NOQA
+            "shrimp-controller = shrimp_controller.daemon:main",
+            "shrimp-inventory = shrimp_controller.inventory:main",
+            "shrimp-cron-clean-expired-tokens = shrimp_controller.cron:clean_expired_tokens",  # NOQA
+            "shrimp-cron-clean-old-tasks = shrimp_controller.cron:clean_old_tasks",  # NOQA
+            "shrimp-cron-clean-old-pwtokens = shrimp_controller.cron:clean_expired_password_resets"  # NOQA
         ]
     },
     classifiers=(

@@ -1,4 +1,4 @@
-# Requirements to test CephLCM
+# Requirements to test Shrimp
 
 # Cannot use it here because pbr still do not understand such line.
 # -c constraints.txt

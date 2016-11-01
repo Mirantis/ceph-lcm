@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm_common.retryutils"""
+"""Tests for shrimp_common.retryutils"""
 
 
 import unittest.mock
@@ -7,7 +7,7 @@ import unittest.mock
 import pymongo.errors
 import pytest
 
-from cephlcm_common import retryutils
+from shrimp_common import retryutils
 
 
 @pytest.fixture

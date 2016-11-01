@@ -1,5 +1,5 @@
 ---
-# Docker tasks for CephLCM
+# Docker tasks for Shrimp
 
 
 - name: Install prerequisites

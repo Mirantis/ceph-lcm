@@ -6,7 +6,7 @@ import uuid
 
 import pytest
 
-from cephlcm_common.models import role
+from shrimp_common.models import role
 
 
 @pytest.fixture

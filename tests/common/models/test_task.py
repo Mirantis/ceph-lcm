@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Test for cephlcm_common.models.task."""
+"""Test for shrimp_common.models.task."""
 
 
 import pytest
 
-from cephlcm_common import exceptions
-from cephlcm_common.models import execution
-from cephlcm_common.models import task
+from shrimp_common import exceptions
+from shrimp_common.models import execution
+from shrimp_common.models import task
 
 
 @pytest.fixture
@@ -169,7 +169,7 @@ def test_finish_not_started_task(task_type, finish_action, configure_model):
     executor_id = pytest.faux.gen_uuid()
     new_task = task.Task(task_type, executor_id).create()
 
-    with pytest.raises(exceptions.CephLCMError):
+    with pytest.raises(exceptions.ShrimpError):
         getattr(new_task, finish_action)()
 
 
@@ -194,7 +194,7 @@ def test_finish_finished_task(task_type, how_to_finish, how_to_finish_again,
     new_task.start()
     getattr(new_task, how_to_finish)()
 
-    with pytest.raises(exceptions.CephLCMError):
+    with pytest.raises(exceptions.ShrimpError):
         getattr(new_task, how_to_finish_again)()
 
 

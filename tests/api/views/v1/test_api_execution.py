@@ -8,10 +8,10 @@ import unittest.mock
 import gridfs.grid_file
 import pytest
 
-from cephlcm_common.models import execution
-from cephlcm_common.models import execution_step
-from cephlcm_common.models import role
-from cephlcm_common.models import task
+from shrimp_common.models import execution
+from shrimp_common.models import execution_step
+from shrimp_common.models import role
+from shrimp_common.models import task
 
 
 @pytest.fixture

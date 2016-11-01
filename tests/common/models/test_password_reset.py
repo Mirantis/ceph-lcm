@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm.models.password_reset."""
+"""Tests for shrimp_common.models.password_reset."""
 
 
 import pytest
 
-from cephlcm_common import exceptions
-from cephlcm_common import passwords
-from cephlcm_common.models import password_reset
-from cephlcm_common.models import user
+from shrimp_common import exceptions
+from shrimp_common import passwords
+from shrimp_common.models import password_reset
+from shrimp_common.models import user
 
 
 @pytest.fixture

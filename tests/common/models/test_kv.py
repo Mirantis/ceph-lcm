@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm.models.kv."""
+"""Tests for shrimp_common.models.kv."""
 
 
 import pytest
 
-from cephlcm_common.models import kv
+from shrimp_common.models import kv
 
 
 def test_upsert_create(configure_model):

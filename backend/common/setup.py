@@ -14,8 +14,8 @@ REQUIREMENTS = (
 
 
 setuptools.setup(
-    name="cephlcm-common",
-    description="Ceph Lifecycle Management common package",
+    name="shrimp-common",
+    description="Shrimp common package",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -30,14 +30,14 @@ setuptools.setup(
     zip_safe=False,
     include_package_data=True,
     package_data={
-        "cephlcm_common": [
+        "shrimp_common": [
             "facts/**",
             "configs/**"
         ]
     },
     entry_points={
         "console_scripts": [
-            "cephlcm-lock = cephlcm_common.cliutils:mongolock_cli"
+            "shrimp-lock = shrimp_common.cliutils:mongolock_cli"
         ]
     },
     classifiers=(

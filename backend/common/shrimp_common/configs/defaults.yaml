@@ -1,0 +1,141 @@
+---
+# This is a default config for Shrimp tool
+#
+# Load order is:
+# - /etc/shrimp/config.toml
+# - $HOME/.config/shrimp/config.toml (or $XDG_CONFIG_HOME/shrimp/config.toml)
+# - ~/.shrimp.toml
+# - $(pwd)/shrimp.toml
+# - This file
+
+
+common:
+  # Argon2 is used for hashing passwords. You may consider it as a next
+  # generation of bcrypt which has no flaw in parallelism. It also
+  # has the same idea as scrypt: memory matters.
+  #
+  # https://www.cryptolux.org/images/0/0d/Argon2.pdf
+  # https://eprint.iacr.org/2016/104.pdf
+  #
+  # For parameter tuning, please check following:
+  # http://argon2-cffi.readthedocs.io/en/stable/parameters.html
+  #
+  # Default settings are too low (to make tests fast, mostly)
+  # I recommend following settings for production
+  #   - time_cost: 10
+  #   - memory_cost: 2048
+  #   - parallelism: 3
+  #   - hash_len: 32
+  #   - salt_len: 16
+  password:
+    length: 10
+    time_cost: 1
+    memory_cost: 512
+    parallelism: 2
+    hash_len: 16
+    salt_len: 16
+  password_reset_ttl_in_seconds: 86400  # 1 day
+  email:
+    enabled: false
+    from: "noreply@mirantis.com"
+    host: "localhost"
+    port: 25
+    login: ""
+    password: ""
+
+
+# Options here are Flask options so please check
+# http://flask.pocoo.org/docs/0.11/config/#builtin-configuration-values
+api:
+  debug: false
+  testing: false
+  logger_name: "shrimp.shrimp_api.wsgi"
+  logger_handler_policy: "never"
+  json_sort_keys: true
+  jsonify_prettyprint_regular: true
+  json_as_ascii: false
+  pagination_per_page: 25
+  server_discovery_token: "26758c32-3421-4f3d-9603-e4b5337e7ecc"
+  reset_password_url: "http://127.0.0.1/password_reset/{reset_token}/"
+  token:
+    ttl_in_seconds: 1800
+  logging:
+    propagate: true
+    level: "DEBUG"
+    handlers:
+      - "stderr_debug"
+
+
+controller:
+  pidfile: "/tmp/shrimp-controller.pid"
+  daemon: false
+  timeout: 60
+  ansible_config: "/vagrant/ansible.cfg"
+  # 0 worker_threads means that we will have 2 * CPU count threads
+  worker_threads: 0
+  graceful_stop: 10
+  logging:
+    propagate: true
+    level: "DEBUG"
+    handlers:
+      - "stderr_debug"
+
+
+cron:
+  clean_finished_tasks_after_seconds: 2592000  # 60 * 60 * 24 * 30; 30 days
+
+
+db:
+  uri: "mongodb://127.0.0.1:27017/devel"
+  connect: false
+  task_queue_length: 1000
+  connect_timeout: 5000  # ms, 5 seconds
+  socket_timeout: 5000  # ms, 5 seconds
+  pool_size: 50
+  gridfs_chunk_size_in_bytes: 261120  # 255 kilobytes
+
+
+plugins:
+  alerts:
+    enabled: []
+    email:
+      enabled: false
+      send_to:
+        - "bigboss@example.com"
+      from: "errors@example.com"
+  playbooks:
+    disabled: []
+
+
+# Default Python logging is used.
+# https://docs.python.org/2/library/logging.config.html#dictionary-schema-details
+logging:
+  version: 1
+  incremental: false
+  disable_existing_loggers: true
+  root:
+    handlers: []
+  filters: {}
+  formatters:
+    stderr_default:
+      format: "%(asctime)s [%(levelname)-8s]: %(message)s"
+      datefmt: "%Y-%m-%d %H:%M:%S"
+    stderr_debug:
+      format: "%(asctime)s [%(levelname)-8s] (%(filename)15s:%(lineno)-4d): %(message)s"
+      datefmt: "%Y-%m-%d %H:%M:%S"
+    syslog:
+      format: "%(name)s %(asctime)s [%(levelname)-8s]: %(message)s"
+      datefmt: "%Y-%m-%d %H:%M:%S"
+  handlers:
+    stderr_debug:
+      class: "logging.StreamHandler"
+      formatter: "stderr_debug"
+      level: "DEBUG"
+    stderr_default:
+      class: "logging.StreamHandler"
+      formatter: "stderr_default"
+      level: "DEBUG"
+    syslog:
+      class: "logging.handlers.SysLogHandler"
+      formatter: "syslog"
+      level: "DEBUG"

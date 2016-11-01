@@ -6,9 +6,9 @@ import copy
 
 import pytest
 
-from cephlcm_common import config
-from cephlcm_common.models import server
-from cephlcm_common.models import task
+from shrimp_common import config
+from shrimp_common.models import server
+from shrimp_common.models import task
 
 
 @pytest.fixture

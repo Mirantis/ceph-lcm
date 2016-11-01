@@ -7,29 +7,29 @@ import setuptools
 
 
 setuptools.setup(
-    name="cephlcm-plugin-playbook-helloworld",
-    description="Hello world plugin for CephLCM",
+    name="shrimp-plugin-playbook-helloworld",
+    description="Hello world plugin for Shrimp",
     version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
     packages=setuptools.find_packages(),
     entry_points={
-        "cephlcm.playbooks": [
-            "hello_world = cephlcm_helloworld.plugin:HelloWorld"
+        "shrimp.playbooks": [
+            "hello_world = shrimp_helloworld.plugin:HelloWorld"
         ]
     },
     python_requires=">= 3.4",
     include_package_data=True,
     package_data={
-        "cephlcm_hello_world": [
+        "shrimp_hello_world": [
             "config.yaml",
             "playbook.yaml",
             "roles/*"
         ]
     },
     install_requires=[
-        "cephlcm_common>=0.1,<0.2"
+        "shrimp_common>=0.1,<0.2"
     ],
     zip_safe=False
 )

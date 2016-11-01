@@ -1,9 +1,9 @@
 {
     "plugin_name": "my_plugin",
-    "package": "cephlcm_{{ cookiecutter.plugin_name }}",
+    "package": "shrimp_{{ cookiecutter.plugin_name }}",
     "entry_point": "{{ cookiecutter.plugin_name }}",
     "plugin_class_name": "{{ cookiecutter.entry_point|replace('_', ' ')|replace('-', ' ')|title|replace(' ', '') }}",
-    "description": "{{ cookiecutter.plugin_name }} plugin for CephLCM",
+    "description": "{{ cookiecutter.plugin_name }} plugin for Shrimp",
     "plugin_display_name": "{{ cookiecutter.description }}",
     "is_public": "True",
     "required_server_list": "False"

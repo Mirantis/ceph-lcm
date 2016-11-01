@@ -6,13 +6,13 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "cephlcm-common>=0.1,<0.2",
+    "shrimp-common>=0.1,<0.2",
 )
 
 
 setuptools.setup(
-    name="cephlcm-migrations",
-    description="Ceph Lifecycle Management migration scripts",
+    name="shrimp-migrations",
+    description="Shrimp migration scripts",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -27,12 +27,12 @@ setuptools.setup(
     zip_safe=False,
     include_package_data=True,
     package_data={
-        "cephlcm_migration": [
+        "shrimp_migration": [
             "scripts/*"
         ]
     },
     entry_points={
-        "console_scripts": ["cephlcm-migrations = cephlcm_migration.cli:main"]
+        "console_scripts": ["shrimp-migrations = shrimp_migration.cli:main"]
     },
     classifiers=(
         "Intended Audience :: Information Technology",

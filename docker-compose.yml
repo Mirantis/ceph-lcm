@@ -2,7 +2,7 @@
 version: "2"
 services:
   frontend:
-    image: cephlcm-frontend
+    image: shrimp-frontend
     links:
       - api
       - cron
@@ -10,15 +10,15 @@ services:
       - "9999:80"
       - "10000:443"
   api:
-    image: cephlcm-api
+    image: shrimp-api
     links:
       - database
   controller:
-    image: cephlcm-controller
+    image: shrimp-controller
     links:
       - database
   database:
-    image: cephlcm-db
+    image: shrimp-db
     volumes_from:
       - database_data
   database_data:
@@ -26,6 +26,6 @@ services:
     volumes:
       - /data/db
   cron:
-    image: cephlcm-cron
+    image: shrimp-cron
     links:
       - database

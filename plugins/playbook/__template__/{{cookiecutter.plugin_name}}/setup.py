@@ -7,7 +7,7 @@ import setuptools
 
 
 setuptools.setup(
-    name="cephlcm-plugin-playbook-{{ cookiecutter.package }}",
+    name="shrimp-plugin-playbook-{{ cookiecutter.package }}",
     description="{{ cookiecutter.description }}",
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -15,7 +15,7 @@ setuptools.setup(
     url="https://github.com/Mirantis/ceph-lcm",
     packages=setuptools.find_packages(),
     entry_points={
-        "cephlcm.playbooks": [
+        "shrimp.playbooks": [
             "{{ cookiecutter.entry_point }} = {{ cookiecutter.package }}.plugin:{{ cookiecutter.plugin_class_name }}"
         ]
     },
@@ -28,7 +28,7 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "cephlcm_common>0.1,<0.2"
+        "shrimp_common=>0.1,<0.2"
     ],
     zip_safe=False
 )

@@ -6,8 +6,8 @@ import unittest.mock as mock
 
 import pytest
 
-from cephlcm_common import config
-from cephlcm_common.models import password_reset
+from shrimp_common import config
+from shrimp_common.models import password_reset
 
 
 CONF = config.make_config()

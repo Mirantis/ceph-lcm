@@ -1,4 +1,4 @@
-# Optional requirements for CephLCM (suitable for development)
+# Optional requirements for Shrimp (suitable for development)
 
 ipdb
 ipython

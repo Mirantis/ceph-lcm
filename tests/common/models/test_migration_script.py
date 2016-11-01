@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Unittests for cephlcm_common.models."""
+"""Unittests for shrimp_common.models."""
 
 
 import pytest
 
-from cephlcm_common.models import migration_script
+from shrimp_common.models import migration_script
 
 
 @pytest.fixture

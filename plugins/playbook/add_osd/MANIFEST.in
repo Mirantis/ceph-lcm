@@ -1,0 +1,2 @@
+include shrimp_add_osd/config.yaml
+include shrimp_add_osd/playbook.yaml

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Tests for cephlcm_common.passwords."""
+"""Tests for shrimp_common.passwords."""
 
 
 import pytest
 
-from cephlcm_common import config
-from cephlcm_common import passwords
+from shrimp_common import config
+from shrimp_common import passwords
 
 
 CONF = config.make_config()

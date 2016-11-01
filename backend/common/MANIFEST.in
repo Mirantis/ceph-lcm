@@ -1,2 +1,2 @@
-graft cephlcm_common/configs
-graft cephlcm_common/facts
+graft shrimp_common/configs
+graft shrimp_common/facts
