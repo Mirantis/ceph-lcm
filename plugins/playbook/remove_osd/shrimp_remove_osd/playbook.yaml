@@ -14,6 +14,8 @@
   become: true
   tasks:
     - set_fact: mon_host="{{ groups['mons'].0 }}"
+    - set_fact: cluster_data="{{ ansible_local['ceph_%s'|format(cluster)] }}"
+    - set_fact: osd_partitions="{{ cluster_data.osd_partitions[cluster] }}"
 
     - name: Get OSD numbers from monitor
       command: ceph --cluster "{{ cluster }}" node ls osd
@@ -42,22 +44,34 @@
       with_items:
         - "{{ osd_numbers }}"
 
-    - name: Destroy OSDs
-      command: ceph-disk destroy --cluster "{{ cluster }}" --destroy-by-id "{{ item }}" --zap
-      with_items:
-        - "{{ osd_numbers }}"
-
     - name: Remove OSDs from crush map
       command: ceph --cluster "{{ cluster }}" osd crush remove "osd.{{ item }}"
       with_items:
         - "{{ osd_numbers }}"
+      delegate_to: "{{ mon_host }}"
 
     - name: Delete auth data for OSDs
       command: ceph --cluster "{{ cluster }}" auth del "osd.{{ item }}"
       with_items:
         - "{{ osd_numbers }}"
+      delegate_to: "{{ mon_host }}"
 
     - name: Remove OSDs
       command: ceph --cluster "{{ cluster }}" osd rm "osd.{{ item }}"
       with_items:
         - "{{ osd_numbers }}"
+      delegate_to: "{{ mon_host }}"
+
+    - name: Destroy OSD data partitions
+      shell: |
+        raw_device=$(echo "{{ item.value.data }}" | egrep -o '/dev/([hsv]d[a-z]{1,2}|cciss/c[0-9]d[0-9]p|nvme[0-9]n[0-9]p){1,2}')
+        partition_nb=$(echo "{{ item.value.data }}" | egrep -o '[0-9]{1,2}$')
+        sgdisk --delete $partition_nb $raw_device
+      with_dict: "{{ osd_partitions }}"
+
+    - name: Destroy OSD journal partitions
+      shell: |
+        raw_device=$(echo "{{ item.value.journal }}" | egrep -o '/dev/([hsv]d[a-z]{1,2}|cciss/c[0-9]d[0-9]p|nvme[0-9]n[0-9]p){1,2}')
+        partition_nb=$(echo "{{ item.value.journal }}" | egrep -o '[0-9]{1,2}$')
+        sgdisk --delete $partition_nb $raw_device
+      with_dict: "{{ osd_partitions }}"
