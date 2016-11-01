@@ -109,24 +109,12 @@ def get_migrations_to_apply(options):
     db_migrations = {item._id for item in db_migrations}
 
     if not options.migration:
-        if options.reapply:
-            return avaialble_migrations
-        if options.fake:
-            for migr in avaialble_migrations:
-                apply_migration(migr, ok=True)
-            return []
+        return get_migrations_to_apply_default(
+            options, avaialble_migrations, db_migrations)
 
-        return [item for item in avaialble_migrations
-                if item.name not in db_migrations]
-
-    migration_names = set(options.migration)
-    absent_migrations = migration_names - {
-        item.name for item in avaialble_migrations}
-    if absent_migrations:
-        raise ValueError("Cannot find following migrations: {0}".format(
-            sorted(absent_migrations)))
-    migrations_to_apply = [
-        item for item in avaialble_migrations if item.name in migration_names]
+    migrations_to_apply = get_migrations_list(
+        options.migration, avaialble_migrations
+    )
 
     if options.reapply:
         return migrations_to_apply
@@ -138,6 +126,32 @@ def get_migrations_to_apply(options):
 
     return [migr for migr in migrations_to_apply
             if migr.name not in db_migrations]
+
+
+def get_migrations_to_apply_default(options, available_migrations,
+                                    db_migrations):
+    if options.reapply:
+        return available_migrations
+
+    if options.fake:
+        for migr in available_migrations:
+            apply_migration(migr, ok=True)
+        return []
+
+    return [item for item in available_migrations
+            if item.name not in db_migrations]
+
+
+def get_migrations_list(cli_list, available_migrations):
+    cli_list = set(cli_list)
+
+    absent_migrations = cli_list - {
+        item.name for item in available_migrations}
+    if absent_migrations:
+        raise ValueError("Cannot find following migrations: {0}".format(
+            sorted(absent_migrations)))
+
+    return [item for item in available_migrations if item.name in cli_list]
 
 
 def apply_migration(migration, *, ok=True):

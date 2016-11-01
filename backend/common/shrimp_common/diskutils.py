@@ -11,8 +11,7 @@ def get_devices(server):
 
     devices = []
     for name, data in server.facts["ansible_devices"].items():
-        partitions = set(data["partitions"])
-        if not partitions or not (partitions & mounts):
+        if not (set(data["partitions"]) & mounts):
             devices.append(posixpath.join("/", "dev", name))
 
     return devices
