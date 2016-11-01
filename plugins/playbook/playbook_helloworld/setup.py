@@ -8,7 +8,7 @@ import setuptools
 
 setuptools.setup(
     name="shrimp-plugin-playbook-helloworld",
-    description="Hello world plugin for CephLCM",
+    description="Hello world plugin for Shrimp",
     version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",

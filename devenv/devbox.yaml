@@ -1,5 +1,5 @@
 ---
-# Provision for CephLCM project development environment
+# Provision for Shrimp project development environment
 
 
 - name: Setup development environment
@@ -11,7 +11,7 @@
     LC_CTYPE: C
     TMUX: 1
   vars:
-    venv: cephlcm
+    venv: shrimp
   roles:
     - base
     - python
