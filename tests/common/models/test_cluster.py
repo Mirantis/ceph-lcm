@@ -25,6 +25,8 @@ def test_create(pymongo_connection, configure_model, freeze_time):
     initiator_id = pytest.faux.gen_uuid()
     name = pytest.faux.gen_alphanumeric()
     clstr = cluster.ClusterModel.create(name, initiator_id)
+    str(clstr)
+    repr(clstr)
     mon_servers = [create_server(), create_server()]
     rgw_server = [create_server()]
     clstr.add_servers(mon_servers, "mons")

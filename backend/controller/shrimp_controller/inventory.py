@@ -13,12 +13,11 @@ try:
 except ImportError:
     import json
 
+from shrimp_common import cliutils
 from shrimp_common import config
 from shrimp_common import log
 from shrimp_common import playbook_plugin
 from shrimp_common import plugins
-from shrimp_common.models import db
-from shrimp_common.models import generic
 from shrimp_controller import exceptions
 
 
@@ -44,10 +43,10 @@ def exit_on_error(func):
 
 
 @exit_on_error
+@cliutils.configure
 def main():
     """Main function."""
 
-    configure()
     options = get_options()
     LOG.debug("Options are %s", options)
 
@@ -60,21 +59,10 @@ def main():
     elif options.host in inventory["_meta"]["hostvars"]:
         dumps(inventory["_meta"]["hostvars"][options.host])
     else:
-        raise exceptions.InventoryError("Cannot find required host {0}",
-                                        options.host)
+        raise exceptions.InventoryError(
+            "Cannot find required host {0}".format(options.host))
 
     return os.EX_OK
-
-
-def configure():
-    """Configures application.
-
-    Basically, it setup logging and configures models to use proper
-    MongoDB.
-    """
-
-    log.configure_logging(CONF.logging_config)
-    generic.configure_models(db.MongoDB())
 
 
 def get_entrypoint():

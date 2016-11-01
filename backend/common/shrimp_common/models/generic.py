@@ -30,6 +30,7 @@ information as well.
 import abc
 import copy
 import functools
+import time
 import uuid
 
 import bson.objectid
@@ -224,6 +225,24 @@ class Model(Base, metaclass=abc.ABCMeta):
         "shrimp_common.models.user.UserModel",
         "initiator_id"
     )
+
+    def __str__(self):
+        return (
+            "<{self.__class__.__name__}("
+            "_id='{self._id}' "
+            "model_id='{self.model_id}' "
+            "version={self.version} "
+            "initiator_id='{self.initiator_id}' "
+            "time_created='{self.time_created} ({time_created})' "
+            "time_deleted='{self.time_deleted} ({time_deleted})'"
+            ")>"
+        ).format(
+            self=self,
+            time_created=time.ctime(self.time_created),
+            time_deleted=time.ctime(self.time_deleted)
+        )
+
+    __repr__ = __str__
 
     def save(self, structure=None):
         """This method dumps model data to the database.
