@@ -3,7 +3,7 @@
 #                                                                       ^^^^^^^^^^^^^^^^^^
 #                                                                       These lines matter
 
-ansible==2.1.2.0
+ansible==2.2.0.0
 ansible-lint==3.3.3
 argon2_cffi==16.2.0
 bandit==1.1.0
