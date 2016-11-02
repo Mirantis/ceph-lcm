@@ -5,11 +5,84 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import sys
+
 import click
+import six
 
 from shrimp_cli import decorators
 from shrimp_cli import main
 from shrimp_cli import utils
+
+if six.PY3:
+    import csv
+else:
+    from backports import csv
+
+
+def compact_view(func):
+    @six.wraps(func)
+    @click.option(
+        "--compact", "-c",
+        is_flag=True,
+        help="Show server list in compact CSV view"
+    )
+    def decorator(compact, *args, **kwargs):
+        response = func(*args, **kwargs)
+        if not compact:
+            return response
+        return build_compact_server_response(response)
+
+    return decorator
+
+
+def build_compact_server_response(response):
+    writer = csv.writer(sys.stdout, "unix")
+    writer.writerow([
+        "machine_id",
+        "version",
+        "fqdn",
+        "username",
+        "default_ip",
+        "interface=mac=ipv4=ipv6",
+        "..."
+    ])
+
+    if "items" in response:
+        response = response["items"]
+    else:
+        response = [response]
+
+    for item in response:
+        row = [
+            item["id"],
+            item["version"],
+            item["data"]["facts"]["ansible_fqdn"],
+            item["data"]["username"],
+            item["data"]["ip"],
+        ]
+        row.extend(get_interface_data(item["data"]["facts"]))
+        writer.writerow(row)
+
+
+def get_interface_data(facts):
+    names = set(facts["ansible_interfaces"]) - {"lo"}
+    names = sorted(names)
+    data = []
+
+    for name in names:
+        mac = ipv4 = ipv6 = ""
+        ifdata = facts.get("ansible_{0}".format(name))
+        if ifdata:
+            mac = ifdata.get("macaddress") or ""
+            ipv4 = ifdata.get("ipv4", {}).get("address") or ""
+            ipv6 = "=".join(item["address"] for item in ifdata.get("ipv6", []))
+
+        line = "{name}={mac}={ipv4}={ipv6}".format(
+            name=name, mac=mac, ipv4=ipv4, ipv6=ipv6)
+        data.append(line)
+
+    return data
 
 
 @main.cli_group
@@ -18,6 +91,7 @@ def server():
 
 
 @decorators.command(server, True)
+@compact_view
 def get_all(client, query_params):
     """Requests the list of servers."""
 
@@ -26,6 +100,7 @@ def get_all(client, query_params):
 
 @click.argument("server-id")
 @decorators.command(server)
+@compact_view
 def get(server_id, client):
     """Request a server with certain ID."""
 
@@ -34,6 +109,7 @@ def get(server_id, client):
 
 @click.argument("server-id")
 @decorators.command(server, True)
+@compact_view
 def get_version_all(server_id, client, query_params):
     """Requests a list of versions for the servers with certain ID."""
 
@@ -43,6 +119,7 @@ def get_version_all(server_id, client, query_params):
 @click.argument("version", type=int)
 @click.argument("server-id")
 @decorators.command(server)
+@compact_view
 def get_version(server_id, version, client):
     """Requests a list of certain version of server with ID."""
 

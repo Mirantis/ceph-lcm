@@ -152,7 +152,7 @@ def with_pagination(func):
         kwargs["query_params"] = query_params
 
         response = func(*args, **kwargs)
-        if no_envelope:
+        if no_envelope and response:
             response = response["items"]
 
         return response
