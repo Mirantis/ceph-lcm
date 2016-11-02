@@ -39,6 +39,9 @@
     # At this step we have to wait till cluster will rebalance
     # TODO(Sergey Arkhipov): Probably it has to be implemented as ansible module
 
+    # For some reason, jewel ceph-disk does not stop daemon on
+    # ceph-disk deactivate. It also does not umount /var/lib/ceph/osd-*
+    # mount point, therefore we have to make sunset manually.
     - name: Stop OSDs on Ubuntu before Xenial
       command: initctl stop ceph-osd cluster={{ cluster }} id={{ item }}
       with_items:
@@ -83,6 +86,12 @@
         - "{{ osd_numbers }}"
       delegate_to: "{{ mon_host }}"
 
+    # Another caveat you may face. It looks great to use ceph-disk destroy
+    # but there is a lot of cases when it fails. For example, if dmcrypt
+    # exists, you need to have keys (but, well, you need to destroy partition,
+    # right?). Or it may hangs for unknown reason.
+    #
+    # So again, sunset manually.
     - name: Destroy OSD data partitions
       shell: |
         raw_device=$(echo "{{ item.value.data }}" | egrep -o '/dev/([hsv]d[a-z]{1,2}|cciss/c[0-9]d[0-9]p|nvme[0-9]n[0-9]p){1,2}')
