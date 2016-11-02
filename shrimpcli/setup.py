@@ -8,7 +8,8 @@ import setuptools
 REQUIREMENTS = (
     "shrimplib==0.1.0",
     "click>=6,<7",
-    "six>=1.10"
+    "six>=1.10",
+    "backports.csv"
 )
 
 
