@@ -8,6 +8,27 @@
 #   roles:
 #     - ceph-fetch-keys
 
+
+# Add custom local facts
+# Can be obtained by ansible_local.ceph_{{ cluster }} section in facts
+- hosts: osds
+  become: true
+  tasks:
+    - name: Ensure ansible local facts directory is created
+      file:
+        path: /etc/ansible/facts.d
+        state: directory
+        recurse: yes
+
+    - name: Create local facts to gather ceph clusters
+      template:
+        src: "{{ ceph_facts_template }}"
+        dest: "/etc/ansible/facts.d/ceph_{{ cluster }}.fact"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: 0770
+
+
 - hosts: mons
   become: True
   tasks:
@@ -41,23 +62,3 @@
   become: True
   roles:
   - ceph-osd
-
-
-# Add custom local facts
-# Can be obtained by ansible_local.ceph_{{ cluster }} section in facts
-- hosts: osds
-  become: true
-  tasks:
-    - name: Ensure ansible local facts directory is created
-      file:
-        path: /etc/ansible/facts.d
-        state: directory
-        recurse: yes
-
-    - name: Create local facts to gather ceph clusters
-      template:
-        src: "{{ ceph_facts_template }}"
-        dest: "/etc/ansible/facts.d/ceph_{{ cluster }}.fact"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        mode: 0770
