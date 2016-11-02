@@ -59,25 +59,34 @@
       when:
         ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
 
-    - name: Get OSD mount points
+    - name: Get OSD mount points (before Xenial)
       shell: "(grep /var/lib/ceph/osd /proc/mounts || echo -n) | awk '{ print $2 }'"
       register: mounted_osd
       changed_when: false
       when:
         ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
 
-    - name: Unmount OSD mount points
+    - name: Unmount OSD mount points (before Xenial)
       command: umount "{{ item }}"
       with_items:
         - "{{ mounted_osd.stdout_lines }}"
       when:
         ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
 
-    - name: Deactivate OSDs on host
+    - name: Deactivate OSDs on host (before Xenial)
       command: ceph-disk deactivate --cluster "{{ cluster }}" --deactivate-by-id "{{ item }}" --mark-out
       ignore_errors: yes
       with_items:
         - "{{ osd_numbers }}"
+      when:
+        ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
+
+    - name: Deactivate OSDs on host
+      command: ceph-disk deactivate --cluster "{{ cluster }}" --deactivate-by-id "{{ item }}" --mark-out
+      with_items:
+        - "{{ osd_numbers }}"
+      when:
+        not (ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14")
 
     - name: Get OSD mount points
       shell: "(grep /var/lib/ceph/osd /proc/mounts || echo -n) | awk '{ print $2 }'"
