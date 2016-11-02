@@ -39,6 +39,27 @@
     # At this step we have to wait till cluster will rebalance
     # TODO(Sergey Arkhipov): Probably it has to be implemented as ansible module
 
+    - name: Stop OSDs on Ubuntu before Xenial
+      command: initctl stop ceph-osd cluster={{ cluster }} id={{ item }}
+      with_items:
+        - "{{ osd_numbers }}"
+      when:
+        ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
+
+    - name: Get OSD mount points before Xenial
+      shell: "(grep /var/lib/ceph/osd /proc/mounts || echo -n) | awk '{ print $2 }'"
+      register: mounted_osd
+      changed_when: false
+      when:
+        ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
+
+    - name: Unmount OSD mount points before Xenial
+      command: umount "{{ item }}"
+      with_items:
+        - "{{ mounted_osd.stdout_lines }}"
+      when:
+        ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
+
     - name: Deactivate OSDs on host
       command: ceph-disk deactivate --cluster "{{ cluster }}" --deactivate-by-id "{{ item }}" --mark-out
       with_items:
