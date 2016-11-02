@@ -19,48 +19,102 @@
   hosts: osds
   become: true
   gather_facts: false
-
-  handlers:
-    - name: restart machine
-      shell: |
-        sleep 2 && shutdown -r now "Ansible updates triggered"
-      async: 1
-      poll: 0
-      ignore_errors: true
-
-    - name: wait for server to boot
-      become: false
-      local_action: wait_for port=22 host={{ inventory_hostname }} state=started delay=10 timeout=500
-
-    - name: remove data
-      file:
-        path: /var/lib/ceph
-        state: absent
-
   tasks:
+    - set_fact: mon_host="{{ groups['mons'].0 }}"
     - set_fact: cluster_data="{{ ansible_local['ceph_%s'|format(cluster)] }}"
-    - set_fact: osd_data="{{ cluster_data.osd_tree[ansible_hostname] }}"
+    - set_fact: osd_partitions="{{ cluster_data.osd_partitions[cluster] }}"
 
     - name: drop all cache
       shell: "sync && sleep 1 && echo 3 > /proc/sys/vm/drop_caches"
 
-    - name: Deactivate OSDs
-      command: ceph-disk deactivate --cluster "{{ cluster }}" --deactivate-by-id "{{ item.id }}" --mark-out
-      with_items: "{{ osd_data }}"
+    - name: Get OSD numbers from monitor
+      command: ceph --cluster "{{ cluster }}" node ls osd
+      register: node_ls_osd
+      delegate_to: "{{ mon_host }}"
 
-    - name: Destroy OSDs
-      command: ceph-disk destroy --cluster "{{ cluster }}" --destroy-by-id "{{ item.id }}" --zap
-      with_items: "{{ osd_data }}"
+    - set_fact: osd_numbers="{{ (node_ls_osd.stdout|trim|from_json)[ansible_nodename]|default([]) }}"
 
-    - name: is reboot needed
-      local_action: shell echo requesting reboot
-      become: false
-      notify:
-        - restart machine
-        - wait for server to boot
-        - remove data
+    - name: Decrease weight of removing OSDs
+      command: ceph --cluster "{{ cluster }}" osd crush reweight "osd.{{ item }}" 0.0
+      with_items:
+        - "{{ osd_numbers }}"
+      delegate_to: "{{ mon_host }}"
+
+    - name: Set OSDs out of cluster
+      command: ceph --cluster "{{ cluster }}" osd out "{{ item }}"
+      with_items:
+        - "{{ osd_numbers }}"
+      delegate_to: "{{ mon_host }}"
+
+    # At this step we have to wait till cluster will rebalance
+    # TODO(Sergey Arkhipov): Probably it has to be implemented as ansible module
+
+    # For some reason, jewel ceph-disk does not stop daemon on
+    # ceph-disk deactivate. It also does not umount /var/lib/ceph/osd-*
+    # mount point, therefore we have to make sunset manually.
+    - name: Stop OSDs on Ubuntu before Xenial
+      command: initctl stop ceph-osd cluster={{ cluster }} id={{ item }}
+      with_items:
+        - "{{ osd_numbers }}"
       when:
-        remove_osd_mountpoints.failed is defined
+        ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
+
+    - name: Get OSD mount points before Xenial
+      shell: "(grep /var/lib/ceph/osd /proc/mounts || echo -n) | awk '{ print $2 }'"
+      register: mounted_osd
+      changed_when: false
+      when:
+        ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
+
+    - name: Unmount OSD mount points before Xenial
+      command: umount "{{ item }}"
+      with_items:
+        - "{{ mounted_osd.stdout_lines }}"
+      when:
+        ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
+
+    - name: Deactivate OSDs on host
+      command: ceph-disk deactivate --cluster "{{ cluster }}" --deactivate-by-id "{{ item }}" --mark-out
+      with_items:
+        - "{{ osd_numbers }}"
+
+    - name: Remove OSDs from crush map
+      command: ceph --cluster "{{ cluster }}" osd crush remove "osd.{{ item }}"
+      with_items:
+        - "{{ osd_numbers }}"
+      delegate_to: "{{ mon_host }}"
+
+    - name: Delete auth data for OSDs
+      command: ceph --cluster "{{ cluster }}" auth del "osd.{{ item }}"
+      with_items:
+        - "{{ osd_numbers }}"
+      delegate_to: "{{ mon_host }}"
+
+    - name: Remove OSDs
+      command: ceph --cluster "{{ cluster }}" osd rm "osd.{{ item }}"
+      with_items:
+        - "{{ osd_numbers }}"
+      delegate_to: "{{ mon_host }}"
+
+    # Another caveat you may face. It looks great to use ceph-disk destroy
+    # but there is a lot of cases when it fails. For example, if dmcrypt
+    # exists, you need to have keys (but, well, you need to destroy partition,
+    # right?). Or it may hangs for unknown reason.
+    #
+    # So again, sunset manually.
+    - name: Destroy OSD data partitions
+      shell: |
+        raw_device=$(echo "{{ item.value.data }}" | egrep -o '/dev/([hsv]d[a-z]{1,2}|cciss/c[0-9]d[0-9]p|nvme[0-9]n[0-9]p){1,2}')
+        partition_nb=$(echo "{{ item.value.data }}" | egrep -o '[0-9]{1,2}$')
+        sgdisk --delete $partition_nb $raw_device
+      with_dict: "{{ osd_partitions }}"
+
+    - name: Destroy OSD journal partitions
+      shell: |
+        raw_device=$(echo "{{ item.value.journal }}" | egrep -o '/dev/([hsv]d[a-z]{1,2}|cciss/c[0-9]d[0-9]p|nvme[0-9]n[0-9]p){1,2}')
+        partition_nb=$(echo "{{ item.value.journal }}" | egrep -o '[0-9]{1,2}$')
+        sgdisk --delete $partition_nb $raw_device
+      with_dict: "{{ osd_partitions }}"
 
 
 # Please be noticed that monitors should be stopped last
@@ -111,7 +165,7 @@
       with_items:
         - "{{ ceph_packages }}"
       when:
-        ansible_pkg_mgr == 'yum'
+        ansible_pkg_mgr == "yum"
 
     - name: purge ceph packages with dnf
       dnf:
@@ -120,7 +174,7 @@
       with_items:
         - "{{ ceph_packages }}"
       when:
-        ansible_pkg_mgr == 'dnf'
+        ansible_pkg_mgr == "dnf"
 
     - name: purge ceph packages with apt
       apt:
@@ -129,7 +183,7 @@
       with_items:
         - "{{ ceph_packages }}"
       when:
-        ansible_pkg_mgr == 'apt'
+        ansible_pkg_mgr == "apt"
 
     - name: purge remaining ceph packages with yum
       yum:
@@ -138,7 +192,7 @@
       with_items:
         - "{{ ceph_remaining_packages }}"
       when:
-        ansible_pkg_mgr == 'yum'
+        ansible_pkg_mgr == "yum"
 
     - name: purge remaining ceph packages with dnf
       dnf:
@@ -147,7 +201,7 @@
       with_items:
         - "{{ ceph_remaining_packages }}"
       when:
-        ansible_pkg_mgr == 'dnf'
+        ansible_pkg_mgr == "dnf"
 
     - name: purge remaining ceph packages with apt
       apt:
@@ -156,7 +210,7 @@
       with_items:
         - "{{ ceph_remaining_packages }}"
       when:
-        ansible_pkg_mgr == 'apt'
+        ansible_pkg_mgr == "apt"
 
     - name: remove config
       file:
@@ -166,7 +220,7 @@
     - name: remove from SysV
       shell: "update-rc.d -f ceph remove"
       when:
-        ansible_distribution == 'Ubuntu'
+        ansible_distribution == "Ubuntu"
 
     - name: Remove ceph fact
       file:
