@@ -49,14 +49,14 @@
       when:
         ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
 
-    - name: Get OSD mount points before Xenial
+    - name: Get OSD mount points
       shell: "(grep /var/lib/ceph/osd /proc/mounts || echo -n) | awk '{ print $2 }'"
       register: mounted_osd
       changed_when: false
       when:
         ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
 
-    - name: Unmount OSD mount points before Xenial
+    - name: Unmount OSD mount points
       command: umount "{{ item }}"
       with_items:
         - "{{ mounted_osd.stdout_lines }}"
@@ -65,8 +65,19 @@
 
     - name: Deactivate OSDs on host
       command: ceph-disk deactivate --cluster "{{ cluster }}" --deactivate-by-id "{{ item }}" --mark-out
+      ignore_errors: yes
       with_items:
         - "{{ osd_numbers }}"
+
+    - name: Get OSD mount points
+      shell: "(grep /var/lib/ceph/osd /proc/mounts || echo -n) | awk '{ print $2 }'"
+      register: mounted_osd
+      changed_when: false
+
+    - name: Unmount OSD mount points
+      command: umount "{{ item }}"
+      with_items:
+        - "{{ mounted_osd.stdout_lines }}"
 
     - name: Remove OSDs from crush map
       command: ceph --cluster "{{ cluster }}" osd crush remove "osd.{{ item }}"
