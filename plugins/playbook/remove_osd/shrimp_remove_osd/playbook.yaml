@@ -42,6 +42,7 @@
     # For some reason, jewel ceph-disk does not stop daemon on
     # ceph-disk deactivate. It also does not umount /var/lib/ceph/osd-*
     # mount point, therefore we have to make sunset manually.
+
     - name: Stop OSDs on Ubuntu before Xenial
       command: initctl stop ceph-osd cluster={{ cluster }} id={{ item }}
       with_items:
@@ -49,34 +50,12 @@
       when:
         ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
 
-    - name: Get OSD mount points (before Xenial)
-      shell: "(grep /var/lib/ceph/osd /proc/mounts || echo -n) | awk '{ print $2 }'"
-      register: mounted_osd
-      changed_when: false
-      when:
-        ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
-
-    - name: Unmount OSD mount points (before Xenial)
-      command: umount "{{ item }}"
-      with_items:
-        - "{{ mounted_osd.stdout_lines }}"
-      when:
-        ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
-
-    - name: Deactivate OSDs on host (before Xenial)
-      command: ceph-disk deactivate --cluster "{{ cluster }}" --deactivate-by-id "{{ item }}" --mark-out
-      ignore_errors: yes
+    - name: Stop OSDs on Ubuntu after Xenial
+      command: systemctl stop "ceph-osd@{{ item }}"
       with_items:
         - "{{ osd_numbers }}"
       when:
-        ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
-
-    - name: Deactivate OSDs on host
-      command: ceph-disk deactivate --cluster "{{ cluster }}" --deactivate-by-id "{{ item }}" --mark-out
-      with_items:
-        - "{{ osd_numbers }}"
-      when:
-        not (ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14")
+        ansible_distribution == "Ubuntu" and ansible_distribution_major_version != "14"
 
     - name: Get OSD mount points
       shell: "(grep /var/lib/ceph/osd /proc/mounts || echo -n) | awk '{ print $2 }'"
@@ -87,6 +66,12 @@
       command: umount "{{ item }}"
       with_items:
         - "{{ mounted_osd.stdout_lines }}"
+
+    - name: Set OSDs down
+      command: ceph --cluster "{{ cluster }}" osd down "{{ item }}"
+      with_items:
+        - "{{ osd_numbers }}"
+      delegate_to: "{{ mon_host }}"
 
     - name: Remove OSDs from crush map
       command: ceph --cluster "{{ cluster }}" osd crush remove "osd.{{ item }}"
@@ -106,7 +91,7 @@
         - "{{ osd_numbers }}"
       delegate_to: "{{ mon_host }}"
 
-    # Another caveat you may face. It looks great to use ceph-disk destroy
+    # Another caveat you may meet. It looks great to use ceph-disk destroy
     # but there is a lot of cases when it fails. For example, if dmcrypt
     # exists, you need to have keys (but, well, you need to destroy partition,
     # right?). Or it may hangs for unknown reason.
