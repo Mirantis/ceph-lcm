@@ -333,6 +333,11 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
         }
         if self.config["install"]["source"] == "stable":
             result["ceph_stable_release"] = self.config["install"]["release"]
+        if self.config["install"].get("repo"):
+            result["ceph_stable_repo"] = self.config["install"]["repo"]
+        if self.config["install"].get("distro_source"):
+            result["ceph_stable_distro_source"] = \
+                self.config["install"]["distro_source"]
 
         # FIXME(Sergey Arkhipov): For some reason, Ceph cannot converge
         # if I set another network.
