@@ -2,6 +2,13 @@
 """Shrimp CLI tools package."""
 
 
+import warnings
+
+
+# This is done to suppress Click warnings about unicode
+warnings.simplefilter("ignore")
+
+
 from shrimp_cli import cloud_config  # NOQA
 from shrimp_cli import cluster  # NOQA
 from shrimp_cli import execution  # NOQA
