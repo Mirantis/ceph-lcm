@@ -41,6 +41,7 @@ RUN set -x \
       python3-pip \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimplib*.whl \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_common*.whl \
+    && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_docker*.whl \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_plugin_server_discovery*.whl \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_plugin_alerts*.whl \
     && rm -r /eggs \
