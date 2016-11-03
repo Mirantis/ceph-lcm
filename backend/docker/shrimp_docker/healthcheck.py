@@ -94,7 +94,7 @@ def address_available(host, port):
 @docker_healthcheck_with_db
 def checkdb():
     try:
-        migration_script.find()
+        migration_script.MigrationScript.find()
     except Exception as exc:
         LOG.warning("Cannot fetch database: %s", exc)
         raise
