@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Modal } from '../directives';
 import { AuthService } from '../services/auth';
+import { ErrorService } from '../services/error';
 import { DataService, pagedResult } from '../services/data';
 import { User, Role } from '../models';
 
@@ -24,6 +25,7 @@ export class UsersComponent {
   constructor(
     private auth: AuthService,
     private data: DataService,
+    private error: ErrorService,
     private modal: Modal
   ) {
     this.fetchData();
@@ -36,7 +38,7 @@ export class UsersComponent {
           this.users = users.items;
           this.pagedData = users;
         },
-        (error) => this.data.handleResponseError(error)
+        (error: any) => this.data.handleResponseError(error)
        );
     this.data.role().findAll({})
       .then(
@@ -51,7 +53,7 @@ export class UsersComponent {
             {} as roleIdsType
           );
         },
-        (error) => this.data.handleResponseError(error)
+        (error: any) => this.data.handleResponseError(error)
       );
   }
 
@@ -92,7 +94,7 @@ export class UsersComponent {
         }
       )
       .catch(
-        (error) => this.data.handleResponseError(error)
+        (error: any) => this.data.handleResponseError(error)
       );
 }
 
@@ -102,6 +104,14 @@ export class UsersComponent {
         this.shownUserId = null;
         this.fetchData();
       });
+  }
+
+  resetUserPassword(user: User) {
+    this.auth.resetPassword(user.data.login)
+      .then(
+        (data: any) => this.error.add(user.data.login, 'Password reset instructions have been sent'),
+        (error: any) => this.data.handleResponseError(error)
+      )
   }
 
   showUserData(user: any) {

@@ -41,8 +41,8 @@ export class Modal {
     this.errors = [];
   }
 
-  isOpened(): boolean {
-    return jQuery('modal').is(':visible');
+  isOpened(id: string = 'modal'): boolean {
+    return jQuery('#' + id).is(':visible');
   }
 };
 
