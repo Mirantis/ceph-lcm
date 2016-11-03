@@ -172,7 +172,7 @@ class HTTPAdapter(requests.adapters.HTTPAdapter):
 
     def add_headers(self, request, **kwargs):
         request.headers["User-Agent"] = self.USER_AGENT
-        super().add_headers(request, **kwargs)
+        super(HTTPAdapter, self).add_headers(request, **kwargs)
 
 
 @six.add_metaclass(abc.ABCMeta)
