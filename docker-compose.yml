@@ -9,18 +9,22 @@ services:
     ports:
       - "9999:80"
       - "10000:443"
+    restart: always
   api:
     image: shrimp-api
     links:
       - database
+    restart: "on-failure:5"
   controller:
     image: shrimp-controller
     links:
       - database
+    restart: "on-failure:5"
   database:
     image: shrimp-db
     volumes_from:
       - database_data
+    rstart: always
   database_data:
     image: tianon/true
     volumes:
@@ -29,3 +33,4 @@ services:
     image: shrimp-cron
     links:
       - database
+    restart: "on-failure:3"
