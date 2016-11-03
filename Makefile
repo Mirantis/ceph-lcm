@@ -26,7 +26,7 @@ endef
 # -----------------------------------------------------------------------------
 
 build_eggs: build_backend_eggs build_shrimplib_eggs build_shrimpcli_eggs build_plugins_eggs
-build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs build_ansible_eggs build_monitoring_eggs build_migration_eggs
+build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs build_ansible_eggs build_monitoring_eggs build_migration_eggs build_docker_eggs
 build_plugins_eggs: build_alerts_eggs build_playbook_eggs
 build_alerts_eggs: build_email_eggs
 build_playbook_eggs: build_deploy_cluster_eggs build_helloworld_eggs build_server_discovery_eggs build_add_osd_eggs build_remove_osd_eggs build_purge_cluster_eggs
@@ -48,6 +48,9 @@ build_monitoring_eggs: clean_eggs make_egg_directory
 
 build_migration_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/backend/migration","$(EGGS_DIR)")
+
+build_docker_eggs: clean_eggs make_egg_directory
+	$(call build_egg,"$(ROOT_DIR)/backend/docker","$(EGGS_DIR)")
 
 build_shrimplib_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/shrimplib","$(EGGS_DIR)")
