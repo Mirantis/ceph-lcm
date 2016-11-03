@@ -24,9 +24,9 @@ services:
     image: shrimp-db
     volumes_from:
       - database_data
-    rstart: always
+    restart: always
   database_data:
-    image: tianon/true
+    image: shrimp-db-data
     volumes:
       - /data/db
   cron:

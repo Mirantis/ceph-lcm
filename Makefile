@@ -9,6 +9,7 @@ CONTAINER_CLI_NAME        := shrimp-cli
 CONTAINER_CONTROLLER_NAME := shrimp-controller
 CONTAINER_CRON_NAME       := shrimp-cron
 CONTAINER_DB_NAME         := shrimp-db
+CONTAINER_DB_DATA_NAME    := shrimp-db-data
 CONTAINER_FRONTEND_NAME   := shrimp-frontend
 CONTAINER_PLUGINS_NAME    := shrimp-base-plugins
 
@@ -101,7 +102,7 @@ clean_ui:
 # -----------------------------------------------------------------------------
 
 
-build_containers: build_container_api build_container_controller build_container_frontend build_container_db build_container_cron
+build_containers: build_container_api build_container_controller build_container_frontend build_container_db build_container_db_data build_container_cron
 build_containers_dev: copy_example_keys build_containers
 
 build_container_api: build_container_plugins
@@ -122,6 +123,9 @@ build_container_cli: build_eggs
 build_container_db:
 	docker build -f "$(ROOT_DIR)/containerization/db.dockerfile" --tag $(CONTAINER_DB_NAME) --pull --rm "$(ROOT_DIR)"
 
+build_container_db_data:
+	docker build -f "$(ROOT_DIR)/containerization/db-data.dockerfile" --tag $(CONTAINER_DB_DATA_NAME) --pull --rm "$(ROOT_DIR)"
+
 build_container_base: build_eggs
 	docker build -f "$(ROOT_DIR)/containerization/backend-base.dockerfile" --tag $(CONTAINER_BASE_NAME) --pull --rm "$(ROOT_DIR)"
 
@@ -131,7 +135,7 @@ build_container_plugins: build_container_base
 # -----------------------------------------------------------------------------
 
 
-dump_images: dump_image_api dump_image_controller dump_image_frontend dump_image_db dump_image_cron
+dump_images: dump_image_api dump_image_controller dump_image_frontend dump_image_db dump_image_db_data dump_image_cron
 
 dump_image_api: make_image_directory
 	$(call dump_image,$(CONTAINER_API_NAME),$(IMAGES_DIR))
@@ -144,6 +148,9 @@ dump_image_frontend: make_image_directory
 
 dump_image_db: make_image_directory
 	$(call dump_image,$(CONTAINER_DB_NAME),$(IMAGES_DIR))
+
+dump_image_db_data: make_image_directory
+	$(call dump_image,$(CONTAINER_DB_DATA_NAME),$(IMAGES_DIR))
 
 dump_image_cron: make_image_directory
 	$(call dump_image,$(CONTAINER_CRON_NAME),$(IMAGES_DIR))
