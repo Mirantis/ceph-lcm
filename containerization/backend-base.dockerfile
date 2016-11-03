@@ -8,8 +8,6 @@ MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
 
-COPY containerization/files/sources.list /etc/apt/sources.list
-
 
 RUN set -x \
   && apt-get update \
