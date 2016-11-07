@@ -10,6 +10,8 @@ Shrimp can be built on any commodity node that has Linux or OS X. Requirements a
 
 
 
+.. _docker-engine-installation:
+
 Docker-engine installation
 --------------------------
 

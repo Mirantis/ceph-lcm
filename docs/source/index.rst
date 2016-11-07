@@ -31,6 +31,7 @@ Contents
    :maxdepth: 1
 
    installation/index.rst
+   deploy/index.rst
 
 
 
