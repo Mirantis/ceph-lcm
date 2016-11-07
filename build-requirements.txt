@@ -1,5 +1,8 @@
 # Common build requirements
 
 pip
+pygments-style-github
 setuptools
+Sphinx
+sphinx-rtd-theme
 wheel

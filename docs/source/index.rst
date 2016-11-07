@@ -1,0 +1,46 @@
+.. Shrimp documentation master file, created by
+   sphinx-quickstart on Mon Nov  7 14:27:18 2016.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to Shrimp's documentation!
+==================================
+
+Shrimp is intendend to simplify deployment and lifecycle management of
+`Ceph <http://ceph.com>`_.
+
+Using this tool, it is possible to deploy clusters with best known
+practices, add new nodes to cluster, remove them and purge cluster
+if not needed anymore. It provides simple API to manage cluster
+configurations. Also, it is possible to use it web UI to manage your
+clusters in several clicks.
+
+Shrimp uses `Ansible <http://ansible.com>`_ with `ceph-ansible
+<https://github.com/ceph/ceph-ansible>`_ community project to deliver
+the best user experience. Every action is supported by plugins, which
+encapsulate best practices and settings. If user do not like proviided
+settings, it is always possible to customize configuration before
+execution.
+
+
+
+Contents
+--------
+
+.. toctree::
+   :maxdepth: 1
+
+   installation/index.rst
+   deploy/index.rst
+   cli
+   ceph_node
+
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
