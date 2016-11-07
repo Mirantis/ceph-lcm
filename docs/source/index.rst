@@ -6,7 +6,6 @@
 Welcome to Shrimp's documentation!
 ==================================
 
-
 Shrimp is intendend to simplify deployment and lifecycle management of
 `Ceph <http://ceph.com>`_.
 
@@ -24,13 +23,14 @@ settings, it is always possible to customize configuration before
 execution.
 
 
+
 Contents
 --------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   installation
+   installation/index.rst
 
 
 
