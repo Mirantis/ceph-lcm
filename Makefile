@@ -2,6 +2,7 @@ ROOT_DIR   := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 OUTPUT_DIR := $(ROOT_DIR)/output
 EGGS_DIR   := $(OUTPUT_DIR)/eggs
 IMAGES_DIR := $(OUTPUT_DIR)/images
+DOCS_DIR   := $(OUTPUT_DIR)/docs
 
 CONTAINER_API_NAME        := shrimp-api
 CONTAINER_BASE_NAME       := shrimp-base
@@ -88,8 +89,12 @@ make_egg_directory: make_output_directory
 make_image_directory: make_output_directory
 	mkdir -p "$(IMAGES_DIR)" || true
 
+make_docs_directory: make_output_directory
+	mkdir -p "$(DOCS_DIR)" || true
+
 make_output_directory:
 	mkdir -p "$(OUTPUT_DIR)" || true
+
 
 # -----------------------------------------------------------------------------
 
@@ -157,6 +162,11 @@ dump_image_db_data: make_image_directory
 
 dump_image_cron: make_image_directory
 	$(call dump_image,$(CONTAINER_CRON_NAME),$(IMAGES_DIR))
+
+# -----------------------------------------------------------------------------
+
+html_docs: make_docs_directory
+	cd "$(ROOT_DIR)/docs" && make html && mv build/html "$(DOCS_DIR)"
 
 # -----------------------------------------------------------------------------
 
