@@ -60,6 +60,7 @@ def json_response(func):
 
         if isinstance(response, dict):
             return response
+
         if response.ok:
             content_type = response.headers.get("Content-Type")
             content_type = content_type or "application/json"
