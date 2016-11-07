@@ -32,6 +32,8 @@ Contents
 
    installation/index.rst
    deploy/index.rst
+   cli
+   ceph_node
 
 
 
