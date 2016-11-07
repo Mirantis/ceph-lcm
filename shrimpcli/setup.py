@@ -33,6 +33,9 @@ setuptools.setup(
             "shrimp = shrimp_cli.main:cli"
         ]
     },
+    extras_require={
+        "simplejson": ["simplejson"]
+    },
     classifiers=(
         "Intended Audience :: Information Technology",
         "Intended Audience :: System Administrators",

@@ -26,6 +26,9 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     python_requires=">=2.7",
     install_requires=REQUIREMENTS,
+    extras_require={
+        "simplejson": ["simplejson"]
+    },
     zip_safe=True,
     classifiers=(
         "Intended Audience :: Information Technology",
