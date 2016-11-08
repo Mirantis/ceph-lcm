@@ -24,6 +24,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 
 
 CLUSTER_NAME = "{{ cluster }}"
@@ -38,8 +39,11 @@ CEPH_DISK_LIST_LINE = re.compile(
     re.UNICODE
 )
 
-LOG = logging.getLogger(__name__)
-"""Logger."""
+PROCESS_WAIT_TIMEOUT = 10
+"""Timeout of waiting for process output."""
+
+PROCESS_GENTLE_KILL_TIMEOUT = 3
+"""Timeout of waiting for process to be killed."""
 
 
 if sys.version_info >= (3,):
@@ -52,7 +56,7 @@ def handle_exceptions(func):
         try:
             func(*args, **kwargs)
         except Exception as exc:
-            LOG.exception("Cannot collect facts: %s", exc)
+            logging.exception("Cannot collect facts: %s", exc)
             print_json(
                 {"osd_tree": {}, "osd_partitions": {}, "error": unicode(exc)}
             )
@@ -64,6 +68,8 @@ def handle_exceptions(func):
 
 @handle_exceptions
 def main():
+    logging.basicConfig(level=logging.DEBUG)
+
     response = {
         "osd_tree": get_osd_tree(),
         "osd_partitions": get_osd_partitions(),
@@ -120,7 +126,7 @@ def get_plain_output(command, wait_stderr=False):
         process = subprocess.Popen(
             command,
             stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=devnull)
-        stdout, stderr = process.communicate()
+        stdout, stderr = wait_for_process(command, process)
 
     logging.debug("Stdout of %s: %s", command, stdout)
     logging.warning("Stderr of %s: %s", command, stderr)
@@ -130,6 +136,44 @@ def get_plain_output(command, wait_stderr=False):
                       command, process.returncode)
 
     return stderr if wait_stderr else stdout
+
+
+def wait_for_process(command, process):
+    logging.debug("Run %s. Pid %s", command, process.pid)
+
+    try:
+        return wait_for_tmo(process, PROCESS_WAIT_TIMEOUT)
+    except ValueError:
+        logging.warning("Timeout for %s (pid %s) is expired. Send SIGTERM.",
+                        command, process.pid)
+
+    process.terminate()
+    try:
+        wait_for_tmo(process, PROCESS_GENTLE_KILL_TIMEOUT)
+    except ValueError:
+        logging.error(
+            "Process %s (pid %s) is still running after SIGTERM. "
+            "Send SIGKILL.",
+            command, process.pid)
+        process.kill()
+
+    raise ValueError("Command {0} hangs.".format(command))
+
+
+def wait_for_tmo(process, timeout):
+    current_time = time.time()
+    finish_time = current_time + timeout
+
+    while current_time <= finish_time:
+        if process.poll() is not None:
+            return process.communicate()
+        time.sleep(0.5)
+        current_time = time.time()
+
+    if process.poll() is not None:
+        return process.communicate()
+
+    raise ValueError("Still running.")
 
 
 def print_json(data):
