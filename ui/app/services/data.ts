@@ -10,7 +10,6 @@ import { ErrorService } from './error';
 import { Token, User, PermissionGroup, Role, Cluster,
   Playbook, PlaybookConfiguration, Server, Execution, ExecutionStep } from '../models';
 import { Modal } from '../directives';
-import * as saveAs from 'file-saver';
 
 type supportedMappers = 'auth' | 'user' | 'role' | 'permission' | 'cluster' |
   'playbook' | 'playbook_configuration' | 'server' | 'execution' | 'execution_step';
@@ -234,7 +233,11 @@ export class DataService {
       },
       success: function(result) {
         let data = new Blob([result], {type: 'application/octet-stream'});
-        saveAs(data, 'execution.log');
+        // Making file saving dialog appear with the filename preset
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(data);
+        link.download = 'execution.log';
+        link.click();
       }
     });
   }
