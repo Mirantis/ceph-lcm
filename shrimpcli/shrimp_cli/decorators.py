@@ -178,7 +178,11 @@ def model_edit(item_id, fetch_method_name, parse_json=True):
         @click.option(
             "--model-editor",
             is_flag=True,
-            help="Fetch model and launch editor to fix stuff."
+            help=(
+                "Fetch model and launch editor to fix stuff. Please pay "
+                "attention that only 'data' field will be available for "
+                "editing."
+            )
         )
         @click.option(
             "--model",
@@ -201,12 +205,24 @@ def model_edit(item_id, fetch_method_name, parse_json=True):
                 if model_stdin:
                     stream = click.get_text_stream("stdin")
                     model = "".join(stream)
+
                 elif model_editor:
-                    fetch_function = getattr(ctx.obj["client"],
-                                             fetch_method_name)
+                    fetch_function = getattr(
+                        ctx.obj["client"], fetch_method_name)
                     model = fetch_function(kwargs[item_id])
-                    model = utils.json_dumps(model)
-                    model = click.edit(model)
+                    if "data" in model:
+                        updated_data = utils.json_dumps(model["data"])
+                        updated_data = click.edit(updated_data)
+                        if not updated_data:
+                            return
+                        updated_data = utils.json_loads(updated_data)
+                        model = fetch_function(kwargs[item_id])
+                        model["data"] = updated_data
+                        model = utils.json_dumps(model)
+                    else:
+                        model = utils.json_dumps(model)
+                        model = click.edit(model)
+
                 if (model_stdin or model_editor) and not model:
                     return
 
