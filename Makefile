@@ -35,11 +35,11 @@ define build_deb_universal
 endef
 
 define build_deb_py2
-    $(call build_deb,--with-python2=True --with-python3=False --xs-python-version='>=2.7',$(1),$(2))
+    $(call build_deb,--with-python2=True --with-python3=False,$(1),$(2))
 endef
 
 define build_deb_py3
-    $(call build_deb,--with-python2=False --with-python3=True --x-python3-version='>=3.4',$(1),$(2))
+    $(call build_deb,--with-python2=False --with-python3=True,$(1),$(2))
 endef
 
 define dump_image
@@ -65,11 +65,18 @@ make_output_directory:
 
 # -----------------------------------------------------------------------------
 
-build_deb_shrimplib: make_deb_directory
+build_deb_shrimplib: clean_debs make_deb_directory
 	$(call build_deb_universal,"$(ROOT_DIR)/shrimplib","$(DEB_DIR)")
 
-build_deb_shrimpcli: make_deb_directory
+build_deb_shrimpcli: clean_debs make_deb_directory
 	$(call build_deb_universal,"$(ROOT_DIR)/shrimpcli","$(DEB_DIR)")
+
+build_deb_ansible: clean_debs make_deb_directory
+	$(call build_deb_py2,"$(ROOT_DIR)/backend/ansible","$(DEB_DIR)")
+
+
+clean_debs:
+	rm -rf "$(DEB_DIR)"
 
 # -----------------------------------------------------------------------------
 
