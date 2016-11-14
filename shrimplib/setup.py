@@ -18,7 +18,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "requests[socks]>=2.11,<2.12",
+    "requests[security,socks]>=2.11,<2.12",
     "six>=1.10",
     "PyYAML>3.10,<4"
 )
