@@ -22,7 +22,7 @@ export class LoginComponent {
       return {};
     }
     return {
-      'text-danger': this.loginError.error,
+      'text-danger': !!this.loginError.error,
       'text-success': !this.loginError.error
     };
   }
