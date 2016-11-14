@@ -55,8 +55,13 @@ def no_sleep(monkeypatch):
 
 
 @pytest.fixture
-def freeze_time(request):
-    return have_mocked(request, "time.time", return_value=100.5)
+def freeze_time(monkeypatch):
+    mocked = mock.MagicMock(return_value=100.5)
+
+    monkeypatch.setattr("time.time", mocked)
+    monkeypatch.setattr("time.monotonic", mocked)
+
+    return mocked
 
 
 @pytest.fixture(scope="session", autouse=True)
