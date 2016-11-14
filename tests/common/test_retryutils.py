@@ -45,27 +45,6 @@ def func_pass_fail():
     return func
 
 
-@pytest.mark.parametrize("attempts, attempt", (
-    (0, 0),
-    (1, 0),
-    (1, 3),
-))
-def test_exp_sleep_time_fails(attempts, attempt):
-    with pytest.raises(ValueError):
-        retryutils.exp_sleep_time(1, 10, attempts, attempt)
-
-
-def test_exp_sleep_time():
-    assert retryutils.exp_sleep_time(1, 10, 100, 1) == 1
-    assert retryutils.exp_sleep_time(1, 10, 100, 100) == 10
-
-    values = [
-        retryutils.exp_sleep_time(1, 10, 10, num) for num in range(1, 11)]
-    for idx, less in enumerate(values, start=1):
-        for more in values[idx:]:
-            assert less <= more
-
-
 def test_simple_retry_ok(func_always_passed, func_pass_fail):
     for func in func_always_passed, func_pass_fail:
         retryutils.simple_retry()(func)()
