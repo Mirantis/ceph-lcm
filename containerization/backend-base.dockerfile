@@ -14,6 +14,7 @@ RUN set -x \
   && apt-get install -y --no-install-recommends \
     libffi6 \
     libpython3.5 \
+    libssl1.0.0 \
     libyaml-0-2 \
     python3.5 \
     python3-setuptools \
@@ -36,6 +37,7 @@ RUN set -x \
     && apt-get install -y --no-install-recommends \
       gcc \
       libffi-dev \
+      libssl-dev \
       libyaml-dev \
       python3-dev \
       python3-pip \
@@ -46,6 +48,6 @@ RUN set -x \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_plugin_alerts*.whl \
     && rm -r /eggs \
     && apt-get clean \
-    && apt-get purge -y libffi-dev libyaml-dev gcc python3-dev python3-pip \
+    && apt-get purge -y libffi-dev libssl-dev libyaml-dev gcc python3-dev python3-pip \
     && apt-get autoremove -y \
     && rm -r /var/lib/apt/lists/*
