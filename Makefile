@@ -77,6 +77,9 @@ build_deb_ansible: clean_debs make_deb_directory
 build_deb_common: clean_debs make_deb_directory
 	$(call build_deb_py3,"$(ROOT_DIR)/backend/common","$(DEB_DIR)")
 
+build_deb_controller: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/backend/controller","$(DEB_DIR)")
+
 
 clean_debs:
 	rm -rf "$(DEB_DIR)"
