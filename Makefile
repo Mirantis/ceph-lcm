@@ -89,6 +89,9 @@ build_deb_migration: clean_debs make_deb_directory
 build_deb_monitoring: clean_debs make_deb_directory
 	$(call build_deb_py2,"$(ROOT_DIR)/backend/monitoring","$(DEB_DIR)")
 
+build_deb_emails: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/alerts/emails","$(DEB_DIR)")
+
 
 clean_debs:
 	rm -rf "$(DEB_DIR)"
