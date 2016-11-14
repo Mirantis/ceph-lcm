@@ -92,6 +92,23 @@ build_deb_monitoring: clean_debs make_deb_directory
 build_deb_emails: clean_debs make_deb_directory
 	$(call build_deb_py3,"$(ROOT_DIR)/plugins/alerts/emails","$(DEB_DIR)")
 
+build_deb_add_osd: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/add_osd","$(DEB_DIR)")
+
+build_deb_deploy_cluster: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/deploy_cluster","$(DEB_DIR)")
+
+build_deb_helloworld: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/playbook_helloworld","$(DEB_DIR)")
+
+build_deb_purge_cluster: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/purge_cluster","$(DEB_DIR)")
+
+build_deb_remove_osd: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/remove_osd","$(DEB_DIR)")
+
+build_deb_server_discovery: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/server_discovery","$(DEB_DIR)")
 
 clean_debs:
 	rm -rf "$(DEB_DIR)"
