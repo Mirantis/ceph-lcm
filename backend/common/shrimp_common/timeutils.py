@@ -21,3 +21,12 @@ def current_unix_timestamp():
     """Returns a current UNIX timestamp (in seconds, ms are truncated)."""
 
     return int(time.time())
+
+
+def timer():
+    """Returns a timer with second precision. This is not UNIX time,
+    this is monotonic timer which is indifferent to changes of system
+    clock.
+    """
+
+    return int(time.monotonic())

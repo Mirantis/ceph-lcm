@@ -78,10 +78,10 @@ class BaseMongoLock(generic.Base):
                 except exceptions.MongoLockCannotAcquire:
                     time.sleep(0.5)
 
-        current_time = timeutils.current_unix_timestamp()
+        current_time = timeutils.timer()
         stop_at = current_time + timeout
         while current_time <= stop_at:
-            current_time = timeutils.current_unix_timestamp()
+            current_time = timeutils.timer()
             try:
                 return self.try_to_acquire()
             except exceptions.MongoLockCannotAcquire:
