@@ -13,8 +13,8 @@ RUN set -x \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
     gcc \
+    libffi-dev \
     libpython2.7 \
-    libssl1.0.0 \
     libssl-dev \
     openssh-client \
     python2.7 \
@@ -30,7 +30,7 @@ RUN set -x \
   && chmod 700 /root/.ssh/ \
   && chmod 600 /root/.ssh/id_rsa \
   && apt-get clean \
-  && apt-get purge -y libssl-dev python-pip python-dev gcc python3-dev python3-pip \
+  && apt-get purge -y libssl-dev libffi-dev python-pip python-dev gcc python3-dev python3-pip \
   && apt-get autoremove -y \
   && rm -r /var/lib/apt/lists/*
 
