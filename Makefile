@@ -3,6 +3,7 @@ OUTPUT_DIR := $(ROOT_DIR)/output
 EGGS_DIR   := $(OUTPUT_DIR)/eggs
 IMAGES_DIR := $(OUTPUT_DIR)/images
 DOCS_DIR   := $(OUTPUT_DIR)/docs
+DEB_DIR    := $(OUTPUT_DIR)/debs
 
 CONTAINER_API_NAME        := shrimp-api
 CONTAINER_BASE_NAME       := shrimp-base
@@ -20,11 +21,58 @@ define build_egg
     cd $(1) && rm -rf dist && python setup.py bdist_wheel && cp dist/* $(2) && rm -rf dist build
 endef
 
+define build_deb
+    cd $(2) && python setup.py \
+        --command-packages=stdeb.command sdist_dsc $(1) && \
+    cd deb_dist && \
+    cd `find . -maxdepth 1 -type d | grep -Ev \\\\.$$` && \
+    DEB_BUILD_OPTIONS=nocheck debuild -us -uc -b && \
+    mv ../*.deb $(3)
+endef
+
+define build_deb_universal
+    $(call build_deb,--with-python2=True --with-python3=True,$(1),$(2))
+endef
+
+define build_deb_py2
+    $(call build_deb,--with-python2=True --with-python3=False --xs-python-version='>=2.7',$(1),$(2))
+endef
+
+define build_deb_py3
+    $(call build_deb,--with-python2=False --with-python3=True --x-python3-version='>=3.4',$(1),$(2))
+endef
+
 define dump_image
     docker save "$(1)" | bzip2 -c -9 > "$(2)/$(1).tar.bz2"
 endef
 
 # -----------------------------------------------------------------------------
+
+make_egg_directory: make_output_directory
+	mkdir -p "$(EGGS_DIR)" || true
+
+make_image_directory: make_output_directory
+	mkdir -p "$(IMAGES_DIR)" || true
+
+make_docs_directory: make_output_directory
+	mkdir -p "$(DOCS_DIR)" || true
+
+make_deb_directory: make_output_directory
+	mkdir -p "$(DEB_DIR)" || true
+
+make_output_directory:
+	mkdir -p "$(OUTPUT_DIR)" || true
+
+# -----------------------------------------------------------------------------
+
+build_deb_shrimplib: make_deb_directory
+	$(call build_deb_universal,"$(ROOT_DIR)/shrimplib","$(DEB_DIR)")
+
+build_deb_shrimpcli: make_deb_directory
+	$(call build_deb_universal,"$(ROOT_DIR)/shrimpcli","$(DEB_DIR)")
+
+# -----------------------------------------------------------------------------
+
 
 build_eggs: build_backend_eggs build_shrimplib_eggs build_shrimpcli_eggs build_plugins_eggs
 build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs build_ansible_eggs build_monitoring_eggs build_migration_eggs build_docker_eggs
@@ -82,19 +130,6 @@ build_purge_cluster_eggs: clean_eggs make_egg_directory
 
 clean_eggs:
 	rm -rf "$(OUTPUT_DIR)"
-
-make_egg_directory: make_output_directory
-	mkdir -p "$(EGGS_DIR)" || true
-
-make_image_directory: make_output_directory
-	mkdir -p "$(IMAGES_DIR)" || true
-
-make_docs_directory: make_output_directory
-	mkdir -p "$(DOCS_DIR)" || true
-
-make_output_directory:
-	mkdir -p "$(OUTPUT_DIR)" || true
-
 
 # -----------------------------------------------------------------------------
 
