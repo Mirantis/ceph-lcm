@@ -65,6 +65,12 @@ make_output_directory:
 
 # -----------------------------------------------------------------------------
 
+build_debs: build_deb_shrimplib build_deb_shrimpcli build_deb_ansible \
+    build_deb_common build_deb_controller build_deb_api build_deb_migration \
+    build_deb_monitoring build_deb_emails build_deb_add_osd \
+    build_deb_deploy_cluster build_deb_helloworld build_deb_purge_cluster \
+    build_deb_remove_osd build_deb_server_discovery
+
 build_deb_shrimplib: clean_debs make_deb_directory
 	$(call build_deb_universal,"$(ROOT_DIR)/shrimplib","$(DEB_DIR)")
 
