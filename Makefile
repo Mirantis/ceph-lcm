@@ -30,6 +30,13 @@ define build_deb
     mv ../*.deb $(3)
 endef
 
+define build_external_deb
+    cd `mktemp -d` \
+		&& DEB_BUILD_OPTIONS=nocheck py2dsc-deb $(2) `pypi-download $(1) | cut -f 2 -d ' '` \
+		&& mv deb_dist/*.deb $(3) \
+		&& to_remove=`pwd` sh -c 'cd / && rm -rf $$to_remove'
+endef
+
 define build_deb_universal
     $(call build_deb,--with-python2=True --with-python3=True,$(1),$(2))
 endef
@@ -40,6 +47,18 @@ endef
 
 define build_deb_py3
     $(call build_deb,--with-python2=False --with-python3=True,$(1),$(2))
+endef
+
+define build_external_deb_universal
+    $(call build_external_deb,$(1),--with-python2=True --with-python3=True,$(2))
+endef
+
+define build_external_deb_py2
+    $(call build_external_deb,$(1),--with-python2=True --with-python3=False,$(2))
+endef
+
+define build_external_deb_py3
+    $(call build_external_deb,$(1),--with-python2=False --with-python3=True,$(2))
 endef
 
 define dump_image
@@ -69,7 +88,9 @@ build_debs: build_deb_shrimplib build_deb_shrimpcli build_deb_ansible \
     build_deb_common build_deb_controller build_deb_api build_deb_migration \
     build_deb_monitoring build_deb_emails build_deb_add_osd \
     build_deb_deploy_cluster build_deb_helloworld build_deb_purge_cluster \
-    build_deb_remove_osd build_deb_server_discovery
+    build_deb_remove_osd build_deb_server_discovery build_debs_external
+
+build_debs_external: build_deb_external_argon2 build_deb_external_csv
 
 build_deb_shrimplib: clean_debs make_deb_directory
 	$(call build_deb_universal,"$(ROOT_DIR)/shrimplib","$(DEB_DIR)")
@@ -115,6 +136,12 @@ build_deb_remove_osd: clean_debs make_deb_directory
 
 build_deb_server_discovery: clean_debs make_deb_directory
 	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/server_discovery","$(DEB_DIR)")
+
+build_deb_external_argon2: clean_debs make_deb_directory
+	$(call build_external_deb_py3,argon2_cffi,"$(DEB_DIR)")
+
+build_deb_external_csv: clean_debs make_deb_directory
+	$(call build_external_deb_py2,backports.csv,"$(DEB_DIR)")
 
 clean_debs:
 	rm -rf "$(DEB_DIR)"
