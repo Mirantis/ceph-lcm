@@ -33,9 +33,9 @@
            chdir=/vagrant
   with_items:
     - backend/common
+    - backend/migration
     - backend/api
     - backend/controller
-    - backend/migration
     - plugins/alerts/emails
     - plugins/playbook/server_discovery
     - plugins/playbook/playbook_helloworld

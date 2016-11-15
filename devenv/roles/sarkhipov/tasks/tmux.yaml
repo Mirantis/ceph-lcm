@@ -9,7 +9,7 @@
     - skip_ansible_lint
 
 - name: Download tmux with truecolor support
-  get_url: url=http://ftp.ru.debian.org/debian/pool/main/t/tmux/tmux_2.2-3_amd64.deb
+  get_url: url=http://ftp.ru.debian.org/debian/pool/main/t/tmux/tmux_2.3-4_amd64.deb
            dest=/tmp/tmux.deb
   when: tmux_version.stdout.find("2.2") == -1
 

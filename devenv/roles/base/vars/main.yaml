@@ -7,6 +7,7 @@ apt_packages:
   - aria2
   - build-essential
   - curl
+  - devscripts
   - emacs24-nox
   - exuberant-ctags
   - flake8
@@ -25,10 +26,10 @@ apt_packages:
   - libxslt-dev
   - libyaml-dev
   - ncurses-term
-  - nodejs
-  - nodejs-legacy
-  - npm
   - pkg-config
+  - python3-all
+  - python3-all-dev
+  - python3-cffi
   - python3-flake8
   - python3-hacking
   - python3-ipdb
@@ -36,8 +37,12 @@ apt_packages:
   - python3-pep8
   - python3-pep8-naming
   - python3-pip
+  - python3-stdeb
   - python3-virtualenv
+  - python-all
+  - python-all-dev
   - python-autopep8
+  - python-cffi
   - python-dev
   - python-flake8
   - python-hacking
@@ -46,6 +51,7 @@ apt_packages:
   - python-pep8
   - python-pep8-naming
   - python-pip
+  - python-stdeb
   - python-virtualenv
   - ruby
   - shellcheck

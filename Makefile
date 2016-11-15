@@ -3,6 +3,7 @@ OUTPUT_DIR := $(ROOT_DIR)/output
 EGGS_DIR   := $(OUTPUT_DIR)/eggs
 IMAGES_DIR := $(OUTPUT_DIR)/images
 DOCS_DIR   := $(OUTPUT_DIR)/docs
+DEB_DIR    := $(OUTPUT_DIR)/debs
 
 CONTAINER_API_NAME        := shrimp-api
 CONTAINER_BASE_NAME       := shrimp-base
@@ -20,11 +21,133 @@ define build_egg
     cd $(1) && rm -rf dist && python setup.py bdist_wheel && cp dist/* $(2) && rm -rf dist build
 endef
 
+define build_deb
+    cd $(2) && python setup.py \
+        --command-packages=stdeb.command sdist_dsc $(1) && \
+    cd deb_dist && \
+    cd `find . -maxdepth 1 -type d | grep -Ev \\\\.$$` && \
+    DEB_BUILD_OPTIONS=nocheck debuild -us -uc -b && \
+    mv ../*.deb $(3)
+endef
+
+define build_external_deb
+    cd `mktemp -d` \
+		&& DEB_BUILD_OPTIONS=nocheck py2dsc-deb $(2) `pypi-download $(1) | cut -f 2 -d ' '` \
+		&& mv deb_dist/*.deb $(3) \
+		&& to_remove=`pwd` sh -c 'cd / && rm -rf $$to_remove'
+endef
+
+define build_deb_universal
+    $(call build_deb,--with-python2=True --with-python3=True,$(1),$(2))
+endef
+
+define build_deb_py2
+    $(call build_deb,--with-python2=True --with-python3=False,$(1),$(2))
+endef
+
+define build_deb_py3
+    $(call build_deb,--with-python2=False --with-python3=True,$(1),$(2))
+endef
+
+define build_external_deb_universal
+    $(call build_external_deb,$(1),--with-python2=True --with-python3=True,$(2))
+endef
+
+define build_external_deb_py2
+    $(call build_external_deb,$(1),--with-python2=True --with-python3=False,$(2))
+endef
+
+define build_external_deb_py3
+    $(call build_external_deb,$(1),--with-python2=False --with-python3=True,$(2))
+endef
+
 define dump_image
     docker save "$(1)" | bzip2 -c -9 > "$(2)/$(1).tar.bz2"
 endef
 
 # -----------------------------------------------------------------------------
+
+make_egg_directory: make_output_directory
+	mkdir -p "$(EGGS_DIR)" || true
+
+make_image_directory: make_output_directory
+	mkdir -p "$(IMAGES_DIR)" || true
+
+make_docs_directory: make_output_directory
+	mkdir -p "$(DOCS_DIR)" || true
+
+make_deb_directory: make_output_directory
+	mkdir -p "$(DEB_DIR)" || true
+
+make_output_directory:
+	mkdir -p "$(OUTPUT_DIR)" || true
+
+# -----------------------------------------------------------------------------
+
+build_debs: build_deb_shrimplib build_deb_shrimpcli build_deb_ansible \
+    build_deb_common build_deb_controller build_deb_api build_deb_migration \
+    build_deb_monitoring build_deb_emails build_deb_add_osd \
+    build_deb_deploy_cluster build_deb_helloworld build_deb_purge_cluster \
+    build_deb_remove_osd build_deb_server_discovery build_debs_external
+
+build_debs_external: build_deb_external_argon2 build_deb_external_csv
+
+build_deb_shrimplib: clean_debs make_deb_directory
+	$(call build_deb_universal,"$(ROOT_DIR)/shrimplib","$(DEB_DIR)")
+
+build_deb_shrimpcli: clean_debs make_deb_directory
+	$(call build_deb_universal,"$(ROOT_DIR)/shrimpcli","$(DEB_DIR)")
+
+build_deb_ansible: clean_debs make_deb_directory
+	$(call build_deb_py2,"$(ROOT_DIR)/backend/ansible","$(DEB_DIR)")
+
+build_deb_common: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/backend/common","$(DEB_DIR)")
+
+build_deb_controller: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/backend/controller","$(DEB_DIR)")
+
+build_deb_api: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/backend/api","$(DEB_DIR)")
+
+build_deb_migration: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/backend/migration","$(DEB_DIR)")
+
+build_deb_monitoring: clean_debs make_deb_directory
+	$(call build_deb_py2,"$(ROOT_DIR)/backend/monitoring","$(DEB_DIR)")
+
+build_deb_emails: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/alerts/emails","$(DEB_DIR)")
+
+build_deb_add_osd: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/add_osd","$(DEB_DIR)")
+
+build_deb_deploy_cluster: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/deploy_cluster","$(DEB_DIR)")
+
+build_deb_helloworld: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/playbook_helloworld","$(DEB_DIR)")
+
+build_deb_purge_cluster: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/purge_cluster","$(DEB_DIR)")
+
+build_deb_remove_osd: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/remove_osd","$(DEB_DIR)")
+
+build_deb_server_discovery: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/server_discovery","$(DEB_DIR)")
+
+build_deb_external_argon2: clean_debs make_deb_directory
+	$(call build_external_deb_py3,argon2_cffi,"$(DEB_DIR)")
+
+build_deb_external_csv: clean_debs make_deb_directory
+	$(call build_external_deb_py2,backports.csv,"$(DEB_DIR)")
+
+clean_debs:
+	rm -rf "$(DEB_DIR)"
+
+# -----------------------------------------------------------------------------
+
 
 build_eggs: build_backend_eggs build_shrimplib_eggs build_shrimpcli_eggs build_plugins_eggs
 build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs build_ansible_eggs build_monitoring_eggs build_migration_eggs build_docker_eggs
@@ -82,19 +205,6 @@ build_purge_cluster_eggs: clean_eggs make_egg_directory
 
 clean_eggs:
 	rm -rf "$(OUTPUT_DIR)"
-
-make_egg_directory: make_output_directory
-	mkdir -p "$(EGGS_DIR)" || true
-
-make_image_directory: make_output_directory
-	mkdir -p "$(IMAGES_DIR)" || true
-
-make_docs_directory: make_output_directory
-	mkdir -p "$(DOCS_DIR)" || true
-
-make_output_directory:
-	mkdir -p "$(OUTPUT_DIR)" || true
-
 
 # -----------------------------------------------------------------------------
 
