@@ -25,9 +25,6 @@ apt_packages:
   - libxslt-dev
   - libyaml-dev
   - ncurses-term
-  - nodejs
-  - nodejs-legacy
-  - npm
   - pkg-config
   - python3-flake8
   - python3-hacking
