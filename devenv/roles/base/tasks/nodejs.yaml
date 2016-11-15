@@ -5,6 +5,8 @@
 - name: Install node 7x repository
   become: true
   shell: "curl -sL {{ node_install_script }} | bash -"
+  tags:
+    - skip_ansible_lint
 
 - name: Install nodejs
   become: true
