@@ -34,6 +34,7 @@ Contents
    deploy/index.rst
    cli
    ceph_node
+   api/index.rst
 
 
 

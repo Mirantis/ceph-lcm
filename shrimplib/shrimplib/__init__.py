@@ -11,7 +11,12 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Library to work with Shrimp API."""
+"""Library to work with Shrimp API.
+
+Top level module provides a list of shortcuts to use with Shrimp. Right
+now, it has only current :py:class:`shrimplib.Client` implementation as
+:py:class:`shrimplib.Client`.
+"""
 
 
 from __future__ import absolute_import
@@ -21,4 +26,4 @@ from shrimplib.client import V1Client
 
 
 Client = V1Client
-"""An actual JSON client."""
+"""An actual version of JSON client for Shrimp."""

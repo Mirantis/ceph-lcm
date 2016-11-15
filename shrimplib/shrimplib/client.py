@@ -11,7 +11,55 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Client for the Shrimp API."""
+"""This module contains implementation of RPC client for Shrimp API.
+
+Shrimp client :py:class:`Client` is a simple RPC client and thin wrapper
+for the `requests <http://docs.python-requests.org/en/master/>`_ library
+which allows end user to work with remote API without worrying about
+connections and endpoints.
+
+RPC client itself manages authorization (therefore you have to supply
+it with user/password pair on initialization) so there is no need in
+explicit session objects but if you do not like that way, you may always
+relogin explicitly.
+
+Usage example:
+
+.. code-block:: python
+
+    client = Client(url="http://localhost", login="root", password="root")
+
+This will initialize new client. Initialization does not imply immediate login,
+login would be occured thread-safely on the first real method execution.
+
+.. code-block:: python
+
+    users = client.get_users()
+
+This will return end user a list with active users in Shrimp.
+
+.. code-block:: json
+
+    [
+        {
+            "data": {
+                "email": "noreply@example.com",
+                "full_name": "Root User",
+                "login": "root",
+                "role_id": "37fb532f-2620-4e0d-80e6-b68ed6988a6d"
+            },
+            "id": "6567c2ab-54cc-40b7-a811-6147a3f3ea83",
+            "initiator_id": null,
+            "model": "user",
+            "time_deleted": 0,
+            "time_updated": 1478865388,
+            "version": 1
+        }
+    ]
+
+Incoming JSON will be parsed. If it is not possible,
+:py:exc:`shrimplib.exceptions.ShrimpError` will be raised.
+"""
 
 
 from __future__ import absolute_import
@@ -44,13 +92,29 @@ VERSION = pkg_resources.get_distribution("shrimplib").version
 
 
 def json_dumps(data):
-    """Makes compact JSON dumps."""
+    """Makes compact JSON dumps.
+
+    :param data: Data which should be encoded to JSON.
+    :type data: Any data, suitable for :py:func:`json.dumps`
+    :return: Data, encoded to JSON.
+    :rtype: str
+    :raises ValueError: if data cannot be encoded to JSON.
+    """
 
     return json.dumps(data, separators=(",", ":"))
 
 
 def make_query_params(**request_params):
-    """Makes query string parameters for request."""
+    """Makes query string parameters for request.
+
+    The reason to have this function is to exclude parameters which value
+    is ``None``.
+
+    :param request_params: Keyword arguments to be used as GET query
+        params later.
+    :return: Parameters to be encoded for GET query.
+    :rtype: dict
+    """
 
     params = {}
     for key, value in six.iteritems(request_params):
@@ -61,9 +125,14 @@ def make_query_params(**request_params):
 
 
 def json_response(func):
-    """Parses requests' response and return unpacked JSON.
+    """Decorator which parses :py:class:`requests.Response` and
+    returns unpacked JSON. If ``Content-Type`` of response is not
+    ``application/json``, then it returns text.
 
-    On problems it also raises API specific exception.
+    :return: Data of :py:class:`requests.Response` from decorated
+        function.
+    :raises shrimplib.exceptions.ShrimpAPIError: if decoding is not possible
+        or response status code is not ``200``.
     """
 
     @six.wraps(func)
@@ -86,10 +155,12 @@ def json_response(func):
 
 
 def inject_timeout(func):
-    """Injects timeout parameter into request.
+    """Decorator which injects ``timeout`` parameter into request.
 
     On client initiation, default timeout is set. This timeout will be
     injected into any request if no explicit parameter is set.
+
+    :return: Value of decorated function.
     """
 
     @six.wraps(func)
@@ -101,7 +172,15 @@ def inject_timeout(func):
 
 
 def inject_pagination_params(func):
-    """Injects pagination params into function."""
+    """Decorator which injects pagination params into function.
+
+    This decorator pops out such parameters as ``page``, ``per_page``,
+    ``all_items``, ``filter`` and ``sort_by`` and prepares correct
+    ``query_params`` unified parameter which should be used for
+    as a parameter of decorated function.
+
+    :return: Value of decorated function.
+    """
 
     @six.wraps(func)
     def decorator(*args, **kwargs):
@@ -128,7 +207,11 @@ def inject_pagination_params(func):
 
 
 def no_auth(func):
-    """Injects mark that no authentication should be performed."""
+    """Decorator which injects mark that no authentication should
+    be performed for this API call.
+
+    :return: Value of decorated function.
+    """
 
     @six.wraps(func)
     def decorator(*args, **kwargs):
@@ -139,9 +222,13 @@ def no_auth(func):
 
 
 def wrap_errors(func):
-    """Catches and logs all errors.
+    """Decorator which logs and catches all errors of decorated function.
 
-    Also wraps all possible errors into ShrimpAPIError class.
+    Also wraps all possible errors into :py:exc:`ShrimpAPIError` class.
+
+    :return: Value of decorated function.
+    :raises shrimplib.exceptions.ShrimpError: on any exception in
+        decorated function.
     """
 
     @six.wraps(func)
@@ -163,9 +250,9 @@ def wrap_errors(func):
 def client_metaclass(name, bases, attrs):
     """A client metaclass to create client instances.
 
-    Basically, it just wraps all public methods with wrap_errors/json_response
-    decorator pair so no need to explicitly define those decorators for
-    every method.
+    Basically, it just wraps all public methods with
+    :py:func:`wrap_errors`/:py:func:`json_response` decorator pair so no
+    need to explicitly define those decorators for every method.
     """
 
     new_attrs = {}
@@ -180,8 +267,14 @@ def client_metaclass(name, bases, attrs):
 
 
 class HTTPAdapter(requests.adapters.HTTPAdapter):
+    """HTTP adapter for client's :py:class:`requests.Session` which injects
+    correct User-Agent header for request."""
 
     USER_AGENT = "shrimplib/{0}".format(VERSION)
+    """User agent for :py:class:`shrimplib.client.Client` instance.
+
+    As a rule, it is just ``shrimplib/{version}`` string.
+    """
 
     def add_headers(self, request, **kwargs):
         request.headers["User-Agent"] = self.USER_AGENT
@@ -191,11 +284,22 @@ class HTTPAdapter(requests.adapters.HTTPAdapter):
 @six.add_metaclass(abc.ABCMeta)
 @six.python_2_unicode_compatible
 class Client(object):
-    """A base client model.
+    """A base RPC client model.
 
-    All non-public methods should be prefixed with _ by convention. This
-    is crucial because actual class instances will be constructed using
-    metaclass which uses this fact.
+    :param str url: URL of Shrimp API (*without* version prefix like ``/v1``).
+    :param str login: Login of user in Shrimp.
+    :param str password: Password of user in Shrimp.
+    :param timeout: Timeout for remote requests. If ``None`` is set,
+        default socket timeout (e.g which is set by
+        :py:func:`socket.setdefaulttimeout`) will be used.
+    :param bool verify: If remote URL implies SSL, then using this option
+        client will check SSL certificate for validity.
+    :param certificate_file: If SSL works with client certificate, this
+        option sets the path to such certificate. If ``None`` is set,
+        then it implies that no client certificate should be used.
+
+    :type timeout: :py:class:`int` or ``None``
+    :type certificate_file: :py:class:`str` or ``None``
     """
 
     AUTH_CLASS = None
@@ -260,10 +364,34 @@ class Client(object):
 
 @six.add_metaclass(client_metaclass)
 class V1Client(Client):
+    """Implemetation of :py:class:`shrimplib.client.Client`
+    which works with API version 1.
+
+    Please check parameters for :py:class:`shrimplib.client.Client` class.
+
+    .. note::
+        All ``**kwargs`` keyword arguments here are the same as
+        :py:meth:`requests.Session.request` takes.
+    """
 
     AUTH_CLASS = auth.V1Auth
 
     def login(self, **kwargs):
+        """This methods logins users into API.
+
+        Basically, you do not need to execute this method by yourself,
+        client will implicitly execute it when needed.
+
+        This method does ``POST /v1/auth`` endpoint call.
+
+        :return: Model of the Token.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url(self.AUTH_CLASS.AUTH_URL)
         payload = {
             "username": self._login,
@@ -274,6 +402,20 @@ class V1Client(Client):
         return response
 
     def logout(self, **kwargs):
+        """This method logouts users from API (after that security token
+        will be deleted).
+
+        Basically, you do not need to execute this method by yourself,
+        client will implicitly execute it when needed.
+
+        This method does ``DELETE /v1/auth`` endpoint call.
+
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         if not self._session.auth.token:
             return {}
 
@@ -288,24 +430,98 @@ class V1Client(Client):
 
     @inject_pagination_params
     def get_clusters(self, query_params, **kwargs):
+        """This method fetches a list of latest cluster models from API.
+
+        By default, only active clusters will be listed.
+
+        This method does ``GET /v1/cluster`` endpoint call.
+
+        :return: List of latest cluster models.
+        :rtype: list
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/cluster/")
         return self._session.get(url, params=query_params, **kwargs)
 
     def get_cluster(self, cluster_id, **kwargs):
+        """This method fetches a single cluster model (latest version)
+        from API.
+
+        This method does ``GET /v1/cluster/{cluster_id}`` endpoint call.
+
+        :param str cluster_id: UUID4 (:rfc:`4122`) in string form
+            of cluster's ID
+        :return: Cluster model of latest available version
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/cluster/{0}/".format(cluster_id))
         return self._session.get(url, **kwargs)
 
     @inject_pagination_params
     def get_cluster_versions(self, cluster_id, query_params, **kwargs):
+        """This method fetches a list of all versions for a certain cluster
+        model.
+
+        This method does ``GET /v1/cluster/{cluster_id}/version/`` endpoint
+        call.
+
+        :param str cluster_id: UUID4 (:rfc:`4122`) in string form
+            of cluster's ID
+        :return: List of cluster versions for cluster with ID ``cluster_id``.
+        :rtype: list
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/cluster/{0}/version/".format(cluster_id))
         return self._session.get(url, params=query_params, **kwargs)
 
     def get_cluster_version(self, cluster_id, version, **kwargs):
+        """This method fetches a certain version of particular cluster model.
+
+        This method does ``GET /v1/cluster/{cluster_id}/version/{version}``
+        endpoint call.
+
+        :param str cluster_id: UUID4 (:rfc:`4122`) in string form
+            of cluster's ID
+        :param int version: The number of version to fetch.
+        :return: Cluster model of certain version.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url(
             "/v1/cluster/{0}/version/{1}/".format(cluster_id, version))
         return self._session.get(url, **kwargs)
 
     def create_cluster(self, name, **kwargs):
+        """This method creates new cluster model.
+
+        This method does ``POST /v1/cluster/`` endpoint call.
+
+        :param str name: Name of the cluster.
+        :return: New cluster model.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/cluster/")
         payload = {
             "name": name
@@ -314,34 +530,144 @@ class V1Client(Client):
         return self._session.post(url, json=payload, **kwargs)
 
     def update_cluster(self, model_data, **kwargs):
+        """This methods updates cluster model.
+
+        Please be noticed that no real update is performed, just a new
+        version of the same cluster is created.
+
+        This method does ``PUT /v1/cluster/`` endpoint call.
+
+        :param dict model_data: Updated model of the cluster.
+        :return: Updated cluster model.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/cluster/{0}/".format(model_data["id"]))
         return self._session.put(url, json=model_data, **kwargs)
 
     def delete_cluster(self, cluster_id, **kwargs):
+        """This methods deletes cluster model.
+
+        Please be noticed that no real delete is performed, cluster
+        model is marked as deleted (``time_deleted > 0``) and model will
+        be skipped from listing, updates are forbidden.
+
+        This method does ``DELETE /v1/cluster/`` endpoint call.
+
+        :param str cluster_id: UUID4 (:rfc:`4122`) in string form
+            of cluster's ID
+        :return: Deleted cluster model.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/cluster/{0}/".format(cluster_id))
         return self._session.delete(url, **kwargs)
 
     @inject_pagination_params
     def get_executions(self, query_params, **kwargs):
+        """This method fetches a list of latest execution models from API.
+
+        This method does ``GET /v1/execution`` endpoint call.
+
+        :return: List of latest execution models.
+        :rtype: list
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/execution/")
         return self._session.get(url, params=query_params, **kwargs)
 
     def get_execution(self, execution_id, **kwargs):
+        """This method fetches a single execution model (latest version)
+        from API.
+
+        This method does ``GET /v1/execution/{execution_id}`` endpoint call.
+
+        :param str execution_id: UUID4 (:rfc:`4122`) in string form
+            of execution's ID
+        :return: Execution model of latest available version
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/execution/{0}/".format(execution_id))
         return self._session.get(url, **kwargs)
 
     @inject_pagination_params
     def get_execution_versions(self, execution_id, query_params, **kwargs):
+        """This method fetches a list of all versions for a certain execution
+        model.
+
+        This method does ``GET /v1/execution/{execution_id}/version/``
+        endpoint call.
+
+        :param str execution_id: UUID4 (:rfc:`4122`) in string form
+            of execution's ID
+        :return: List of execution versions for execution with
+            ID ``execution_id``.
+        :rtype: list
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/execution/{0}/version/".format(execution_id))
         return self._session.get(url, params=query_params, **kwargs)
 
     def get_execution_version(self, execution_id, version, **kwargs):
+        """This method fetches a certain version of particular execution model.
+
+        This method does ``GET
+        /v1/execution/{execution_id}/version/{version}`` endpoint call.
+
+        :param str execution_id: UUID4 (:rfc:`4122`) in string form
+            of execution's ID
+        :param int version: The number of version to fetch.
+        :return: Execution model of certain version.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url(
             "/v1/execution/{0}/version/{1}/".format(execution_id, version))
         return self._session.get(url, **kwargs)
 
     def create_execution(self, playbook_configuration_id,
                          playbook_configuration_version, **kwargs):
+        """This method creates new execution model.
+
+        This method does ``POST /v1/execution/`` endpoint call.
+
+        :param str playbook_configuration_id: UUID4 (:rfc:`4122`) in
+            string form of playbook configuration's ID.
+        :param int playbook_configuration_version: Version of playbook
+            configuration model.
+        :return: New execution model.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/execution/")
         payload = {
             "playbook_configuration": {
@@ -353,15 +679,62 @@ class V1Client(Client):
         return self._session.post(url, json=payload, **kwargs)
 
     def cancel_execution(self, execution_id, **kwargs):
+        """This method cancels existing execution.
+
+        This method does ``DELETE /v1/execution/`` endpoint call.
+
+        :param str execution_id: UUID4 (:rfc:`4122`) in string form of
+            execution's ID.
+        :return: Canceled execution model.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/execution/")
         return self._session.delete(url, **kwargs)
 
     @inject_pagination_params
     def get_execution_steps(self, execution_id, query_params, **kwargs):
+        """This method fetches step models of the execution.
+
+        This method does ``GET /v1/execution/{execution_id}/steps``
+        endpoint call.
+
+        :param str execution_id: UUID4 (:rfc:`4122`) in string form of
+            execution's ID.
+        :return: List of execution steps.
+        :rtype: list
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/execution/{0}/steps/".format(execution_id))
         return self._session.get(url, params=query_params, **kwargs)
 
     def get_execution_log(self, execution_id, **kwargs):
+        """This method fetches text execution log for a certain execution.
+
+        Execution log is a raw Ansible execution log, that one, which
+        is generated by :program:`ansible-playbook` program.
+
+        This method does ``GET /v1/execution/{execution_id}/log``
+        endpoint call.
+
+        :param str execution_id: UUID4 (:rfc:`4122`) in string form of
+            execution's ID.
+        :return: List of execution steps.
+        :rtype: list
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         kwargs.setdefault("headers", {}).setdefault(
             "Content-Type", "application/json"
         )
