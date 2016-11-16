@@ -5,15 +5,15 @@ IMAGES_DIR := $(OUTPUT_DIR)/images
 DOCS_DIR   := $(OUTPUT_DIR)/docs
 DEB_DIR    := $(OUTPUT_DIR)/debs
 
-CONTAINER_API_NAME        := shrimp-api
-CONTAINER_BASE_NAME       := shrimp-base
-CONTAINER_CLI_NAME        := shrimp-cli
-CONTAINER_CONTROLLER_NAME := shrimp-controller
-CONTAINER_CRON_NAME       := shrimp-cron
-CONTAINER_DB_NAME         := shrimp-db
-CONTAINER_DB_DATA_NAME    := shrimp-db-data
-CONTAINER_FRONTEND_NAME   := shrimp-frontend
-CONTAINER_PLUGINS_NAME    := shrimp-base-plugins
+CONTAINER_API_NAME        := decapod-api
+CONTAINER_BASE_NAME       := decapod-base
+CONTAINER_CLI_NAME        := decapod-cli
+CONTAINER_CONTROLLER_NAME := decapod-controller
+CONTAINER_CRON_NAME       := decapod-cron
+CONTAINER_DB_NAME         := decapod-db
+CONTAINER_DB_DATA_NAME    := decapod-db-data
+CONTAINER_FRONTEND_NAME   := decapod-frontend
+CONTAINER_PLUGINS_NAME    := decapod-base-plugins
 
 # -----------------------------------------------------------------------------
 
@@ -84,7 +84,7 @@ make_output_directory:
 
 # -----------------------------------------------------------------------------
 
-build_debs: build_deb_shrimplib build_deb_shrimpcli build_deb_ansible \
+build_debs: build_deb_decapodlib build_deb_decapodcli build_deb_ansible \
     build_deb_common build_deb_controller build_deb_api build_deb_migration \
     build_deb_monitoring build_deb_emails build_deb_add_osd \
     build_deb_deploy_cluster build_deb_helloworld build_deb_purge_cluster \
@@ -92,11 +92,11 @@ build_debs: build_deb_shrimplib build_deb_shrimpcli build_deb_ansible \
 
 build_debs_external: build_deb_external_argon2 build_deb_external_csv
 
-build_deb_shrimplib: clean_debs make_deb_directory
-	$(call build_deb_universal,"$(ROOT_DIR)/shrimplib","$(DEB_DIR)")
+build_deb_decapodlib: clean_debs make_deb_directory
+	$(call build_deb_universal,"$(ROOT_DIR)/decapodlib","$(DEB_DIR)")
 
-build_deb_shrimpcli: clean_debs make_deb_directory
-	$(call build_deb_universal,"$(ROOT_DIR)/shrimpcli","$(DEB_DIR)")
+build_deb_decapodcli: clean_debs make_deb_directory
+	$(call build_deb_universal,"$(ROOT_DIR)/decapodcli","$(DEB_DIR)")
 
 build_deb_ansible: clean_debs make_deb_directory
 	$(call build_deb_py2,"$(ROOT_DIR)/backend/ansible","$(DEB_DIR)")
@@ -149,7 +149,7 @@ clean_debs:
 # -----------------------------------------------------------------------------
 
 
-build_eggs: build_backend_eggs build_shrimplib_eggs build_shrimpcli_eggs build_plugins_eggs
+build_eggs: build_backend_eggs build_decapodlib_eggs build_decapodcli_eggs build_plugins_eggs
 build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs build_ansible_eggs build_monitoring_eggs build_migration_eggs build_docker_eggs
 build_plugins_eggs: build_alerts_eggs build_playbook_eggs
 build_alerts_eggs: build_email_eggs
@@ -176,11 +176,11 @@ build_migration_eggs: clean_eggs make_egg_directory
 build_docker_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/backend/docker","$(EGGS_DIR)")
 
-build_shrimplib_eggs: clean_eggs make_egg_directory
-	$(call build_egg,"$(ROOT_DIR)/shrimplib","$(EGGS_DIR)")
+build_decapodlib_eggs: clean_eggs make_egg_directory
+	$(call build_egg,"$(ROOT_DIR)/decapodlib","$(EGGS_DIR)")
 
-build_shrimpcli_eggs: clean_eggs make_egg_directory
-	$(call build_egg,"$(ROOT_DIR)/shrimpcli","$(EGGS_DIR)")
+build_decapodcli_eggs: clean_eggs make_egg_directory
+	$(call build_egg,"$(ROOT_DIR)/decapodcli","$(EGGS_DIR)")
 
 build_email_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/plugins/alerts/emails","$(EGGS_DIR)")
