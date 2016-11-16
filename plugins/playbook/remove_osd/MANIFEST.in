@@ -1,2 +1,2 @@
-include shrimp_remove_osd/config.yaml
-include shrimp_remove_osd/playbook.yaml
+include decapod_remove_osd/config.yaml
+include decapod_remove_osd/playbook.yaml

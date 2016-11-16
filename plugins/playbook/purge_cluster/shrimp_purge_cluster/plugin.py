@@ -14,9 +14,9 @@
 """Playbook plugin to purge cluster."""
 
 
-from shrimp_common import log
-from shrimp_common import playbook_plugin
-from shrimp_common.models import server
+from decapod_common import log
+from decapod_common import playbook_plugin
+from decapod_common.models import server
 
 
 DESCRIPTION = """\

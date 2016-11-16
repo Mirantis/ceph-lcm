@@ -18,13 +18,13 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "shrimp-common>=0.1,<0.2",
+    "decapod-common>=0.1,<0.2",
 )
 
 
 setuptools.setup(
-    name="shrimp-plugin-alerts",
-    description="Shrimp email alerts plugin",
+    name="decapod-plugin-alerts",
+    description="Decapod email alerts plugin",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -38,7 +38,7 @@ setuptools.setup(
     install_requires=REQUIREMENTS,
     zip_safe=False,
     entry_points={
-        "shrimp.alerts": ["email = shrimp_email_alerts.email:alert"]
+        "decapod.alerts": ["email = decapod_email_alerts.email:alert"]
     },
     classifiers=(
         "Intended Audience :: Information Technology",

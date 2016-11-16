@@ -1,4 +1,4 @@
-This is a Hello world plugin for Shrimp.
+This is a Hello world plugin for Decapod.
 
 It's main intention is to be a generic plugin which installs something
 on the host and run some service. This plugin installs simpliest WSGI

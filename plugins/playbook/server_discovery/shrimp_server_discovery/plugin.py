@@ -26,17 +26,17 @@ try:
 except ImportError:
     import json
 
-from shrimp_common import log
-from shrimp_common import playbook_plugin
-from shrimp_common import retryutils
-from shrimp_common.models import server
+from decapod_common import log
+from decapod_common import playbook_plugin
+from decapod_common import retryutils
+from decapod_common.models import server
 
 
 DESCRIPTION = """
-Plugin to register server into Shrimp.
+Plugin to register server into Decapod.
 
 Basically, server should send only limited information about self into
-Shrimp. All other verification and discovery should be done by Shrimp
+Decapod. All other verification and discovery should be done by Decapod
 controller service using Ansible. This involves collecting of facts and
 verification that host is accesible.
 

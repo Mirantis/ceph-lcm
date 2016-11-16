@@ -1,1 +1,1 @@
-include shrimp_server_discovery/config.yaml
+include decapod_server_discovery/config.yaml

@@ -14,7 +14,7 @@
 """Playbook plugin to install helloworld."""
 
 
-from shrimp_common import playbook_plugin
+from decapod_common import playbook_plugin
 
 
 DESCRIPTION = """\

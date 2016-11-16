@@ -19,26 +19,26 @@ import setuptools
 
 
 setuptools.setup(
-    name="shrimp-plugin-playbook-add-osd",
-    description="Add OSD plugin for Shrimp",
+    name="decapod-plugin-playbook-add-osd",
+    description="Add OSD plugin for Decapod",
     version="0.1.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
     packages=setuptools.find_packages(),
     entry_points={
-        "shrimp.playbooks": ["add_osd = shrimp_add_osd.plugin:AddOSD"]
+        "decapod.playbooks": ["add_osd = decapod_add_osd.plugin:AddOSD"]
     },
     python_requires=">= 3.4",
     include_package_data=True,
     package_data={
-        "shrimp_add_osd": [
+        "decapod_add_osd": [
             "config.yaml",
             "playbook.yaml"
         ]
     },
     install_requires=[
-        "shrimp_common>=0.1,<0.2",
+        "decapod_common>=0.1,<0.2",
     ],
     zip_safe=False
 )

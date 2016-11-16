@@ -14,11 +14,11 @@
 """Exceptions for deploy cluster playbook."""
 
 
-from shrimp_common import exceptions as base_exceptions
+from decapod_common import exceptions as base_exceptions
 
 
-class ClusterDeployError(base_exceptions.ShrimpError):
-    """Exception family, specific for ShrimpError plugin for cluster
+class ClusterDeployError(base_exceptions.DecapodError):
+    """Exception family, specific for DecapodError plugin for cluster
     deployment."""
 
 

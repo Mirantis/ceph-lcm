@@ -11,16 +11,16 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Email alerting plugin for Shrimp."""
+"""Email alerting plugin for Decapod."""
 
 
 import datetime
 import pprint
 import traceback
 
-from shrimp_common import config
-from shrimp_common import emailutils
-from shrimp_common import log
+from decapod_common import config
+from decapod_common import emailutils
+from decapod_common import log
 
 
 UNMANAGED_TEXT_MESSAGE = """
