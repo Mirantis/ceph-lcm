@@ -46,7 +46,7 @@ export class Modal {
   }
 };
 
-// Rotating shrimp loading indicator
+// Rotating decapod loading indicator
 @Component({
   selector: 'loader',
   templateUrl: './app/templates/loader.html'

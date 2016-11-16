@@ -63,7 +63,7 @@ gulp.task('concat:js', function () {
     'build/tmp/js/vendors.min.js',
     'build/tmp/js/app.min.js'
   ])
-  .pipe(concat('shrimp.min.js'))
+  .pipe(concat('decapod.min.js'))
   .pipe(gulp.dest('build/js'))
 });
 
@@ -125,7 +125,7 @@ gulp.task('cleanup', function (callback) {
 gulp.task('modify:index', function () {
   return gulp.src('index.html')
   .pipe(replace('href="app/', 'href="'))
-  .pipe(replace(/<\!---->[\s\S]+-->/m, '    <script src="js/shrimp.min.js"></script>'))
+  .pipe(replace(/<\!---->[\s\S]+-->/m, '    <script src="js/decapod.min.js"></script>'))
   .pipe(replace(/\s*<script>[\s\S]+<\/script>/m, ''))
   .pipe(gulp.dest('build'));
 });
