@@ -23,7 +23,7 @@ common:
 api:
   debug: false
   testing: false
-  logger_name: "shrimp.shrimp_api.wsgi"
+  logger_name: "decapod.decapod_api.wsgi"
   logger_handler_policy: "never"
   json_sort_keys: faluse
   jsonify_prettyprint_regular: false
@@ -41,7 +41,7 @@ api:
 
 
 controller:
-  pidfile: "/tmp/shrimp-controller.pid"
+  pidfile: "/tmp/decapod-controller.pid"
   daemon: false
   timeout: 60
   ansible_config: "/etc/ansible/ansible.cfg"
@@ -60,7 +60,7 @@ cron:
 
 
 db:
-  uri: "mongodb://database:27017/shrimp?ssl=true"
+  uri: "mongodb://database:27017/decapod?ssl=true"
   connect: false
   task_queue_length: 1000
   connect_timeout: 5000  # ms, 5 seconds

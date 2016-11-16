@@ -1,7 +1,7 @@
 # vi: set ft=dockerfile :
 
 
-FROM shrimp-base
+FROM decapod-base
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
@@ -14,7 +14,7 @@ RUN set -x \
     gcc \
     python3-dev \
     python3-pip \
-  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_plugin_playbook*.whl \
+  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_plugin_playbook*.whl \
   && rm -r /eggs \
   && apt-get clean \
   && apt-get purge -y python3-dev python3-pip gcc \

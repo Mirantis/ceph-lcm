@@ -2,4 +2,4 @@
 set -eu
 
 
-. /etc/shrimp.sh && /usr/local/bin/shrimp "$@"
+. /etc/decapod.sh && /usr/local/bin/decapod "$@"

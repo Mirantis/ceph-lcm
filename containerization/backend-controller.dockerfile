@@ -1,7 +1,7 @@
 # vi: set ft=dockerfile :
 
 
-FROM shrimp-base-plugins
+FROM decapod-base-plugins
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
@@ -23,9 +23,9 @@ RUN set -x \
     python-dev \
     python-pip \
     python-setuptools \
-  && pip2 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_ansible*.whl \
-  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_controller*.whl \
-  && /usr/local/bin/shrimp-ansible-deploy-config \
+  && pip2 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_ansible*.whl \
+  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_controller*.whl \
+  && /usr/local/bin/decapod-ansible-deploy-config \
   && rm -r /eggs \
   && chmod 700 /root/.ssh/ \
   && chmod 600 /root/.ssh/id_rsa \
@@ -36,4 +36,4 @@ RUN set -x \
 
 
 ENTRYPOINT ["/usr/bin/dumb-init", "-c", "--"]
-CMD ["shrimp-controller"]
+CMD ["decapod-controller"]
