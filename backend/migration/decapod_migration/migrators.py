@@ -19,7 +19,7 @@ import os
 import os.path
 import subprocess
 
-from shrimp_common import log
+from decapod_common import log
 
 
 LOG = log.getLogger(__name__)

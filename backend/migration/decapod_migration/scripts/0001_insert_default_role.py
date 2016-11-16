@@ -17,10 +17,10 @@ This migration applies default 'wheel' role.
 """
 
 
-from shrimp_api import wsgi
-from shrimp_common.models import db
-from shrimp_common.models import generic
-from shrimp_common.models import role
+from decapod_api import wsgi
+from decapod_common.models import db
+from decapod_common.models import generic
+from decapod_common.models import role
 
 
 with wsgi.application.app_context():

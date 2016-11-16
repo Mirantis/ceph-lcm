@@ -20,11 +20,11 @@ import time
 
 import pkg_resources
 
-from shrimp_migration import migrators
-from shrimp_common import cliutils
-from shrimp_common import log
-from shrimp_common.models import lock
-from shrimp_common.models import migration_script
+from decapod_migration import migrators
+from decapod_common import cliutils
+from decapod_common import log
+from decapod_common.models import lock
+from decapod_common.models import migration_script
 
 
 MIGRATION_SHOW_TEMPLATE = """
@@ -41,7 +41,7 @@ SHA1 of script: {script_hash}
 """Template to display for migration.show"""
 
 DIRECTORY = pkg_resources.resource_filename(
-    "shrimp_migration", "scripts")
+    "decapod_migration", "scripts")
 """Directory where migration scripts are placed."""
 
 LOG = log.getLogger(__name__)
@@ -181,7 +181,7 @@ def apply_migration(migration, *, ok=True):
 
 def get_options():
     parser = argparse.ArgumentParser(
-        description="Run migrations again Shrimp database.")
+        description="Run migrations again Decapod database.")
     parser.set_defaults(callback=lambda el: parser.print_help())
     subparsers = parser.add_subparsers()
 

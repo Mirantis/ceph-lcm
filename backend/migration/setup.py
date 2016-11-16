@@ -18,13 +18,13 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "shrimp-common>=0.1,<0.2",
+    "decapod-common>=0.1,<0.2",
 )
 
 
 setuptools.setup(
-    name="shrimp-migrations",
-    description="Shrimp migration scripts",
+    name="decapod-migrations",
+    description="Decapod migration scripts",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -39,12 +39,12 @@ setuptools.setup(
     zip_safe=False,
     include_package_data=True,
     package_data={
-        "shrimp_migration": [
+        "decapod_migration": [
             "scripts/*"
         ]
     },
     entry_points={
-        "console_scripts": ["shrimp-migrations = shrimp_migration.cli:main"]
+        "console_scripts": ["decapod-migrations = decapod_migration.cli:main"]
     },
     classifiers=(
         "Intended Audience :: Information Technology",
