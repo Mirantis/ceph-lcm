@@ -18,9 +18,9 @@ import copy
 
 import pytest
 
-from shrimp_common import config
-from shrimp_common.models import server
-from shrimp_common.models import task
+from decapod_common import config
+from decapod_common.models import server
+from decapod_common.models import task
 
 
 @pytest.fixture

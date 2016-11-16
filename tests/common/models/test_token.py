@@ -11,12 +11,12 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This module contains tests for shrimp_common.models.token."""
+"""This module contains tests for decapod_common.models.token."""
 
 
 import pytest
 
-from shrimp_common.models import token
+from decapod_common.models import token
 
 
 def test_create_token_in_db(configure_model, pymongo_connection, freeze_time):

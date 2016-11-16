@@ -16,7 +16,7 @@
 
 import pytest
 
-from shrimp_common.models import cluster
+from decapod_common.models import cluster
 
 
 @pytest.fixture

@@ -18,7 +18,7 @@ import uuid
 
 import pytest
 
-from shrimp_common.models import role
+from decapod_common.models import role
 
 
 @pytest.fixture

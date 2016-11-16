@@ -11,14 +11,14 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for shrimp_common.timeutils."""
+"""Tests for decapod_common.timeutils."""
 
 
 import time
 
 import pytest
 
-from shrimp_common import timeutils
+from decapod_common import timeutils
 
 
 @pytest.mark.parametrize("timestamp", (

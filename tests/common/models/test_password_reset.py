@@ -11,15 +11,15 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for shrimp_common.models.password_reset."""
+"""Tests for decapod_common.models.password_reset."""
 
 
 import pytest
 
-from shrimp_common import exceptions
-from shrimp_common import passwords
-from shrimp_common.models import password_reset
-from shrimp_common.models import user
+from decapod_common import exceptions
+from decapod_common import passwords
+from decapod_common.models import password_reset
+from decapod_common.models import user
 
 
 @pytest.fixture

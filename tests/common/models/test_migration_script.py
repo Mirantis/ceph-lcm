@@ -11,12 +11,12 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Unittests for shrimp_common.models."""
+"""Unittests for decapod_common.models."""
 
 
 import pytest
 
-from shrimp_common.models import migration_script
+from decapod_common.models import migration_script
 
 
 @pytest.fixture

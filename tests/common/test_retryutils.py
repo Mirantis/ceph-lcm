@@ -11,7 +11,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for shrimp_common.retryutils"""
+"""Tests for decapod_common.retryutils"""
 
 
 import unittest.mock
@@ -19,7 +19,7 @@ import unittest.mock
 import pymongo.errors
 import pytest
 
-from shrimp_common import retryutils
+from decapod_common import retryutils
 
 
 @pytest.fixture

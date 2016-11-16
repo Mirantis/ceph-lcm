@@ -16,9 +16,9 @@
 
 import pytest
 
-from shrimp_common import plugins
-from shrimp_common.models import playbook_configuration
-from shrimp_common.models import server
+from decapod_common import plugins
+from decapod_common.models import playbook_configuration
+from decapod_common.models import server
 
 
 @pytest.fixture

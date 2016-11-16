@@ -20,16 +20,16 @@ import uuid
 import mongomock
 import pytest
 
-import shrimp_api
-from shrimp_common import emailutils
-from shrimp_common import log
-from shrimp_common.models import cluster
-from shrimp_common.models import execution
-from shrimp_common.models import generic
-from shrimp_common.models import playbook_configuration
-from shrimp_common.models import role
-from shrimp_common.models import server
-from shrimp_common.models import user
+import decapod_api
+from decapod_common import emailutils
+from decapod_common import log
+from decapod_common.models import cluster
+from decapod_common.models import execution
+from decapod_common.models import generic
+from decapod_common.models import playbook_configuration
+from decapod_common.models import role
+from decapod_common.models import server
+from decapod_common.models import user
 
 
 def have_mocked(request, *mock_args, **mock_kwargs):
@@ -66,7 +66,7 @@ def freeze_time(monkeypatch):
 
 @pytest.fixture(scope="session", autouse=True)
 def configure_logging():
-    log.configure_logging(shrimp_api.CONF.logging_config)
+    log.configure_logging(decapod_api.CONF.logging_config)
 
 
 @pytest.yield_fixture(scope="module")
@@ -79,7 +79,7 @@ def mongo_db_name():
 @pytest.yield_fixture(scope="module")
 def pymongo_connection(mongo_db_name):
     client = mongomock.MongoClient()
-    with mock.patch("shrimp_common.models.db.MongoDB", return_value=client):
+    with mock.patch("decapod_common.models.db.MongoDB", return_value=client):
         yield client
 
 
@@ -96,7 +96,7 @@ def configure_model(mongo_db_name, pymongo_connection):
 @pytest.fixture
 def smtp(request, monkeypatch):
     sendmail_mock = mock.MagicMock()
-    client = have_mocked(request, "shrimp_common.emailutils.make_client")
+    client = have_mocked(request, "decapod_common.emailutils.make_client")
     client.return_value = sendmail_mock
 
     return sendmail_mock
@@ -144,7 +144,7 @@ def public_playbook_name():
     mocked_plugin.PUBLIC = True
 
     patch = mock.patch(
-        "shrimp_common.plugins.get_playbook_plugins",
+        "decapod_common.plugins.get_playbook_plugins",
         return_value={name: mocked_plugin}
     )
 
@@ -233,7 +233,7 @@ def execution_log_storage(monkeypatch):
     storage = mock.MagicMock()
     storage_class = mock.MagicMock(return_value=storage)
     monkeypatch.setattr(
-        "shrimp_common.models.execution.ExecutionLogStorage",
+        "decapod_common.models.execution.ExecutionLogStorage",
         storage_class
     )
 

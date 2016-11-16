@@ -18,8 +18,8 @@ import unittest.mock as mock
 
 import pytest
 
-from shrimp_common import config
-from shrimp_common.models import password_reset
+from decapod_common import config
+from decapod_common.models import password_reset
 
 
 CONF = config.make_config()

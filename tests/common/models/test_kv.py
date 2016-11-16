@@ -11,12 +11,12 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for shrimp_common.models.kv."""
+"""Tests for decapod_common.models.kv."""
 
 
 import pytest
 
-from shrimp_common.models import kv
+from decapod_common.models import kv
 
 
 def test_upsert_create(configure_model):

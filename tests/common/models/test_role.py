@@ -11,15 +11,15 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This module has tests for shrimp_common.models.role."""
+"""This module has tests for decapod_common.models.role."""
 
 
 import collections
 
 import pytest
 
-from shrimp_common import exceptions
-from shrimp_common.models import role
+from decapod_common import exceptions
+from decapod_common.models import role
 
 
 @pytest.fixture

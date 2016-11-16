@@ -11,13 +11,13 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for shrimp_common.passwords."""
+"""Tests for decapod_common.passwords."""
 
 
 import pytest
 
-from shrimp_common import config
-from shrimp_common import passwords
+from decapod_common import config
+from decapod_common import passwords
 
 
 CONF = config.make_config()
