@@ -1075,24 +1075,98 @@ class V1Client(Client):
 
     @inject_pagination_params
     def get_users(self, query_params, **kwargs):
+        """This method fetches a list of latest user models from API.
+
+        By default, only active users will be listed.
+
+        This method does ``GET /v1/user`` endpoint call.
+
+        :return: List of latest user models.
+        :rtype: list
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/user/")
         return self._session.get(url, params=query_params, **kwargs)
 
     def get_user(self, user_id, **kwargs):
+        """This method fetches a single user model (latest version)
+        from API.
+
+        This method does ``GET /v1/user/{user_id}`` endpoint call.
+
+        :param str user_id: UUID4 (:rfc:`4122`) in string form
+            of user's ID
+        :return: User model of latest available version
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/user/{0}/".format(user_id))
         return self._session.get(url, **kwargs)
 
     @inject_pagination_params
     def get_user_versions(self, user_id, query_params, **kwargs):
+        """This method fetches a list of all versions for a certain user
+        model.
+
+        This method does ``GET /v1/user/{user_id}/version/`` endpoint
+        call.
+
+        :param str user_id: UUID4 (:rfc:`4122`) in string form
+            of user's ID
+        :return: List of user versions for user with ID ``user_id``.
+        :rtype: list
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/user/{0}/version/".format(user_id))
         return self._session.get(url, params=query_params, **kwargs)
 
     def get_user_version(self, user_id, version, **kwargs):
+        """This method fetches a certain version of particular user model.
+
+        This method does ``GET /v1/user/{user_id}/version/{version}``
+        endpoint call.
+
+        :param str user_id: UUID4 (:rfc:`4122`) in string form
+            of user's ID
+        :param int version: The number of version to fetch.
+        :return: User model of certain version.
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url(
             "/v1/user/{0}/version/{1}/".format(user_id, version))
         return self._session.get(url, **kwargs)
 
     def create_user(self, login, email, full_name="", role_id=None, **kwargs):
+        """This method creates new user model.
+
+        This method does ``POST /v1/user/`` endpoint call.
+
+        :param str name: Name of the user.
+        :return: New user model.
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/user/")
         payload = {
             "login": login,
@@ -1104,10 +1178,44 @@ class V1Client(Client):
         return self._session.post(url, json=payload, **kwargs)
 
     def update_user(self, model_data, **kwargs):
+        """This methods updates user model.
+
+        Please be noticed that no real update is performed, just a new
+        version of the same user is created.
+
+        This method does ``PUT /v1/user/`` endpoint call.
+
+        :param dict model_data: Updated model of the user.
+        :return: Updated user model.
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/user/{0}/".format(model_data["id"]))
         return self._session.put(url, json=model_data, **kwargs)
 
     def delete_user(self, user_id, **kwargs):
+        """This methods deletes user model.
+
+        Please be noticed that no real delete is performed, user model
+        is marked as deleted (``time_deleted > 0``) and model will be
+        skipped from listing, updates are forbidden.
+
+        This method does ``DELETE /v1/user/`` endpoint call.
+
+        :param str user_id: UUID4 (:rfc:`4122`) in string form
+            of user's ID
+        :return: Deleted user model.
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/user/{0}/".format(user_id))
         return self._session.delete(url, **kwargs)
 
