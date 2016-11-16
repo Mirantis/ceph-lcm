@@ -16,9 +16,9 @@
 
 import collections
 
-from shrimp_common import exceptions
-from shrimp_common import plugins
-from shrimp_common.models import generic
+from decapod_common import exceptions
+from decapod_common import plugins
+from decapod_common.models import generic
 
 
 class PermissionSet:
@@ -66,7 +66,7 @@ class RoleModel(generic.Model):
     """This is a model for the role.
 
     Role is a model which has a list of permissions for
-    user in Shrimp.
+    user in Decapod.
     """
 
     MODEL_NAME = "role"
@@ -130,7 +130,7 @@ class RoleModel(generic.Model):
         return models
 
     def delete(self, initiator_id=None):
-        from shrimp_common.models import user
+        from decapod_common.models import user
 
         user.UserModel.check_revoke_role(self.model_id, initiator_id)
         super().delete()

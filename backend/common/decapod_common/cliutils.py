@@ -18,11 +18,11 @@ import argparse
 import functools
 import pty
 
-from shrimp_common import config
-from shrimp_common import log
-from shrimp_common.models import db
-from shrimp_common.models import generic
-from shrimp_common.models import lock
+from decapod_common import config
+from decapod_common import log
+from decapod_common.models import db
+from decapod_common.models import generic
+from decapod_common.models import lock
 
 
 CONF = config.make_config()

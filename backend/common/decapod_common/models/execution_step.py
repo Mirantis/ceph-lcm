@@ -22,9 +22,9 @@ result and, possibly, messages.
 
 import enum
 
-from shrimp_common import wrappers
-from shrimp_common.models import generic
-from shrimp_common.models import properties
+from decapod_common import wrappers
+from decapod_common.models import generic
+from decapod_common.models import properties
 
 
 @enum.unique

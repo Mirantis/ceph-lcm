@@ -21,10 +21,10 @@ and expired tokens are invalid.
 
 import bson.objectid
 
-from shrimp_common import config
-from shrimp_common import timeutils
-from shrimp_common.models import generic
-from shrimp_common.models import properties
+from decapod_common import config
+from decapod_common import timeutils
+from decapod_common.models import generic
+from decapod_common.models import properties
 
 
 CONF = config.make_api_config()
@@ -50,7 +50,7 @@ class TokenModel(generic.Model):
         self.expires_at = 0
 
     user = properties.ModelProperty(
-        "shrimp_common.models.user.UserModel",
+        "decapod_common.models.user.UserModel",
         "user_id"
     )
 

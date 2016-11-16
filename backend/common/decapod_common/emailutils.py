@@ -19,8 +19,8 @@ import smtplib
 from email.mime import multipart
 from email.mime import text
 
-from shrimp_common import config
-from shrimp_common import log
+from decapod_common import config
+from decapod_common import log
 
 
 CONF = config.make_config()

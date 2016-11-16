@@ -21,8 +21,8 @@ import gridfs.errors
 import pymongo
 import pymongo.uri_parser
 
-from shrimp_common import config
-from shrimp_common import log
+from decapod_common import config
+from decapod_common import log
 
 
 CONF = config.make_config()
@@ -60,7 +60,7 @@ class MongoDB:
 
         self.client = pymongo.MongoClient(uri, **mongo_kwargs)
         self.dbname = self.client.get_default_database()
-        self.dbname = self.dbname.name if self.dbname else "shrimp"
+        self.dbname = self.dbname.name if self.dbname else "decapod"
 
     @property
     def db(self):

@@ -26,8 +26,8 @@ REQUIREMENTS = (
 
 
 setuptools.setup(
-    name="shrimp-common",
-    description="Shrimp common package",
+    name="decapod-common",
+    description="Decapod common package",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -42,14 +42,14 @@ setuptools.setup(
     zip_safe=False,
     include_package_data=True,
     package_data={
-        "shrimp_common": [
+        "decapod_common": [
             "facts/**",
             "configs/**"
         ]
     },
     entry_points={
         "console_scripts": [
-            "shrimp-lock = shrimp_common.cliutils:mongolock_cli"
+            "decapod-lock = decapod_common.cliutils:mongolock_cli"
         ]
     },
     classifiers=(

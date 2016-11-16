@@ -49,11 +49,11 @@ import bson.objectid
 import pymongo
 import pymongo.errors
 
-from shrimp_common import exceptions
-from shrimp_common import log
-from shrimp_common import timeutils
-from shrimp_common import wrappers
-from shrimp_common.models import properties
+from decapod_common import exceptions
+from decapod_common import log
+from decapod_common import timeutils
+from decapod_common import wrappers
+from decapod_common.models import properties
 
 
 MODEL_DB_STRUCTURE = {
@@ -234,7 +234,7 @@ class Model(Base, metaclass=abc.ABCMeta):
         self._id = None
 
     initiator = properties.ModelProperty(
-        "shrimp_common.models.user.UserModel",
+        "decapod_common.models.user.UserModel",
         "initiator_id"
     )
 

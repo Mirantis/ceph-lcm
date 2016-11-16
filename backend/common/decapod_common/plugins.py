@@ -18,15 +18,15 @@ import functools
 
 import pkg_resources
 
-from shrimp_common import config
-from shrimp_common import log
-from shrimp_common import playbook_plugin
+from decapod_common import config
+from decapod_common import log
+from decapod_common import playbook_plugin
 
 
-NS_ALERT = "shrimp.alerts"
+NS_ALERT = "decapod.alerts"
 """Namespace for alert plugins to use."""
 
-NS_PLAYBOOKS = "shrimp.playbooks"
+NS_PLAYBOOKS = "decapod.playbooks"
 """Namespace for playbook plugins to use."""
 
 CONF = config.make_config()

@@ -24,10 +24,10 @@ is no need in explicit enumeration).
 
 import copy
 
-from shrimp_common import plugins
-from shrimp_common.models import generic
-from shrimp_common.models import properties
-from shrimp_common.models import server
+from decapod_common import plugins
+from decapod_common.models import generic
+from decapod_common.models import properties
+from decapod_common.models import server
 
 
 class PlaybookConfigurationModel(generic.Model):
@@ -51,7 +51,7 @@ class PlaybookConfigurationModel(generic.Model):
     )
 
     cluster = properties.ModelProperty(
-        "shrimp_common.models.cluster.ClusterModel",
+        "decapod_common.models.cluster.ClusterModel",
         "cluster_id"
     )
 

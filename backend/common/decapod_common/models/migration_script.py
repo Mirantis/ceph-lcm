@@ -21,8 +21,8 @@ update database, apply new schema or rework data.
 
 import enum
 
-from shrimp_common import timeutils
-from shrimp_common.models import generic
+from decapod_common import timeutils
+from decapod_common.models import generic
 
 
 @enum.unique

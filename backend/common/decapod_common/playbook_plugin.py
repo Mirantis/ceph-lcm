@@ -32,11 +32,11 @@ try:
 except ImportError:
     import json
 
-from shrimp_common import config
-from shrimp_common import exceptions
-from shrimp_common import log
-from shrimp_common import networkutils
-from shrimp_common.models import task
+from decapod_common import config
+from decapod_common import exceptions
+from decapod_common import log
+from decapod_common import networkutils
+from decapod_common.models import task
 
 
 CONF = config.make_config()
@@ -45,11 +45,11 @@ CONF = config.make_config()
 LOG = log.getLogger(__name__)
 """Logger."""
 
-ENV_ENTRY_POINT = "SHRIMP_ENTRYPOINT"
-ENV_TASK_ID = "SHRIMP_TASK_ID"
-ENV_EXECUTION_ID = "SHRIMP_EXECUTION_ID"
-ENV_DB_URI = "SHRIMP_DB_URI"
-DYNAMIC_INVENTORY_PATH = shutil.which("shrimp-inventory")
+ENV_ENTRY_POINT = "DECAPOD_ENTRYPOINT"
+ENV_TASK_ID = "DECAPOD_TASK_ID"
+ENV_EXECUTION_ID = "DECAPOD_EXECUTION_ID"
+ENV_DB_URI = "DECAPOD_DB_URI"
+DYNAMIC_INVENTORY_PATH = shutil.which("decapod-inventory")
 
 
 class Base(metaclass=abc.ABCMeta):
@@ -225,7 +225,7 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
     @functools.lru_cache()
     def get_playbook_configuration(self, task):
-        from shrimp_common.models import playbook_configuration
+        from decapod_common.models import playbook_configuration
 
         if not task:
             return None
@@ -280,7 +280,7 @@ class Playbook(Base, metaclass=abc.ABCMeta):
         super().on_pre_execute(task)
 
     def on_post_execute(self, task, *exc_info):
-        from shrimp_common.models import execution
+        from decapod_common.models import execution
 
         commandline = self.compose_command(task)
         env = self.get_environment_variables(task)

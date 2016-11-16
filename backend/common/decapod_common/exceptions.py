@@ -11,11 +11,11 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This are the basic exceptions for Shrimp tool."""
+"""This are the basic exceptions for Decapod tool."""
 
 
-class ShrimpError(Exception):
-    """Basic exception for Shrimp tool."""
+class DecapodError(Exception):
+    """Basic exception for Decapod tool."""
 
     def __init__(self, message=""):
         message = message or getattr(self, "description", None) \
@@ -23,81 +23,81 @@ class ShrimpError(Exception):
         super().__init__(message)
 
 
-class CannotUpdateDeletedModel(ShrimpError):
+class CannotUpdateDeletedModel(DecapodError):
     """Exception which is raised if you are trying to update deleted model."""
 
 
-class UniqueConstraintViolationError(ShrimpError):
+class UniqueConstraintViolationError(DecapodError):
     """Exception which is raised if db operation violates unique constraint."""
 
 
-class CannotDeleteRoleWithActiveUsers(ShrimpError):
+class CannotDeleteRoleWithActiveUsers(DecapodError):
     """Exception raised on attempt to delete role with active users."""
 
 
-class CannotDeleteClusterWithServers(ShrimpError):
+class CannotDeleteClusterWithServers(DecapodError):
     """Exception raised on attempt to delete cluster with servers."""
 
 
-class CannotDeleteServerInCluster(ShrimpError):
+class CannotDeleteServerInCluster(DecapodError):
     """Exception raised on attempt ot delete server which still in cluster."""
 
 
-class CannotStartTaskError(ShrimpError):
+class CannotStartTaskError(DecapodError):
     """Exception raised if it is impossible to start such task."""
 
 
-class CannotCancelTaskError(ShrimpError):
+class CannotCancelTaskError(DecapodError):
     """Exception raised if it is impossible to cancel such task."""
 
 
-class CannotCompleteTaskError(ShrimpError):
+class CannotCompleteTaskError(DecapodError):
     """Exception raised if it is impossible to complete such task."""
 
 
-class CannotFailTask(ShrimpError):
+class CannotFailTask(DecapodError):
     """Exception raised if it is impossible to fail such task."""
 
 
-class CannotBounceTaskError(ShrimpError):
+class CannotBounceTaskError(DecapodError):
     """Exception raised if it is impossible to bounce task."""
 
 
-class CannotSetExecutorError(ShrimpError):
+class CannotSetExecutorError(DecapodError):
     """Exception raised if it is impossible to set executor data."""
 
 
-class InternalDBError(ShrimpError):
+class InternalDBError(DecapodError):
     """Exception raised if it is impossible to complete DB request."""
 
 
-class CannotLockServers(ShrimpError, ValueError):
+class CannotLockServers(DecapodError, ValueError):
     """Exception raised if it is impossible to lock all servers."""
 
 
-class CannotDeleteLockedServer(ShrimpError):
+class CannotDeleteLockedServer(DecapodError):
     """Exception raised on attempt to delete server which still locked."""
 
 
-class UnknownPlaybookConfiguration(ShrimpError):
+class UnknownPlaybookConfiguration(DecapodError):
     """Exception raised if playbook configuration is unknown."""
 
 
-class PasswordResetExpiredError(ShrimpError):
+class PasswordResetExpiredError(DecapodError):
     """Exception raised if password reset token was expired."""
 
 
-class PasswordResetUnknownUser(ShrimpError):
+class PasswordResetUnknownUser(DecapodError):
     """Exception raised if no valid user for password resetting is found."""
 
 
-class MongoLockCannotAcquire(ShrimpError):
+class MongoLockCannotAcquire(DecapodError):
     """Exception raised is it is not possible to acquire mongo lock."""
 
 
-class MongoLockCannotProlong(ShrimpError):
+class MongoLockCannotProlong(DecapodError):
     """Exception raised if it is not possible to prolong mongo lock."""
 
 
-class MongoLockCannotRelease(ShrimpError):
+class MongoLockCannotRelease(DecapodError):
     """Exception raised if it is not possible to release mongo lock."""

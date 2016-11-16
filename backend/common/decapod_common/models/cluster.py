@@ -18,10 +18,10 @@ them to roles.
 """
 
 
-from shrimp_common import exceptions
-from shrimp_common import log
-from shrimp_common.models import generic
-from shrimp_common.models import server
+from decapod_common import exceptions
+from decapod_common import log
+from decapod_common.models import generic
+from decapod_common.models import server
 
 
 LOG = log.getLogger(__name__)
@@ -31,7 +31,7 @@ LOG = log.getLogger(__name__)
 class ClusterModel(generic.Model):
     """This is a model for the cluster.
 
-    In Shrimp cluster is a mutable exclusive group of servers (server
+    In Decapod cluster is a mutable exclusive group of servers (server
     cannot belong to different clusters). Also, it defines a set of roles
     specific to the domain of application (osd, mon, mds, rgw roles).
     """

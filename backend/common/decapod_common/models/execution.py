@@ -20,10 +20,10 @@ configuration to execute and creates task for execution.
 
 import enum
 
-from shrimp_common.models import db
-from shrimp_common.models import generic
-from shrimp_common.models import playbook_configuration
-from shrimp_common.models import properties
+from decapod_common.models import db
+from decapod_common.models import generic
+from decapod_common.models import playbook_configuration
+from decapod_common.models import properties
 
 
 @enum.unique

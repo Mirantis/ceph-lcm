@@ -14,7 +14,7 @@
 """Simple KV storage."""
 
 
-from shrimp_common.models import generic
+from decapod_common.models import generic
 
 
 class KV(generic.Base):

@@ -27,11 +27,11 @@ import uuid
 import pymongo
 import pymongo.errors
 
-from shrimp_common import exceptions
-from shrimp_common import log
-from shrimp_common import retryutils
-from shrimp_common import timeutils
-from shrimp_common.models import generic
+from decapod_common import exceptions
+from decapod_common import log
+from decapod_common import retryutils
+from decapod_common import timeutils
+from decapod_common.models import generic
 
 
 LOG = log.getLogger(__name__)

@@ -18,16 +18,16 @@ import collections
 
 import pymongo.errors
 
-from shrimp_common import exceptions
-from shrimp_common import passwords
-from shrimp_common.models import generic
-from shrimp_common.models import properties
+from decapod_common import exceptions
+from decapod_common import passwords
+from decapod_common.models import generic
+from decapod_common.models import properties
 
 
 class UserModel(generic.Model):
     """This is a model for the user.
 
-    User is a model which initiates some actions in Shrimp. Also,
+    User is a model which initiates some actions in Decapod. Also,
     it has to be authenticated and authorized.
     """
 
@@ -46,7 +46,7 @@ class UserModel(generic.Model):
         self._permissions = collections.defaultdict(set)
 
     role = properties.ModelProperty(
-        "shrimp_common.models.role.RoleModel",
+        "decapod_common.models.role.RoleModel",
         "role_id"
     )
 
@@ -133,7 +133,7 @@ class UserModel(generic.Model):
     def delete(self):
         super().delete()
 
-        from shrimp_common.models import token
+        from decapod_common.models import token
 
         token.revoke_for_user(self.model_id)
 

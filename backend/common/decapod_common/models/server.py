@@ -21,10 +21,10 @@ using API. It has to be created after Ansible playbook invocation.
 import enum
 import uuid
 
-from shrimp_common import exceptions
-from shrimp_common import retryutils
-from shrimp_common.models import generic
-from shrimp_common.models import properties
+from decapod_common import exceptions
+from decapod_common import retryutils
+from decapod_common.models import generic
+from decapod_common.models import properties
 
 
 @enum.unique
@@ -38,7 +38,7 @@ class ServerState(enum.IntEnum):
 class ServerModel(generic.Model):
     """This is a model for the server.
 
-    Server is a model, which presents physical servers in Shrimp.
+    Server is a model, which presents physical servers in Decapod.
     Servers are grouped into clusters. Please remember, that
     it is forbidden to create the model using API, it has to
     be created using Ansible playbook invocation.
@@ -62,7 +62,7 @@ class ServerModel(generic.Model):
         self.lock = None
 
     _cluster = properties.ModelProperty(
-        "shrimp_common.models.cluster.ClusterModel",
+        "decapod_common.models.cluster.ClusterModel",
         "cluster_id"
     )
 

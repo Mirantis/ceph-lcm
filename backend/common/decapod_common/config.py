@@ -11,7 +11,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This module contains configuration routines for Shrimp."""
+"""This module contains configuration routines for Decapod."""
 
 
 import functools
@@ -38,11 +38,11 @@ USER_CONFIG_HOME = os.getenv(
 """User config directory according to XDG specification."""
 
 CONFIG_FILES = (
-    "shrimp.yaml",
-    os.path.join(USER_CONFIG_HOME, "shrimp.yaml"),
-    os.path.join(HOME, ".shrimp.yaml"),
-    os.path.join("/", "etc", "shrimp", "config.yaml"),
-    pkg_resources.resource_filename("shrimp_common", "configs/defaults.yaml")
+    "decapod.yaml",
+    os.path.join(USER_CONFIG_HOME, "decapod.yaml"),
+    os.path.join(HOME, ".decapod.yaml"),
+    os.path.join("/", "etc", "decapod", "config.yaml"),
+    pkg_resources.resource_filename("decapod_common", "configs/defaults.yaml")
 )
 """A list of config files in order to load/parse them."""
 
@@ -85,7 +85,7 @@ class ApiConfig(Config):
     def logging_config(self):
         config = super().logging_config
         config["loggers"] = {
-            "shrimp": self["api"]["logging"]
+            "decapod": self["api"]["logging"]
         }
 
         return config
@@ -97,7 +97,7 @@ class ControllerConfig(Config):
     def logging_config(self):
         config = super().logging_config
         config["loggers"] = {
-            "shrimp": self["controller"]["logging"]
+            "decapod": self["controller"]["logging"]
         }
 
         return config

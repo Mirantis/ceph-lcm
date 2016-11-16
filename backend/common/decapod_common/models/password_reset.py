@@ -19,15 +19,15 @@ import math
 import os
 import string
 
-from shrimp_common import config
-from shrimp_common import exceptions
-from shrimp_common import log
-from shrimp_common import passwords
-from shrimp_common import retryutils
-from shrimp_common import timeutils
-from shrimp_common.models import generic
-from shrimp_common.models import token
-from shrimp_common.models import user
+from decapod_common import config
+from decapod_common import exceptions
+from decapod_common import log
+from decapod_common import passwords
+from decapod_common import retryutils
+from decapod_common import timeutils
+from decapod_common.models import generic
+from decapod_common.models import token
+from decapod_common.models import user
 
 
 CONF = config.make_config()

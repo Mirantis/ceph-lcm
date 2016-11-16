@@ -1,11 +1,11 @@
 ---
-# This is a default config for Shrimp tool
+# This is a default config for Decapod tool
 #
 # Load order is:
-# - /etc/shrimp/config.toml
-# - $HOME/.config/shrimp/config.toml (or $XDG_CONFIG_HOME/shrimp/config.toml)
-# - ~/.shrimp.toml
-# - $(pwd)/shrimp.toml
+# - /etc/decapod/config.toml
+# - $HOME/.config/decapod/config.toml (or $XDG_CONFIG_HOME/decapod/config.toml)
+# - ~/.decapod.toml
+# - $(pwd)/decapod.toml
 # - This file
 
 
@@ -49,7 +49,7 @@ common:
 api:
   debug: false
   testing: false
-  logger_name: "shrimp.shrimp_api.wsgi"
+  logger_name: "decapod.decapod_api.wsgi"
   logger_handler_policy: "never"
   json_sort_keys: true
   jsonify_prettyprint_regular: true
@@ -67,7 +67,7 @@ api:
 
 
 controller:
-  pidfile: "/tmp/shrimp-controller.pid"
+  pidfile: "/tmp/decapod-controller.pid"
   daemon: false
   timeout: 60
   ansible_config: "/vagrant/ansible.cfg"

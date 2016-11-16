@@ -1,2 +1,2 @@
-graft shrimp_common/configs
-graft shrimp_common/facts
+graft decapod_common/configs
+graft decapod_common/facts

@@ -22,7 +22,7 @@ import warnings
 import argon2
 import argon2.exceptions
 
-from shrimp_common import config
+from decapod_common import config
 
 
 CONF = config.make_config()
