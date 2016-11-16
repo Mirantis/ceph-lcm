@@ -1364,31 +1364,270 @@ class V1Client(Client):
         return self._session.delete(url, **kwargs)
 
     def get_permissions(self, **kwargs):
+        """This method lists exisiting permissions in system. Not those,
+        which available for current user, but overall ones. This is
+        mostly required if you compose new role.
+
+        This method does ``GET /v1/permission`` endpoint call.
+
+        *Example of result*:
+
+        .. code-block:: json
+
+            {
+                "items": [
+                    {
+                        "name": "api",
+                        "permissions": [
+                            "create_cluster",
+                            "create_execution",
+                            "create_playbook_configuration",
+                            "create_role",
+                            "create_server",
+                            "create_user",
+                            "delete_cluster",
+                            "delete_execution",
+                            "delete_playbook_confuiguration",
+                            "delete_role",
+                            "delete_server",
+                            "delete_user",
+                            "edit_cluster",
+                            "edit_playbook_configuration",
+                            "edit_role",
+                            "edit_server",
+                            "edit_user",
+                            "view_cluster",
+                            "view_cluster_versions",
+                            "view_execution",
+                            "view_execution_steps",
+                            "view_execution_version",
+                            "view_playbook_configuration",
+                            "view_playbook_configuration_version",
+                            "view_role",
+                            "view_role_versions",
+                            "view_server",
+                            "view_server_versions",
+                            "view_user",
+                            "view_user_versions"
+                        ]
+                    },
+                    {
+                        "name": "playbook",
+                        "permissions": [
+                            "add_osd",
+                            "cluster_deploy",
+                            "hello_world",
+                            "purge_cluster",
+                            "remove_osd"
+                        ]
+                    }
+                ]
+            }
+
+        .. note::
+
+            As you can see, there are 2 types of permissions in Decapod:
+
+            1. api
+            2. playbook
+
+            *api* permissions are responsible for accessing API
+            endpoints. If user wants to access some API endpoint, he has
+            to have appropriate permission in his role. Some endpoints
+            require several permissions and rule of thumb here is common
+            sense: is user wants to *update* role, he has to have a
+            permission to *view* it.
+
+            *playbook* permissions are slightly different beasts. Each
+            permission allows user to execute a certain playbook.
+
+        :return: A list of premissions like those mentioned above
+        :rtype: list
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/permission/")
         return self._session.get(url, **kwargs)
 
     def get_playbooks(self, **kwargs):
+        """This method returns a list of playbooks avaialble for execution.
+
+        This method does ``GET /v1/playbook`` endpoint call.
+
+        *Example of result*:
+
+        .. code-block:: json
+
+            {
+                "items": [
+                    {
+                        "description": "Adding new OSD to the cluster.",
+                        "id": "add_osd",
+                        "name": "Add OSD to Ceph cluster",
+                        "required_server_list": true
+                    },
+                    {
+                        "description": "Ceph cluster deployment playbook.",
+                        "id": "cluster_deploy",
+                        "name": "Deploy Ceph cluster",
+                        "required_server_list": true
+                    },
+                    {
+                        "description": "Example plugin for playbook.",
+                        "id": "hello_world",
+                        "name": "Hello World",
+                        "required_server_list": false
+                    },
+                    {
+                        "description": "Purge whole Ceph cluster.",
+                        "id": "purge_cluster",
+                        "name": "Purge cluster",
+                        "required_server_list": false
+                    },
+                    {
+                        "description": "Remove OSD host from cluster.",
+                        "id": "remove_osd",
+                        "name": "Remove OSD host from Ceph cluster",
+                        "required_server_list": true
+                    }
+                ]
+            }
+
+        .. note::
+
+            Please remember that ``playbook`` parameter in ``POST
+            /v1/playbook_configuration`` is ``id`` field here.
+
+        :return: A list of playbook data.
+        :rtype: list
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/playbook/")
         return self._session.get(url, **kwargs)
 
     @no_auth
     def get_info(self, **kwargs):
+        """This method fetches basic data from Shrimp API.
+
+        It makes no sense to use this method for anything, it is just a
+        healthcheck that service actually works.
+
+        *Example of result*:
+
+        .. code-block:: json
+
+            {
+                "time": {
+                    "local": "2016-11-16T12:46:55.868153",
+                    "unix": 1479300415,
+                    "utc": "2016-11-16T12:46:55.868220"
+                },
+                "version": "0.1.0"
+            }
+
+        .. important::
+
+            This method is basically the only one you may access being
+            not logged in.
+
+        :return: Something
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/info/")
         return self._session.get(url, **kwargs)
 
     @no_auth
     def request_password_reset(self, login, **kwargs):
+        """This method requests password resetting for a user.
+
+        Please be noticed that no real password resetting is occured, it
+        just *requesting* password reset. After that, user will receive
+        secret link on his email. If user will proceed that link, he can
+        *actually* reset her password.
+
+        This method does ``POST /v1/password_reset`` endpoint call.
+
+        *Example of result*:
+
+        .. code-block:: json
+
+            {
+                "message": "Password reset was requested."
+            }
+
+        :param str login: Login of user who is required to reset password.
+        :return: A message that password reset was requested.
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/password_reset/")
         payload = {"login": login}
         return self._session.post(url, json=payload, **kwargs)
 
     @no_auth
     def peek_password_reset(self, reset_token, **kwargs):
+        """This method checks if password reset with given token is
+        still requested. It does not consume token, it just checks if
+        it is possible or not.
+
+        *Example of result*:
+
+        .. code-block:: json
+
+            {
+                "message": "Password reset was requested."
+            }
+
+        :param str reset_token: Password reset token from email.
+        :return: A message that password reset was requested.
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/password_reset/{0}/".format(reset_token))
         return self._session.get(url, **kwargs)
 
     @no_auth
     def reset_password(self, reset_token, new_password, **kwargs):
+        """This method does actual password resetting.
+
+        *Example of result*:
+
+        .. code-block:: json
+
+            {
+                "message": "Password has been reset."
+            }
+
+        :param str reset_token: Password reset token from email.
+        :param str new_password: New password for user.
+        :return: A message that password was reset.
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/password_reset/{0}/".format(reset_token))
         payload = {"password": new_password}
         return self._session.post(url, json=payload, **kwargs)
