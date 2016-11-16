@@ -744,10 +744,42 @@ class V1Client(Client):
 
     @inject_pagination_params
     def get_playbook_configurations(self, query_params, **kwargs):
+        """This method fetches a list of latest playbook configuration models
+        from API.
+
+        By default, only active playbook configurations will be listed.
+
+        This method does ``GET /v1/playbook_configuration`` endpoint call.
+
+        :return: List of latest playbook configuration models.
+        :rtype: list
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/playbook_configuration/")
         return self._session.get(url, params=query_params, **kwargs)
 
     def get_playbook_configuration(self, playbook_configuration_id, **kwargs):
+        """This method fetches a single playbook configuration model
+        (latest version) from API.
+
+        This method does ``GET
+        /v1/playbook_configuration/{playbook_configuration_id}``
+        endpoint call.
+
+        :param str playbook_configuration_id: UUID4 (:rfc:`4122`) in
+            string form of playbook configuration's ID.
+        :return: Playbook configuration model of latest available version.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url(
             "/v1/playbook_configuration/{0}/".format(playbook_configuration_id)
         )
@@ -755,6 +787,24 @@ class V1Client(Client):
 
     def get_playbook_configuration_versions(self, playbook_configuration_id,
                                             query_params, **kwargs):
+        """This method fetches a list of all versions for a certain
+        playbook configuration model.
+
+        This method does ``GET
+        /v1/playbook_configuration/{playbook_configuration_id}/version/``
+        endpoint call.
+
+        :param str playbook_configuration_id: UUID4 (:rfc:`4122`) in
+            string form of playbook configuration's ID.
+        :return: List of playbook configuration versions for playbook
+            configuration with ID ``playbook_configuration_id``.
+        :rtype: list
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url(
             "/v1/playbook_configuration/{0}/version/".format(
                 playbook_configuration_id))
@@ -762,6 +812,25 @@ class V1Client(Client):
 
     def get_playbook_configuration_version(self, playbook_configuration_id,
                                            version, **kwargs):
+
+        """This method fetches a certain version of particular playbook
+        configuration model.
+
+        This method does ``GET
+        /v1/playbook_configuration/{playbook_configuration_id}/version/{version}``
+        endpoint call.
+
+        :param str playbook_configuration_id: UUID4 (:rfc:`4122`) in
+            string form of playbook configuration's ID
+        :param int version: The number of version to fetch.
+        :return: Playbook configuration model of certain version.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url(
             "/v1/playbook_configuration/{0}/version/{1}/".format(
                 playbook_configuration_id, version))
@@ -769,6 +838,26 @@ class V1Client(Client):
 
     def create_playbook_configuration(self, name, cluster_id, playbook,
                                       server_ids, **kwargs):
+        """This method creates new playbook configuration model.
+
+        This method does ``POST /v1/playbook_configuration/`` endpoint
+        call.
+
+        :param str name: Name of the playbook configuration.
+        :param str cluster_id: UUID4 (:rfc:`4122`) in string form
+            of cluster's ID
+        :param str playbook: ID of playbook to use.
+        :param server_ids: List of server UUID4 (:rfc:`4122`) in string
+            form of server model IDs.
+            :type server_ids: [:py:class:`str`, ...]
+        :return: New cluster model.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/playbook_configuration/")
         payload = {
             "name": name,
@@ -780,12 +869,48 @@ class V1Client(Client):
         return self._session.post(url, json=payload, **kwargs)
 
     def update_playbook_configuration(self, model_data, **kwargs):
+        """This method updates playbook configuration model.
+
+        Please be noticed that no real update is performed, just a new
+        version of the same playbook configuration is created.
+
+        This method does ``PUT /v1/playbook_configuration/`` endpoint
+        call.
+
+        :param dict model_data: Updated model of the playbook configuration.
+        :return: Updated playbook configuration model.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url(
             "/v1/playbook_configuration/{0}/".format(model_data["id"]))
         return self._session.put(url, json=model_data, **kwargs)
 
     def delete_playbook_configuration(self, playbook_configuration_id,
                                       **kwargs):
+        """This method deletes playbook configuration model.
+
+        Please be noticed that no real delete is performed, playbook
+        configuration model is marked as deleted (``time_deleted > 0``)
+        and model will be skipped from listing, updates are forbidden.
+
+        This method does ``DELETE /v1/playbook_configuration/`` endpoint
+        call.
+
+        :param str playbook_configuration_id: UUID4 (:rfc:`4122`) in
+            string form of playbook configuration's ID
+        :return: Deleted playbook configuration model.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url(
             "/v1/playbook_configuration/{0}/".format(playbook_configuration_id)
         )
