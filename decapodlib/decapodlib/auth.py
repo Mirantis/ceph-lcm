@@ -11,7 +11,15 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Custom authentication for decapodlib."""
+"""This module contains implementation of authorization for Decapod API.
+
+Decapod client uses `requests
+<http://docs.python-requests.org/en/master/>`_ library
+to access its API so authentication is done using
+requests's classes. Please check `official guide
+<http://docs.python-requests.org/en/master/user/advanced/#custom-authentication>`_
+for details.
+"""
 
 
 from __future__ import absolute_import
@@ -24,7 +32,14 @@ import requests.auth
 
 
 class V1Auth(requests.auth.AuthBase):
-    """Request authentication provider for Decapod API V1."""
+    """Request authentication provider for Decapod API V1.
+
+    The idea of that provider is really simple: it stores authentication
+    token from Decapod API and injects it into proper header on
+    every request. If no token is defined, it will authorize for you
+    transparently using :py:class:`decapodlib.client.Client` login
+    method.
+    """
 
     AUTH_URL = "/v1/auth/"
     """URL of authentication."""
@@ -52,13 +67,13 @@ class V1Auth(requests.auth.AuthBase):
         return req
 
     def revoke_token(self):
-        """Drops information about known token."""
+        """Resets information about known token."""
 
         with self.token_lock:
             self.token = None
 
 
 def no_auth(request):
-    """Do not do any authentication for request."""
+    """Trivial authenticator which does no authentication for a request."""
 
     return request

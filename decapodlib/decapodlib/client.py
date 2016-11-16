@@ -90,6 +90,8 @@ LOG = logging.getLogger(__name__)
 VERSION = pkg_resources.get_distribution("decapodlib").version
 """Package version."""
 
+__all__ = "VERSION", "Client", "V1Client"
+
 
 def json_dumps(data):
     """Makes compact JSON dumps.

@@ -14,6 +14,7 @@ API
 
   decapodlib
   decapodlib.client
+  decapodlib.auth
 
 
 decapodlib
@@ -28,4 +29,11 @@ decapodlib.client
 +++++++++++++++++
 
 .. automodule:: decapodlib.client
+  :members:
+
+
+decapodlib.auth
++++++++++++++++
+
+.. automodule:: decapodlib.auth
   :members:
