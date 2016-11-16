@@ -1,5 +1,5 @@
 ---
-# Provision for Shrimp project development environment
+# Provision for Decapod project development environment
 
 
 - name: Setup development environment
@@ -11,7 +11,7 @@
     LC_CTYPE: C
     TMUX: 1
   vars:
-    venv: shrimp
+    venv: decapod
   roles:
     - base
     - python

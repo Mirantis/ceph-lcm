@@ -28,9 +28,9 @@ pyenv_pythons:
   - "3.5.2"
   - "pypy-5.3.1"
 
-shrimp_python: "3.5.2"
+decapod_python: "3.5.2"
 tox_version: "2.3.1"
-venv: shrimp
+venv: decapod
 
 pyenv_plugins:
   - name: pyenv-virtualenv

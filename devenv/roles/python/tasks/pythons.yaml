@@ -1,5 +1,5 @@
 ---
-# Install Pythons in Pyenv and create Shrimp virtualenv
+# Install Pythons in Pyenv and create Decapod virtualenv
 
 
 - name: Install Pythons
@@ -9,13 +9,13 @@
     # -s flags for pyenv install tells that it skips if nothing to do
     - skip_ansible_lint
 
-- name: Check if Shrimp virtualenv exists
-  stat: path="{{ pyenv_root }}/versions/shrimp"
-  register: shrimp_virtualenv
+- name: Check if Decapod virtualenv exists
+  stat: path="{{ pyenv_root }}/versions/decapod"
+  register: decapod_virtualenv
 
-- name: Create Shrimp virtualenv
-  command: bash -ic "pyenv virtualenv {{ shrimp_python }} {{ venv }}"
-  when: not shrimp_virtualenv.stat.exists
+- name: Create Decapod virtualenv
+  command: bash -ic "pyenv virtualenv {{ decapod_python }} {{ venv }}"
+  when: not decapod_virtualenv.stat.exists
 
 - name: Install requirements in PyEnv virtualenv
   command: bash -ic "pyenv activate {{ venv }} && pip install -r {{ item }} -c constraints.txt"
