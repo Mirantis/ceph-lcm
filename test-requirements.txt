@@ -1,4 +1,4 @@
-# Requirements to test Shrimp
+# Requirements to test Decapod
 
 # Cannot use it here because pbr still do not understand such line.
 # -c constraints.txt

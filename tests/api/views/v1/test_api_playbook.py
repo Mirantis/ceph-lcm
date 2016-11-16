@@ -16,7 +16,7 @@
 
 import pytest
 
-from shrimp_common import plugins
+from decapod_common import plugins
 
 
 def test_access_unauth(client_v1):

@@ -18,7 +18,7 @@ import unittest.mock as mock
 
 import pytest
 
-from shrimp_common.models import task
+from decapod_common.models import task
 
 
 def have_mocked(request, *mock_args, **mock_kwargs):
@@ -42,13 +42,13 @@ def task_watch(request):
 
 @pytest.fixture
 def mainloop_process_task(request):
-    return have_mocked(request, "shrimp_controller.mainloop.process_task")
+    return have_mocked(request, "decapod_controller.mainloop.process_task")
 
 
 @pytest.fixture
 def mainloop_possible_to_process(request):
     mocked = have_mocked(request,
-                         "shrimp_controller.mainloop.possible_to_process")
+                         "decapod_controller.mainloop.possible_to_process")
     mocked.return_value = True
 
     return mocked

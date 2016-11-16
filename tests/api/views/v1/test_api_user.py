@@ -19,14 +19,14 @@ import json
 
 import pytest
 
-from shrimp_common import passwords
-from shrimp_common.models import user
+from decapod_common import passwords
+from decapod_common.models import user
 
 
 @pytest.fixture
 def new_password_message(monkeypatch):
     monkeypatch.setattr(
-        "shrimp_api.views.v1.user.NEW_PASSWORD_MESSAGE",
+        "decapod_api.views.v1.user.NEW_PASSWORD_MESSAGE",
         "{password}"
     )
 

@@ -11,12 +11,12 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for shrimp_common.models.execution."""
+"""Tests for decapod_common.models.execution."""
 
 
 import pytest
 
-from shrimp_common.models import execution
+from decapod_common.models import execution
 
 
 def test_create(new_execution, new_pcmodel, pymongo_connection):

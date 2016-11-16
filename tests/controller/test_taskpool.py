@@ -21,9 +21,9 @@ import unittest.mock
 
 import pytest
 
-from shrimp_common import config
-from shrimp_common.models import task
-from shrimp_controller import taskpool
+from decapod_common import config
+from decapod_common.models import task
+from decapod_controller import taskpool
 
 
 CONF = config.make_controller_config()
@@ -44,7 +44,7 @@ def create_task():
 
 @pytest.yield_fixture
 def mocked_plugin():
-    patch = unittest.mock.patch("shrimp_common.plugins.get_playbook_plugins")
+    patch = unittest.mock.patch("decapod_common.plugins.get_playbook_plugins")
     with patch as ptch:
         plugin = unittest.mock.MagicMock()
 

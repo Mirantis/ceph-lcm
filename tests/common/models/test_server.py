@@ -11,13 +11,13 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for shrimp_common.models.server."""
+"""Tests for decapod_common.models.server."""
 
 
 import pytest
 
-from shrimp_common import exceptions
-from shrimp_common.models import server
+from decapod_common import exceptions
+from decapod_common.models import server
 
 
 @pytest.mark.parametrize("state", (

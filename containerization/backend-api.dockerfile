@@ -1,13 +1,13 @@
 # vi: set ft=dockerfile :
 
 
-FROM shrimp-base-plugins
+FROM decapod-base-plugins
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
 COPY output/eggs /eggs
 COPY constraints.txt /constraints.txt
-COPY containerization/files/uwsgi.ini /etc/shrimp-api-uwsgi.ini
+COPY containerization/files/uwsgi.ini /etc/decapod-api-uwsgi.ini
 
 
 RUN set -x \
@@ -20,8 +20,8 @@ RUN set -x \
     python3-dev \
     python3-pip \
   && pip3 install --compile --no-cache-dir --disable-pip-version-check -c /constraints.txt uwsgi \
-  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_migrations*.whl \
-  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/shrimp_api*.whl \
+  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_migrations*.whl \
+  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_api*.whl \
   && rm -r /eggs /constraints.txt \
   && apt-get clean \
   && apt-get purge -y libffi-dev libpcre3-dev python3-dev python3-pip gcc \
@@ -32,4 +32,4 @@ RUN set -x \
 EXPOSE 8000
 
 ENTRYPOINT ["/usr/bin/dumb-init", "-c", "--"]
-CMD ["sh", "-c", "shrimp-migrations apply && uwsgi /etc/shrimp-api-uwsgi.ini"]
+CMD ["sh", "-c", "decapod-migrations apply && uwsgi /etc/decapod-api-uwsgi.ini"]

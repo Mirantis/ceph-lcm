@@ -1,15 +1,15 @@
 Installation
 ============
 
-Shrimp is a tool to manage lifecycle of Ceph cluster. It is extendable
+Decapod is a tool to manage lifecycle of Ceph cluster. It is extendable
 by plugins and it is possible to run arbitrary actions on remote nodes,
 but default deliverable will not include them.
 
-Shrimp uses Ansible to manage deployment and management of Ceph nodes.
+Decapod uses Ansible to manage deployment and management of Ceph nodes.
 You may consider each plugin as Ansible playbook and possibilities to
-set host/extra variables + access to Shrimp data model.
+set host/extra variables + access to Decapod data model.
 
-What Shrimp does and does not:
+What Decapod does and does not:
 
 *Does*:
 

@@ -2,7 +2,7 @@
 version: "2"
 services:
   frontend:
-    image: shrimp-frontend
+    image: decapod-frontend
     links:
       - api
       - cron
@@ -11,26 +11,26 @@ services:
       - "10000:443"
     restart: always
   api:
-    image: shrimp-api
+    image: decapod-api
     links:
       - database
     restart: "on-failure:5"
   controller:
-    image: shrimp-controller
+    image: decapod-controller
     links:
       - database
     restart: "on-failure:5"
   database:
-    image: shrimp-db
+    image: decapod-db
     volumes_from:
       - database_data
     restart: always
   database_data:
-    image: shrimp-db-data
+    image: decapod-db-data
     volumes:
       - /data/db
   cron:
-    image: shrimp-cron
+    image: decapod-cron
     links:
       - database
     restart: "on-failure:3"

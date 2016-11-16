@@ -1,12 +1,12 @@
-.. Shrimp documentation master file, created by
+.. Decapod documentation master file, created by
    sphinx-quickstart on Mon Nov  7 14:27:18 2016.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Shrimp's documentation!
-==================================
+Welcome to Decapod's documentation!
+===================================
 
-Shrimp is intendend to simplify deployment and lifecycle management of
+Decapod is intendend to simplify deployment and lifecycle management of
 `Ceph <http://ceph.com>`_.
 
 Using this tool, it is possible to deploy clusters with best known
@@ -15,7 +15,7 @@ if not needed anymore. It provides simple API to manage cluster
 configurations. Also, it is possible to use it web UI to manage your
 clusters in several clicks.
 
-Shrimp uses `Ansible <http://ansible.com>`_ with `ceph-ansible
+Decapod uses `Ansible <http://ansible.com>`_ with `ceph-ansible
 <https://github.com/ceph/ceph-ansible>`_ community project to deliver
 the best user experience. Every action is supported by plugins, which
 encapsulate best practices and settings. If user do not like proviided

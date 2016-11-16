@@ -19,15 +19,15 @@ import os
 
 import pytest
 
-from shrimp_common import playbook_plugin
-from shrimp_common.models import task
-from shrimp_controller import exceptions
-from shrimp_controller import inventory
+from decapod_common import playbook_plugin
+from decapod_common.models import task
+from decapod_controller import exceptions
+from decapod_controller import inventory
 
 
 @pytest.fixture()
 def mocked_configure(monkeypatch, configure_model, pymongo_connection):
-    monkeypatch.setattr("shrimp_common.models.db.MongoDB",
+    monkeypatch.setattr("decapod_common.models.db.MongoDB",
                         lambda: pymongo_connection)
 
 

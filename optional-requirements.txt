@@ -1,4 +1,4 @@
-# Optional requirements for Shrimp (suitable for development)
+# Optional requirements for Decapod (suitable for development)
 
 ipdb
 ipython

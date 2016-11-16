@@ -11,12 +11,12 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for shrimp_common.models.playbook_configuration."""
+"""Tests for decapod_common.models.playbook_configuration."""
 
 
 import pytest
 
-from shrimp_common.models import playbook_configuration
+from decapod_common.models import playbook_configuration
 
 
 def test_create(new_cluster, new_servers, public_playbook_name,

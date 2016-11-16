@@ -1,2 +1,2 @@
-include shrimp_deploy_cluster/config.yaml
-include shrimp_deploy_cluster/playbook.yaml
+include decapod_deploy_cluster/config.yaml
+include decapod_deploy_cluster/playbook.yaml

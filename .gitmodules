@@ -1,3 +1,3 @@
-[submodule "backend/ansible/shrimp_ansible/ceph-ansible"]
-	path = backend/ansible/shrimp_ansible/ceph-ansible
+[submodule "ceph-ansible"]
+	path = backend/ansible/decapod_ansible/ceph-ansible
 	url = https://github.com/ceph/ceph-ansible.git

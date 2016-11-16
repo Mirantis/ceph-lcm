@@ -24,8 +24,8 @@ REQUIREMENTS = (
 
 
 setuptools.setup(
-    name="shrimp-ansible",
-    description="Shrimp Ansible files",
+    name="decapod-ansible",
+    description="Decapod Ansible files",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -40,7 +40,7 @@ setuptools.setup(
     zip_safe=False,
     include_package_data=True,
     package_data={
-        "shrimp_ansible": [
+        "decapod_ansible": [
             "ceph-ansible/LICENSE",
             "ceph-ansible/library",
             "ceph-ansible/plugins",
@@ -50,7 +50,7 @@ setuptools.setup(
     },
     entry_points={
         "console_scripts": [
-            "shrimp-ansible-deploy-config = shrimp_ansible.generate_config:write_config"  # NOQA
+            "decapod-ansible-deploy-config = decapod_ansible.generate_config:write_config"  # NOQA
         ]
     },
     classifiers=(

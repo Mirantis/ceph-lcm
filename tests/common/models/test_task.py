@@ -11,14 +11,14 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Test for shrimp_common.models.task."""
+"""Test for decapod_common.models.task."""
 
 
 import pytest
 
-from shrimp_common import exceptions
-from shrimp_common.models import execution
-from shrimp_common.models import task
+from decapod_common import exceptions
+from decapod_common.models import execution
+from decapod_common.models import task
 
 
 @pytest.fixture
@@ -181,7 +181,7 @@ def test_finish_not_started_task(task_type, finish_action, configure_model):
     executor_id = pytest.faux.gen_uuid()
     new_task = task.Task(task_type, executor_id).create()
 
-    with pytest.raises(exceptions.ShrimpError):
+    with pytest.raises(exceptions.DecapodError):
         getattr(new_task, finish_action)()
 
 
@@ -206,7 +206,7 @@ def test_finish_finished_task(task_type, how_to_finish, how_to_finish_again,
     new_task.start()
     getattr(new_task, how_to_finish)()
 
-    with pytest.raises(exceptions.ShrimpError):
+    with pytest.raises(exceptions.DecapodError):
         getattr(new_task, how_to_finish_again)()
 
 

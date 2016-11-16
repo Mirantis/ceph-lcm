@@ -19,7 +19,7 @@ import setuptools
 
 
 setuptools.setup(
-    name="shrimp-plugin-playbook-{{ cookiecutter.package }}",
+    name="decapod-plugin-playbook-{{ cookiecutter.package }}",
     description="{{ cookiecutter.description }}",
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -27,7 +27,7 @@ setuptools.setup(
     url="https://github.com/Mirantis/ceph-lcm",
     packages=setuptools.find_packages(),
     entry_points={
-        "shrimp.playbooks": [
+        "decapod.playbooks": [
             "{{ cookiecutter.entry_point }} = {{ cookiecutter.package }}.plugin:{{ cookiecutter.plugin_class_name }}"
         ]
     },
@@ -40,7 +40,7 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "shrimp_common=>0.1,<0.2"
+        "decapod_common=>0.1,<0.2"
     ],
     zip_safe=False
 )

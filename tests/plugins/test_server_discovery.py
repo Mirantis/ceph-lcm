@@ -21,9 +21,9 @@ import shutil
 
 import pytest
 
-from shrimp_common import playbook_plugin
-from shrimp_common import plugins
-from shrimp_common.models import task
+from decapod_common import playbook_plugin
+from decapod_common import plugins
+from decapod_common.models import task
 
 
 @pytest.fixture
@@ -83,9 +83,9 @@ def test_compose_command(new_task, plugin):
 
     assert args == ["new"]
     if "--inventory-file" in opts:
-        assert opts["--inventory-file"] == shutil.which("shrimp-inventory")
+        assert opts["--inventory-file"] == shutil.which("decapod-inventory")
     else:
-        assert opts["-i"] == shutil.which("shrimp-inventory")
+        assert opts["-i"] == shutil.which("decapod-inventory")
     if "--module-name" in opts:
         assert opts["--module-name"] == plugin.MODULE
     else:

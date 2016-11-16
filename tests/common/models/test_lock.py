@@ -11,16 +11,16 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for shrimp_common.models.lock."""
+"""Tests for decapod_common.models.lock."""
 
 
 import time
 
 import pytest
 
-from shrimp_common import exceptions
-from shrimp_common import timeutils
-from shrimp_common.models import lock
+from decapod_common import exceptions
+from decapod_common import timeutils
+from decapod_common.models import lock
 
 
 @pytest.fixture

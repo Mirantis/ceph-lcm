@@ -11,7 +11,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for shrimp_api.validators."""
+"""Tests for decapod_api.validators."""
 
 
 import unittest.mock as mock
@@ -19,8 +19,8 @@ import uuid
 
 import pytest
 
-from shrimp_api import exceptions
-from shrimp_api import validators
+from decapod_api import exceptions
+from decapod_api import validators
 
 
 def dummy_function(self):

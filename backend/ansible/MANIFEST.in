@@ -1,5 +1,5 @@
-include shrimp_ansible/ceph-ansible/LICENSE
-graft shrimp_ansible/ceph-ansible/library
-graft shrimp_ansible/ceph-ansible/plugins
-graft shrimp_ansible/ceph-ansible/roles
-graft shrimp_ansible/plugins
+include decapod_ansible/ceph-ansible/LICENSE
+graft decapod_ansible/ceph-ansible/library
+graft decapod_ansible/ceph-ansible/plugins
+graft decapod_ansible/ceph-ansible/roles
+graft decapod_ansible/plugins

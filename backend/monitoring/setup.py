@@ -18,7 +18,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "shrimp-ansible==0.1.0",
+    "decapod-ansible==0.1.0",
     "PyMongo[tls]>=3.3,<3.4",
     "PyYAML>=3.11,<5",
     "ipaddr>=2.1,<2.2"
@@ -26,8 +26,8 @@ REQUIREMENTS = (
 
 
 setuptools.setup(
-    name="shrimp-monitoring",
-    description="Custom monitoring plugin for Shrimp",
+    name="decapod-monitoring",
+    description="Custom monitoring plugin for Decapod",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -41,14 +41,14 @@ setuptools.setup(
     install_requires=REQUIREMENTS,
     include_package_data=True,
     package_data={
-        "shrimp_monitoring": [
+        "decapod_monitoring": [
             "ansible_playbook.yaml",
             "html_js_css/*"
         ]
     },
     entry_points={
         "console_scripts": [
-            "shrimp-collect-data = shrimp_monitoring.src.ansible:main"
+            "decapod-collect-data = decapod_monitoring.src.ansible:main"
         ]
     },
     zip_safe=True,

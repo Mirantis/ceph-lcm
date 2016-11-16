@@ -17,8 +17,8 @@
 import flask.testing
 import pytest
 
-import shrimp_api
-from shrimp_common.models import user
+import decapod_api
+from decapod_common.models import user
 
 
 class JsonApiClient(flask.testing.FlaskClient):
@@ -74,7 +74,7 @@ class JsonApiClient(flask.testing.FlaskClient):
 
 @pytest.yield_fixture
 def app(configure_model):
-    application = shrimp_api.create_application()
+    application = decapod_api.create_application()
     application.testing = True
     application.test_client_class = JsonApiClient
 

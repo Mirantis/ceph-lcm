@@ -20,10 +20,10 @@ import unittest.mock
 import gridfs.grid_file
 import pytest
 
-from shrimp_common.models import execution
-from shrimp_common.models import execution_step
-from shrimp_common.models import role
-from shrimp_common.models import task
+from decapod_common.models import execution
+from decapod_common.models import execution_step
+from decapod_common.models import role
+from decapod_common.models import task
 
 
 @pytest.fixture

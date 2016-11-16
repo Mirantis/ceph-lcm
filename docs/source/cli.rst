@@ -1,12 +1,13 @@
-Shrimp CLI
-==========
+Decapod CLI
+===========
 
 Installation
 ------------
 
-To install Shrimp CLI on your local machine, you need to install 2
-packages: ``shrimplib`` and ``shrimp-cli``. First package is RPC client
-library to access Shrimp API, second is CLI wrapper for that library.
+To install Decapod CLI on your local machine, you need to install 2
+packages: ``decapodlib`` and ``decapod-cli``. First package is RPC
+client library to access Decapod API, second is CLI wrapper for that
+library.
 
 To build packages, execute the following for the top level of the source
 code repository:
@@ -20,16 +21,16 @@ directory. After that, you need to install them with
 
 .. code-block:: bash
 
-    $ pip install output/eggs/shrimplib*.whl output/eggs/shrimp_cli*.whl
+    $ pip install output/eggs/decapodlib*.whl output/eggs/decapod_cli*.whl
 
-Execute shrimp to check that installation succeed.
+Execute decapod to check that installation succeed.
 
 
 
 Usage
 -----
 
-To access Shrimp, you need to know URL (``http://10.10.0.2:9999`` or
+To access Decapod, you need to know URL (``http://10.10.0.2:9999`` or
 ``https://10.10.0.2:10000``) and username with password. For development
 installation is ``root``/``root``.
 
@@ -37,9 +38,9 @@ You need to set it to CLI directly or use environment variables:
 
 .. code-block:: bash
 
-    export SHRIMP_URL=http://10.10.0.2:9999
-    export SHRIMP_LOGIN=root
-    export SHRIMP_PASSWORD=root
+    export DECAPOD_URL=http://10.10.0.2:9999
+    export DECAPOD_LOGIN=root
+    export DECAPOD_PASSWORD=root
 
 Save it to a file and source when required.
 
@@ -47,10 +48,10 @@ To verify that it works, execute the following:
 
 .. code-block:: bash
 
-    $ shrimp -u http://10.10.0.2:9999 -l root -p root user get-all
+    $ decapod -u http://10.10.0.2:9999 -l root -p root user get-all
 
 Or, if you prefer environment variables,
 
 .. code-block:: bash
 
-    $ shrimp user get-all
+    $ decapod user get-all

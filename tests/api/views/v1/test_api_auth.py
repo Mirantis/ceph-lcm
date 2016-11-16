@@ -16,7 +16,7 @@
 
 import pytest
 
-from shrimp_common.models import user
+from decapod_common.models import user
 
 
 def make_user(login, password):

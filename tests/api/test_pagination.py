@@ -11,15 +11,15 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for shrimp_api.pagination."""
+"""Tests for decapod_api.pagination."""
 
 
 import json
 
 import pytest
 
-from shrimp_api import pagination
-from shrimp_common import config
+from decapod_api import pagination
+from decapod_common import config
 
 
 CONF = config.make_api_config()

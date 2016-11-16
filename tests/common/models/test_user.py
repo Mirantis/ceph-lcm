@@ -11,15 +11,15 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This module contains tests for shrimp_common.models.user."""
+"""This module contains tests for decapod_common.models.user."""
 
 
 import pytest
 
-from shrimp_common import exceptions
-from shrimp_common import passwords
-from shrimp_common.models import token
-from shrimp_common.models import user
+from decapod_common import exceptions
+from decapod_common import passwords
+from decapod_common.models import token
+from decapod_common.models import user
 
 
 def test_create_new_user(configure_model, pymongo_connection, freeze_time):

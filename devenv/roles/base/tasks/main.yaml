@@ -1,5 +1,5 @@
 ---
-# Base tasks for Shrimp development provision
+# Base tasks for Decapod development provision
 
 
 - include: apt.yaml

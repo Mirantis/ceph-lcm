@@ -11,7 +11,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for shrimp_controller.mainloop"""
+"""Tests for decapod_controller.mainloop"""
 
 
 import threading
@@ -19,10 +19,10 @@ import time
 
 import pytest
 
-from shrimp_common.models import execution
-from shrimp_common.models import server
-from shrimp_common.models import task
-from shrimp_controller import mainloop
+from decapod_common.models import execution
+from decapod_common.models import server
+from decapod_common.models import task
+from decapod_controller import mainloop
 
 
 @pytest.fixture

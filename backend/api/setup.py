@@ -18,16 +18,16 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "shrimp-common>=0.1,<0.2",
-    "shrimp-migrations>=0.1,<0.2",
+    "decapod-common>=0.1,<0.2",
+    "decapod-migrations>=0.1,<0.2",
     "Flask>=0.11,<0.12",
     "jsonschema>=2.5,<2.6"
 )
 
 
 setuptools.setup(
-    name="shrimp-api",
-    description="Shrimp API service",
+    name="decapod-api",
+    description="Decapod API service",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",
