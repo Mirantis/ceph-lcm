@@ -15,6 +15,8 @@ API
   decapodlib
   decapodlib.client
   decapodlib.auth
+  decapodlib.exceptions
+  decapodlib.cloud_config
 
 
 decapodlib
@@ -43,4 +45,11 @@ decapodlib.exceptions
 +++++++++++++++++++++
 
 .. automodule:: decapodlib.exceptions
+  :members:
+
+
+decapodlib.cloud_config
++++++++++++++++++++++++
+
+.. automodule:: decapodlib.cloud_config
   :members:

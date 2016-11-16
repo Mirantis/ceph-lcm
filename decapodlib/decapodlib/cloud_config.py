@@ -12,6 +12,15 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""This module has routines to help user to build user-data configs for
+`cloud-init <http://cloudinit.readthedocs.io>`_.
+
+Decapod uses cloud-init to implement server discovery. On each server boot
+user-data will be executed (you may consider cloud-init as rc.local on steroids).
+
+Basically, it creates several files on the host system and put their
+execution into host rc.local.
+"""
 
 
 from __future__ import absolute_import
@@ -114,6 +123,8 @@ PACKAGES = (
 )
 """A list of packages to install with cloud-init."""
 
+__all__ = "generate_cloud_config",
+
 
 class ExplicitDumper(yaml.SafeDumper):
     """A dumper that will never emit aliases."""
@@ -123,10 +134,12 @@ class ExplicitDumper(yaml.SafeDumper):
 
 
 class YAMLLiteral(six.text_type):
-    pass
+    """Literal which should be set with | scalar view."""
 
 
 def literal_presenter(dumper, data):
+    """Presenter of :py:class:`YAMLLiteral`."""
+
     return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
 
 
@@ -136,6 +149,23 @@ ExplicitDumper.add_representer(YAMLLiteral, literal_presenter)
 
 def generate_cloud_config(url, server_discovery_token, public_key, username,
                           timeout=REQUEST_TIMEOUT):
+    """This function generates user-data config (or cloud config)
+    for cloud-init.
+
+    :param str url: URL of Decapod API. This URL should be accessible
+        from remote machine.
+    :param str server_discovery_token: Server discovery token from Decapod
+        config.
+    :param str public_key: SSH public key of Ansible. This key will be placed
+        in ``~username/.ssh/authorized_keys``.
+    :param str username: Username of the user, which Ansible will use to
+        access this host.
+    :param int timeout: Timeout of connection to Decapod API.
+
+    :return: Generated user-data in YAML format.
+    :rtype: str
+    """
+
     server_discovery_token = str(server_discovery_token)
     timeout = timeout or REQUEST_TIMEOUT
 
@@ -157,6 +187,20 @@ def generate_cloud_config(url, server_discovery_token, public_key, username,
 
 
 def get_files(url, server_discovery_token, username, timeout):
+    """This function returns part of user-data which is related
+    to files which should be placed on remote host.
+
+    :param str url: URL of Decapod API. This URL should be accessible
+        from remote machine.
+    :param str server_discovery_token: Server discovery token from Decapod
+        config.
+    :param str username: Username of the user, which Ansible will use to
+        access this host.
+    :param int timeout: Timeout of connection to Decapod API.
+    :return: A list of the data, related to files
+    :rtype: list
+    """
+
     python_program = PYTHON_PROG.format(
         username=username,
         url=url,
@@ -183,6 +227,17 @@ def get_files(url, server_discovery_token, username, timeout):
 
 
 def get_users(username, public_key):
+    """This function returns part of user-data which is related
+    to users which should be created on remote host.
+
+    :param str username: Username of the user, which Ansible will use to
+        access this host.
+    :param str public_key: SSH public key of Ansible. This key will be placed
+        in ``~username/.ssh/authorized_keys``.
+    :return: A list of the data, related to users
+    :rtype: list
+    """
+
     return [
         {
             "name": username,
@@ -195,6 +250,19 @@ def get_users(username, public_key):
 
 
 def get_commands(url):
+    """This function returns part of user-data which is related
+    to commands which should be executed on remote host.
+
+    .. note::
+
+        These commands will be executed once on the first boot.
+
+    :param str url: URL of Decapod API. This URL should be accessible
+        from remote machine.
+    :return: A list of the data, related to commands.
+    :rtype: list
+    """
+
     command = [
         get_command_header(),
         get_command_update_rc_local(),
@@ -207,10 +275,24 @@ def get_commands(url):
 
 
 def get_command_header():
+    """This function returns command for user-data which creates
+    header in the log.
+
+    :return: A command to put in the header.
+    :rtype: list
+    """
+
     return ["echo", "=== START DECAPOD SERVER DISCOVERY ==="]
 
 
 def get_command_update_rc_local():
+    """This function returns command for user-data which updates
+    ``/etc/rc.local`` file.
+
+    :return: A command which updates file.
+    :rtype: list
+    """
+
     return [
         "sh", "-xc", (
             r"grep -q '{server_discovery_filename}' /etc/rc.local || "
@@ -224,6 +306,13 @@ def get_command_update_rc_local():
 
 
 def get_command_enable_rc_local():
+    """This function returns command for user-data which enables
+    execution of ``/etc/rc.local`` file.
+
+    :return: A command which enables execution.
+    :rtype: list
+    """
+
     return [
         "sh", "-xc",
         r"systemctl enable rc-local.service || true"
@@ -231,6 +320,13 @@ def get_command_enable_rc_local():
 
 
 def get_command_run_script():
+    """This function returns command for user-data which executes
+    ``/etc/rc.local`` file.
+
+    :return: A command which executes script.
+    :rtype: list
+    """
+
     return [
         "sh", "-xc",
         r"{script} 2>&1 | tee -a {logfile}".format(
@@ -241,10 +337,24 @@ def get_command_run_script():
 
 
 def get_command_footer():
+    """This function returns command for user-data which creates
+    footer in the log.
+
+    :return: A command to put in the footer.
+    :rtype: list
+    """
+
     return ["echo", "=== FINISH DECAPOD SERVER DISCOVERY ==="]
 
 
 def get_hostname(hostname):
+    """This command parses given URL and extracts hostname.
+
+    :param str hostname: URL to parse.
+    :return: Hostname from parameter
+    :rtype: str
+    """
+
     parsed = six.moves.urllib.parse.urlparse(hostname)
     parsed = parsed.netloc.split(":", 1)[0]
 
