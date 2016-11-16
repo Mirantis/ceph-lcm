@@ -4,11 +4,11 @@ Ceph Node OS deployment
 .. warning::
 
     Baremetal provision and OS deployment is out of scope of this guide:
-    Shrimp does not do any OS deployment or network setup.
+    Decapod does not do any OS deployment or network setup.
 
     This should be done by external means.
 
-Shrimp has only one requirement: OS has to execute
+Decapod has only one requirement: OS has to execute
 `cloud-init <http://cloudinit.readthedocs.io/en/latest/>`_
 and it should be possible to run your own user-data.
 Please check available datasources for cloud-init:
@@ -26,7 +26,7 @@ cover MAAS installation and OS deployment with this tool.
 Generate user-data for cloud-init
 ---------------------------------
 
-To generate user-data you need to have working Shrimp installation
+To generate user-data you need to have working Decapod installation
 up and running. To do so, you need to have 2 prerequisites: server
 discovery token and SSH public key.
 
@@ -35,8 +35,8 @@ discovery token and SSH public key.
 Server discovery token
 ++++++++++++++++++++++
 
-Shrimp uses automatic server discovery (and cloud-init usage required
-only for that). To access Shrimp API, servers will access it using
+Decapod uses automatic server discovery (and cloud-init usage required
+only for that). To access Decapod API, servers will access it using
 authentication token with limited capabilities (basically, it can only
 post to server discovery API endpoint).
 
@@ -83,10 +83,10 @@ Assuming steps above completed ok, execute following:
 
 .. code-block:: bash
 
-    $ shrimp -u http://10.10.0.2:9999 cloud-config \
+    $ decapod -u http://10.10.0.2:9999 cloud-config \
       7f080dab-d803-4339-9c69-e647f7d6e200 ansible_ssh_keyfile.pem.pub
 
-URL has to be public URL of the Shrimp machine with correct port.
+URL has to be public URL of the Decapod machine with correct port.
 Servers will send HTTP request for server discovery using this URL.
 
 As a result, you will get YAML-like user-data. This user-data is going
@@ -146,7 +146,7 @@ But to do that, you need to encode it to *base64* first:
 
 .. code-block:: bash
 
-    $ shrimp -u http://10.10.0.2:9999 cloud-config \
+    $ decapod -u http://10.10.0.2:9999 cloud-config \
       7f080dab-d803-4339-9c69-e647f7d6e200 ansible_ssh_keyfile.pem.pub \
       | base64 -w 0 > user_data.txt
 

@@ -1,7 +1,8 @@
-Build Docker images of Shrimp
-=============================
+Build Docker images of Decapod
+==============================
 
-Shrimp can be built on any commodity node that has Linux or OS X. Requirements are only for software:
+Decapod can be built on any commodity node that has Linux or OS X.
+Requirements are only for software:
 
 #. Machine should have ``setuptools>=26`` Python package (does not matter, Python2 or Python3 is used)
 #. Machine should have ``npm>=3`` (required to build frontend)
@@ -71,8 +72,8 @@ Cloning of source code repository
 .. code-block:: bash
 
     $ git clone --recurse-submodules \
-      https://github.com/Mirantis/ceph-lcm.git shrimp
-    $ cd shrimp
+      https://github.com/Mirantis/ceph-lcm.git decapod
+    $ cd decapod
 
 Inside repository, please check available versions with git tag. To
 select specific version, please do ``git checkout {tag} && git submodule
@@ -127,7 +128,7 @@ following in the top level directory of your source code repository:
     perfect-forward secrecy for secured connection.
 
 **config.yaml**
-    Configuration file for Shrimp
+    Configuration file for Decapod.
 
 **mongodb.pem**
     SSL/TLS pair of certificate and key, concatenated in one file.
@@ -143,9 +144,9 @@ SSH private keys
     Secrecy of the key is on you. Please keep it private.
 
 
-Shrimp uses Ansible to configure remote machines, Ansible uses
+Decapod uses Ansible to configure remote machines, Ansible uses
 SSH to connect to remote machines. Therefore, it is required to
-propagate SSH private key to Shrimp. If you don’t have a prepared
+propagate SSH private key to Decapod. If you don’t have a prepared
 SSH private key, you may generate a new one using the following guide:
 https://confluence.atlassian.com/bitbucketserver/creating-ssh-keys-776639788.html
 
@@ -187,8 +188,8 @@ Please put SSL files in the top level of your source code repository:
 Configuration
 -------------
 
-Configuration for Shrimp is done in YAML [#YAML]_ format. Please check the
-example in ``containerization/files/config.yaml``.
+Configuration for Decapod is done in YAML [#YAML]_ format. Please check
+the example in ``containerization/files/config.yaml``.
 
 
 

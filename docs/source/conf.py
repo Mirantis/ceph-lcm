@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Shrimp documentation build configuration file, created by
+# Decapod documentation build configuration file, created by
 # sphinx-quickstart on Mon Nov  7 14:27:18 2016.
 #
 # This file is execfile()d with the current directory set to its
@@ -58,7 +58,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Shrimp'
+project = 'Decapod'
 copyright = '2016, Sergey Arkhipov'
 author = 'Sergey Arkhipov'
 
@@ -143,7 +143,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
 #
-# html_title = 'Shrimp v0'
+# html_title = 'Decapod v0'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #
@@ -243,7 +243,7 @@ html_static_path = ['_static']
 # html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Shrimpdoc'
+htmlhelp_basename = 'Decapoddoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -269,7 +269,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Shrimp.tex', 'Shrimp Documentation',
+    (master_doc, 'Decapod.tex', 'Decapod Documentation',
      'Sergey Arkhipov', 'manual'),
 ]
 
@@ -311,7 +311,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'shrimp', 'Shrimp Documentation',
+    (master_doc, 'decapod', 'Decapod Documentation',
      [author], 1)
 ]
 
@@ -326,8 +326,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Shrimp', 'Shrimp Documentation',
-     author, 'Shrimp', 'One line description of project.',
+    (master_doc, 'Decapod', 'Decapod Documentation',
+     author, 'Decapod', 'One line description of project.',
      'Miscellaneous'),
 ]
 
