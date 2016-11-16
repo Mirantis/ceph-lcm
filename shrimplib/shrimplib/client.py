@@ -918,24 +918,110 @@ class V1Client(Client):
 
     @inject_pagination_params
     def get_servers(self, query_params, **kwargs):
+        """This method fetches a list of latest server models from API.
+
+        By default, only active servers will be listed.
+
+        This method does ``GET /v1/server`` endpoint call.
+
+        :return: List of latest server models.
+        :rtype: list
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/server/")
         return self._session.get(url, params=query_params, **kwargs)
 
     def get_server(self, server_id, **kwargs):
+        """This method fetches a single server model (latest version)
+        from API.
+
+        This method does ``GET /v1/server/{server_id}`` endpoint call.
+
+        :param str server_id: UUID4 (:rfc:`4122`) in string form
+            of server's ID
+        :return: Server model of latest available version
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/server/{0}/".format(server_id))
         return self._session.get(url, **kwargs)
 
     @inject_pagination_params
     def get_server_versions(self, server_id, query_params, **kwargs):
+        """This method fetches a list of all versions for a certain server
+        model.
+
+        This method does ``GET /v1/server/{server_id}/version/``
+        endpoint call.
+
+        :param str server_id: UUID4 (:rfc:`4122`) in string form
+            of server's ID
+        :return: List of server versions for server with ID ``server_id``.
+        :rtype: list
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/server/{0}/version/".format(server_id))
         return self._session.get(url, params=query_params, **kwargs)
 
     def get_server_version(self, server_id, version, **kwargs):
+        """This method fetches a certain version of particular server model.
+
+        This method does ``GET /v1/server/{server_id}/version/{version}``
+        endpoint call.
+
+        :param str server_id: UUID4 (:rfc:`4122`) in string form
+            of server's ID
+        :param int version: The number of version to fetch.
+        :return: Server model of certain version.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url(
             "/v1/server/{0}/version/{1}/".format(server_id, version))
         return self._session.get(url, **kwargs)
 
     def create_server(self, server_id, host, username, **kwargs):
+        """This method creates new server model.
+
+        This method does ``POST /v1/server/`` endpoint call.
+
+        .. warning::
+
+            You should avoid to use this method manually.
+            Servers must be discovered using `cloud-init
+            <https://cloudinit.readthedocs.io/en/latest/>`_ based
+            discovery mechanism.
+
+        :param str server_id: Unique ID of server.
+        :param str host: Hostname of the server (should be accessible by
+            Shrimp). It is better to have FQDN here.
+        :param str username: The name of the user for Ansible on this server.
+            Shrimp will use Ansible which SSH to machine with hostname
+            given in ``host`` parameter and that username.
+        :return: New server model.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/server/")
         payload = {
             "id": server_id,
@@ -946,10 +1032,44 @@ class V1Client(Client):
         return self._session.post(url, json=payload, **kwargs)
 
     def put_server(self, model_data, **kwargs):
+        """This methods updates server model.
+
+        Please be noticed that no real update is performed, just a new
+        version of the same server is created.
+
+        This method does ``PUT /v1/server/`` endpoint call.
+
+        :param dict model_data: Updated model of the server.
+        :return: Updated server model.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/server/{0}/".format(model_data["id"]))
         return self._session.put(url, json=model_data, **kwargs)
 
     def delete_server(self, server_id, **kwargs):
+        """This methods deletes server model.
+
+        Please be noticed that no real delete is performed, server
+        model is marked as deleted (``time_deleted > 0``) and model will
+        be skipped from listing, updates are forbidden.
+
+        This method does ``DELETE /v1/server/`` endpoint call.
+
+        :param str server_id: UUID4 (:rfc:`4122`) in string form
+            of server's ID
+        :return: Deleted server model.
+        :rtype: dict
+        :raises shrimplib.exceptions.ShrimpError: if not possible to
+            connect to API.
+        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/server/{0}/".format(server_id))
         return self._session.delete(url, **kwargs)
 
