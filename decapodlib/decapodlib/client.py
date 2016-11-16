@@ -1221,24 +1221,98 @@ class V1Client(Client):
 
     @inject_pagination_params
     def get_roles(self, query_params, **kwargs):
+        """This method fetches a list of latest role models from API.
+
+        By default, only active roles will be listed.
+
+        This method does ``GET /v1/role`` endpoint call.
+
+        :return: List of latest role models.
+        :rtype: list
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/role/")
         return self._session.get(url, params=query_params, **kwargs)
 
     def get_role(self, role_id, **kwargs):
+        """This method fetches a single role model (latest version)
+        from API.
+
+        This method does ``GET /v1/role/{role_id}`` endpoint call.
+
+        :param str role_id: UUID4 (:rfc:`4122`) in string form
+            of role's ID
+        :return: Role model of latest available version
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/role/{0}/".format(role_id))
         return self._session.get(url, **kwargs)
 
     @inject_pagination_params
     def get_role_versions(self, role_id, query_params, **kwargs):
+        """This method fetches a list of all versions for a certain role
+        model.
+
+        This method does ``GET /v1/role/{role_id}/version/`` endpoint
+        call.
+
+        :param str role_id: UUID4 (:rfc:`4122`) in string form
+            of role's ID
+        :return: List of role versions for role with ID ``role_id``.
+        :rtype: list
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/role/{0}/version/".format(role_id))
         return self._session.get(url, params=query_params, **kwargs)
 
     def get_role_version(self, role_id, version, **kwargs):
+        """This method fetches a certain version of particular role model.
+
+        This method does ``GET /v1/role/{role_id}/version/{version}``
+        endpoint call.
+
+        :param str role_id: UUID4 (:rfc:`4122`) in string form
+            of role's ID
+        :param int version: The number of version to fetch.
+        :return: Role model of certain version.
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url(
             "/v1/role/{0}/version/{1}/".format(role_id, version))
         return self._session.get(url, **kwargs)
 
     def create_role(self, name, permissions, **kwargs):
+        """This method creates new role model.
+
+        This method does ``POST /v1/role`` endpoint call.
+
+        :param str name: Name of the role.
+        :return: New role model.
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/role/")
         payload = {
             "name": name,
@@ -1248,10 +1322,44 @@ class V1Client(Client):
         return self._session.post(url, json=payload, **kwargs)
 
     def update_role(self, model_data, **kwargs):
+        """This methods updates role model.
+
+        Please be noticed that no real update is performed, just a new
+        version of the same role is created.
+
+        This method does ``PUT /v1/role/`` endpoint call.
+
+        :param dict model_data: Updated model of the role.
+        :return: Updated role model.
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/role/{0}/".format(model_data["id"]))
         return self._session.put(url, json=model_data, **kwargs)
 
     def delete_role(self, role_id, **kwargs):
+        """This methods deletes role model.
+
+        Please be noticed that no real delete is performed, role model
+        is marked as deleted (``time_deleted > 0``) and model will be
+        skipped from listing, updates are forbidden.
+
+        This method does ``DELETE /v1/role/`` endpoint call.
+
+        :param str role_id: UUID4 (:rfc:`4122`) in string form
+            of role's ID
+        :return: Deleted role model.
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
         url = self._make_url("/v1/role/{0}/".format(role_id))
         return self._session.delete(url, **kwargs)
 
