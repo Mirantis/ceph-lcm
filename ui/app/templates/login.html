@@ -30,7 +30,7 @@
         <button
           type="submit"
           class="btn btn-primary"
-          [disabled]="!loginForm.form.valid"
+          [disabled]="!username || !password"
         >
           Login
         </button>

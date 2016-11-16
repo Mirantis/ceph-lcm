@@ -1,20 +1,28 @@
 import { DebugElement } from '@angular/core';
-import { async, TestBed, ComponentFixture } from '@angular/core/testing';
+import { async, inject, TestBed, ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
 
 import { LoginComponent } from './login';
+import { AuthService } from '../../app/services/auth';
 import { AppModule } from '../app.module';
 
-describe('LoginComponent', () => {
+describe('Login Component', () => {
   let fixture: ComponentFixture<LoginComponent>;
   let component: LoginComponent;
+  let login = 'dummy_login';
+  let password = 'dummy_pass';
+  let submitButton: any;
+  let authService: any;
 
   beforeEach(
     async(() => {
       return TestBed.configureTestingModule({
         imports: [AppModule],
-        providers: [{provide: APP_BASE_HREF, useValue : '/'}]
+        providers: [
+          AuthService,
+          {provide: APP_BASE_HREF, useValue : '/'}
+        ]
       }).compileComponents()
     })
   );
@@ -22,6 +30,7 @@ describe('LoginComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
+
     fixture.detectChanges();
   });
 
@@ -43,12 +52,34 @@ describe('LoginComponent', () => {
     expect(component.getErrorClass()).toEqual({});
   });
 
-  it('checks that login form is rendered and allows logging in', () => {
-    // let login: DebugElement = fixture.debugElement.query(By.css('input[name=username]'));
-    // let password: DebugElement = fixture.debugElement.query(By.css('input[name=password]'));
+  describe('login form', () => {
+    beforeEach(() => {
+      submitButton = fixture.nativeElement.querySelector('button[type=submit]');
+    });
 
-    // login.nativeElement.value = 'root';
-    // password.nativeElement.value = 'root';
+    it('requires both login & password to be entered to allow submission', () => {
+      expect(submitButton.disabled).toBeTruthy();
 
+      component.username = login;
+      fixture.detectChanges();
+      expect(submitButton.disabled).toBeTruthy();
+
+      component.password = password;
+      fixture.detectChanges();
+      expect(submitButton.disabled).toBeFalsy();
+    });
+
+    it('passes provided credentials to the backend as is', () => {
+        authService = fixture.debugElement.injector.get(AuthService);
+        authService.login = jasmine.createSpy('login').and.returnValue(Promise.resolve({}));
+
+        component.username = login;
+        component.password = password;
+        fixture.detectChanges();
+
+        submitButton.click();
+        expect(authService.login).toHaveBeenCalledWith(login, password);
+      }
+    );
   });
 });
