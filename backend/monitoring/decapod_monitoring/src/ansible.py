@@ -44,7 +44,7 @@ else:
 
 
 ANSIBLE_PLAYBOOK = pkg_resources.resource_filename(
-    "shrimp_monitoring", "ansible_playbook.yaml")
+    "decapod_monitoring", "ansible_playbook.yaml")
 
 PATH_HOMEDIR = os.path.expanduser("~")
 
@@ -114,7 +114,7 @@ def get_db_client():
     if hasattr(get_db_client, "cached"):
         return get_db_client.cached
 
-    with open("/etc/shrimp/config.yaml", "rt") as yamlfp:
+    with open("/etc/decapod/config.yaml", "rt") as yamlfp:
         config = yaml.load(yamlfp)
 
     parsed = pymongo.uri_parser.parse_uri(config["db"]["uri"])

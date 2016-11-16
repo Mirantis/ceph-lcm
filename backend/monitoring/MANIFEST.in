@@ -1,2 +1,2 @@
-include shrimp_monitoring/ansible_playbook.yaml
-graft shrimp_monitoring/html_js_css/*
+include decapod_monitoring/ansible_playbook.yaml
+graft decapod_monitoring/html_js_css/*
