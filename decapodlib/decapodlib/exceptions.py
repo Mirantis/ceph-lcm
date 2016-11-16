@@ -11,7 +11,12 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Exceptions raised in decapodlib."""
+"""Exceptions raised in decapodlib.
+
+Please be noticed, that all exception raised from :py:mod:`decapodlib`
+will be wrapped in :py:class:`decapodlib.exceptions.DecapodError` or its
+subclasses.
+"""
 
 
 from __future__ import absolute_import
@@ -23,7 +28,12 @@ import six
 
 @six.python_2_unicode_compatible
 class DecapodError(Exception):
-    """Common error, raised in decapodlib."""
+    """Basic error raised in decapodlib.
+
+    :param Exception exc: Original exception, wrapped in this class.
+
+    Original exception is stored in ``exception`` field.
+    """
 
     __slots__ = "exception",
 
@@ -39,7 +49,11 @@ class DecapodError(Exception):
 
 @six.python_2_unicode_compatible
 class DecapodAPIError(DecapodError):
-    """Common error in API."""
+    """Common error in API.
+
+    :param requests.Response response: Original response which is a base
+        of that exception.
+    """
 
     __slots__ = "error", "description", "code", "exception"
 
@@ -70,6 +84,19 @@ class DecapodAPIError(DecapodError):
 
     @property
     def json(self):
+        """Return this error as parsed JSON.
+
+        *Example of result*:
+
+        .. code-block:: python
+
+            {
+                "code": 403,
+                "error": "Forbidden",
+                "description": "Access was forbidden!"
+            }
+        """
+
         return {
             "code": self.code,
             "error": self.error,

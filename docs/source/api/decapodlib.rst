@@ -37,3 +37,10 @@ decapodlib.auth
 
 .. automodule:: decapodlib.auth
   :members:
+
+
+decapodlib.exceptions
++++++++++++++++++++++
+
+.. automodule:: decapodlib.exceptions
+  :members:
