@@ -16,13 +16,13 @@
 
 import flask
 
-from shrimp_api import config as app_config
-from shrimp_api import handlers
-from shrimp_api import views
-from shrimp_common import config as base_config
-from shrimp_common import log
-from shrimp_common.models import db
-from shrimp_common.models import generic as generic_model
+from decapod_api import config as app_config
+from decapod_api import handlers
+from decapod_api import views
+from decapod_common import config as base_config
+from decapod_common import log
+from decapod_common.models import db
+from decapod_common.models import generic as generic_model
 
 
 CONF = base_config.make_api_config()

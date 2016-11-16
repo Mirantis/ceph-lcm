@@ -14,15 +14,15 @@
 """Implementation of password reset API."""
 
 
-from shrimp_api import exceptions as http_exceptions
-from shrimp_api import validators
-from shrimp_api.views import generic
-from shrimp_common import config
-from shrimp_common import emailutils
-from shrimp_common import exceptions as base_exceptions
-from shrimp_common import log
-from shrimp_common.models import password_reset
-from shrimp_common.models import user
+from decapod_api import exceptions as http_exceptions
+from decapod_api import validators
+from decapod_api.views import generic
+from decapod_common import config
+from decapod_common import emailutils
+from decapod_common import exceptions as base_exceptions
+from decapod_common import log
+from decapod_common.models import password_reset
+from decapod_common.models import user
 
 
 NEW_PASSWORD_RESET_SCHEMA = validators.create_data_schema({
@@ -132,6 +132,6 @@ def notify_user(token_id, email):
 
     emailutils.send(
         to=[email],
-        subject="Password reset for Shrimp",
+        subject="Password reset for Decapod",
         text_body=message
     )

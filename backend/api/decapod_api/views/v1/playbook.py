@@ -14,9 +14,9 @@
 """Small API to list playbooks plugins available in application."""
 
 
-from shrimp_api import auth
-from shrimp_api.views import generic
-from shrimp_common import plugins
+from decapod_api import auth
+from decapod_api.views import generic
+from decapod_common import plugins
 
 
 class PlaybookView(generic.ModelView):

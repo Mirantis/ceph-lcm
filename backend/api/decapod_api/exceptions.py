@@ -18,10 +18,10 @@ import flask.json
 
 from werkzeug import exceptions
 
-from shrimp_common import exceptions as app_exceptions
+from decapod_common import exceptions as app_exceptions
 
 
-class ShrimpJSONMixin(app_exceptions.ShrimpError, exceptions.HTTPException):
+class DecapodJSONMixin(app_exceptions.DecapodError, exceptions.HTTPException):
     """Basic JSON mixin for the werkzeug exceptions.
 
     Basic werkzeug exceptions return an HTML. This mixin
@@ -56,11 +56,11 @@ class ShrimpJSONMixin(app_exceptions.ShrimpError, exceptions.HTTPException):
         return [("Content-Type", "application/json")]
 
 
-class BadRequest(ShrimpJSONMixin, exceptions.BadRequest):
+class BadRequest(DecapodJSONMixin, exceptions.BadRequest):
     pass
 
 
-class Unauthorized(ShrimpJSONMixin, exceptions.Unauthorized):
+class Unauthorized(DecapodJSONMixin, exceptions.Unauthorized):
 
     def get_headers(self, environ=None):
         headers = super().get_headers(environ=environ)
@@ -69,28 +69,28 @@ class Unauthorized(ShrimpJSONMixin, exceptions.Unauthorized):
         return headers
 
 
-class Forbidden(ShrimpJSONMixin, exceptions.Forbidden):
+class Forbidden(DecapodJSONMixin, exceptions.Forbidden):
     pass
 
 
-class NotFound(ShrimpJSONMixin, exceptions.NotFound):
+class NotFound(DecapodJSONMixin, exceptions.NotFound):
     pass
 
 
-class MethodNotAllowed(ShrimpJSONMixin, exceptions.MethodNotAllowed):
+class MethodNotAllowed(DecapodJSONMixin, exceptions.MethodNotAllowed):
 
     def get_headers(self, environ=None):
-        headers = ShrimpJSONMixin.get_headers(self, environ)
+        headers = DecapodJSONMixin.get_headers(self, environ)
         headers.extend(exceptions.MethodNotAllowed.get_headers(self, environ))
 
         return headers
 
 
-class NotAcceptable(ShrimpJSONMixin, exceptions.NotAcceptable):
+class NotAcceptable(DecapodJSONMixin, exceptions.NotAcceptable):
     pass
 
 
-class InternalServerError(ShrimpJSONMixin, exceptions.InternalServerError):
+class InternalServerError(DecapodJSONMixin, exceptions.InternalServerError):
     pass
 
 

@@ -19,8 +19,8 @@ import datetime
 
 import pkg_resources
 
-from shrimp_api.views import generic
-from shrimp_common import timeutils
+from decapod_api.views import generic
+from decapod_common import timeutils
 
 
 class InfoView(generic.ModelView):
@@ -35,5 +35,5 @@ class InfoView(generic.ModelView):
                 "utc": datetime.datetime.utcnow().isoformat(),
                 "unix": timeutils.current_unix_timestamp()
             },
-            "version": pkg_resources.get_distribution("shrimp_api").version
+            "version": pkg_resources.get_distribution("decapod_api").version
         }

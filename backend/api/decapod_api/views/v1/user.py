@@ -14,15 +14,15 @@
 """This module contains view for /v1/user API."""
 
 
-from shrimp_api import auth
-from shrimp_api import exceptions as http_exceptions
-from shrimp_api import validators
-from shrimp_api.views import generic
-from shrimp_common import emailutils
-from shrimp_common import exceptions as base_exceptions
-from shrimp_common import log
-from shrimp_common import passwords
-from shrimp_common.models import user
+from decapod_api import auth
+from decapod_api import exceptions as http_exceptions
+from decapod_api import validators
+from decapod_api.views import generic
+from decapod_common import emailutils
+from decapod_common import exceptions as base_exceptions
+from decapod_common import log
+from decapod_common import passwords
+from decapod_common.models import user
 
 
 DATA_SCHEMA = {
@@ -48,7 +48,7 @@ POST_SCHEMA = validators.create_data_schema(DATA_SCHEMA, True)
 NEW_PASSWORD_MESSAGE = """\
 Hi, {name}.
 
-Your password for Shrimp is {password!r}.
+Your password for Decapod is {password!r}.
 """.strip()
 
 LOG = log.getLogger(__name__)
@@ -175,6 +175,6 @@ def notify_about_new_password(model, password):
     message = make_password_message(model, password)
     emailutils.send(
         to=[model.email],
-        subject="New password for Shrimp",
+        subject="New password for Decapod",
         text_body=message
     )

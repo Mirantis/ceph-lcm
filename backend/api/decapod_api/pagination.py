@@ -20,8 +20,8 @@ import re
 import flask.json
 import jsonschema
 
-from shrimp_common import config
-from shrimp_common import log
+from decapod_common import config
+from decapod_common import log
 
 
 FILTER_SCHEMA = {

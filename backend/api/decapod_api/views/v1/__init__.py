@@ -16,17 +16,17 @@
 
 import flask
 
-from shrimp_api.views.v1 import auth
-from shrimp_api.views.v1 import cluster
-from shrimp_api.views.v1 import execution
-from shrimp_api.views.v1 import info
-from shrimp_api.views.v1 import password_reset
-from shrimp_api.views.v1 import permission
-from shrimp_api.views.v1 import playbook
-from shrimp_api.views.v1 import playbook_configuration
-from shrimp_api.views.v1 import role
-from shrimp_api.views.v1 import server
-from shrimp_api.views.v1 import user
+from decapod_api.views.v1 import auth
+from decapod_api.views.v1 import cluster
+from decapod_api.views.v1 import execution
+from decapod_api.views.v1 import info
+from decapod_api.views.v1 import password_reset
+from decapod_api.views.v1 import permission
+from decapod_api.views.v1 import playbook
+from decapod_api.views.v1 import playbook_configuration
+from decapod_api.views.v1 import role
+from decapod_api.views.v1 import server
+from decapod_api.views.v1 import user
 
 
 BLUEPRINT_NAME = "ApiV1"

@@ -14,9 +14,9 @@
 """Small API to list permissions available in application."""
 
 
-from shrimp_api import auth
-from shrimp_api.views import generic
-from shrimp_common.models import role
+from decapod_api import auth
+from decapod_api.views import generic
+from decapod_common.models import role
 
 
 class PermissionView(generic.ModelView):

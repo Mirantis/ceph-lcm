@@ -22,12 +22,12 @@ import functools
 
 import flask
 
-from shrimp_api import exceptions
-from shrimp_common import log
-from shrimp_common import passwords
-from shrimp_common.models import role
-from shrimp_common.models import token
-from shrimp_common.models import user
+from decapod_api import exceptions
+from decapod_common import log
+from decapod_common import passwords
+from decapod_common.models import role
+from decapod_common.models import token
+from decapod_common.models import user
 
 
 LOG = log.getLogger(__name__)

@@ -18,15 +18,15 @@ import functools
 
 import flask
 
-from shrimp_api import auth
-from shrimp_api import exceptions as http_exceptions
-from shrimp_api import validators
-from shrimp_api.views import generic
-from shrimp_common import config
-from shrimp_common import exceptions as base_exceptions
-from shrimp_common import log
-from shrimp_common.models import server
-from shrimp_common.models import task
+from decapod_api import auth
+from decapod_api import exceptions as http_exceptions
+from decapod_api import validators
+from decapod_api.views import generic
+from decapod_common import config
+from decapod_common import exceptions as base_exceptions
+from decapod_common import log
+from decapod_common.models import server
+from decapod_common.models import task
 
 
 DATA_SCHEMA = {

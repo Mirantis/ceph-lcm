@@ -14,7 +14,7 @@
 """This module has instance of WSGI application."""
 
 
-import shrimp_api
+import decapod_api
 
 
-app = application = shrimp_api.create_application()
+app = application = decapod_api.create_application()

@@ -25,9 +25,9 @@ import flask
 import six
 import werkzeug.exceptions
 
-from shrimp_api import exceptions
-from shrimp_common import log
-from shrimp_common import plugins
+from decapod_api import exceptions
+from decapod_common import log
+from decapod_common import plugins
 
 
 LOG = log.getLogger(__name__)
@@ -52,16 +52,16 @@ def set_cache_control(response):
 def error_to_json(error):
     """Converts all errors into proper JSONable exceptions.
 
-    This is required because by contract Shrimp API is JSON API
+    This is required because by contract Decapod API is JSON API
     and not JSON data will break their APIs. This catch-em-all
     error handler is required to fullfil a contract on JSON API.
     """
 
-    if isinstance(error, exceptions.ShrimpJSONMixin):
+    if isinstance(error, exceptions.DecapodJSONMixin):
         return error.get_response()
 
     if isinstance(error, werkzeug.exceptions.HTTPException):
-        json_error = exceptions.ShrimpJSONMixin()
+        json_error = exceptions.DecapodJSONMixin()
 
         json_error.code = error.code
         json_error.description = error.description

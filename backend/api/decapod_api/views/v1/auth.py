@@ -16,11 +16,11 @@
 
 import flask
 
-from shrimp_api import auth
-from shrimp_api import exceptions
-from shrimp_api import validators
-from shrimp_api.views import generic
-from shrimp_common import log
+from decapod_api import auth
+from decapod_api import exceptions
+from decapod_api import validators
+from decapod_api.views import generic
+from decapod_common import log
 
 
 POST_SCHEMA = {

@@ -18,8 +18,8 @@ import functools
 
 import jsonschema
 
-from shrimp_api import exceptions
-from shrimp_common import log
+from decapod_api import exceptions
+from decapod_common import log
 
 
 JSONSCHEMA_DEFINITIONS = {

@@ -11,17 +11,20 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This module has routines to configure API."""
+"""This module has basic routines for Flask views.
+
+Decapod uses Flask as a web framework and leverages by its pluggable
+views. Currently, registration of views into app is done by traversing
+a list of subclasses of generic view and this requires explicit module
+imports. It is ok, because we have a limited set of APIs and do not
+require to have view as plugins.
+"""
 
 
-from shrimp_common import config
+from decapod_api.views import v1
 
 
-CONF = config.make_api_config()
-"""API config."""
+def register_api(application):
+    """Register API endpoints to the application."""
 
-
-def configure(application):
-    """Rudimentary implementation of WSGI app configuration."""
-
-    application.config.from_object(CONF)
+    application.register_blueprint(v1.BLUEPRINT, url_prefix="/v1")
