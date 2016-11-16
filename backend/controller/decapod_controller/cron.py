@@ -16,13 +16,13 @@
 
 import time
 
-from shrimp_common import cliutils
-from shrimp_common import config
-from shrimp_common import log
-from shrimp_common import timeutils
-from shrimp_common.models import password_reset
-from shrimp_common.models import task
-from shrimp_common.models import token
+from decapod_common import cliutils
+from decapod_common import config
+from decapod_common import log
+from decapod_common import timeutils
+from decapod_common.models import password_reset
+from decapod_common.models import task
+from decapod_common.models import token
 
 
 CONF = config.make_controller_config()

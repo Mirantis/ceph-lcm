@@ -19,12 +19,12 @@ import os
 import sys
 import threading
 
-from shrimp_common import config
-from shrimp_common import log
-from shrimp_common.models import execution
-from shrimp_common.models import server
-from shrimp_common.models import task
-from shrimp_controller import taskpool
+from decapod_common import config
+from decapod_common import log
+from decapod_common.models import execution
+from decapod_common.models import server
+from decapod_common.models import task
+from decapod_controller import taskpool
 
 
 CONF = config.make_controller_config()

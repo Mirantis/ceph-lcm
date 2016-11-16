@@ -11,7 +11,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Daemon process of the Shrimp controller."""
+"""Daemon process of the Decapod controller."""
 
 
 import argparse
@@ -22,11 +22,11 @@ import sys
 import daemon
 import lockfile
 
-from shrimp_common import config
-from shrimp_common import log
-from shrimp_common.models import db
-from shrimp_common.models import generic
-from shrimp_controller import mainloop
+from decapod_common import config
+from decapod_common import log
+from decapod_common.models import db
+from decapod_common.models import generic
+from decapod_controller import mainloop
 
 
 CONF = config.make_controller_config()
@@ -70,7 +70,7 @@ def main_script(options, set_shutdown=True):
 
 def get_options():
     parser = argparse.ArgumentParser(
-        description="Shrimp controller"
+        description="Decapod controller"
     )
 
     parser.add_argument(

@@ -14,10 +14,10 @@
 """Exceptions, specific to controller."""
 
 
-from shrimp_common import exceptions as base_exceptions
+from decapod_common import exceptions as base_exceptions
 
 
-class InventoryError(base_exceptions.ShrimpError):
+class InventoryError(base_exceptions.DecapodError):
     """Base class for all errors occured in Ansible dynamic inventory."""
 
     def __init__(self, message, *args):

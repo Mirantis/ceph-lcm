@@ -18,14 +18,14 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "shrimp-common>=0.1,<0.2",
+    "decapod-common>=0.1,<0.2",
     "python-daemon>=2.1,<2.2",
     "lockfile>=0.12,<0.13"
 )
 
 
 setuptools.setup(
-    name="shrimp-controller",
+    name="decapod-controller",
     description="Ceph Lifecycle Management controller service",
     long_description="",  # TODO
     version="0.1.0",
@@ -41,11 +41,11 @@ setuptools.setup(
     zip_safe=False,
     entry_points={
         "console_scripts": [
-            "shrimp-controller = shrimp_controller.daemon:main",
-            "shrimp-inventory = shrimp_controller.inventory:main",
-            "shrimp-cron-clean-expired-tokens = shrimp_controller.cron:clean_expired_tokens",  # NOQA
-            "shrimp-cron-clean-old-tasks = shrimp_controller.cron:clean_old_tasks",  # NOQA
-            "shrimp-cron-clean-old-pwtokens = shrimp_controller.cron:clean_expired_password_resets"  # NOQA
+            "decapod-controller = decapod_controller.daemon:main",
+            "decapod-inventory = decapod_controller.inventory:main",
+            "decapod-cron-clean-expired-tokens = decapod_controller.cron:clean_expired_tokens",  # NOQA
+            "decapod-cron-clean-old-tasks = decapod_controller.cron:clean_old_tasks",  # NOQA
+            "decapod-cron-clean-old-pwtokens = decapod_controller.cron:clean_expired_password_resets"  # NOQA
         ]
     },
     classifiers=(

@@ -12,7 +12,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Dynamic inventory for Shrimp."""
+"""Dynamic inventory for Decapod."""
 
 
 import argparse
@@ -25,12 +25,12 @@ try:
 except ImportError:
     import json
 
-from shrimp_common import cliutils
-from shrimp_common import config
-from shrimp_common import log
-from shrimp_common import playbook_plugin
-from shrimp_common import plugins
-from shrimp_controller import exceptions
+from decapod_common import cliutils
+from decapod_common import config
+from decapod_common import log
+from decapod_common import playbook_plugin
+from decapod_common import plugins
+from decapod_controller import exceptions
 
 
 CONF = config.make_controller_config()
@@ -110,7 +110,7 @@ def get_options():
     """Parses options."""
 
     parser = argparse.ArgumentParser(
-        description="Dynamic inventory for Shrimp.")
+        description="Dynamic inventory for Decapod.")
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(

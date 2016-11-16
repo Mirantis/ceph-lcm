@@ -23,10 +23,10 @@ import queue
 import threading
 import time
 
-from shrimp_common import config
-from shrimp_common import log
-from shrimp_common import plugins
-from shrimp_common.models import task
+from decapod_common import config
+from decapod_common import log
+from decapod_common import plugins
+from decapod_common.models import task
 
 
 TaskState = collections.namedtuple("TaskState", ["future", "stop_event"])
