@@ -26,11 +26,11 @@ import urllib.request
 
 import pymongo.uri_parser
 
-from shrimp_common import config
-from shrimp_common import log
-from shrimp_common.models import db
-from shrimp_common.models import generic
-from shrimp_common.models import migration_script
+from decapod_common import config
+from decapod_common import log
+from decapod_common.models import db
+from decapod_common.models import generic
+from decapod_common.models import migration_script
 
 
 LOG = log.getLogger(__name__)
