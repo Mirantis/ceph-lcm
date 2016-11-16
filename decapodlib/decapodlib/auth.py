@@ -11,7 +11,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Custom authentication for shrimplib."""
+"""Custom authentication for decapodlib."""
 
 
 from __future__ import absolute_import
@@ -24,7 +24,7 @@ import requests.auth
 
 
 class V1Auth(requests.auth.AuthBase):
-    """Request authentication provider for Shrimp API V1."""
+    """Request authentication provider for Decapod API V1."""
 
     AUTH_URL = "/v1/auth/"
     """URL of authentication."""

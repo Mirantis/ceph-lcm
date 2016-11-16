@@ -19,9 +19,9 @@ from __future__ import unicode_literals
 
 import click
 
-from shrimp_cli import decorators
-from shrimp_cli import main
-from shrimp_cli import utils
+from decapodcli import decorators
+from decapodcli import main
+from decapodcli import utils
 
 
 @main.cli_group
@@ -64,7 +64,7 @@ def get_version(cluster_id, version, client):
 @click.argument("name")
 @decorators.command(cluster)
 def create(name, client):
-    """Creates new cluster in Shrimp."""
+    """Creates new cluster in Decapod."""
 
     return client.create_cluster(name)
 
@@ -92,10 +92,10 @@ def update(cluster_id, name, model, client):
 @click.argument("cluster-id", type=click.UUID)
 @decorators.command(cluster)
 def delete(cluster_id, client):
-    """Deletes cluster from Shrimp.
+    """Deletes cluster from Decapod.
 
     Please be notices that *actually* there is no deletion in common
-    sense. Shrimp archives user. It won't be active after but still all
+    sense. Decapod archives user. It won't be active after but still all
     history will be accessible.
     """
 

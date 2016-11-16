@@ -11,23 +11,23 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Shrimp CLI tools package."""
+"""CLI methods for playbook."""
 
 
-import warnings
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
+from decapodcli import decorators
+from decapodcli import main
 
 
-# This is done to suppress Click warnings about unicode
-warnings.simplefilter("ignore")
+@main.cli_group
+def playbook():
+    """Playbook subcommands."""
 
 
-from shrimp_cli import cloud_config  # NOQA
-from shrimp_cli import cluster  # NOQA
-from shrimp_cli import execution  # NOQA
-from shrimp_cli import password_reset  # NOQA
-from shrimp_cli import permission  # NOQA
-from shrimp_cli import playbook_configuration  # NOQA
-from shrimp_cli import playbook  # NOQA
-from shrimp_cli import role  # NOQA
-from shrimp_cli import server  # NOQA
-from shrimp_cli import user  # NOQA
+@decorators.command(playbook)
+def get_all(client):
+    """Request a list of permissions avaialable in API."""
+
+    return client.get_playbooks()

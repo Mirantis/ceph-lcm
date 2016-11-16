@@ -18,7 +18,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "shrimplib==0.1.0",
+    "decapodlib==0.1.0",
     "click>=6,<7",
     "six>=1.10",
     "backports.csv ; python_version=='2.7' or python_version=='2.6'"
@@ -26,8 +26,8 @@ REQUIREMENTS = (
 
 
 setuptools.setup(
-    name="shrimp-cli",
-    description="Shrimp CLI",
+    name="decapod-cli",
+    description="Decapod CLI",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",
@@ -42,7 +42,7 @@ setuptools.setup(
     zip_safe=False,
     entry_points={
         "console_scripts": [
-            "shrimp = shrimp_cli.main:cli"
+            "decapod = decapodcli.main:cli"
         ]
     },
     extras_require={

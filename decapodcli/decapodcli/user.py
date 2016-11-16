@@ -19,9 +19,9 @@ from __future__ import unicode_literals
 
 import click
 
-from shrimp_cli import decorators
-from shrimp_cli import main
-from shrimp_cli import utils
+from decapodcli import decorators
+from decapodcli import main
+from decapodcli import utils
 
 
 @main.cli_group
@@ -67,7 +67,7 @@ def get_version(user_id, version, client):
 @click.argument("login")
 @decorators.command(user)
 def create(login, email, full_name, role_id, client):
-    """Creates new user in Shrimp.
+    """Creates new user in Decapod.
 
     Please enter valid email. User will receive email with his initial
     password on this address. Also, password reset links will be sent to
@@ -120,10 +120,10 @@ def update(user_id, login, email, full_name, role_id, model, client):
 @click.argument("user-id", type=click.UUID)
 @decorators.command(user)
 def delete(user_id, client):
-    """Deletes user from Shrimp.
+    """Deletes user from Decapod.
 
     Please be notices that *actually* there is no deletion in common
-    sense. Shrimp archives user. It won't be active after but still all
+    sense. Decapod archives user. It won't be active after but still all
     history will be accessible.
     """
 

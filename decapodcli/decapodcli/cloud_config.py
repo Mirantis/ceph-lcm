@@ -20,8 +20,8 @@ from __future__ import unicode_literals
 
 import click
 
-from shrimp_cli import main
-from shrimplib import cloud_config
+from decapodcli import main
+from decapodlib import cloud_config
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
@@ -40,9 +40,9 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 def cli(ctx, public_key_filename, server_discovery_token, user):
     """Generates config for cloud-init.
 
-    This command generates cloud-init user-data config to setup Shrimp
+    This command generates cloud-init user-data config to setup Decapod
     hosts. This config creates required user, put your provided public
-    key to the authorized_keys and register server to Shrimp with
+    key to the authorized_keys and register server to Decapod with
     required parameters.
 
     These settings are possible to setup using commandline parameter,

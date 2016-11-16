@@ -19,10 +19,10 @@ from __future__ import unicode_literals
 
 import click
 
-from shrimp_cli import decorators
-from shrimp_cli import main
-from shrimp_cli import param_types
-from shrimp_cli import utils
+from decapodcli import decorators
+from decapodcli import main
+from decapodcli import param_types
+from decapodcli import utils
 
 
 def permissions_to_dict(permissions):
@@ -88,7 +88,7 @@ def get_version(role_id, version, client):
     help="Comma-separated list of playbook permissions."
 )
 def create(name, api_permissions, playbook_permissions, client):
-    """Create new role in Shrimp."""
+    """Create new role in Decapod."""
 
     permissions = {
         "api": api_permissions,
@@ -140,10 +140,10 @@ def update(role_id, name, api_permissions, playbook_permissions, model,
 @click.argument("role-id", type=click.UUID)
 @decorators.command(role)
 def delete(role_id, client):
-    """Deletes role from Shrimp.
+    """Deletes role from Decapod.
 
     Please be notices that *actually* there is no deletion in common
-    sense. Shrimp archives user. It won't be active after but still all
+    sense. Decapod archives user. It won't be active after but still all
     history will be accessible.
     """
 

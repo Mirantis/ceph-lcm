@@ -22,9 +22,9 @@ import os
 import click
 import six
 
-from shrimp_cli import param_types
-from shrimp_cli import utils
-from shrimplib import exceptions
+from decapodcli import param_types
+from decapodcli import utils
+from decapodlib import exceptions
 
 
 def catch_errors(func):
@@ -35,9 +35,9 @@ def catch_errors(func):
     def decorator(ctx, *args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except exceptions.ShrimpAPIError as exc:
+        except exceptions.DecapodAPIError as exc:
             utils.format_output_json(ctx, exc.json, True)
-        except exceptions.ShrimpError as exc:
+        except exceptions.DecapodError as exc:
             click.echo(six.text_type(exc), err=True)
         finally:
             ctx.close()

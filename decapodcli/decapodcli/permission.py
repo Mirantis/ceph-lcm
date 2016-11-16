@@ -11,19 +11,23 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Library to work with Shrimp API.
-
-Top level module provides a list of shortcuts to use with Shrimp. Right
-now, it has only current :py:class:`shrimplib.Client` implementation as
-:py:class:`shrimplib.Client`.
-"""
+"""CLI methods for permission."""
 
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from shrimplib.client import V1Client
+from decapodcli import decorators
+from decapodcli import main
 
 
-Client = V1Client
-"""An actual version of JSON client for Shrimp."""
+@main.cli_group
+def permission():
+    """Permission subcommands."""
+
+
+@decorators.command(permission)
+def get_all(client):
+    """Request a list of permissions avaialable in API."""
+
+    return client.get_permissions()

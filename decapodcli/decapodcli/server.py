@@ -22,9 +22,9 @@ import sys
 import click
 import six
 
-from shrimp_cli import decorators
-from shrimp_cli import main
-from shrimp_cli import utils
+from decapodcli import decorators
+from decapodcli import main
+from decapodcli import utils
 
 if six.PY3:
     import csv
@@ -143,7 +143,7 @@ def get_version(server_id, version, client):
 @click.argument("server-id")
 @decorators.command(server)
 def create(server_id, hostname, username, client):
-    """Creates new server in Shrimp."""
+    """Creates new server in Decapod."""
 
     return client.create_server(server_id, hostname, username)
 
@@ -171,10 +171,10 @@ def update(server_id, name, model, client):
 @click.argument("server-id")
 @decorators.command(server)
 def delete(server_id, client):
-    """Deletes server from Shrimp.
+    """Deletes server from Decapod.
 
     Please be notices that *actually* there is no deletion in common
-    sense. Shrimp archives item. It won't be active after but still all
+    sense. Decapod archives item. It won't be active after but still all
     history will be accessible.
     """
 

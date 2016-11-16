@@ -11,9 +11,9 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This module contains implementation of RPC client for Shrimp API.
+"""This module contains implementation of RPC client for Decapod API.
 
-Shrimp client :py:class:`Client` is a simple RPC client and thin wrapper
+Decapod client :py:class:`Client` is a simple RPC client and thin wrapper
 for the `requests <http://docs.python-requests.org/en/master/>`_ library
 which allows end user to work with remote API without worrying about
 connections and endpoints.
@@ -36,7 +36,7 @@ login would be occured thread-safely on the first real method execution.
 
     users = client.get_users()
 
-This will return end user a list with active users in Shrimp.
+This will return end user a list with active users in Decapod.
 
 .. code-block:: json
 
@@ -58,7 +58,7 @@ This will return end user a list with active users in Shrimp.
     ]
 
 Incoming JSON will be parsed. If it is not possible,
-:py:exc:`shrimplib.exceptions.ShrimpError` will be raised.
+:py:exc:`decapodlib.exceptions.DecapodError` will be raised.
 """
 
 
@@ -75,8 +75,8 @@ import requests
 import requests.adapters
 import six
 
-from shrimplib import auth
-from shrimplib import exceptions
+from decapodlib import auth
+from decapodlib import exceptions
 
 try:
     import simplejson as json
@@ -87,7 +87,7 @@ except ImportError:
 LOG = logging.getLogger(__name__)
 """Logger."""
 
-VERSION = pkg_resources.get_distribution("shrimplib").version
+VERSION = pkg_resources.get_distribution("decapodlib").version
 """Package version."""
 
 
@@ -131,7 +131,7 @@ def json_response(func):
 
     :return: Data of :py:class:`requests.Response` from decorated
         function.
-    :raises shrimplib.exceptions.ShrimpAPIError: if decoding is not possible
+    :raises decapodlib.exceptions.DecapodAPIError: if decoding is not possible
         or response status code is not ``200``.
     """
 
@@ -149,7 +149,7 @@ def json_response(func):
                 return response.json()
             return response.text
 
-        raise exceptions.ShrimpAPIError(response)
+        raise exceptions.DecapodAPIError(response)
 
     return decorator
 
@@ -224,10 +224,10 @@ def no_auth(func):
 def wrap_errors(func):
     """Decorator which logs and catches all errors of decorated function.
 
-    Also wraps all possible errors into :py:exc:`ShrimpAPIError` class.
+    Also wraps all possible errors into :py:exc:`DecapodAPIError` class.
 
     :return: Value of decorated function.
-    :raises shrimplib.exceptions.ShrimpError: on any exception in
+    :raises decapodlib.exceptions.DecapodError: on any exception in
         decorated function.
     """
 
@@ -236,13 +236,13 @@ def wrap_errors(func):
         try:
             return func(*args, **kwargs)
         except Exception as exc:
-            if isinstance(exc, exceptions.ShrimpError):
+            if isinstance(exc, exceptions.DecapodError):
                 LOG.error("Error on access to API: %s", exc)
                 raise
 
-            LOG.exception("Exception in shrimplib: %s", exc)
+            LOG.exception("Exception in decapodlib: %s", exc)
 
-            raise exceptions.ShrimpAPIError(exc)
+            raise exceptions.DecapodAPIError(exc)
 
     return decorator
 
@@ -270,10 +270,10 @@ class HTTPAdapter(requests.adapters.HTTPAdapter):
     """HTTP adapter for client's :py:class:`requests.Session` which injects
     correct User-Agent header for request."""
 
-    USER_AGENT = "shrimplib/{0}".format(VERSION)
-    """User agent for :py:class:`shrimplib.client.Client` instance.
+    USER_AGENT = "decapodlib/{0}".format(VERSION)
+    """User agent for :py:class:`decapodlib.client.Client` instance.
 
-    As a rule, it is just ``shrimplib/{version}`` string.
+    As a rule, it is just ``decapodlib/{version}`` string.
     """
 
     def add_headers(self, request, **kwargs):
@@ -286,9 +286,9 @@ class HTTPAdapter(requests.adapters.HTTPAdapter):
 class Client(object):
     """A base RPC client model.
 
-    :param str url: URL of Shrimp API (*without* version prefix like ``/v1``).
-    :param str login: Login of user in Shrimp.
-    :param str password: Password of user in Shrimp.
+    :param str url: URL of Decapod API (*without* version prefix like ``/v1``).
+    :param str login: Login of user in Decapod.
+    :param str password: Password of user in Decapod.
     :param timeout: Timeout for remote requests. If ``None`` is set,
         default socket timeout (e.g which is set by
         :py:func:`socket.setdefaulttimeout`) will be used.
@@ -349,7 +349,7 @@ class Client(object):
         raise NotImplementedError()
 
     def __str__(self):
-        return "ShrimpAPI: url={0!r}, login={1!r}, password={2!r}".format(
+        return "DecapodAPI: url={0!r}, login={1!r}, password={2!r}".format(
             self._url, self._login, "*" * len(self._password)
         )
 
@@ -364,10 +364,10 @@ class Client(object):
 
 @six.add_metaclass(client_metaclass)
 class V1Client(Client):
-    """Implemetation of :py:class:`shrimplib.client.Client`
+    """Implemetation of :py:class:`decapodlib.client.Client`
     which works with API version 1.
 
-    Please check parameters for :py:class:`shrimplib.client.Client` class.
+    Please check parameters for :py:class:`decapodlib.client.Client` class.
 
     .. note::
         All ``**kwargs`` keyword arguments here are the same as
@@ -386,9 +386,9 @@ class V1Client(Client):
 
         :return: Model of the Token.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -410,9 +410,9 @@ class V1Client(Client):
 
         This method does ``DELETE /v1/auth`` endpoint call.
 
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -438,9 +438,9 @@ class V1Client(Client):
 
         :return: List of latest cluster models.
         :rtype: list
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -457,9 +457,9 @@ class V1Client(Client):
             of cluster's ID
         :return: Cluster model of latest available version
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -478,9 +478,9 @@ class V1Client(Client):
             of cluster's ID
         :return: List of cluster versions for cluster with ID ``cluster_id``.
         :rtype: list
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -498,9 +498,9 @@ class V1Client(Client):
         :param int version: The number of version to fetch.
         :return: Cluster model of certain version.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -516,9 +516,9 @@ class V1Client(Client):
         :param str name: Name of the cluster.
         :return: New cluster model.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -540,9 +540,9 @@ class V1Client(Client):
         :param dict model_data: Updated model of the cluster.
         :return: Updated cluster model.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -562,9 +562,9 @@ class V1Client(Client):
             of cluster's ID
         :return: Deleted cluster model.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -579,9 +579,9 @@ class V1Client(Client):
 
         :return: List of latest execution models.
         :rtype: list
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -598,9 +598,9 @@ class V1Client(Client):
             of execution's ID
         :return: Execution model of latest available version
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -620,9 +620,9 @@ class V1Client(Client):
         :return: List of execution versions for execution with
             ID ``execution_id``.
         :rtype: list
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -640,9 +640,9 @@ class V1Client(Client):
         :param int version: The number of version to fetch.
         :return: Execution model of certain version.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -662,9 +662,9 @@ class V1Client(Client):
             configuration model.
         :return: New execution model.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -687,9 +687,9 @@ class V1Client(Client):
             execution's ID.
         :return: Canceled execution model.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -707,9 +707,9 @@ class V1Client(Client):
             execution's ID.
         :return: List of execution steps.
         :rtype: list
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -729,9 +729,9 @@ class V1Client(Client):
             execution's ID.
         :return: List of execution steps.
         :rtype: list
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -753,9 +753,9 @@ class V1Client(Client):
 
         :return: List of latest playbook configuration models.
         :rtype: list
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -774,9 +774,9 @@ class V1Client(Client):
             string form of playbook configuration's ID.
         :return: Playbook configuration model of latest available version.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -799,9 +799,9 @@ class V1Client(Client):
         :return: List of playbook configuration versions for playbook
             configuration with ID ``playbook_configuration_id``.
         :rtype: list
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -825,9 +825,9 @@ class V1Client(Client):
         :param int version: The number of version to fetch.
         :return: Playbook configuration model of certain version.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -852,9 +852,9 @@ class V1Client(Client):
             :type server_ids: [:py:class:`str`, ...]
         :return: New cluster model.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -880,9 +880,9 @@ class V1Client(Client):
         :param dict model_data: Updated model of the playbook configuration.
         :return: Updated playbook configuration model.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -905,9 +905,9 @@ class V1Client(Client):
             string form of playbook configuration's ID
         :return: Deleted playbook configuration model.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -926,9 +926,9 @@ class V1Client(Client):
 
         :return: List of latest server models.
         :rtype: list
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -945,9 +945,9 @@ class V1Client(Client):
             of server's ID
         :return: Server model of latest available version
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -966,9 +966,9 @@ class V1Client(Client):
             of server's ID
         :return: List of server versions for server with ID ``server_id``.
         :rtype: list
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -986,9 +986,9 @@ class V1Client(Client):
         :param int version: The number of version to fetch.
         :return: Server model of certain version.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -1010,15 +1010,15 @@ class V1Client(Client):
 
         :param str server_id: Unique ID of server.
         :param str host: Hostname of the server (should be accessible by
-            Shrimp). It is better to have FQDN here.
+            Decapod). It is better to have FQDN here.
         :param str username: The name of the user for Ansible on this server.
-            Shrimp will use Ansible which SSH to machine with hostname
+            Decapod will use Ansible which SSH to machine with hostname
             given in ``host`` parameter and that username.
         :return: New server model.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -1042,9 +1042,9 @@ class V1Client(Client):
         :param dict model_data: Updated model of the server.
         :return: Updated server model.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 
@@ -1064,9 +1064,9 @@ class V1Client(Client):
             of server's ID
         :return: Deleted server model.
         :rtype: dict
-        :raises shrimplib.exceptions.ShrimpError: if not possible to
+        :raises decapodlib.exceptions.DecapodError: if not possible to
             connect to API.
-        :raises shrimplib.exceptions.ShrimpAPIError: if API returns error
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
             response.
         """
 

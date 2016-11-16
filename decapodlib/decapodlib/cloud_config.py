@@ -207,7 +207,7 @@ def get_commands(url):
 
 
 def get_command_header():
-    return ["echo", "=== START SHRIMP SERVER DISCOVERY ==="]
+    return ["echo", "=== START DECAPOD SERVER DISCOVERY ==="]
 
 
 def get_command_update_rc_local():
@@ -241,7 +241,7 @@ def get_command_run_script():
 
 
 def get_command_footer():
-    return ["echo", "=== FINISH SHRIMP SERVER DISCOVERY ==="]
+    return ["echo", "=== FINISH DECAPOD SERVER DISCOVERY ==="]
 
 
 def get_hostname(hostname):

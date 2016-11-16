@@ -19,8 +19,8 @@ from __future__ import unicode_literals
 
 import click
 
-from shrimp_cli import decorators
-from shrimp_cli import main
+from decapodcli import decorators
+from decapodcli import main
 
 
 @main.cli_group
@@ -73,7 +73,7 @@ def create(playbook_configuration_id, playbook_configuration_version, client):
 @click.argument("execution-id", type=click.UUID)
 @decorators.command(execution)
 def cancel(execution_id, client):
-    """Cancel execution in Shrimp.
+    """Cancel execution in Decapod.
 
     Please be noticed that canceling may take time.
     """

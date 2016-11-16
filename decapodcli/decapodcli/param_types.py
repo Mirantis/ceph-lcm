@@ -11,7 +11,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Custom parameter types used in Shrimp CLI."""
+"""Custom parameter types used in Decapod CLI."""
 
 
 from __future__ import absolute_import
@@ -19,7 +19,7 @@ from __future__ import unicode_literals
 
 import click.types
 
-from shrimp_cli import utils
+from decapodcli import utils
 
 
 class CSVParamType(click.types.ParamType):

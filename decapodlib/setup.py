@@ -25,8 +25,8 @@ REQUIREMENTS = (
 
 
 setuptools.setup(
-    name="shrimplib",
-    description="Shrimp client library",
+    name="decapodlib",
+    description="Decapod client library",
     long_description="",  # TODO
     version="0.1.0",
     author="Sergey Arkhipov",

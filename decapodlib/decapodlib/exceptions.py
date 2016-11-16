@@ -11,7 +11,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Exceptions raised in shrimplib."""
+"""Exceptions raised in decapodlib."""
 
 
 from __future__ import absolute_import
@@ -22,8 +22,8 @@ import six
 
 
 @six.python_2_unicode_compatible
-class ShrimpError(Exception):
-    """Common error, raised in shrimplib."""
+class DecapodError(Exception):
+    """Common error, raised in decapodlib."""
 
     __slots__ = "exception",
 
@@ -38,13 +38,13 @@ class ShrimpError(Exception):
 
 
 @six.python_2_unicode_compatible
-class ShrimpAPIError(ShrimpError):
+class DecapodAPIError(DecapodError):
     """Common error in API."""
 
     __slots__ = "error", "description", "code", "exception"
 
     def __init__(self, response):
-        super(ShrimpAPIError, self).__init__(response)
+        super(DecapodAPIError, self).__init__(response)
 
         if isinstance(response, requests.Response):
             self.init_response(response)

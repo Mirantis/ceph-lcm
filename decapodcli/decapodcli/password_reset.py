@@ -19,8 +19,8 @@ from __future__ import unicode_literals
 
 import click
 
-from shrimp_cli import decorators
-from shrimp_cli import main
+from decapodcli import decorators
+from decapodcli import main
 
 
 @main.cli_group

@@ -11,23 +11,23 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""CLI methods for playbook."""
+"""Decapod CLI tools package."""
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
-from shrimp_cli import decorators
-from shrimp_cli import main
+import warnings
 
 
-@main.cli_group
-def playbook():
-    """Playbook subcommands."""
+# This is done to suppress Click warnings about unicode
+warnings.simplefilter("ignore")
 
 
-@decorators.command(playbook)
-def get_all(client):
-    """Request a list of permissions avaialable in API."""
-
-    return client.get_playbooks()
+from decapodcli import cloud_config  # NOQA
+from decapodcli import cluster  # NOQA
+from decapodcli import execution  # NOQA
+from decapodcli import password_reset  # NOQA
+from decapodcli import permission  # NOQA
+from decapodcli import playbook_configuration  # NOQA
+from decapodcli import playbook  # NOQA
+from decapodcli import role  # NOQA
+from decapodcli import server  # NOQA
+from decapodcli import user  # NOQA

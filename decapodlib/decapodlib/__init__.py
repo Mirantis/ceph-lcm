@@ -11,23 +11,19 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""CLI methods for permission."""
+"""Library to work with Decapod API.
+
+Top level module provides a list of shortcuts to use with Decapod. Right
+now, it has only current :py:class:`decapodlib.Client` implementation as
+:py:class:`decapodlib.Client`.
+"""
 
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from shrimp_cli import decorators
-from shrimp_cli import main
+from decapodlib.client import V1Client
 
 
-@main.cli_group
-def permission():
-    """Permission subcommands."""
-
-
-@decorators.command(permission)
-def get_all(client):
-    """Request a list of permissions avaialable in API."""
-
-    return client.get_permissions()
+Client = V1Client
+"""An actual version of JSON client for Decapod."""
