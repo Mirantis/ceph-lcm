@@ -125,6 +125,13 @@ change it later, resetting the password.
 
 Let's assume, that user's password is ``mypassword``.
 
+.. note::
+
+   As mentioned in (TODO), decapod API returns JSONs and client works
+   with parsed JSONs. No models or similar datastructures are used,
+   just parsed JSONs, so except to get lists and dicts from RPC client
+   responses.
+
 
 
 Create new role
@@ -242,10 +249,114 @@ So, we need to do following:
 Create new cluster model
 ------------------------
 
+To deploy new cluster, first we have to create model for that. You may
+interpret cluster as a named holder for actual Ceph configuration.
+
+.. code-block:: python
+
+    >>> cluster = client.create_cluster("ceph")
+
+Also, it is possible to delete cluster right now with
+:py:class:`decapodlib.client.V1Client.delete_cluster` because it has no
+assigned servers. If cluster has servers assigned, it is not possible to
+delete it.
+
 
 Create new playbook configuration
 ---------------------------------
 
+According to TODO, playbook configuration is a settings for playbook
+to be executed on given set of servers. To get playbooks, execute
+:py:meth:`decapodlib.client.V1Client.get_playbooks` (please check method
+documentation for example of results).
+
+.. code-block:: python
+
+    >>> playbooks = client.get_playbooks()
+
+For now, we are interested in ``cluster_deploy`` playbook. It states
+that it requires the server list. Some playbooks require explicit server
+list, some - don't. This is context dependend. For example, if you want
+to purge whole cluster with ``purge_cluster`` playbook, it makes no
+sense to specify all servers: purginig cluster affects all servers in
+this cluster, so playbook configuration will be created for all servers
+in such cluster.
+
+To deploy clusters, we have to specify servers. To get a list of active
+servers, just use appropriate :py:meth:`decapodlib.V1Client.get_servers`
+method:
+
+.. code-block:: python
+
+    >>> servers = client.get_servers()
+
+To run playbooks, we need only IDs of servers. For simplicity of
+tutorial, let's assume that we want to use all known servers for that
+cluster.
+
+.. code-block:: python
+
+    >>> server_ids = [server["id"] for server in servers]
+
+Not everything is ready for creating our playbook configuration.
+
+.. code-block:: python
+
+    >>> config = client.create_playbook_configuration("cephdeploy", cluster["id"], "cluster_deploy", server_ids)
+
+Done, configuration is created. Please check TODO to get
+description of configuration options. If you want to modify
+something (e.g. add another servers as monitors), use
+:py:meth:`decapodlib.client.V1Client.update_playbook_configuration`
+method.
+
 
 Execute playbook configuration
 ------------------------------
+
+After you have good enough playbook configuration, it is a time to
+execute it.
+
+.. code-block:: python
+
+    >>> execution = client.create_execution(config["id"], config["version"])
+
+.. note::
+
+    Please pay attention that you need both playbook configuration ID
+    and version. This is done intentionally because you may want to
+    execute another version of configuration.
+
+When execution is created, it does not start immediately. API service
+creates task for controller service in UNIX spooling style and
+controller starts to execute it if it is possible. Decapod uses server
+locking to avoid collisions in playbook executions, so execution will
+start only when locks for all required servers can be acquired.
+
+You can check status of execution by requesting model again.
+
+.. code-block:: python
+
+    >>> execution = client.get_execution(execution["id"])
+    >>> print(execution["data"]["state"])
+    >>> "started"
+
+When execution is started, you can track it's steps using
+:py:meth:`decapodlib.client.V1Client.get_execution_steps` method.
+
+.. code-block:: python
+
+    >>> steps = client.get_execution_steps(execution["id"])
+
+This will return user a models of execution steps for a following
+execution. When execution is finished, it is also possible to request
+whole log of execution in plain text (basically, it is just an stdout on
+:program:`ansible-playbook`).
+
+.. code-block:: python
+
+    >>> log = client.get_execution_log(execution["id"])
+
+Execution is completed when its state either ``completed`` or
+``failed``. Completed means that everything is OK, failed - something
+went wrong.
