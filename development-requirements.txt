@@ -1,0 +1,15 @@
+# Development requirements file for Decapod
+#
+# Initial intention to have this file is to support readthedocs documentation
+# generation but it can be used to install the project in development mode
+# in a single pip run.
+#
+# pip install -r development-requirements.txt
+
+-e decapodlib
+-e decapodcli
+-e backend/common
+-e backend/migration
+-e backend/api
+-e backend/controller
+-e backend/docker
