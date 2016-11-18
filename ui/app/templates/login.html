@@ -1,5 +1,5 @@
 <div class="login-background">
-  <form (ngSubmit)="login()" #loginForm="ngForm" *ngIf="!reset">
+  <form (ngSubmit)="login()" #loginForm="ngForm" *ngIf="!reset" id="login">
     <div class="login-box">
       <div class="logo-box">
         <div class="logo"></div>
@@ -41,7 +41,7 @@
     </div>
   </form>
 
-  <form #resetForm="ngForm" *ngIf="reset && !resetToken">
+  <form #resetForm="ngForm" *ngIf="reset && !resetToken" id="reset">
     <div class="login-box">
       <div class="logo-box">
         <div class="logo"></div>
@@ -84,7 +84,7 @@
     </div>
   </form>
 
-  <form #newPasswordForm="ngForm" *ngIf="reset && resetToken">
+  <form #newPasswordForm="ngForm" *ngIf="reset && resetToken" id="update">
     <div class="login-box">
       <div class="logo-box">
         <div class="logo"></div>
@@ -117,6 +117,7 @@
 
       <div class="login-button">
         <button
+          id="update_password"
           type="button"
           class="btn btn-primary"
           [disabled]="!password || password !== passwordConfirmation"

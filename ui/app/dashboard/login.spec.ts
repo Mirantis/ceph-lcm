@@ -1,27 +1,21 @@
-import { DebugElement } from '@angular/core';
-import { async, inject, TestBed, ComponentFixture } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
+import { async, TestBed, ComponentFixture } from '@angular/core/testing';
 import { APP_BASE_HREF } from '@angular/common';
 
-import { LoginComponent } from './login';
+import { LoginComponent } from './index';
 import { AuthService } from '../../app/services/auth';
 import { AppModule } from '../app.module';
 
 describe('Login Component', () => {
   let fixture: ComponentFixture<LoginComponent>;
   let component: LoginComponent;
-  let login = 'dummy_login';
-  let password = 'dummy_pass';
-  let submitButton: any;
-  let authService: any;
 
   beforeEach(
     async(() => {
       return TestBed.configureTestingModule({
         imports: [AppModule],
         providers: [
-          AuthService,
-          {provide: APP_BASE_HREF, useValue : '/'}
+          {provide: APP_BASE_HREF, useValue : '/'},
+          AuthService
         ]
       }).compileComponents()
     })
@@ -34,25 +28,55 @@ describe('Login Component', () => {
     fixture.detectChanges();
   });
 
+  describe('alert message', () => {
+    let unauthorized = 'Unauthorized';
+    let networkError = 'Network unreachable';
+    let notFound = {error: '404', message: 'Not Found'};
 
-  it('provides proper css class for the notification message', () => {
-    let assertAlertClass = (isError: boolean) => {
-      let classes = component.getErrorClass();
-      expect(classes['text-success']).toBe(!isError);
-      expect(classes['text-danger']).toBe(isError);
-    };
+    it('has proper css class assigned depending on type', () => {
+      let assertAlertClass = (isError: boolean) => {
+        let classes = component.getErrorClass();
+        expect(classes['text-success']).toBe(!isError);
+        expect(classes['text-danger']).toBe(isError);
+      };
 
-    component.loginError = {error: null, message: 'message'};
-    assertAlertClass(false);
+      component.loginError = {error: null, message: 'any'};
+      assertAlertClass(false);
 
-    component.loginError = {error: '404', message: 'Not Found'};
-    assertAlertClass(true);
+      component.loginError = notFound;
+      assertAlertClass(true);
 
-    component.resetErrors();
-    expect(component.getErrorClass()).toEqual({});
+      component.resetErrors();
+      expect(component.getErrorClass()).toEqual({});
+    });
+
+    it('gets reset properly', () => {
+      component.loginError = notFound;
+      component.resetErrors();
+      expect(component.loginError).toBeNull();
+    });
+
+    it('is correctly printed', () => {
+      component.resetErrors();
+      expect(component.getErrorMessage()).toBe('');
+
+      component.loginError = {error: 'any', message: networkError};
+      expect(component.getErrorMessage()).toBe(networkError);
+
+      component.loginError = {error: unauthorized, message: 'any'};
+      expect(component.getErrorMessage()).toContain('Authentication error');
+
+      component.loginError = notFound;
+      expect(component.getErrorMessage()).toBe(notFound.message);
+    });
   });
 
   describe('login form', () => {
+    let submitButton: any;
+    let authService: any;
+    let login = 'dummy_login';
+    let password = 'dummy_pass';
+
     beforeEach(() => {
       submitButton = fixture.nativeElement.querySelector('button[type=submit]');
     });

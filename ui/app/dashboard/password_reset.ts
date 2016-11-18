@@ -10,7 +10,7 @@ import { ErrorService }   from '../services/error';
 })
 export class PasswordResetComponent extends LoginComponent {
   resetToken: string = null;
-  newPassword: string = null;
+  passwordConfirmation: string = null;
 
   constructor(
     public auth: AuthService,
@@ -24,20 +24,25 @@ export class PasswordResetComponent extends LoginComponent {
 
   ngOnInit() {
     this.route.params.forEach((params: Params) => {
-      this.resetToken = params['reset_token'];
-      if (this.resetToken) {
-        this.auth.checkPasswordResetToken(this.resetToken)
-          .then(
-            () => {
-              this.loginError = {error: '', message: 'Please enter the new password'}
-            },
-            (error: any) => {
-              this.loginError = {error: 'Not Found', message: 'Password reset token was not found'};
-              this.resetToken = null;
-            }
-          )
+      let token = params['reset_token'];
+      if (token) {
+        this.checkProvidedToken(token);
       }
     });
+  }
+
+  checkProvidedToken(token: string) {
+    return this.auth.checkPasswordResetToken(token)
+      .then(
+        () => {
+          this.loginError = {error: '', message: 'Please enter the new password'};
+          this.resetToken = token;
+        },
+        (error: any) => {
+          this.loginError = {error: 'Not Found', message: 'Password reset token was not found'};
+          this.resetToken = null;
+        }
+      );
   }
 
   resetPassword() {
