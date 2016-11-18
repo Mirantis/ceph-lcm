@@ -862,24 +862,189 @@ username      Username which Ansible uses to connect to this server.
 Playbook Configuration
 ++++++++++++++++++++++
 
+Every playbook requires configuration. This model presents such
+configuration. On create of playbook configuration, Decapod generates
+config for given server list and playbook according to best practices.
+It just proposes a good config, user always may update it.
+
+
 JSON Schema
 -----------
+
+.. code-block:: json
+
+    {
+        "name": {"$ref": "#/definitions/non_empty_string"},
+        "playbook_id": {"$ref": "#/definitions/non_empty_string"},
+        "cluster_id": {"$ref": "#/definitions/uuid4"},
+        "configuration": {"type": "object"}
+    }
+
 
 Real-world Example
 ------------------
 
+.. code-block:: json
+
+    {
+        "data": {
+            "cluster_id": "1597a71f-6619-4db6-9cda-a153f4f19097",
+            "configuration": {
+                "global_vars": {
+                    "ceph_facts_template": "/usr/local/lib/python3.5/dist-packages/shrimp_common/facts/ceph_facts_module.py.j2",
+                    "ceph_stable": true,
+                    "ceph_stable_distro_source": "jewel-xenial",
+                    "ceph_stable_release": "jewel",
+                    "ceph_stable_repo": "http://eu.mirror.fuel-infra.org/shrimp/ceph/apt",
+                    "cluster": "ceph",
+                    "cluster_network": "10.10.0.0/24",
+                    "copy_admin_key": true,
+                    "fsid": "1597a71f-6619-4db6-9cda-a153f4f19097",
+                    "journal_collocation": true,
+                    "journal_size": 100,
+                    "max_open_files": 131072,
+                    "nfs_file_gw": false,
+                    "nfs_obj_gw": false,
+                    "os_tuning_params": [
+                        {
+                            "name": "kernel.pid_max",
+                            "value": 4194303
+                        },
+                        {
+                            "name": "fs.file-max",
+                            "value": 26234859
+                        }
+                    ],
+                    "public_network": "10.10.0.0/24"
+                },
+                "inventory": {
+                    "_meta": {
+                        "hostvars": {
+                            "10.10.0.2": {
+                                "ansible_user": "ansible",
+                                "devices": [
+                                    "/dev/vdb"
+                                ],
+                                "monitor_interface": "ens3"
+                            },
+                            "10.10.0.3": {
+                                "ansible_user": "ansible",
+                                "devices": [
+                                    "/dev/vdb"
+                                ],
+                                "monitor_interface": "ens3"
+                            },
+                            "10.10.0.4": {
+                                "ansible_user": "ansible",
+                                "devices": [
+                                    "/dev/vdb"
+                                ],
+                                "monitor_interface": "ens3"
+                            },
+                            "10.10.0.7": {
+                                "ansible_user": "ansible",
+                                "devices": [
+                                    "/dev/vdd",
+                                    "/dev/vde",
+                                    "/dev/vdc",
+                                    "/dev/vdb"
+                                ],
+                                "monitor_interface": "ens3"
+                            },
+                            "10.10.0.8": {
+                                "ansible_user": "ansible",
+                                "devices": [
+                                    "/dev/vdd",
+                                    "/dev/vde",
+                                    "/dev/vdc",
+                                    "/dev/vdb"
+                                ],
+                                "monitor_interface": "ens3"
+                            }
+                        }
+                    },
+                    "clients": [],
+                    "iscsi_gw": [],
+                    "mdss": [],
+                    "mons": [
+                        "10.10.0.2"
+                    ],
+                    "nfss": [],
+                    "osds": [
+                        "10.10.0.7",
+                        "10.10.0.8",
+                        "10.10.0.3",
+                        "10.10.0.4"
+                    ],
+                    "rbd_mirrors": [],
+                    "restapis": [
+                        "10.10.0.2"
+                    ],
+                    "rgws": []
+                }
+            },
+            "name": "deploy",
+            "playbook_id": "cluster_deploy"
+        },
+        "id": "fd76cea9-3efa-4432-854c-fee30ca79ddb",
+        "initiator_id": "9d010f3f-2ec0-4079-ae8c-f46415e2530c",
+        "model": "playbook_configuration",
+        "time_deleted": 0,
+        "time_updated": 1478174220,
+        "version": 2
+    }
+
+
 Field description
 -----------------
+
+=============    ===================================
+Field            Description
+=============    ===================================
+cluster_id       ID of the cluster to deploy.
+configuration    Configuration of the playbook.
+name             Name of the playbook configuration.
+playbook_id      ID of the playbook to use.
+=============    ===================================
+
+Configuration differs from one playbook to another. Please check
+documentation on playbook plugins (TODO) to get a meaning of each
+configuration option.
+
 
 
 Execution
 +++++++++
 
+Execution is the model, which incapsulates data about execution of
+certain playbook configuration on the cluster. You may consider it as a
+run of :program:`ansible-playbook`.
+
+
 JSON Schema
 -----------
 
 Real-world Example
 ------------------
+
+.. code-block:: json
+
+    {
+        "data": {
+            "playbook_configuration": {
+                "id": "fd76cea9-3efa-4432-854c-fee30ca79ddb",
+                "version": 2
+            },
+            "state": "failed"
+        },
+        "id": "6f016e18-97c4-4069-9e99-70862d98e46a",
+        "initiator_id": null,
+        "model": "execution",
+        "time_deleted": 0,
+        "time_updated": 1478175025,
+        "version": 3
+    }
+
 
 Field description
 -----------------
