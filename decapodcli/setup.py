@@ -21,7 +21,7 @@ REQUIREMENTS = (
     "decapodlib==0.1.0",
     "click>=6,<7",
     "six>=1.10",
-    "backports.csv ; python_version=='2.7' or python_version=='2.6'"
+    "backports.csv"
 )
 
 
