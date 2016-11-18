@@ -22,6 +22,7 @@ def get_networks(server):
     networks = {}
 
     for ifname in server.facts["ansible_interfaces"]:
+        ifname = ifname.replace("-", "_")
         interface = server.facts.get("ansible_{0}".format(ifname))
 
         if not interface:
@@ -83,6 +84,7 @@ def get_public_network_if(server, all_servers):
     public_network = get_public_network(all_servers)
 
     for name in server.facts["ansible_interfaces"]:
+        name = name.replace("-", "_")
         interface = server.facts["ansible_{0}".format(name)]
         if not interface.get("ipv4"):
             continue
