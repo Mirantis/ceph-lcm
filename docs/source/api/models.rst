@@ -171,15 +171,60 @@ A few things to know about data model in Decapod:
 User
 ++++
 
+User model presents a data about Decapod user. This model never displays
+password of the user.
+
 
 JSON Schema
 -----------
 
+.. code-block:: json
+
+    {
+        "login": {"$ref": "#/definitions/non_empty_string"},
+        "email": {"$ref": "#/definitions/email"},
+        "full_name": {"$ref": "#/definitions/non_empty_string"},
+        "role_id": {
+            "oneOf": [
+                {"$ref": "#/definitions/uuid4"},
+                {"type": "null"}
+            ]
+        }
+    }
+
+
 Real-world Example
 ------------------
 
+.. code-block:: json
+
+    {
+        "data": {
+            "email": "noreply@example.com",
+            "full_name": "Root User",
+            "login": "root",
+            "role_id": "4f96f3b0-85e5-4735-8c97-34fbef157c9d"
+        },
+        "id": "ee3944e8-758e-45dc-8e9e-e220478e442c",
+        "initiator_id": null,
+        "model": "user",
+        "time_deleted": 0,
+        "time_updated": 1479295535,
+        "version": 1
+    }
+
+
 Field description
 -----------------
+
+=========    ==========================================================================================================================
+Field        Description
+=========    ==========================================================================================================================
+email        Email of the user. This has to be real email, because user will get some important notifications like password reset here.
+full_name    Full name of the user.
+login        Username in Decapod
+role_id      ID of role assigned to user. Can be ``null`` if no role is assigned.
+=========    ==========================================================================================================================
 
 
 Role
