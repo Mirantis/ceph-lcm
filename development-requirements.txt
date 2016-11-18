@@ -13,3 +13,5 @@
 -e backend/api
 -e backend/controller
 -e backend/docker
+sphinx-rtd-theme
+pygments-style-github
