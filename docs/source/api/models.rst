@@ -844,6 +844,7 @@ Real-world Example
         "version": 2
     }
 
+
 Field description
 -----------------
 
@@ -857,6 +858,17 @@ name          Human-readable name of the server.
 state         State of the server (operational, off etc)
 username      Username which Ansible uses to connect to this server.
 ==========    ======================================================
+
+Possible states:
+
+=======================    =====================================================================
+State                      Description
+=======================    =====================================================================
+operational                Server is up and running.
+off                        Server was excluded from Decapod.
+maintenance_no_reconfig    Server is in maintenance, but no cluster reconfiguration is required.
+maintenance_reconfig       Server is in maintenance, cluster reconfiguration is required.
+=======================    =====================================================================
 
 
 Playbook Configuration
@@ -1073,6 +1085,19 @@ playbook_configuration    Information about ID and version of used playbook conf
 state                     State of execution (failed, completed etc)
 ======================    ================================================================
 
+Possible states:
+
+=========    ==========================================
+State        Description
+=========    ==========================================
+created      Execution was created but not started yet.
+started      Execution is in progress.
+completed    Execution was completed successfuly.
+failed       Execution was failed.
+canceling    Canceling of execution is in progress.
+canceled     Execution has been canceled.
+=========    ==========================================
+
 
 
 Execution Step
@@ -1139,6 +1164,17 @@ server_id       ID of the server where task was performed.
 time_started    UNIX timestamp when task was started.
 time_finished   UNIX timestamp when task was finished.
 =============   ===============================================
+
+Possible states:
+
+===========    =========================================================
+State          Description
+===========    =========================================================
+ok             Task was executed without any problems.
+skipped        Task execution was skipped.
+failed         Task was failed.
+unreachable    Task was not executed because remote host is unreachable.
+===========    =========================================================
 
 
 
