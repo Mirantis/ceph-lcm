@@ -117,7 +117,7 @@ To please check signature of
     ... None
 
 So, new user is created. To get example of the user model, please check
-TODO.
+:ref:`api-model-user`.
 
 Please be noticed, that no password is set on user create. User will get
 his password in his email after creating of user. If she wants, she may
@@ -127,19 +127,19 @@ Let's assume, that user's password is ``mypassword``.
 
 .. note::
 
-   As mentioned in (TODO), decapod API returns JSONs and client works
-   with parsed JSONs. No models or similar datastructures are used,
-   just parsed JSONs, so except to get lists and dicts from RPC client
-   responses.
+   As mentioned in :doc:`models`, decapod API returns JSONs and client
+   works with parsed JSONs. No models or similar datastructures are
+   used, just parsed JSONs, so except to get lists and dicts from RPC
+   client responses.
 
 
 
 Create new role
 +++++++++++++++
 
-You may consider Role (TODO) as a named set of
-permissions. To get a list of permissions, please use
-:py:meth:`decapodlib.V1Client.get_permissions` method.
+You may consider Role as a named set of permissions. To get a list of
+permissions, please use :py:meth:`decapodlib.V1Client.get_permissions`
+method.
 
 .. code-block:: python
 
@@ -190,8 +190,8 @@ the same value and it is possible to access any versions were made in
 Decapod using API.
 
 To update model, we need to update its *data* fieldset (please check
-TODO for details). Do not update any field except of *data*, you will
-get *400 Bad Request* on such attempt.
+:ref:`api-model-basic` for details). Do not update any field except of
+*data*, you will get *400 Bad Request* on such attempt.
 
 .. code-block:: python
 
@@ -265,8 +265,8 @@ delete it.
 Create new playbook configuration
 ---------------------------------
 
-According to TODO, playbook configuration is a settings for playbook
-to be executed on given set of servers. To get playbooks, execute
+Playbook configuration is a settings for playbook to be
+executed on given set of servers. To get playbooks, execute
 :py:meth:`decapodlib.client.V1Client.get_playbooks` (please check method
 documentation for example of results).
 
@@ -304,8 +304,9 @@ Not everything is ready for creating our playbook configuration.
 
     >>> config = client.create_playbook_configuration("cephdeploy", cluster["id"], "cluster_deploy", server_ids)
 
-Done, configuration is created. Please check TODO to get
-description of configuration options. If you want to modify
+Done, configuration is created. Please check
+:ref:`api-model-playbook-configuration` to get description
+of configuration options. If you want to modify
 something (e.g. add another servers as monitors), use
 :py:meth:`decapodlib.client.V1Client.update_playbook_configuration`
 method.

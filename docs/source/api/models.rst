@@ -13,6 +13,9 @@ This chapter is intended to explain how to update models and why whole
 model is required.
 
 
+
+.. _api-model-basic:
+
 Basic model
 +++++++++++
 
@@ -167,6 +170,8 @@ A few things to know about data model in Decapod:
 7. Deleted model is excluded from listings by default but it is always
    possible to access it with parametrized listing or direct request.
 
+
+.. _api-model-user:
 
 User
 ++++
@@ -870,6 +875,8 @@ maintenance_no_reconfig    Server is in maintenance, but no cluster reconfigurat
 maintenance_reconfig       Server is in maintenance, cluster reconfiguration is required.
 =======================    =====================================================================
 
+
+.. _api-model-playbook-configuration:
 
 Playbook Configuration
 ++++++++++++++++++++++
