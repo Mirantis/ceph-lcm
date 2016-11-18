@@ -230,27 +230,206 @@ role_id      ID of role assigned to user. Can be ``null`` if no role is assigned
 Role
 ++++
 
+Role presents a set of permissions. Each API action require permissions,
+sometimes API may require conditional permissions: for example, playbook
+execution require permission on every playbook type.
+
+
+
 JSON Schema
 -----------
+
+.. code-block:: json
+
+    {
+        "name": {"$ref": "#/definitions/non_empty_string"},
+        "permissions": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["name", "permissions"],
+                "additionalProperties": false,
+                "properties": {
+                    "name": {"$ref": "#/definitions/non_empty_string"},
+                    "permissions": {
+                        "type": "array",
+                        "items": {"$ref": "#/definitions/non_empty_string"}
+                    }
+                }
+            }
+        }
+    }
+
+
 
 Real-world Example
 ------------------
 
+.. code-block:: json
+
+    {
+        "data": {
+            "name": "wheel",
+            "permissions": [
+                {
+                    "name": "playbook",
+                    "permissions": [
+                        "add_osd",
+                        "cluster_deploy",
+                        "hello_world",
+                        "purge_cluster",
+                        "remove_osd"
+                    ]
+                },
+                {
+                    "name": "api",
+                    "permissions": [
+                        "create_cluster",
+                        "create_execution",
+                        "create_playbook_configuration",
+                        "create_role",
+                        "create_server",
+                        "create_user",
+                        "delete_cluster",
+                        "delete_execution",
+                        "delete_playbook_confuiguration",
+                        "delete_role",
+                        "delete_server",
+                        "delete_user",
+                        "edit_cluster",
+                        "edit_playbook_configuration",
+                        "edit_role",
+                        "edit_server",
+                        "edit_user",
+                        "view_cluster",
+                        "view_cluster_versions",
+                        "view_execution",
+                        "view_execution_steps",
+                        "view_execution_version",
+                        "view_playbook_configuration",
+                        "view_playbook_configuration_version",
+                        "view_role",
+                        "view_role_versions",
+                        "view_server",
+                        "view_server_versions",
+                        "view_user",
+                        "view_user_versions"
+                    ]
+                }
+            ]
+        },
+        "id": "4f96f3b0-85e5-4735-8c97-34fbef157c9d",
+        "initiator_id": null,
+        "model": "role",
+        "time_deleted": 0,
+        "time_updated": 1479295534,
+        "version": 1
+    }
+
+
+
 Field description
 -----------------
+
+===========    ================================================================
+Field          Description
+===========    ================================================================
+name           Name of the role.
+permissions    A list of permissions for the role. Each permission refer some subset of interest: ``api`` permission is responsible for access to endpoints, ``playbook`` is responsible for playbook which this role allows to execute.
+===========    ================================================================
 
 
 Cluster
 +++++++
 
+Cluster model has all data, related to the cluster. Also, it provides
+credentials to access or configure apps to use with this Ceph cluster.
+
+
+
 JSON Schema
 -----------
+
+.. code-block:: json
+
+    {
+        "name": {"$ref": "#/definitions/non_empty_string"},
+        "configuration": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["server_id", "version"],
+                    "properties": {
+                        "server_id": {"$ref": "#/definitions/dmidecode_uuid"},
+                        "version": {"$ref": "#/definitions/positive_integer"}
+                    }
+                }
+            }
+        }
+    }
+
 
 Real-world Example
 ------------------
 
+.. code-block:: json
+
+    {
+        "data": {
+            "configuration": {
+                "mons": [
+                    {
+                        "server_id": "3ee25709-215d-4f51-8348-20b4e7390fdb",
+                        "version": 2
+                    }
+                ],
+                "osds": [
+                    {
+                        "server_id": "045cdedf-898d-450d-8b3e-10a1bd20ece1",
+                        "version": 2
+                    },
+                    {
+                        "server_id": "0f26c53a-4ce6-4fdd-9e4b-ed7400abf8eb",
+                        "version": 2
+                    },
+                    {
+                        "server_id": "6cafad99-6353-448c-afbc-f161d0664522",
+                        "version": 2
+                    },
+                    {
+                        "server_id": "73079fc7-58a8-40b0-ba03-f02d7a4f2817",
+                        "version": 2
+                    }
+                ],
+                "restapis": [
+                    {
+                        "server_id": "3ee25709-215d-4f51-8348-20b4e7390fdb",
+                        "version": 2
+                    }
+                ]
+            },
+            "name": "ceph"
+        },
+        "id": "1597a71f-6619-4db6-9cda-a153f4f19097",
+        "initiator_id": "9d010f3f-2ec0-4079-ae8c-f46415e2530c",
+        "model": "cluster",
+        "time_deleted": 0,
+        "time_updated": 1478175677,
+        "version": 3
+    }
+
+
 Field description
 -----------------
+
+=============    ==============================================================
+Field            Description
+=============    ==============================================================
+name             Name of the cluster. This name will be propagated to Ceph by default (but always possible to redefine in playbook configuration).
+configuration    Configuration of the cluster. In most cases this is a mapping of node role name (mon, osd etc) to the list of servers which have that role.
+=============    ==============================================================
 
 
 Server
