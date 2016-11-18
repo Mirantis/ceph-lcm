@@ -1024,6 +1024,23 @@ run of :program:`ansible-playbook`.
 JSON Schema
 -----------
 
+.. code-block:: json
+
+    {
+        "playbook_configuration": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "version"],
+            "properties": {
+                "id": {"$ref": "#/definitions/uuid4"},
+                "version": {"$ref": "#/definitions/positive_integer"}
+            }
+        },
+        "state": {"$ref": "#/definitions/non_empty_string"}
+    }
+
+
+
 Real-world Example
 ------------------
 
@@ -1049,19 +1066,79 @@ Real-world Example
 Field description
 -----------------
 
+======================    ================================================================
+Field                     Description
+======================    ================================================================
+playbook_configuration    Information about ID and version of used playbook configuration.
+state                     State of execution (failed, completed etc)
+======================    ================================================================
+
 
 
 Execution Step
 ++++++++++++++
 
+This is a model of step of playbook execution. Step is a granular task
+of configuration management system.
+
+
 JSON Schema
 -----------
+
+.. code-block:: json
+
+    {
+        "error": {"type": "object"},
+        "execution_id": {"$ref": "#/definitions/uuid4"},
+        "name": {"$ref": "#/definitions/non_empty_string"},
+        "result": {"$ref": "#/definitions/non_empty_string"},
+        "role": {"$ref": "#/definitions/non_empty_string"},
+        "server_id": {"$ref": "#/definitions/uuid4"},
+        "time_started": {"$ref": "#/definitions/positive_integer"},
+        "time_finished": {"$ref": "#/definitions/positive_integer"}
+    }
+
 
 Real-world Example
 ------------------
 
+.. code-block:: json
+
+    {
+        "data": {
+            "error": {},
+            "execution_id": "6f016e18-97c4-4069-9e99-70862d98e46a",
+            "name": "set config and keys paths",
+            "result": "skipped",
+            "role": "ceph-restapi",
+            "server_id": "3ee25709-215d-4f51-8348-20b4e7390fdb",
+            "time_finished": 1478175019,
+            "time_started": 1478175019
+        },
+        "id": "581b292b3ceda10087ab8d41",
+        "initiator_id": "6f016e18-97c4-4069-9e99-70862d98e46a",
+        "model": "execution_step",
+        "time_deleted": 0,
+        "time_updated": 1478175019,
+        "version": 1
+    }
+
+
 Field description
 -----------------
+
+=============   ===============================================
+Field           Description
+=============   ===============================================
+error           Error data from Ansible
+execution_id    ID of execution made
+name            Name of the task which was executed
+result          Result of the task execution (failed, ok, ...).
+role            Role which task belongs to.
+server_id       ID of the server where task was performed.
+time_started    UNIX timestamp when task was started.
+time_finished   UNIX timestamp when task was finished.
+=============   ===============================================
 
 
 
