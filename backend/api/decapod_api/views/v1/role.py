@@ -36,7 +36,6 @@ DATA_SCHEMA = {
                 "permissions": {
                     "type": "array",
                     "items": {"$ref": "#/definitions/non_empty_string"}
-
                 }
             }
         }

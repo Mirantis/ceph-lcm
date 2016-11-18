@@ -1,8 +1,7 @@
 Decapod API
 ===========
 
-This document covers Decapod API internals and gives some usage guides
-Also, you may find some reasoning about internal design here also.
+This document covers Decapod API internals.
 
 
 
@@ -12,4 +11,6 @@ Contents
 .. toctree::
   :maxdepth: 2
 
+  models
+  usage
   decapodlib
