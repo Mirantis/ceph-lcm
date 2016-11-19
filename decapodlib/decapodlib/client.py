@@ -69,6 +69,7 @@ import abc
 import inspect
 import logging
 import socket
+import warnings
 
 import pkg_resources
 import requests
@@ -87,8 +88,11 @@ except ImportError:
 LOG = logging.getLogger(__name__)
 """Logger."""
 
-VERSION = pkg_resources.get_distribution("decapodlib").version
-"""Package version."""
+try:
+    VERSION = pkg_resources.get_distribution("decapodlib").version
+except pkg_resources.DistributionNotFound as exc:
+    warnings.warn("Module is imported outside of distribution.", ImportWarning)
+    VERSION = "unknown"
 
 __all__ = "VERSION", "Client", "V1Client"
 
