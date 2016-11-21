@@ -83,6 +83,7 @@ def get_interface_data(facts):
     data = []
 
     for name in names:
+        name = name.replace("-", "_")
         mac = ipv4 = ipv6 = ""
         ifdata = facts.get("ansible_{0}".format(name))
         if ifdata:
