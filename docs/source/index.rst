@@ -32,6 +32,7 @@ Contents
 
    installation/index.rst
    deploy/index.rst
+   data_model
    cli
    ceph_node
    api/index.rst
