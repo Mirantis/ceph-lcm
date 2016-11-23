@@ -179,6 +179,8 @@ actions:
 
 
 
+.. _api-usage-assign-user-with-role:
+
 Assign user with role
 +++++++++++++++++++++
 
@@ -189,9 +191,11 @@ version of the same entity. So updates and deletes doing progression of
 the same value and it is possible to access any versions were made in
 Decapod using API.
 
-To update model, we need to update its *data* fieldset (please check
-:ref:`api-model-basic` for details). Do not update any field except of
-*data*, you will get *400 Bad Request* on such attempt.
+.. important::
+
+    To update model, we need to update its *data* fieldset (please check
+    :ref:`api-model-basic` for details). Do not update any field except
+    of *data*, you will get *400 Bad Request* on such attempt.
 
 .. code-block:: python
 

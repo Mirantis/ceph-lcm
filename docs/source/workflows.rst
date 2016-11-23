@@ -24,6 +24,8 @@ appears in Decapod, it means that tool can use it.
 
 
 
+.. _workflows-cluster-deployment:
+
 Cluster Deployment
 ++++++++++++++++++
 
