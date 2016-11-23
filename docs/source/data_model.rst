@@ -23,9 +23,10 @@ When new model is creating in system, Decapod will send new password
 on his email. After that it is possible to reset that password and set
 required one.
 
-If user is created without a role, it can do bare minimum with system:
-even listing of entities requires permissions. Authorization is done
-assigning a role to the user. User may have only one role in Decapod.
+If user is created without a `Role`_, it can do bare minimum with
+system: even listing of entities requires permissions. Authorization
+is done assigning a role to the user. User may have only one role in
+Decapod.
 
 
 Role
@@ -189,10 +190,29 @@ parameter will be used as is.
          $ ansible-playbook -i ./inventoryfile --extra-vars "inventory_section|to_json" playbook.yaml
 
 Decapod will try to generate best possible configuration for given set
-of servers. After that you can modify it as you want.
+of `Server`_ models. After that you can modify it as you want.
 
 .. note::
 
-    Decapod will use servers IP as hosts. Those IPs are IPs of machine
-    visible by Decapod, they are not belonging to any other network
-    other then that which is used by Decapod to SSH on those machines.
+    Decapod will use `Server`_'s IP as hosts. Those IPs are IPs of
+    machine visible by Decapod, they are not belonging to any other
+    network other then that which is used by Decapod to SSH on those
+    machines.
+
+
+Execution
++++++++++
+
+Execution model defines execution of `Playbook Configuration`_.
+
+Each playbook configuration can be run various amount of time, and this
+model defines a single execution. As a result, model has result of the
+execution (completed, failed etc) and execution log.
+
+Execution log can be present in 2 ways: execution steps and raw log. Raw
+log is pure Ansible log of whole execution as is, taken from stdout.
+Execution steps are parsed steps of the execution.
+
+Each execution step has timestamps (started, finished), ID of the
+`Server`_ which issued event, role and task name of the event, status of
+the task and detailed information on error.
