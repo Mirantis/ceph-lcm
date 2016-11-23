@@ -90,7 +90,6 @@ def test_create_server_again_nothing_happened(parameter, configure_model):
         "initiator_id": pytest.faux.gen_uuid(),
         "server_id": pytest.faux.gen_uuid(),
         "facts": {},
-        "initiator_id": pytest.faux.gen_uuid()
     }
 
     model = server.ServerModel.create(**params)
@@ -107,7 +106,6 @@ def test_create_server_again(parameter, configure_model):
         "username": pytest.faux.gen_alphanumeric(),
         "fqdn": pytest.faux.gen_alphanumeric(),
         "ip": pytest.faux.gen_ipaddr(),
-        "initiator_id": pytest.faux.gen_uuid(),
         "server_id": pytest.faux.gen_uuid(),
         "facts": {},
         "initiator_id": pytest.faux.gen_uuid()

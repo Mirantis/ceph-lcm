@@ -37,7 +37,7 @@ FILTER_SCHEMA = {
                     "gt": {"type": "integer"},
                     "gte": {"type": "integer"},
                     "lt": {"type": "integer"},
-                    "gte": {"type": "integer"},
+                    "lte": {"type": "integer"},
                     "regexp": {"type": "string"},
                     "ne": {
                         "oneOf": [
