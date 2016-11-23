@@ -55,6 +55,8 @@ playbooks like purging cluster or removing OSD hosts.
 
 
 
+.. _data-model-server:
+
 Cluster
 +++++++
 
@@ -96,6 +98,8 @@ ignoring `ohai <https://docs.chef.io/ohai.html>`_ and `facter
     discovered by discovery protocol.
 
 
+.. _data-model-server-discovery:
+
 Server Discovery
 ----------------
 
@@ -135,6 +139,8 @@ Server discovery process is done in 6 steps:
 6. After facts are collected new version (or update of existing one) will
    be performed.
 
+
+.. _data-model-playbook-configuration:
 
 Playbook Configuration
 ++++++++++++++++++++++
@@ -199,6 +205,9 @@ of `Server`_ models. After that you can modify it as you want.
     network other then that which is used by Decapod to SSH on those
     machines.
 
+
+
+.. _data-model-execution:
 
 Execution
 +++++++++

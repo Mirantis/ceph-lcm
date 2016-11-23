@@ -33,6 +33,7 @@ Contents
    installation/index.rst
    deploy/index.rst
    data_model
+   workflows
    cli
    ceph_node
    api/index.rst
