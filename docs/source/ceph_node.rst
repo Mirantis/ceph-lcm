@@ -137,6 +137,8 @@ We will assume that you have a CLI profile named ``mymaas``.
 
 
 
+.. _deploy-os-using-maas:
+
 Deploy OS using MAAS
 ********************
 
