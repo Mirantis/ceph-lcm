@@ -133,3 +133,66 @@ Server discovery process is done in 6 steps:
 5. Controller execute this task and collect facts from remote host.
 6. After facts are collected new version (or update of existing one) will
    be performed.
+
+
+Playbook Configuration
+++++++++++++++++++++++
+
+To define playbook configuration, we need to define playbook first.
+
+Decapod uses plugins to deliver Ceph management functionality. Plugins
+are just Python packages, which contain Ansible playbooks, configuration
+file and Python code itself which is glue between playbook YAML file
+and Decapod internals.
+
+In most cases, Ansible playbooks are generic ones: they have abilities
+to inject some values into them: not only hosts where playbook has to
+be executed, but some arbitrary parameters also (e.g Ceph FSID). Those
+parameters are injected into Ansible by ``--extra-vars`` commandline
+option or by setting them in inventory.
+
+Playbook configuration is a named set of such parameters for a playbook.
+It defines tuple of (*name*, *playbook*, *parameters*).
+
+For simplicity, each parameters are split into 2 sections:
+``global_vars`` and ``inventory``.
+
+``global_vars`` are variables which are global for playbook. Basically,
+there is no need in them: all might be defined in inventory section.
+But to avoid copypaste, they were moved into that section. Each
+parameter in this section is defined for every host and if inventory
+is not redefining it, it would be used. If inventory redefines, then
+inventory's version would be used.
+
+.. note::
+
+    If you can image running of :program:`ansible-playbook`
+    then ``global_vars`` will be passed as ``--extra-vars``
+    parameter. Please `check official documentation on such injection
+    <http://docs.ansible.com/ansible/playbooks_variables.html#passing-variables-on-the-command-line>`_.
+
+``inventory`` will be used as Ansible inventory. In 99% of cases, this
+would be real inventory. Sometimes it might differ to exclude sensitive
+information like monitor secret from public view, but in most cases this
+parameter will be used as is.
+
+.. note::
+
+    If you are familiar with :program:`ansible-playbook` program,
+    then playbook configuration is equal to do following:
+
+    1. Put contents of ``global_vars`` into ``./inventoryfile``
+    2. Execute
+
+    .. code-block:: bash
+
+         $ ansible-playbook -i ./inventoryfile --extra-vars "inventory_section|to_json" playbook.yaml
+
+Decapod will try to generate best possible configuration for given set
+of servers. After that you can modify it as you want.
+
+.. note::
+
+    Decapod will use servers IP as hosts. Those IPs are IPs of machine
+    visible by Decapod, they are not belonging to any other network
+    other then that which is used by Decapod to SSH on those machines.
