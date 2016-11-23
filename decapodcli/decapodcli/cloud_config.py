@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import click
 
 from decapodcli import main
+
 from decapodlib import cloud_config
 
 

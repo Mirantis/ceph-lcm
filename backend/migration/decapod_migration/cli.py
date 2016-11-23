@@ -21,6 +21,7 @@ import time
 import pkg_resources
 
 from decapod_migration import migrators
+
 from decapod_common import cliutils
 from decapod_common import log
 from decapod_common.models import lock

@@ -15,8 +15,9 @@
 """This module has routines to help user to build user-data configs for
 `cloud-init <http://cloudinit.readthedocs.io>`_.
 
-Decapod uses cloud-init to implement server discovery. On each server boot
-user-data will be executed (you may consider cloud-init as rc.local on steroids).
+Decapod uses cloud-init to implement server discovery. On each server
+boot user-data will be executed (you may consider cloud-init as rc.local
+on steroids).
 
 Basically, it creates several files on the host system and put their
 execution into host rc.local.

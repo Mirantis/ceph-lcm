@@ -68,3 +68,33 @@
   become: True
   roles:
   - ceph-iscsi-gw
+
+
+# Hacks for ceph-ansible setup
+# Please check upstream bugs and remove these workarounds after
+# proper fixes will be merged
+
+# By default, ceph-ansible do not enable monitors so after restart
+# processes won't up.
+- hosts: mons
+  become: true
+  tasks:
+  - name: Enable monitors on startup
+    command: systemctl enable ceph-mon.service
+
+# By default, ceph-ansible do not enable rgws so after restart
+# processes won't up.
+- hosts: rgws
+  become: true
+  tasks:
+  - name: Create dependencies directory for ceph-target
+    file: path=/etc/systemd/system/ceph.target.wants state=directory
+
+  - name: Create symlink for RGW service
+    file:
+      src: /lib/systemd/system/ceph-radosgw@.service
+      dest: "/etc/systemd/system/ceph.target.wants/ceph-radosgw@rgw.{{ ansible_hostname }}.service"
+      state: link
+
+  - name: Enable ceph.target
+    command: systemctl enable ceph.target

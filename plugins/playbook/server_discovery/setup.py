@@ -28,7 +28,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     entry_points={
         "decapod.playbooks": [
-            "server_discovery = decapod_server_discovery.plugin:ServerDiscovery"
+            "server_discovery = decapod_server_discovery.plugin:ServerDiscovery"  # NOQA
         ]
     },
     python_requires=">= 3.4",
