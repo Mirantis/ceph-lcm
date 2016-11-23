@@ -68,3 +68,16 @@
   become: True
   roles:
   - ceph-iscsi-gw
+
+
+# Hacks for ceph-ansible setup
+# Please check upstream bugs and remove these workarounds after
+# proper fixes will be merged
+
+# By default, ceph-ansible do not enable monitors so after restart
+# processes won't up.
+- hosts: mons
+  become: true
+  tasks:
+  - name: Enable monitors on startup
+    command: systemctl enable ceph-mon.service
