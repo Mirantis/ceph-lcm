@@ -842,7 +842,7 @@ class V1Client(Client):
                 playbook_configuration_id, version))
         return self._session.get(url, **kwargs)
 
-    def create_playbook_configuration(self, name, cluster_id, playbook,
+    def create_playbook_configuration(self, name, cluster_id, playbook_id,
                                       server_ids, **kwargs):
         """This method creates new playbook configuration model.
 
@@ -852,7 +852,7 @@ class V1Client(Client):
         :param str name: Name of the playbook configuration.
         :param str cluster_id: UUID4 (:rfc:`4122`) in string form
             of cluster's ID
-        :param str playbook: ID of playbook to use.
+        :param str playbook_id: ID of playbook to use.
         :param server_ids: List of server UUID4 (:rfc:`4122`) in string
             form of server model IDs.
             :type server_ids: [:py:class:`str`, ...]
@@ -868,7 +868,7 @@ class V1Client(Client):
         payload = {
             "name": name,
             "cluster_id": cluster_id,
-            "playbook": playbook,
+            "playbook_id": playbook_id,
             "server_ids": list(set(server_ids))
         }
 
