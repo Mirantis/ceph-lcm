@@ -241,7 +241,8 @@ Deploy Ceph cluster
 +++++++++++++++++++
 
 Now it is a time to deploy actual Ceph cluster. Please consider
-mentioned assumptions and the chapter on product workflow (TODO).
+mentioned assumptions and the chapter on product workflow:
+:doc:`../workflows`.
 
 So, we need to do following:
 
