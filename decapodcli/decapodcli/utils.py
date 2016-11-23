@@ -49,10 +49,10 @@ def format_output_json(ctx, response, error=False):
 
     if error:
         click.echo(response, err=True)
-    elif ctx.obj["no_pager"]:
-        click.echo(response)
-    else:
+    elif ctx.obj["pager"]:
         click.echo_via_pager(response)
+    else:
+        click.echo(response)
 
 
 def update_model(item_id, fetch_item, update_item, model, **kwargs):

@@ -99,7 +99,7 @@ def log(ctx, execution_id, client):
     response = client.get_execution_log(execution_id,
                                         headers={"Content-Type": "text/plain"})
 
-    if ctx.obj["no_pager"]:
-        click.echo(response)
-    else:
+    if ctx.obj["pager"]:
         click.echo_via_pager(response)
+    else:
+        click.echo(response)

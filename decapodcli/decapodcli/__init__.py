@@ -16,9 +16,11 @@
 
 import warnings
 
+import click
 
-# This is done to suppress Click warnings about unicode
-warnings.simplefilter("ignore")
+
+click.disable_unicode_literals_warning = True
+warnings.simplefilter("always", PendingDeprecationWarning)
 
 
 from decapodcli import cloud_config  # NOQA

@@ -17,6 +17,8 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import warnings
+
 import click
 
 from decapodcli import decorators
@@ -80,6 +82,12 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     help="Do not use pager for output."
 )
 @click.option(
+    "--pager", "-r",
+    envvar="DECAPOD_PAGER",
+    is_flag=True,
+    help="Use pager for output."
+)
+@click.option(
     "--output-format", "-f",
     default="json",
     type=click.Choice(["json"]),
@@ -87,7 +95,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 )
 @click.pass_context
 def cli(ctx, url, login, password, no_verify, ssl_certificate, debug,
-        timeout, no_pager, output_format):
+        timeout, no_pager, pager, output_format):
     """Decapod command line tool.
 
     With this CLI it is possible to access all API endpoints of Decapod.
@@ -108,9 +116,23 @@ def cli(ctx, url, login, password, no_verify, ssl_certificate, debug,
         - DECAPOD_SSL_CERTIFICATE - this environment variable sets a path
                                     to SSL client certificate.
         - DECAPOD_DEBUG           - this environment variable sets debug mode.
-        - DECAPOD_NO_PAGER        - this environment variable removes pager
+        - DECAPOD_NO_PAGER        - (deprecated) this environment variable
+                                    removes pager support.
+        - DECAPOD_PAGER           - this environment variable add pager
                                     support.
     """
+
+    pagerize = False
+    if no_pager:
+        warnings.warn(
+            "--no-pager (or environment variable DECAPOD_NO_PAGER) "
+            "is deprecated. This is default behavior now. If you want "
+            "pager support, please use --pager option.",
+            PendingDeprecationWarning
+        )
+        pagerize = False
+    if pager:
+        pagerize = True
 
     if ssl_certificate:
         ssl_certificate.close()
@@ -123,7 +145,7 @@ def cli(ctx, url, login, password, no_verify, ssl_certificate, debug,
         "debug": debug,
         "timeout": timeout,
         "format": output_format,
-        "no_pager": no_pager,
+        "pager": pagerize,
         "client": decapodlib.Client(url, login, password,
                                     timeout=timeout, verify=not no_verify,
                                     certificate_file=ssl_certificate)
