@@ -95,6 +95,15 @@ To build development images, just execute the following command:
 
     $ make build_containers_dev
 
+Actually, there is not big difference between production and development
+version. Basically, target ``build_containers_dev`` is a sequence of
+2 targets: ``copy_example_keys`` and ``build_containers``. Target
+``copy_example_keys`` copies hardcoded files, mentioned in `Building a
+production version`_ into correct places.
+
+Since these files are placed in VCS, user has to replace them with
+private ones on container build.
+
 
 
 Building a production version
