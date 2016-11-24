@@ -7662,6 +7662,11 @@ a.grid .grid-header .icon:focus {
 .modal-errors form div.checkbox label {
   text-transform: none;
 }
+.modal-errors .long-content {
+  max-height: 200px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
 .modal-errors p:last-child {
   margin-bottom: 0;
 }
@@ -7683,6 +7688,11 @@ a.grid .grid-header .icon:focus {
 }
 .modal-body form div.checkbox label {
   text-transform: none;
+}
+.modal-body .long-content {
+  max-height: 200px;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 .modal-footer {
   border: 0;

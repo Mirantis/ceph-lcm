@@ -54,18 +54,20 @@
 
       <label>Permissions groups</label>
 
-      <div *ngFor="let group of permissions">
-        <h5>{{group.name}}</h5>
-        <div class="checkbox" *ngFor="let permission of group.permissions">
-          <label>
-            <input
-              type="checkbox"
-              [name]="group"
-              [value]="permission"
-              [checked]="getGroupPermission(group, permission)"
-              (click)="toggleGroupPermission(group, permission)">
-              {{permission}}
-          </label>
+      <div class="long-content">
+        <div *ngFor="let group of permissions">
+          <h5>{{group.name}}</h5>
+          <div class="checkbox" *ngFor="let permission of group.permissions">
+            <label>
+              <input
+                type="checkbox"
+                [name]="group"
+                [value]="permission"
+                [checked]="getGroupPermission(group, permission)"
+                (click)="toggleGroupPermission(group, permission)">
+                {{permission}}
+            </label>
+          </div>
         </div>
       </div>
     </form>
