@@ -7,6 +7,8 @@ required actions.
 
 
 
+.. _workflows-server-discovery:
+
 Server discovery
 ++++++++++++++++
 

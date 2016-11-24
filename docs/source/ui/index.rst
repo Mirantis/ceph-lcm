@@ -7,4 +7,6 @@ Decapod Web UI.
 *Contents*
 
 .. toctree::
+
   acl
+  cluster_deployment
