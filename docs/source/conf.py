@@ -59,7 +59,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Decapod'
-copyright = '2016, Sergey Arkhipov'
+copyright = '2016, Mirantis'
 author = 'Sergey Arkhipov'
 
 # The version info for the project you're documenting, acts as replacement for
