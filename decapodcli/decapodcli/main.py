@@ -93,9 +93,10 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     type=click.Choice(["json"]),
     help="How to format output. Currently only JSON is supported."
 )
+@decorators.with_color
 @click.pass_context
 def cli(ctx, url, login, password, no_verify, ssl_certificate, debug,
-        timeout, no_pager, pager, output_format):
+        timeout, no_pager, pager, color, output_format):
     """Decapod command line tool.
 
     With this CLI it is possible to access all API endpoints of Decapod.
@@ -130,7 +131,6 @@ def cli(ctx, url, login, password, no_verify, ssl_certificate, debug,
             "pager support, please use --pager option.",
             PendingDeprecationWarning
         )
-        pagerize = False
     if pager:
         pagerize = True
 
@@ -146,9 +146,12 @@ def cli(ctx, url, login, password, no_verify, ssl_certificate, debug,
         "timeout": timeout,
         "format": output_format,
         "pager": pagerize,
-        "client": decapodlib.Client(url, login, password,
-                                    timeout=timeout, verify=not no_verify,
-                                    certificate_file=ssl_certificate)
+        "color": color,
+        "client": decapodlib.Client(
+            url, login, password,
+            timeout=timeout, verify=not no_verify,
+            certificate_file=ssl_certificate
+        )
     }
     utils.configure_logging(debug)
 

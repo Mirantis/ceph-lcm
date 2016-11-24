@@ -27,6 +27,11 @@ from decapodcli import utils
 
 from decapodlib import exceptions
 
+try:
+    import pygments
+except ImportError:
+    pygments = None
+
 
 def catch_errors(func):
     """Decorator which catches all errors and tries to print them."""
@@ -72,6 +77,28 @@ def format_output(func):
 
         if ctx.obj["format"] == "json":
             utils.format_output_json(ctx, response)
+
+    return decorator
+
+
+def with_color(func):
+    """Decorator which adds --color option if available."""
+
+    if pygments is None:
+        def decorator(*args, **kwargs):
+            kwargs["color"] = None
+            return func(*args, **kwargs)
+    else:
+        decorator = click.option(
+            "--color",
+            default=None,
+            type=click.Choice(["light", "dark"]),
+            help=(
+                "Colorize output. By default no color is used. "
+                "Parameter means colorscheme of the terminal")
+        )(func)
+
+    decorator = six.wraps(func)(decorator)
 
     return decorator
 

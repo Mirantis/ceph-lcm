@@ -46,7 +46,8 @@ setuptools.setup(
         ]
     },
     extras_require={
-        "simplejson": ["simplejson"]
+        "simplejson": ["simplejson"],
+        "color": ["pygments"]
     },
     classifiers=(
         "Intended Audience :: Information Technology",

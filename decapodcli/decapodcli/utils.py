@@ -28,6 +28,13 @@ try:
 except ImportError:
     import json
 
+try:
+    import pygments
+    import pygments.lexers
+    import pygments.formatters
+except ImportError:
+    pygments = None
+
 
 def json_loads(data):
     if isinstance(data, bytes):
@@ -46,6 +53,7 @@ def parameter_name(name):
 
 def format_output_json(ctx, response, error=False):
     response = json_dumps(response)
+    response = colorize(response, ctx.obj["color"], "json")
 
     if error:
         click.echo(response, err=True)
@@ -84,3 +92,15 @@ def configure_logging(debug):
         six.moves.http_client.HTTPConnection.debuglevel = 0
         logging.getLogger().setLevel(logging.CRITICAL)
         requests_log.setLevel(logging.CRITICAL)
+
+
+def colorize(text, color, lexer):
+    if pygments is None or not color:
+        return text
+
+    lexer_obj = pygments.lexers.get_lexer_by_name(lexer, ensurenl=False)
+    formatter_obj = pygments.formatters.get_formatter_by_name(
+        "terminal", bg=color)
+    colorized = pygments.highlight(text, lexer_obj, formatter_obj)
+
+    return colorized
