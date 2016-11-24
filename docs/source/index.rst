@@ -35,6 +35,7 @@ Contents
    data_model
    workflows
    cli
+   ui/index.rst
    ceph_node
    api/index.rst
 

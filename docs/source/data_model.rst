@@ -29,6 +29,8 @@ is done assigning a role to the user. User may have only one role in
 Decapod.
 
 
+.. _data-model-role:
+
 Role
 ++++
 
