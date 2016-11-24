@@ -22,7 +22,7 @@ export class ClustersComponent {
   }
 
   fetchData() {
-    this.data.cluster().findAll({
+    return this.data.cluster().findAll({
       filter: _.get(this.filter, 'query', {}),
       page: _.get(this.pager, 'page', 1)
     })

@@ -11,7 +11,7 @@
 
 <pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
 
-<div class="row" *ngIf="clusters && clusters.length">
+<div class="clusters row" *ngIf="clusters && clusters.length">
   <div class="col-xs-12">
 
     <div class="table-help">
@@ -21,7 +21,7 @@
 
     <div
       class="box"
-      *ngFor="let cluster of clusters"
+      *ngFor="let cluster of pager.getPageItems(clusters)"
       [ngClass]="{open: cluster.id === shownClusterId}"
     >
       <div class="col-xs-10 name">

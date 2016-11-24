@@ -47,7 +47,7 @@ describe('Password Reset Component', () => {
       });
     }));
 
-    describe('and is correct - ', () => {
+    describe('and is correct -', () => {
       let prerequisites: any;
       let updateButton: any;
       let dummyPassword = 'dummy_password';

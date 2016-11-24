@@ -4,6 +4,7 @@ import * as jQuery from 'jquery';
 import * as _ from 'lodash';
 import 'bootstrap';
 import globals = require('./services/globals');
+import { BaseModel } from './models';
 
 // Bootstrap modal methods
 @Component({
@@ -134,6 +135,11 @@ export class Pager {
   switchPage(page: number) {
     this.page = page;
     this.onChange.emit();
+  }
+
+  getPageItems(allItems: BaseModel[]): BaseModel[] {
+    let perPage = this.pagingData.per_page;
+    return _.slice(allItems, (this.page - 1) * perPage, perPage);
   }
 }
 
