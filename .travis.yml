@@ -13,10 +13,13 @@ env:
   - TOXENV=docs
 
 install:
-  - pip install tox
+  - pip install tox coverage
   - pip install ansible -c constraints.txt
 
 script: tox
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 matrix:
   allow_failures:
