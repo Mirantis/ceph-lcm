@@ -1310,7 +1310,65 @@ class V1Client(Client):
 
         This method does ``POST /v1/role`` endpoint call.
 
+        This method accepts parameter ``permissions``. This is a list
+        of permissions like that:
+
+        .. code-block:: json
+
+            [
+                {
+                    "name": "playbook",
+                    "permissions": [
+                        "add_osd",
+                        "cluster_deploy",
+                        "hello_world",
+                        "purge_cluster",
+                        "remove_osd"
+                    ]
+                },
+                {
+                    "name": "api",
+                    "permissions": [
+                        "create_cluster",
+                        "create_execution",
+                        "create_playbook_configuration",
+                        "create_role",
+                        "create_server",
+                        "create_user",
+                        "delete_cluster",
+                        "delete_execution",
+                        "delete_playbook_confuiguration",
+                        "delete_role",
+                        "delete_server",
+                        "delete_user",
+                        "edit_cluster",
+                        "edit_playbook_configuration",
+                        "edit_role",
+                        "edit_server",
+                        "edit_user",
+                        "view_cluster",
+                        "view_cluster_versions",
+                        "view_execution",
+                        "view_execution_steps",
+                        "view_execution_version",
+                        "view_playbook_configuration",
+                        "view_playbook_configuration_version",
+                        "view_role",
+                        "view_role_versions",
+                        "view_server",
+                        "view_server_versions",
+                        "view_user",
+                        "view_user_versions"
+                    ]
+                }
+            ]
+
+        So, each element is a dict with ``name`` and ``permissions``
+        field.
+
         :param str name: Name of the role.
+        :param list permissions: A list of permissions. Please
+            check example above.
         :return: New role model.
         :rtype: dict
         :raises decapodlib.exceptions.DecapodError: if not possible to
