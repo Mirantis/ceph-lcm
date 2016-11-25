@@ -26,8 +26,10 @@ Official Plugins
 ++++++++++++++++
 
 .. toctree::
+   :maxdepth: 1
 
    cluster_deploy
+   add_osd
 
 
 
