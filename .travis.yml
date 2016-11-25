@@ -1,0 +1,24 @@
+language: python
+sudo: false
+cache: pip
+python: 3.5
+
+env:
+  - TOXENV=dev-test
+  - TOXENV=dev-static
+  - TOXENV=metrics
+  - TOXENV=bandit
+  - TOXENV=deadcode
+  - TOXENV=devenv-lint
+  - TOXENV=docs
+
+install:
+  - pip install tox
+  - pip install ansible -c constraints.txt
+
+script: tox
+
+matrix:
+  allow_failures:
+    - TOXENV=bandit
+    - TOXENV=deadcode
