@@ -22,12 +22,13 @@ work even with such options which are not listed here.
 Information
 +++++++++++
 
-========    ===================
-Property    Value
-========    ===================
-ID          cluster_deploy
-Name        Deploy Ceph Cluster
-========    ===================
+====================    ===================
+Property                Value
+====================    ===================
+ID                      cluster_deploy
+Name                    Deploy Ceph Cluster
+Required Server List    Yes
+====================    ===================
 
 
 Version Mapping

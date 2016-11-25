@@ -30,6 +30,8 @@ Official Plugins
 
    cluster_deploy
    add_osd
+   remove_osd
+   purge_cluster
 
 
 

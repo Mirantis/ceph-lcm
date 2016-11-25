@@ -21,12 +21,13 @@ work even with such options which are not listed here.
 Information
 +++++++++++
 
-========    ============
-Property    Value
-========    ============
-ID          add_osd
-Name        Add OSD Host
-========    ============
+====================    ============
+Property                Value
+====================    ============
+ID                      add_osd
+Name                    Add OSD Host
+Required Server List    Yes
+====================    ============
 
 
 Version Mapping
@@ -116,6 +117,7 @@ Real World Example of Configuration
         "time_updated": 1478174220,
         "version": 2
     }
+
 
 
 Parameter Description
