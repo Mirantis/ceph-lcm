@@ -18,6 +18,7 @@ import getopt
 import json
 import os.path
 import shutil
+import unittest.mock
 
 import pytest
 
@@ -41,7 +42,15 @@ def new_task(configure_model):
 
 
 @pytest.yield_fixture
-def plugin():
+def no_connect():
+    patcher = unittest.mock.patch(
+        "decapod_server_discovery.plugin.verbose_create_connection")
+    with patcher:
+        yield
+
+
+@pytest.yield_fixture
+def plugin(no_connect):
     plug = plugins.get_playbook_plugins()
     plug = plug["server_discovery"]()
 
