@@ -1,6 +1,8 @@
 Decapod
 =======
 
+|Build Status| |Code Coverage|
+
 Decapod is intendend to simplify deployment and lifecycle management of
 `Ceph <http://ceph.com>`_.
 
@@ -23,3 +25,9 @@ Demo
 
 .. image:: http://img.youtube.com/vi/hvEyqutiwZs/sddefault.jpg
    :target: https://www.youtube.com/watch?v=hvEyqutiwZs
+
+.. |Build Status| image:: https://travis-ci.org/Mirantis/ceph-lcm.svg?branch=master
+    :target: https://travis-ci.org/Mirantis/ceph-lcm
+
+.. |Code Coverage| image:: https://codecov.io/gh/Mirantis/ceph-lcm/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/Mirantis/ceph-lcm
