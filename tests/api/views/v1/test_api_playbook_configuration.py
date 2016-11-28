@@ -37,7 +37,8 @@ def valid_post_request(new_cluster, new_servers, public_playbook_name):
         "name": pytest.faux.gen_alpha(),
         "playbook_id": public_playbook_name,
         "cluster_id": new_cluster.model_id,
-        "server_ids": [srv.model_id for srv in new_servers]
+        "server_ids": [srv.model_id for srv in new_servers],
+        "hints": []
     }
 
 
