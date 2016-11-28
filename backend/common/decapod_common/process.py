@@ -12,6 +12,7 @@ import sys
 import tempfile
 
 from decapod_common import config
+from decapod_common import log
 
 try:
     import simplejson as json
@@ -25,17 +26,74 @@ ENV_EXECUTION_ID = "DECAPOD_EXECUTION_ID"
 ENV_DB_URI = "DECAPOD_DB_URI"
 DYNAMIC_INVENTORY_PATH = shutil.which("decapod-inventory")
 
+NO_VALUE = object()
+"""Special marker means that option has no value."""
+
 CONF = config.make_config()
 """Config."""
 
+LOG = log.getLogger(__name__)
+"""Logger."""
+
+
+class RunningProcess:
+
+    __slots__ = "process",
+
+    def __init__(self, process):
+        self.process = process
+
+    def alive(self):
+        return self.process.poll() is None
+
+    @property
+    def pid(self):
+        return self.process.pid
+
+    @property
+    def returncode(self):
+        return self.process.returncode
+
+    @property
+    def stdout(self):
+        return self.process.stdout
+
+    @property
+    def stderr(self):
+        return self.process.stderr
+
+    def stop(self):
+        if not self.alive():
+            return
+
+        LOG.debug("Send SIGTERM to process %d", self.pid)
+        self.process.terminate()
+        self.process.wait(CONF["controller"]["graceful_stop"])
+
+        if not self.alive():
+            LOG.debug("Process %d has been stopped after SIGTERM", self.pid)
+            return
+
+        self.process.kill()
+        self.process.wait()
+
+        LOG.debug("Process %d has been stopped after SIGKILL", self.pid)
+
+    def __str__(self):
+        data = {"status": self.alive()}
+
+        if self.alive:
+            data["pid"] = self.pid
+        else:
+            data["returncode"] = self.returncode
+        data = ", ".join("{0}={1}".format(k, v) for k, v in self.data.items())
+
+        return "<{0}({1})>".format(self.__class__.__name__, data)
+
+    __repr__ = __str__
+
 
 class Process:
-
-    ALLOW_DOUBLE_DASH = False
-
-    @staticmethod
-    def make_json_parameter(data):
-        return json.dumps(data, separators=(",", ":"))
 
     def __init__(
             self, command=None, stdout=sys.stdout, stderr=sys.stderr,
@@ -60,7 +118,15 @@ class Process:
         cmdline = [self.command]
 
         for key, value in sorted(self.options.items()):
-            cmdline.extend([key, value])
+            if value is NO_VALUE:
+                cmdline.append(key)
+            else:
+                cmdline.extend([key, value])
+
+        if self.allow_double_dash:
+            cmdline.append("--")
+
+        cmdline.extend(self.args)
 
         return cmdline
 
@@ -84,9 +150,19 @@ class Process:
         return all_envs
 
     def run(self):
-        return subprocess.Popen(
+        process = subprocess.Popen(
             self.commandline, self.full_env,
-            stdout=self.stdout, stderr=self.stderr, stdin=self.stdin)
+            shell=self.shell, stdout=self.stdout, stderr=self.stderr,
+            stdin=self.stdin)
+        process = RunningProcess(process)
+
+        return process
+
+    def __str__(self):
+        return "<{0.__class__.__name__}({0.printable_commandline})>".format(
+            self)
+
+    __repr__ = __str__
 
 
 class ControllerProcess(Process):
@@ -117,6 +193,7 @@ class Ansible(ControllerProcess):
 
     def __init__(self, entry_point, task, module, options=None):
         super().__init__(
+            entry_point, task,
             command="ansible",
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -133,6 +210,7 @@ class AnsiblePlaybook(ControllerProcess):
         self.fileio = tempfile.TemporaryFile()
 
         super().__init__(
+            entry_point, task,
             command="ansible-playbook",
             stdout=self.fileio,
             stderr=subprocess.STDOUT
@@ -142,6 +220,10 @@ class AnsiblePlaybook(ControllerProcess):
 
     @property
     def stdout_file(self):
-        self.fileio.seek(0)
+        self.fileio.flush()
 
         return self.fileio
+
+
+def jsonify(data):
+    return json.dumps(data, separators=(",", ":"))

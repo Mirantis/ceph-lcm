@@ -20,6 +20,7 @@ import os
 import pytest
 
 from decapod_common import playbook_plugin
+from decapod_common import process
 from decapod_common.models import task
 from decapod_controller import exceptions
 from decapod_controller import inventory
@@ -55,7 +56,7 @@ def test_get_entrypoint_fail(monkeypatch):
 
 
 def test_get_entrypoint_and_task_id_ok(monkeypatch):
-    monkeypatch.setenv(playbook_plugin.ENV_ENTRY_POINT, "1")
+    monkeypatch.setenv(process.ENV_ENTRY_POINT, "1")
 
     assert inventory.get_entrypoint() == "1"
 
@@ -104,8 +105,8 @@ def test_main_list(monkeypatch, capsys, mocked_sysexit, mocked_configure):
     tsk = task.ServerDiscoveryTask(server_id, host, username, initiator_id)
     tsk = tsk.create()
 
-    monkeypatch.setenv(playbook_plugin.ENV_ENTRY_POINT, "server_discovery")
-    monkeypatch.setenv(playbook_plugin.ENV_TASK_ID, str(tsk._id))
+    monkeypatch.setenv(process.ENV_ENTRY_POINT, "server_discovery")
+    monkeypatch.setenv(process.ENV_TASK_ID, str(tsk._id))
     monkeypatch.setattr("sys.argv", ["progname", "--list"])
 
     assert inventory.main() == os.EX_OK
@@ -127,8 +128,8 @@ def test_main_host_ok(monkeypatch, capsys, mocked_sysexit, mocked_configure):
     tsk = task.ServerDiscoveryTask(server_id, host, username, initiator_id)
     tsk = tsk.create()
 
-    monkeypatch.setenv(playbook_plugin.ENV_ENTRY_POINT, "server_discovery")
-    monkeypatch.setenv(playbook_plugin.ENV_TASK_ID, str(tsk._id))
+    monkeypatch.setenv(process.ENV_ENTRY_POINT, "server_discovery")
+    monkeypatch.setenv(process.ENV_TASK_ID, str(tsk._id))
     monkeypatch.setattr("sys.argv", ["progname", "--host", host])
 
     assert inventory.main() == os.EX_OK
@@ -151,8 +152,8 @@ def test_main_host_failed(monkeypatch, capsys, mocked_sysexit,
     tsk = task.ServerDiscoveryTask(server_id, host, username, initiator_id)
     tsk = tsk.create()
 
-    monkeypatch.setenv(playbook_plugin.ENV_ENTRY_POINT, "server_discovery")
-    monkeypatch.setenv(playbook_plugin.ENV_TASK_ID, str(tsk._id))
+    monkeypatch.setenv(process.ENV_ENTRY_POINT, "server_discovery")
+    monkeypatch.setenv(process.ENV_TASK_ID, str(tsk._id))
     monkeypatch.setattr("sys.argv", ["progname", "--host", unknown_host])
 
     inventory.main()

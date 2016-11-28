@@ -119,10 +119,10 @@ class TaskPool:
                 tsk, process.pid
             )
 
-            while not stop_ev.is_set() and process.poll() is None:
+            while not stop_ev.is_set() and process.alive():
                 stop_ev.wait(0.5)
 
-            self.gentle_stop_process(process)
+            process.stop()
 
             LOG.info(
                 "Management process for task %s with PID %d has "
@@ -180,23 +180,3 @@ class TaskPool:
             "Cannot find suitable plugin for task {0} {1}".format(
                 tsk._id, tsk.task_type)
          )
-
-    def gentle_stop_process(self, process):
-        if process.poll() is not None:
-            return
-
-        LOG.debug("Send SIGTERM to process %d", process.pid)
-
-        process.terminate()
-        process.wait(CONF["controller"]["graceful_stop"])
-
-        if process.poll() is None:
-            LOG.debug(
-                "Process %d has not finished after SIGTERM. "
-                "Send SIGKILL.",
-                process.pid
-            )
-            process.kill()
-            process.wait()
-        else:
-            LOG.debug("Process %d has been stopped after SIGTERM", process.pid)

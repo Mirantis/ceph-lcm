@@ -84,11 +84,10 @@ class ServerDiscovery(playbook_plugin.Ansible):
         }
 
     def compose_command(self, task):
-        cmdline = super().compose_command(task)
-        cmdline.extend(["--tree", self.tempdir])
-        cmdline.append("new")
+        super().compose_command(task)
 
-        return cmdline
+        self.proc.options["--tree"] = self.tempdir
+        self.proc.args.append("new")
 
     def on_pre_execute(self, task):
         self.tempdir = tempfile.mkdtemp()
