@@ -163,9 +163,8 @@ class Process:
 
     def run(self):
         process = subprocess.Popen(
-            self.commandline, self.full_env,
-            shell=self.shell, stdout=self.stdout, stderr=self.stderr,
-            stdin=self.stdin)
+            self.commandline, env=self.full_env, shell=self.shell,
+            stdout=self.stdout, stderr=self.stderr, stdin=self.stdin)
         process = RunningProcess(process)
 
         return process

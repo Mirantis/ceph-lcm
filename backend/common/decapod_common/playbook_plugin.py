@@ -107,7 +107,7 @@ class Base(metaclass=abc.ABCMeta):
             self.compose_command(task)
             LOG.info("Execute %s for %s",
                      self.proc.commandline, self.entry_point)
-            LOG.debug("Commandline: \"%s\"", self.printable_cmdline)
+            LOG.debug("Commandline: \"%s\"", self.proc.printable_commandline)
             yield self.proc.run()
         finally:
             LOG.info("Execute post-run step for %s", self.entry_point)
@@ -194,27 +194,29 @@ class Playbook(Base, metaclass=abc.ABCMeta):
     def on_post_execute(self, task, *exc_info):
         from decapod_common.models import execution
 
-        header = self.proc.printable_commandline
-        header_length = min(len(header), 80)
-        header_top = " Ansible commandline ".center(header_length, "=")
-        header = "\n\n{0}\n{1}\n{2}\n".format(
-            header_top, header, "=" * header_length
-        )
-        self.proc.stdout_file.write(header.encode("utf-8"))
-
+        self.write_header()
         try:
             execution_model = execution.ExecutionModel.find_by_model_id(
                 task.execution_id)
             self.proc.stdout_file.seek(0)
             with execution_model.new_logfile as logfp:
-                shutil.copyfileobj(self.stdout_file, logfp)
+                shutil.copyfileobj(self.proc.stdout_file, logfp)
         except Exception as exc:
             LOG.exception("Cannot save execution log of %s: %s",
                           task.execution_id, exc)
         finally:
-            self.stdout_file.close()
+            self.proc.stdout_file.close()
 
         super().on_post_execute(task, *exc_info)
+
+    def write_header(self):
+        header = self.proc.printable_commandline
+        header_length = min(len(header), 80)
+        header_top = " Ansible commandline ".center(header_length, "=")
+        header = "\n\n{0}\n{1}\n{2}\n".format(
+            header_top, header, "=" * header_length)
+        header = header.encode("utf-8")
+        self.proc.fileio.write(header)
 
     @abc.abstractmethod
     def make_playbook_configuration(self, servers):
