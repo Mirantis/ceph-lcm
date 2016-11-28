@@ -22,8 +22,8 @@ import unittest.mock
 
 import pytest
 
-from decapod_common import playbook_plugin
 from decapod_common import plugins
+from decapod_common import process
 from decapod_common.models import task
 
 
@@ -62,7 +62,7 @@ def plugin(no_connect):
 
 
 def test_dynamic_inventory(new_task, plugin, monkeypatch):
-    monkeypatch.setenv(playbook_plugin.ENV_TASK_ID, str(new_task._id))
+    monkeypatch.setenv(process.ENV_TASK_ID, str(new_task._id))
 
     assert plugin.get_dynamic_inventory() == {
         "new": {
@@ -80,13 +80,14 @@ def test_dynamic_inventory(new_task, plugin, monkeypatch):
 
 def test_compose_command(new_task, plugin):
     plugin.on_pre_execute(new_task)
-    cmdline = plugin.compose_command(new_task)
+    plugin.compose_command(new_task)
+    cmdline = plugin.proc.commandline
 
     assert cmdline[0] == shutil.which("ansible")
     opts, args = getopt.getopt(
         cmdline[1:],
         ":m:i:t:",
-        ["inventory-file=", "module-name=", "tree=", "become=", "one-line="]
+        ["inventory-file=", "module-name=", "tree=", "become", "one-line"]
     )
     opts = dict(opts)
 

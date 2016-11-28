@@ -24,9 +24,9 @@ import pkg_resources
 import yaml
 
 try:
-    from yaml import CLoader as YAMLLoader
+    from yaml import CSafeLoader as YAMLLoader
 except Exception as exc:
-    from yaml import Loader as YAMLLoader
+    from yaml import SafeLoader as YAMLLoader
 
 
 HOME = os.path.expanduser("~")

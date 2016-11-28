@@ -28,8 +28,8 @@ except ImportError:
 from decapod_common import cliutils
 from decapod_common import config
 from decapod_common import log
-from decapod_common import playbook_plugin
 from decapod_common import plugins
+from decapod_common import process
 from decapod_controller import exceptions
 
 
@@ -84,7 +84,7 @@ def get_entrypoint():
     variables must be defined.
     """
 
-    entry_point = os.getenv(playbook_plugin.ENV_ENTRY_POINT)
+    entry_point = os.getenv(process.ENV_ENTRY_POINT)
 
     LOG.debug("Entrypoint: %s", entry_point)
 

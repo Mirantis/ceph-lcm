@@ -16,40 +16,23 @@
 
 import abc
 import contextlib
-import copy
 import functools
 import os
-import shlex
 import shutil
-import subprocess
 import sys
 import tempfile
 
 import pkg_resources
 
-try:
-    import simplejson as json
-except ImportError:
-    import json
-
 from decapod_common import config
 from decapod_common import exceptions
 from decapod_common import log
 from decapod_common import networkutils
+from decapod_common import process
 from decapod_common.models import task
-
-
-CONF = config.make_config()
-"""Config."""
 
 LOG = log.getLogger(__name__)
 """Logger."""
-
-ENV_ENTRY_POINT = "DECAPOD_ENTRYPOINT"
-ENV_TASK_ID = "DECAPOD_TASK_ID"
-ENV_EXECUTION_ID = "DECAPOD_EXECUTION_ID"
-ENV_DB_URI = "DECAPOD_DB_URI"
-DYNAMIC_INVENTORY_PATH = shutil.which("decapod-inventory")
 
 
 class Base(metaclass=abc.ABCMeta):
@@ -60,17 +43,14 @@ class Base(metaclass=abc.ABCMeta):
     DESCRIPTION = ""
     PUBLIC = True
     REQUIRED_SERVER_LIST = True
-    PROCESS_STDOUT = subprocess.PIPE
-    PROCESS_STDERR = subprocess.PIPE
-    PROCESS_STDIN = subprocess.DEVNULL
 
     @property
     def env_task_id(self):
-        return os.getenv(ENV_TASK_ID)
+        return os.getenv(process.ENV_TASK_ID)
 
     @property
     def env_entry_point(self):
-        return os.getenv(ENV_ENTRY_POINT)
+        return os.getenv(process.ENV_ENTRY_POINT)
 
     @property
     def task(self):
@@ -87,6 +67,7 @@ class Base(metaclass=abc.ABCMeta):
         self.module_name = module_name
         self.entry_point = entry_point
         self.config = self.load_config(self.config_filename)
+        self.proc = None
 
     def get_filename(self, filename):
         return pkg_resources.resource_filename(self.module_name, filename)
@@ -100,62 +81,6 @@ class Base(metaclass=abc.ABCMeta):
 
     def get_extra_vars(self, task):
         return {}
-
-    def get_environment_variables(self, task):
-        return {
-            ENV_ENTRY_POINT: self.entry_point,
-            ENV_TASK_ID: str(task._id),
-            ENV_EXECUTION_ID: str(task.execution_id or ""),
-            ENV_DB_URI: CONF["db"]["uri"],
-            "ANSIBLE_CONFIG": str(CONF["controller"]["ansible_config"])
-        }
-
-    @contextlib.contextmanager
-    def execute(self, task):
-        process = None
-
-        try:
-            LOG.info("Execute pre-run step for %s", self.entry_point)
-            self.on_pre_execute(task)
-            LOG.info("Finish execution of pre-run step for %s",
-                     self.entry_point)
-
-            commandline = self.compose_command(task)
-            env = self.get_environment_variables(task)
-            copypaste_command = printable_commandline(commandline, env)
-
-            LOG.info("Execute %s for %s",
-                     printable_commandline(commandline), self.entry_point)
-            LOG.debug("Commandline: \"%s\"", copypaste_command)
-
-            all_env = copy.deepcopy(os.environ)
-            all_env.update(env)
-            process = self.run(commandline, all_env)
-
-            yield process
-        finally:
-            if process:
-                if self.PROCESS_STDOUT is subprocess.PIPE:
-                    LOG.debug("STDOUT of %d: %s",
-                              process.pid, process.stdout.read())
-                if self.PROCESS_STDERR is subprocess.PIPE:
-                    LOG.debug("STDERR of %d: %s",
-                              process.pid, process.stderr.read())
-
-            LOG.info("Execute post-run step for %s", self.entry_point)
-            self.on_post_execute(task, *sys.exc_info())
-            LOG.info("Finish execution of post-run step for %s",
-                     self.entry_point)
-
-        LOG.info("Finish execute %s for %s",
-                 printable_commandline(commandline), self.entry_point)
-
-    def run(self, commandline, env):
-        return subprocess.Popen(
-            commandline, env=env,
-            stdout=self.PROCESS_STDOUT, stdin=self.PROCESS_STDIN,
-            stderr=self.PROCESS_STDERR
-        )
 
     def on_pre_execute(self, task):
         pass
@@ -171,50 +96,52 @@ class Base(metaclass=abc.ABCMeta):
     def get_dynamic_inventory(self):
         raise NotImplementedError()
 
+    @contextlib.contextmanager
+    def execute(self, task):
+        try:
+            LOG.info("Execute pre-run step for %s", self.entry_point)
+            self.on_pre_execute(task)
+            LOG.info("Finish execution of pre-run step for %s",
+                     self.entry_point)
+
+            self.compose_command(task)
+            LOG.info("Execute %s for %s",
+                     self.proc.commandline, self.entry_point)
+            LOG.debug("Commandline: \"%s\"", self.proc.printable_commandline)
+            yield self.proc.run()
+        finally:
+            LOG.info("Execute post-run step for %s", self.entry_point)
+            self.on_post_execute(task, *sys.exc_info())
+            LOG.info("Finish execution of post-run step for %s",
+                     self.entry_point)
+
+        LOG.info("Finish execute %s for %s",
+                 self.proc.commandline, self.entry_point)
+
 
 class Ansible(Base, metaclass=abc.ABCMeta):
 
-    ANSIBLE_CMD = shutil.which("ansible")
     MODULE = None
     BECOME = True
     ONE_LINE = True
-    EXTRA_VARS = {}
 
     @abc.abstractmethod
     def compose_command(self, task):
-        if not self.ANSIBLE_CMD:
-            raise RuntimeError("'ansible' cannot be found in PATH")
-        if not self.MODULE:
-            raise RuntimeError("No module is defined for execution")
-
-        cmdline = [self.ANSIBLE_CMD]
-        cmdline.extend(["--inventory-file", DYNAMIC_INVENTORY_PATH])
-        cmdline.extend(["--module-name", self.MODULE])
+        self.proc = process.Ansible(self.entry_point, task, self.MODULE)
 
         if self.ONE_LINE:
-            cmdline.append("--one-line")
+            self.proc.options["--one-line"] = process.NO_VALUE
         if self.BECOME:
-            cmdline.append("--become")
-        for key, value in sorted(self.EXTRA_VARS.items()):
-            cmdline.extend(
-                ["--extra-vars", shlex.quote("{0}={1}".format(key, value))])
+            self.proc.options["--become"] = process.NO_VALUE
 
         extra = self.get_extra_vars(task)
         if extra:
-            extra = json.dumps(extra, separators=(",", ":"))
-            cmdline.extend(["--extra-vars", extra])
-
-        return cmdline
+            self.proc.options["--extra-vars"] = process.jsonify(extra)
 
 
 class Playbook(Base, metaclass=abc.ABCMeta):
 
-    ANSIBLE_CMD = shutil.which("ansible-playbook")
-    PROCESS_STDOUT = None
-    PROCESS_STDERR = subprocess.STDOUT
-    PROCESS_STDIN = subprocess.DEVNULL
     BECOME = False
-    EXTRA_VARS = {}
 
     @property
     def playbook_config(self):
@@ -235,27 +162,16 @@ class Playbook(Base, metaclass=abc.ABCMeta):
         )
 
     def compose_command(self, task):
-        if not self.ANSIBLE_CMD:
-            raise RuntimeError("'ansible-playbook' cannot be found in PATH")
-
-        cmdline = [self.ANSIBLE_CMD]
-        cmdline.append("-vvv")  # this is required to make logfile usable
-        cmdline.extend(["--inventory-file", DYNAMIC_INVENTORY_PATH])
+        self.proc = process.AnsiblePlaybook(self.entry_point, task)
+        self.proc.args.append(self.get_filename(self.playbook_filename))
+        self.proc.options["-vvv"] = process.NO_VALUE
 
         if self.BECOME:
-            cmdline.append("--become")
-        for key, value in sorted(self.EXTRA_VARS.items()):
-            cmdline.extend(
-                ["--extra-vars", shlex.quote("{0}={1}".format(key, value))])
+            self.proc.options["--become"] = process.NO_VALUE
 
         extra = self.get_extra_vars(task)
         if extra:
-            extra = json.dumps(extra, separators=(",", ":"))
-            cmdline.extend(["--extra-vars", extra])
-
-        cmdline.append(self.get_filename(self.playbook_filename))
-
-        return cmdline
+            self.proc.options["--extra-vars"] = process.jsonify(extra)
 
     def get_dynamic_inventory(self):
         if self.playbook_config:
@@ -275,37 +191,32 @@ class Playbook(Base, metaclass=abc.ABCMeta):
             "inventory": inventory
         }
 
-    def on_pre_execute(self, task):
-        self.PROCESS_STDOUT = tempfile.TemporaryFile()
-        super().on_pre_execute(task)
-
     def on_post_execute(self, task, *exc_info):
         from decapod_common.models import execution
 
-        commandline = self.compose_command(task)
-        env = self.get_environment_variables(task)
-        header = printable_commandline(commandline, env)
-        header_length = min(len(header), 80)
-        header_top = " Ansible commandline ".center(header_length, "=")
-        header = "\n\n{0}\n{1}\n{2}\n".format(
-            header_top, header, "=" * header_length
-        )
-        self.PROCESS_STDOUT.write(header.encode("utf-8"))
-
-        self.PROCESS_STDOUT.seek(0)
+        self.write_header()
         try:
             execution_model = execution.ExecutionModel.find_by_model_id(
-                task.execution_id
-            )
+                task.execution_id)
+            self.proc.stdout_file.seek(0)
             with execution_model.new_logfile as logfp:
-                shutil.copyfileobj(self.PROCESS_STDOUT, logfp)
+                shutil.copyfileobj(self.proc.stdout_file, logfp)
         except Exception as exc:
             LOG.exception("Cannot save execution log of %s: %s",
                           task.execution_id, exc)
         finally:
-            self.PROCESS_STDOUT.close()
+            self.proc.stdout_file.close()
 
         super().on_post_execute(task, *exc_info)
+
+    def write_header(self):
+        header = self.proc.printable_commandline
+        header_length = min(len(header), 80)
+        header_top = " Ansible commandline ".center(header_length, "=")
+        header = "\n\n{0}\n{1}\n{2}\n".format(
+            header_top, header, "=" * header_length)
+        header = header.encode("utf-8")
+        self.proc.fileio.write(header)
 
     @abc.abstractmethod
     def make_playbook_configuration(self, servers):
@@ -378,13 +289,3 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
 @functools.lru_cache()
 def load_config(filename):
     return config.yaml_load(filename)
-
-
-def printable_commandline(commandline, env=None):
-    env = env or {}
-
-    result = ["{0}={1}".format(k, v) for k, v in sorted(env.items())]
-    result.extend(commandline)
-    result = " ".join(shlex.quote(item) for item in result)
-
-    return result

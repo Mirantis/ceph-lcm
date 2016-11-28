@@ -71,10 +71,11 @@ def test_task_complete(mocked_plugin, tpool, configure_model, freeze_time):
 
     def side_effect(*args, **kwargs):
         if polled["a"]:
-            return object()
+            return False
         polled["a"] = True
+        return True
 
-    mocked_plugin.poll.side_effect = side_effect
+    mocked_plugin.alive.side_effect = side_effect
 
     tpool.submit(tsk)
     assert tsk._id in tpool.data
@@ -97,10 +98,11 @@ def test_task_cancelled(mocked_plugin, tpool, configure_model, freeze_time):
 
     def side_effect(*args, **kwargs):
         if polled["a"]:
-            return object()
+            return False
         polled["a"] = True
+        return True
 
-    mocked_plugin.poll.side_effect = side_effect
+    mocked_plugin.alive.side_effect = side_effect
 
     tpool.submit(tsk)
     tpool.cancel(tsk._id)
@@ -120,7 +122,7 @@ def test_task_cancelled(mocked_plugin, tpool, configure_model, freeze_time):
 def test_task_failed_poll(mocked_plugin, tpool, configure_model, freeze_time):
     tsk = create_task()
 
-    mocked_plugin.poll.side_effect = OSError
+    mocked_plugin.alive.side_effect = OSError
 
     tpool.submit(tsk)
     time.sleep(3)
@@ -141,10 +143,11 @@ def test_task_failed_exit(mocked_plugin, tpool, configure_model, freeze_time):
 
     def side_effect(*args, **kwargs):
         if polled["a"]:
-            return object()
+            return False
         polled["a"] = True
+        return True
 
-    mocked_plugin.poll.side_effect = side_effect
+    mocked_plugin.alive.side_effect = side_effect
     mocked_plugin.returncode = os.EX_SOFTWARE
 
     tpool.submit(tsk)
@@ -163,7 +166,7 @@ def test_task_stop(mocked_plugin, tpool, configure_model, freeze_time):
     def side_effect(*args, **kwargs):
         time.sleep(0.2)
 
-    mocked_plugin.poll.side_effect = side_effect
+    mocked_plugin.alive.side_effect = side_effect
 
     tasks = []
     for _ in range(20):
@@ -179,48 +182,3 @@ def test_task_stop(mocked_plugin, tpool, configure_model, freeze_time):
         assert tsk.time_cancelled == int(freeze_time.return_value)
         assert not tsk.time_completed
         assert not tsk.time_failed
-
-
-def test_gentle_stop_full(mocked_plugin, tpool, configure_model, freeze_time):
-    mocked_plugin.poll.return_value = None
-
-    tpool.gentle_stop_process(mocked_plugin)
-
-    assert mocked_plugin.mock_calls == [
-        unittest.mock.call.poll(),
-        unittest.mock.call.terminate(),
-        unittest.mock.call.wait(CONF["controller"]["graceful_stop"]),
-        unittest.mock.call.poll(),
-        unittest.mock.call.kill(),
-        unittest.mock.call.wait()
-    ]
-
-
-def test_gentle_stop_term(mocked_plugin, tpool, configure_model, freeze_time):
-    a = {"a": False}
-
-    def side_effect():
-        if a["a"]:
-            return object()
-        a["a"] = True
-
-    mocked_plugin.poll.side_effect = side_effect
-
-    tpool.gentle_stop_process(mocked_plugin)
-
-    assert mocked_plugin.mock_calls == [
-        unittest.mock.call.poll(),
-        unittest.mock.call.terminate(),
-        unittest.mock.call.wait(CONF["controller"]["graceful_stop"]),
-        unittest.mock.call.poll()
-    ]
-
-
-def test_gentle_stop_ready(mocked_plugin, tpool, configure_model, freeze_time):
-    mocked_plugin.poll.return_value = object()
-
-    tpool.gentle_stop_process(mocked_plugin)
-
-    assert mocked_plugin.mock_calls == [
-        unittest.mock.call.poll()
-    ]
