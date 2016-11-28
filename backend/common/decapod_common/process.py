@@ -60,19 +60,28 @@ class RunningProcess:
 
     @property
     def pid(self):
+        self.process.poll()
         return self.process.pid
 
     @property
     def returncode(self):
+        self.process.poll()
         return self.process.returncode
 
     @property
     def stdout(self):
+        self.process.poll()
         return self.process.stdout
 
     @property
     def stderr(self):
+        self.process.poll()
         return self.process.stderr
+
+    @property
+    def stdin(self):
+        self.process.poll()
+        return self.process.stdin
 
     def stop(self):
         if not self.alive():
@@ -98,7 +107,7 @@ class RunningProcess:
             data["pid"] = self.pid
         else:
             data["returncode"] = self.returncode
-        data = ", ".join("{0}={1}".format(k, v) for k, v in self.data.items())
+        data = ", ".join("{0}={1}".format(k, v) for k, v in data.items())
 
         return "<{0}({1})>".format(self.__class__.__name__, data)
 
