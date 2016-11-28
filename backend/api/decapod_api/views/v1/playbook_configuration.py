@@ -159,7 +159,8 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
                 playbook_id=self.request_json["playbook_id"],
                 cluster=cluster_model,
                 servers=servers_for_playbook,
-                initiator_id=self.initiator_id
+                initiator_id=self.initiator_id,
+                hints=self.request_json["hints"]
             )
         except base_exceptions.UniqueConstraintViolationError as exc:
             LOG.warning(

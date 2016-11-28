@@ -56,12 +56,15 @@ class PlaybookConfigurationModel(generic.Model):
     )
 
     @classmethod
-    def create(cls, name, playbook_id, cluster, servers, initiator_id=None):
+    def create(cls, name, playbook_id, cluster, servers, hints=None,
+               initiator_id=None):
+        hints = hints or []
+
         model = cls()
         model.name = name
         model.playbook_id = playbook_id
         model.cluster = cluster
-        model.configuration = model.make_configuration(cluster, servers)
+        model.configuration = model.make_configuration(cluster, servers, hints)
         model.initiator_id = initiator_id
         model.save()
 
@@ -81,10 +84,12 @@ class PlaybookConfigurationModel(generic.Model):
 
         return server.ServerModel.find_by_ip(list(ips))
 
-    def make_configuration(self, cluster, servers):
+    def make_configuration(self, cluster, servers, hints):
         plug = plugins.get_public_playbook_plugins()
         plug = plug[self.playbook_id]()
-        configuration = plug.build_playbook_configuration(cluster, servers)
+        configuration = plug.build_playbook_configuration(
+            cluster, servers, hints
+        )
 
         return configuration
 
