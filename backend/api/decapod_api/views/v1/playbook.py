@@ -28,7 +28,8 @@ class PlaybookView(generic.ModelView):
                     "name": "example",
                     "description": "Example playbook",
                     "required_server_list": true
-                    "id": "example"
+                    "id": "example",
+                    "hints": []
                 }
             ]
         }
@@ -50,7 +51,8 @@ class PlaybookView(generic.ModelView):
                 "name": plug.name,
                 "id": plug.entry_point,
                 "description": plug.DESCRIPTION,
-                "required_server_list": bool(plug.REQUIRED_SERVER_LIST)
+                "required_server_list": bool(plug.REQUIRED_SERVER_LIST),
+                "hints": plug.HINTS
             }
             data.append(plugin_data)
 

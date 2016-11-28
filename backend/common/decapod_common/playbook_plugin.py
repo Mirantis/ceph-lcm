@@ -124,6 +124,7 @@ class Ansible(Base, metaclass=abc.ABCMeta):
     MODULE = None
     BECOME = True
     ONE_LINE = True
+    HINTS = []
 
     @abc.abstractmethod
     def compose_command(self, task):
@@ -142,6 +143,7 @@ class Ansible(Base, metaclass=abc.ABCMeta):
 class Playbook(Base, metaclass=abc.ABCMeta):
 
     BECOME = False
+    HINTS = []
 
     @property
     def playbook_config(self):
