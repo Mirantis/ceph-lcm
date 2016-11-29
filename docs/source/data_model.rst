@@ -207,6 +207,15 @@ of `Server`_ models. After that you can modify it as you want.
     network other then that which is used by Decapod to SSH on those
     machines.
 
+Creating of playbook configuration supports optional hints. Hints are
+answers on simple questions understandable by plugins. With hints it
+is possible to generate more precise configuration. For example, if
+user sets *dmcrypt* hint for cluster deployment, Decapod with generate
+configuration with dmcrypted OSDs.
+
+Avaialble hints could be found from ``GET /v1/playbook`` API endpoint or
+:doc:`playbook_plugins/index` page.
+
 
 
 .. _data-model-execution:
