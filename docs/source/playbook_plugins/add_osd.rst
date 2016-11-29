@@ -30,6 +30,19 @@ Required Server List    Yes
 ====================    ============
 
 
+
+Avaialble Hints
++++++++++++++++
+
++---------+--------------------+---------------+-----------------------------------+
+| Hint    | Title              | Default Value | Description                       |
++=========+====================+===============+===================================+
+| dmcrypt | Use dmcrypted OSDs | False         | This option defines if we need to |
+|         |                    |               | use dmcrypt for OSD devices.      |
++---------+--------------------+---------------+-----------------------------------+
+
+
+
 Version Mapping
 +++++++++++++++
 
@@ -43,6 +56,7 @@ Plugin Version    ceph-ansible Version
 >=0.1,<0.2        `v1.0.8 <https://github.com/ceph/ceph-ansible/tree/v1.0.8>`_
 >=0.2,<0.3        `v2.0.0 Cow <https://github.com/ceph/ceph-ansible/tree/v2.0.0>`_
 ==============    ================================================================
+
 
 
 Real World Example of Configuration
