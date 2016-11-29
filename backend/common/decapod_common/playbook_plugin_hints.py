@@ -56,6 +56,7 @@ class Hints:
 
     def make_api_structure(self):
         values = []
+
         for _id, value in sorted(self.schema.items()):
             description = value.get("description", _id)
             enum_values = value.get("enum", [])
