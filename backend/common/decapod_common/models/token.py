@@ -129,12 +129,8 @@ class TokenModel(generic.Model):
         }
 
     def make_api_specific_fields(self, *args, **kwargs):
-        user_model = self.user
-        if user_model:
-            user_model = user_model.make_api_structure()
-
         return {
-            "user": user_model,
+            "user": self.user,
             "expires_at": self.expires_at
         }
 

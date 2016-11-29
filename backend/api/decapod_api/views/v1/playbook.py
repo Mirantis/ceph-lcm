@@ -48,10 +48,9 @@ class PlaybookView(generic.ModelView):
         for plugin in plugins.get_public_playbook_plugins().values():
             plug = plugin()
 
+            hints = []
             if hasattr(plug.HINTS, "make_api_structure"):
-                hints = plug.HINTS.make_api_structure()
-            else:
-                hints = []
+                hints = plug.HINTS
 
             plugin_data = {
                 "name": plug.name,

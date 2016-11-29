@@ -119,6 +119,8 @@ def test_create_cluster_same_name(sudo_client_v1):
 def test_update_cluster_onlyname(sudo_client_v1, normal_user, client_v1,
                                  new_cluster):
     api_model = new_cluster.make_api_structure()
+    api_model["data"]["configuration"] = \
+        api_model["data"]["configuration"].make_api_structure()
     del api_model["data"]["configuration"]["rgws"]
     api_model["data"]["name"] = pytest.faux.gen_alpha()
 
