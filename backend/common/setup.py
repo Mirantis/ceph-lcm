@@ -20,7 +20,6 @@ import setuptools
 REQUIREMENTS = (
     "pymongo[tls]>=3.3,<3.4",
     "PyYAML>=3.10,<4",
-    "simplejson>=3.8,<4",
     "argon2_cffi>=16.2,<17",
     "jsonschema>=2.5,<2.6"
 )

@@ -16,6 +16,7 @@ Process utilities for Decapod.
 """
 
 
+import json
 import os
 import shlex
 import shutil
@@ -25,11 +26,6 @@ import tempfile
 
 from decapod_common import config
 from decapod_common import log
-
-try:
-    import simplejson as json
-except ImportError:
-    import json
 
 
 ENV_ENTRY_POINT = "DECAPOD_ENTRYPOINT"

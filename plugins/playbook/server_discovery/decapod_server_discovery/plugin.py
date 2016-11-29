@@ -14,17 +14,13 @@
 """Playbook plugin for server discovery."""
 
 
+import json
 import os
 import os.path
 import re
 import shutil
 import socket
 import tempfile
-
-try:
-    import simplejson as json
-except ImportError:
-    import json
 
 from decapod_common import log
 from decapod_common import playbook_plugin
