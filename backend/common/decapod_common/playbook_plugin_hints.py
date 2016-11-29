@@ -65,7 +65,8 @@ class Hints:
                     "id": _id,
                     "values": enum_values,
                     "description": description,
-                    "type": value["typename"]
+                    "type": value["typename"],
+                    "default_value": value.get("default_value")
                 }
             )
 

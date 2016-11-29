@@ -38,7 +38,8 @@ HINTS_SCHEMA = {
     "dmcrypt": {
         "description": "Setup OSDs with dmcrypt",
         "typename": "boolean",
-        "type": "boolean"
+        "type": "boolean",
+        "default_value": False
     }
 }
 """Schema for playbook hints."""
@@ -74,12 +75,12 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
         if cluster.configuration.changed:
             cluster.save()
 
-    def make_playbook_configuration(self, cluster, servers):
+    def make_playbook_configuration(self, cluster, servers, hints):
         if cluster.configuration.state or cluster.server_list:
             raise exceptions.NotEmptyServerList(cluster.model_id)
 
-        global_vars = self.make_global_vars(cluster, servers)
-        inventory = self.make_inventory(cluster, servers)
+        global_vars = self.make_global_vars(cluster, servers, hints)
+        inventory = self.make_inventory(cluster, servers, hints)
 
         if not monitor_secret.MonitorSecret.find_one(cluster.model_id):
             monitor_secret.MonitorSecret.upsert(
@@ -116,8 +117,8 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
 
         return inventory
 
-    def make_global_vars(self, cluster, servers):
-        result = super().make_global_vars(cluster, servers)
+    def make_global_vars(self, cluster, servers, hints):
+        result = super().make_global_vars(cluster, servers, hints)
 
         result["journal_collocation"] = self.config["journal"]["collocation"]
         result["journal_size"] = self.config["journal"]["size"]
@@ -126,8 +127,8 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
 
         return result
 
-    def make_inventory(self, cluster, servers):
-        groups = self.get_inventory_groups(servers)
+    def make_inventory(self, cluster, servers, hints):
+        groups = self.get_inventory_groups(servers, hints)
         inventory = {"_meta": {"hostvars": {}}}
 
         for name, group_servers in groups.items():
@@ -141,7 +142,7 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
 
         return inventory
 
-    def get_inventory_groups(self, servers):
+    def get_inventory_groups(self, servers, hints):
         # TODO(Sergey Arkhipov): Well, create proper configuration.
         # This enough for demo.
 

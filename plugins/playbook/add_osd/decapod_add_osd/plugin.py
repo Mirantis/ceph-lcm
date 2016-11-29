@@ -61,18 +61,18 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
         if cluster.configuration.changed:
             cluster.save()
 
-    def make_playbook_configuration(self, cluster, servers):
+    def make_playbook_configuration(self, cluster, servers, hints):
         cluster_config = cluster.configuration.make_api_structure()
         if not cluster_config.get("mons"):
             raise exceptions.NoMonitorsError(cluster.model_id)
 
-        global_vars = self.make_global_vars(cluster, servers)
-        inventory = self.make_inventory(cluster, servers)
+        global_vars = self.make_global_vars(cluster, servers, hints)
+        inventory = self.make_inventory(cluster, servers, hints)
 
         return global_vars, inventory
 
-    def make_global_vars(self, cluster, servers):
-        result = super().make_global_vars(cluster, servers)
+    def make_global_vars(self, cluster, servers, hints):
+        result = super().make_global_vars(cluster, servers, hints)
 
         result["journal_collocation"] = self.config["journal"]["collocation"]
         result["journal_size"] = self.config["journal"]["size"]
@@ -81,8 +81,8 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
 
         return result
 
-    def make_inventory(self, cluster, servers):
-        groups = self.get_inventory_groups(cluster, servers)
+    def make_inventory(self, cluster, servers, hints):
+        groups = self.get_inventory_groups(cluster, servers, hints)
         inventory = {"_meta": {"hostvars": {}}}
         all_servers = server.ServerModel.cluster_servers(cluster.model_id)
 
@@ -99,7 +99,7 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
 
         return inventory
 
-    def get_inventory_groups(self, cluster, servers):
+    def get_inventory_groups(self, cluster, servers, hints):
         cluster_servers = server.ServerModel.cluster_servers(cluster.model_id)
         cluster_servers = {item._id: item for item in cluster_servers}
 
