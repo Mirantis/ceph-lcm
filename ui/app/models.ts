@@ -53,7 +53,8 @@ declare module './models' {
     name: string,
     id: string,
     required_server_list: boolean,
-    description: string
+    description: string,
+    hints: [Hint]
   }
 
   interface PlaybookConfiguration extends BaseModel {
@@ -62,8 +63,16 @@ declare module './models' {
       cluster_id: string,
       playbook_id: string,
       configuration: Object,
-      server_ids?: string[]
+      server_ids?: string[],
+      hints: [Hint]
     }
+  }
+
+  interface Hint {
+    description: string,
+    id: string,
+    type: string,
+    values: [string]
   }
 
   interface Server extends BaseModel {
