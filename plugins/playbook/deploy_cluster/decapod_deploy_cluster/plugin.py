@@ -20,6 +20,7 @@ from decapod_common import diskutils
 from decapod_common import log
 from decapod_common import networkutils
 from decapod_common import playbook_plugin
+from decapod_common import playbook_plugin_hints
 
 from . import exceptions
 from . import monitor_secret
@@ -33,6 +34,15 @@ deployment, cluster model will be updated.
 """.strip()
 """Plugin description."""
 
+HINTS_SCHEMA = {
+    "dmcrypt": {
+        "description": "Setup OSDs with dmcrypt",
+        "typename": "boolean",
+        "type": "boolean"
+    }
+}
+"""Schema for playbook hints."""
+
 LOG = log.getLogger(__name__)
 """Logger."""
 
@@ -43,6 +53,8 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
     DESCRIPTION = DESCRIPTION
     PUBLIC = True
     REQUIRED_SERVER_LIST = True
+
+    HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
 
     def on_pre_execute(self, task):
         super().on_pre_execute(task)
