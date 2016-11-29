@@ -76,12 +76,14 @@ export class DataService {
       name: {type: 'string'},
       description: {type: 'string'},
       required_server_list: {type: 'boolean'},
-      id: {type: 'string'}
+      id: {type: 'string'},
+      hints: {type: 'object'}
     },
     playbook_configuration: {
       name: {type: 'string'},
       playbook: {type: 'string'},
-      configuration: {type: 'object'}
+      configuration: {type: 'object'},
+      hints: {type: 'object'}
     },
     server: {
       name: {type: 'string'},

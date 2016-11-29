@@ -38,6 +38,7 @@ def test_playbook_list(sudo_client_v1):
     for plugin in list_of_plugins:
         plugin = plugin()
         for data in response.json["items"]:
+            assert isinstance(data["hints"], list)
             if plugin.name == data["name"]:
                 assert plugin.DESCRIPTION == data["description"]
                 assert plugin.REQUIRED_SERVER_LIST == \

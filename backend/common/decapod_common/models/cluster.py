@@ -95,7 +95,7 @@ class ClusterModel(generic.Model):
     def make_api_specific_fields(self):
         return {
             "name": self.name,
-            "configuration": self.configuration.make_api_structure()
+            "configuration": self.configuration
         }
 
     def add_servers(self, servers, role):

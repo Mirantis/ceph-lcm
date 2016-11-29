@@ -44,7 +44,25 @@ POST_SCHEMA = {
     "name": {"$ref": "#/definitions/non_empty_string"},
     "cluster_id": {"$ref": "#/definitions/uuid4"},
     "playbook_id": {"$ref": "#/definitions/non_empty_string"},
-    "server_ids": {"$ref": "#/definitions/dmidecode_uuid_array"}
+    "server_ids": {"$ref": "#/definitions/dmidecode_uuid_array"},
+    "hints": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "required": ["id", "value"],
+            "additionalProperties": False,
+            "properties": {
+                "id": {"$ref": "#/definitions/non_empty_string"},
+                "value": {
+                    "oneOf": [
+                        {"$ref": "#/definitions/non_empty_string"},
+                        {"type": "boolean"},
+                        {"type": "array"}
+                    ]
+                }
+            }
+        }
+    }
 }
 POST_SCHEMA = validators.create_data_schema(POST_SCHEMA, True)
 """Schema for the creating new playbook configuration."""
@@ -141,7 +159,8 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
                 playbook_id=self.request_json["playbook_id"],
                 cluster=cluster_model,
                 servers=servers_for_playbook,
-                initiator_id=self.initiator_id
+                initiator_id=self.initiator_id,
+                hints=self.request_json["hints"]
             )
         except base_exceptions.UniqueConstraintViolationError as exc:
             LOG.warning(

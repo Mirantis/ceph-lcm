@@ -22,6 +22,7 @@ import sys
 import uuid
 
 import flask
+import flask.json
 import six
 import werkzeug.exceptions
 
@@ -32,6 +33,18 @@ from decapod_common import plugins
 
 LOG = log.getLogger(__name__)
 """Logger."""
+
+
+class JSONEncoder(flask.json.JSONEncoder):
+    """Custom JSON Encoder for app."""
+
+    def default(self, obj):
+        if hasattr(obj, "make_api_structure"):
+            return obj.make_api_structure()
+        if hasattr(obj, "__json__"):
+            return obj.__json__()
+
+        return super().default(obj)
 
 
 def set_global_request_id():
@@ -85,6 +98,8 @@ def register_handlers(application):
 
     application.before_request(set_global_request_id)
     application.after_request(set_cache_control)
+
+    application.json_encoder = JSONEncoder
 
     for error_code in werkzeug.exceptions.default_exceptions:
         application.register_error_handler(error_code, error_to_json)

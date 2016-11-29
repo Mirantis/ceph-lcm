@@ -17,13 +17,9 @@
 
 import argparse
 import functools
+import json
 import os
 import sys
-
-try:
-    import simplejson as json
-except ImportError:
-    import json
 
 from decapod_common import cliutils
 from decapod_common import config

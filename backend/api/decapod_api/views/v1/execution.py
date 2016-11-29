@@ -247,8 +247,14 @@ class ExecutionStepsLog(generic.View):
                 break
 
         if not download and request_json:
-            logfile = codecs.EncodedFile(logfile, "utf-8", errors="ignore")
-            return {"data": logfile.read()}
+            def generator():
+                fileobj = codecs.getreader("utf-8")(logfile, errors="ignore")
+                result = fileobj.read(1024)
+                while result:
+                    yield result
+                    result = fileobj.read(1024)
+
+            return {"data": "".join(generator())}
 
         response = generic.fs_response(logfile, download,
                                        cache_for=LOG_CACHE_TIMEOUT)

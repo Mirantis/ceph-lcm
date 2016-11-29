@@ -28,7 +28,8 @@ class PlaybookView(generic.ModelView):
                     "name": "example",
                     "description": "Example playbook",
                     "required_server_list": true
-                    "id": "example"
+                    "id": "example",
+                    "hints": []
                 }
             ]
         }
@@ -46,11 +47,17 @@ class PlaybookView(generic.ModelView):
 
         for plugin in plugins.get_public_playbook_plugins().values():
             plug = plugin()
+
+            hints = []
+            if hasattr(plug.HINTS, "make_api_structure"):
+                hints = plug.HINTS
+
             plugin_data = {
                 "name": plug.name,
                 "id": plug.entry_point,
                 "description": plug.DESCRIPTION,
-                "required_server_list": bool(plug.REQUIRED_SERVER_LIST)
+                "required_server_list": bool(plug.REQUIRED_SERVER_LIST),
+                "hints": hints
             }
             data.append(plugin_data)
 

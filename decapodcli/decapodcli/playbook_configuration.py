@@ -68,15 +68,21 @@ def get_version(playbook_configuration_id, version, client):
 @click.argument("cluster-id", type=click.UUID)
 @click.argument("playbook")
 @click.argument("name")
+@click.option(
+    "--hints",
+    default=None,
+    type=param_types.JSON,
+    help="JSON dump of hints parameter"
+)
 @decorators.command(playbook_configuration)
-def create(name, playbook, cluster_id, server_ids, client):
+def create(name, playbook, cluster_id, server_ids, hints, client):
     """Create new playbook configuration."""
 
     cluster_id = str(cluster_id)
     server_ids = [str(item) for item in server_ids]
 
     return client.create_playbook_configuration(
-        name, cluster_id, playbook, server_ids
+        name, cluster_id, playbook, server_ids, hints
     )
 
 

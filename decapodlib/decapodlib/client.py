@@ -843,11 +843,25 @@ class V1Client(Client):
         return self._session.get(url, **kwargs)
 
     def create_playbook_configuration(self, name, cluster_id, playbook_id,
-                                      server_ids, **kwargs):
+                                      server_ids, hints=None, **kwargs):
         """This method creates new playbook configuration model.
 
         This method does ``POST /v1/playbook_configuration/`` endpoint
         call.
+
+        Hints for playbook configuration are the list of optional
+        parameters for creating playbook configuration. It
+        has to be the list key/value parameters obtained from
+        :py:meth:`decapodlib.client.V1Client.get_playbooks`.
+
+        .. code-block:: json
+
+            [
+                {
+                    "id": "dmcrypt",
+                    "value": true
+                }
+            ]
 
         :param str name: Name of the playbook configuration.
         :param str cluster_id: UUID4 (:rfc:`4122`) in string form
@@ -855,7 +869,8 @@ class V1Client(Client):
         :param str playbook_id: ID of playbook to use.
         :param server_ids: List of server UUID4 (:rfc:`4122`) in string
             form of server model IDs.
-            :type server_ids: [:py:class:`str`, ...]
+        :type server_ids: [:py:class:`str`, ...]
+        :param list hints: List of hints for playbook configuration.
         :return: New cluster model.
         :rtype: dict
         :raises decapodlib.exceptions.DecapodError: if not possible to
@@ -869,7 +884,8 @@ class V1Client(Client):
             "name": name,
             "cluster_id": cluster_id,
             "playbook_id": playbook_id,
-            "server_ids": list(set(server_ids))
+            "server_ids": list(set(server_ids)),
+            "hints": hints or []
         }
 
         return self._session.post(url, json=payload, **kwargs)
@@ -1531,31 +1547,43 @@ class V1Client(Client):
                         "description": "Adding new OSD to the cluster.",
                         "id": "add_osd",
                         "name": "Add OSD to Ceph cluster",
-                        "required_server_list": true
+                        "required_server_list": true,
+                        "hints": []
                     },
                     {
                         "description": "Ceph cluster deployment playbook.",
                         "id": "cluster_deploy",
                         "name": "Deploy Ceph cluster",
-                        "required_server_list": true
+                        "required_server_list": true,
+                        "hints": [
+                            {
+                                "description": "Setup OSDs with dmcrypt",
+                                "id": "dmcrypt",
+                                "type": "boolean",
+                                "values": []
+                            }
+                        ]
                     },
                     {
                         "description": "Example plugin for playbook.",
                         "id": "hello_world",
                         "name": "Hello World",
                         "required_server_list": false
+                        "hints": []
                     },
                     {
                         "description": "Purge whole Ceph cluster.",
                         "id": "purge_cluster",
                         "name": "Purge cluster",
-                        "required_server_list": false
+                        "required_server_list": false,
+                        "hints": []
                     },
                     {
                         "description": "Remove OSD host from cluster.",
                         "id": "remove_osd",
                         "name": "Remove OSD host from Ceph cluster",
-                        "required_server_list": true
+                        "required_server_list": true,
+                        "hints": []
                     }
                 ]
             }

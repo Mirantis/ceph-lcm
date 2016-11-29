@@ -147,22 +147,10 @@ class ModelView(View):
     def prepare_response(self, response):
         assert isinstance(self.model_name, str)
 
-        if hasattr(response, "make_api_structure"):
-            return response.make_api_structure()
-        if isinstance(response, (list, tuple)):
-            return self.prepare_list_response(response)
-        elif isinstance(response, dict):
-            return self.prepare_dict_response(response)
-        elif response is None:
+        if response is None:
             return {}
 
         return response
-
-    def prepare_list_response(self, data):
-        return [self.prepare_response(el) for el in data]
-
-    def prepare_dict_response(self, data):
-        return {k: self.prepare_response(v) for k, v in data.items()}
 
 
 class CRUDView(ModelView):

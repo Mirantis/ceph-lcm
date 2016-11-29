@@ -51,17 +51,17 @@ class PurgeCluster(playbook_plugin.CephAnsiblePlaybook):
 
         cluster.delete()
 
-    def make_playbook_configuration(self, cluster, servers):
-        global_vars = self.make_global_vars(cluster, servers)
-        inventory = self.make_inventory(cluster, servers)
+    def make_playbook_configuration(self, cluster, servers, hints):
+        global_vars = self.make_global_vars(cluster, servers, hints)
+        inventory = self.make_inventory(cluster, servers, hints)
 
         return global_vars, inventory
 
-    def make_global_vars(self, cluster, servers):
+    def make_global_vars(self, cluster, servers, hints):
         return {"cluster": cluster.name}
 
-    def make_inventory(self, cluster, servers):
-        groups = self.get_inventory_groups(cluster, servers)
+    def make_inventory(self, cluster, servers, hints):
+        groups = self.get_inventory_groups(cluster, servers, hints)
         inventory = {"_meta": {"hostvars": {}}}
 
         for name, group_servers in groups.items():
@@ -74,7 +74,7 @@ class PurgeCluster(playbook_plugin.CephAnsiblePlaybook):
 
         return inventory
 
-    def get_inventory_groups(self, cluster, servers):
+    def get_inventory_groups(self, cluster, servers, hints):
         cluster_servers = server.ServerModel.cluster_servers(cluster.model_id)
         cluster_servers = {item._id: item for item in cluster_servers}
 

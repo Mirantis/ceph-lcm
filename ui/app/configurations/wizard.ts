@@ -21,7 +21,12 @@ export class WizardComponent {
   @Input() servers: Server[];
   @Output() callback = new EventEmitter();
 
-  newConfiguration: PlaybookConfiguration = new PlaybookConfiguration({data: {server_ids: []}});
+  newConfiguration: PlaybookConfiguration = new PlaybookConfiguration({
+    data: {
+      server_ids: [],
+      hints: []
+    }
+  });
   jsonConfiguration: string;
   serversRequired: boolean = false;
   readonly: boolean = false;
@@ -82,7 +87,12 @@ export class WizardComponent {
       this.initForEditing(configuration);
     } else {
       this.step = 1;
-      this.newConfiguration = new PlaybookConfiguration({data: {server_ids: []}});
+      this.newConfiguration = new PlaybookConfiguration({
+        data: {
+          server_ids: [],
+          hints: []
+        }
+      });
     }
   }
 

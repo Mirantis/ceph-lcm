@@ -34,7 +34,7 @@ class HelloWorld(playbook_plugin.Playbook):
     PUBLIC = True
     REQUIRED_SERVER_LIST = False
 
-    def make_playbook_configuration(self, cluster, servers):
+    def make_playbook_configuration(self, cluster, servers, hints):
         inventory = {
             "servers": [srv.ip for srv in servers]
         }

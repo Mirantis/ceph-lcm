@@ -28,6 +28,7 @@ from decapod_common import config
 from decapod_common import exceptions
 from decapod_common import log
 from decapod_common import networkutils
+from decapod_common import playbook_plugin_hints
 from decapod_common import process
 from decapod_common.models import task
 
@@ -124,6 +125,7 @@ class Ansible(Base, metaclass=abc.ABCMeta):
     MODULE = None
     BECOME = True
     ONE_LINE = True
+    HINTS = []
 
     @abc.abstractmethod
     def compose_command(self, task):
@@ -142,6 +144,7 @@ class Ansible(Base, metaclass=abc.ABCMeta):
 class Playbook(Base, metaclass=abc.ABCMeta):
 
     BECOME = False
+    HINTS = None
 
     @property
     def playbook_config(self):
@@ -183,8 +186,14 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
         return config
 
-    def build_playbook_configuration(self, cluster, servers):
-        extra, inventory = self.make_playbook_configuration(cluster, servers)
+    def build_playbook_configuration(self, cluster, servers, hints):
+        if isinstance(self.HINTS, playbook_plugin_hints.Hints):
+            hints = self.HINTS.consume(hints)
+        else:
+            hints = {}
+
+        extra, inventory = self.make_playbook_configuration(
+            cluster, servers, hints)
 
         return {
             "global_vars": extra,
@@ -219,7 +228,7 @@ class Playbook(Base, metaclass=abc.ABCMeta):
         self.proc.fileio.write(header)
 
     @abc.abstractmethod
-    def make_playbook_configuration(self, servers):
+    def make_playbook_configuration(self, servers, hints):
         raise NotImplementedError()
 
 
@@ -243,7 +252,7 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
 
         return config
 
-    def make_global_vars(self, cluster, servers):
+    def make_global_vars(self, cluster, servers, hints):
         result = {
             "ceph_{0}".format(self.config["install"]["source"]): True,
             "fsid": cluster.model_id,

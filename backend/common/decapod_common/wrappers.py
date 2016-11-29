@@ -58,4 +58,4 @@ class PaginationResult:
         for item in items:
             model = self.model_class()
             model.update_from_db_document(item)
-            yield model.make_api_structure()
+            yield model
