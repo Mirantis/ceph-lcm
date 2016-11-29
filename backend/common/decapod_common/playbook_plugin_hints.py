@@ -19,11 +19,16 @@ import jsonschema
 from decapod_common import log
 
 
+FORMAT_CHECKER = jsonschema.FormatChecker()
+"""Format checker instance for JSONSchema."""
+
 LOG = log.getLogger(__name__)
 """Logger."""
 
 
 class Hints:
+
+    __slots__ = "validator",
 
     def __init__(self, schema):
         schema = {
@@ -33,8 +38,7 @@ class Hints:
         }
 
         self.validator = jsonschema.Draft4Validator(
-            schema,
-            format_checker=jsonschema.FormatChecker()
+            schema, format_checker=FORMAT_CHECKER
         )
 
     def consume(self, value):

@@ -120,7 +120,15 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
     def make_global_vars(self, cluster, servers, hints):
         result = super().make_global_vars(cluster, servers, hints)
 
-        result["journal_collocation"] = self.config["journal"]["collocation"]
+        if hints["dmcrypt"]:
+            result["journal_collocation"] = False
+            result["dmcrypt_journal_collocation"] = \
+                self.config["journal"]["collocation"]
+        else:
+            result["dmcrypt_journal_collocation"] = False
+            result["journal_collocation"] = \
+                self.config["journal"]["collocation"]
+
         result["journal_size"] = self.config["journal"]["size"]
         result["ceph_facts_template"] = pkg_resources.resource_filename(
             "decapod_common", "facts/ceph_facts_module.py.j2")
