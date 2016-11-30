@@ -171,12 +171,12 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
         return inventory
 
     def get_inventory_groups(self, servers, hints):
-        # TODO(Sergey Arkhipov): Well, create proper configuration.
-        # This enough for demo.
+        mon = min(servers, key=diskutils.get_server_storage_size)
+        osds = [srv for srv in servers if srv is not mon]
 
         result = {
-            "mons": [servers[0]],
-            "osds": servers[1:],
+            "mons": [mon],
+            "osds": osds,
             "rgws": [],
             "mdss": [],
             "nfss": [],
