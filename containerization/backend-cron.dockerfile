@@ -4,6 +4,10 @@
 FROM decapod-controller
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
+
+LABEL description="Different cron jobs for Decapod" version="0.2" vendor="Mirantis"
+
+
 COPY output/eggs /eggs
 COPY containerization/files/crontab /decapod
 COPY containerization/files/cron-caddyfile /etc/caddy/config

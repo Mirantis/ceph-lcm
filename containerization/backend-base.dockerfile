@@ -5,8 +5,9 @@ FROM ubuntu:xenial
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
-ENV LC_ALL C.UTF-8
-ENV LANG C.UTF-8
+LABEL description="Base image of Decapod" version="0.2" vendor="Mirantis"
+
+ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
 
 RUN set -x \

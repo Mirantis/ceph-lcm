@@ -5,6 +5,9 @@ FROM decapod-base-plugins
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
+LABEL description="API service for Decapod" version="0.2" vendor="Mirantis"
+
+
 COPY output/eggs /eggs
 COPY constraints.txt /constraints.txt
 COPY containerization/files/uwsgi.ini /etc/decapod-api-uwsgi.ini
