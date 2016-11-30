@@ -40,6 +40,12 @@ HINTS_SCHEMA = {
         "typename": "boolean",
         "type": "boolean",
         "default_value": False
+    },
+    "collocation": {
+        "description": "Setup OSDs with collocated journals",
+        "typename": "boolean",
+        "type": "boolean",
+        "default_value": False
     }
 }
 """Schema for playbook hints."""
@@ -120,14 +126,19 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
     def make_global_vars(self, cluster, servers, hints):
         result = super().make_global_vars(cluster, servers, hints)
 
+        result["journal_collocation"] = False
+        result["dmcrypt_journal_collocation"] = False
+        result["dmcrypt_dedicated_journal"] = False
+        result["raw_multi_journal"] = False
         if hints["dmcrypt"]:
-            result["journal_collocation"] = False
-            result["dmcrypt_journal_collocation"] = \
-                self.config["journal"]["collocation"]
+            if hints["collocation"]:
+                result["dmcrypt_journal_collocation"] = True
+            else:
+                result["dmcrypt_dedicated_journal"] = True
+        elif hints["collocation"]:
+            result["journal_collocation"] = True
         else:
-            result["dmcrypt_journal_collocation"] = False
-            result["journal_collocation"] = \
-                self.config["journal"]["collocation"]
+            result["raw_multi_journal"] = True
 
         result["journal_size"] = self.config["journal"]["size"]
         result["ceph_facts_template"] = pkg_resources.resource_filename(
@@ -141,12 +152,21 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
 
         for name, group_servers in groups.items():
             inventory[name] = [srv.ip for srv in group_servers]
+
         for srv in servers:
             hostvars = inventory["_meta"]["hostvars"].setdefault(srv.ip, {})
+            hostvars["ansible_user"] = srv.username
             hostvars["monitor_interface"] = networkutils.get_public_network_if(
                 srv, servers)
-            hostvars["devices"] = diskutils.get_devices(srv)
-            hostvars["ansible_user"] = srv.username
+
+            if hints["collocation"]:
+                hostvars["devices"] = diskutils.get_devices(srv)
+            else:
+                hostvars["devices"] = []
+                hostvars["raw_journal_devices"] = []
+                for pair in diskutils.get_data_journal_pairs_iter(srv):
+                    hostvars["devices"].append(pair["data"])
+                    hostvars["raw_journal_devices"].append(pair["journal"])
 
         return inventory
 

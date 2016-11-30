@@ -30,6 +30,12 @@ def get_devices(server, dev_prefix=True):
     return devices
 
 
+def get_server_storage_size(server):
+    sorter = dev_size_sorter(server)
+
+    return sum(sorter(dev) for dev in get_devices(server, False))
+
+
 def get_data_journal_pairs(server, dev_prefix=True):
     return list(get_data_journal_pairs_iter(server, dev_prefix))
 
@@ -41,8 +47,8 @@ def get_data_journal_pairs_iter(server, dev_prefix=True):
 
     fast_disks = get_flash_disks(server, devices)
     slow_disks = devices - fast_disks
-    fast_disks.sort(key=size_sorter, reverse=True)
-    slow_disks.sort(key=size_sorter, reverse=True)
+    fast_disks = sorted(fast_disks, key=size_sorter, reverse=True)
+    slow_disks = sorted(slow_disks, key=size_sorter, reverse=True)
     while fast_disks and slow_disks:
         yield {
             "data": get_dev_name(slow_disks.pop(0), dev_prefix),
