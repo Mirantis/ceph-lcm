@@ -69,112 +69,122 @@ Real World Example of Configuration
 .. code-block:: json
 
     {
-        "data": {
-            "cluster_id": "1597a71f-6619-4db6-9cda-a153f4f19097",
-            "configuration": {
-                "global_vars": {
-                    "ceph_facts_template": "/usr/local/lib/python3.5/dist-packages/shrimp_common/facts/ceph_facts_module.py.j2",
-                    "ceph_stable": true,
-                    "ceph_stable_distro_source": "jewel-xenial",
-                    "ceph_stable_release": "jewel",
-                    "ceph_stable_repo": "http://eu.mirror.fuel-infra.org/shrimp/ceph/apt",
-                    "cluster": "ceph",
-                    "cluster_network": "10.10.0.0/24",
-                    "copy_admin_key": true,
-                    "fsid": "1597a71f-6619-4db6-9cda-a153f4f19097",
-                    "journal_collocation": true,
-                    "journal_size": 100,
-                    "max_open_files": 131072,
-                    "nfs_file_gw": false,
-                    "nfs_obj_gw": false,
-                    "os_tuning_params": [
-                        {
-                            "name": "kernel.pid_max",
-                            "value": 4194303
-                        },
-                        {
-                            "name": "fs.file-max",
-                            "value": 26234859
-                        }
-                    ],
-                    "public_network": "10.10.0.0/24"
-                },
-                "inventory": {
-                    "_meta": {
-                        "hostvars": {
-                            "10.10.0.2": {
-                                "ansible_user": "ansible",
-                                "devices": [
-                                    "/dev/vdb"
-                                ],
-                                "monitor_interface": "ens3"
-                            },
-                            "10.10.0.3": {
-                                "ansible_user": "ansible",
-                                "devices": [
-                                    "/dev/vdb"
-                                ],
-                                "monitor_interface": "ens3"
-                            },
-                            "10.10.0.4": {
-                                "ansible_user": "ansible",
-                                "devices": [
-                                    "/dev/vdb"
-                                ],
-                                "monitor_interface": "ens3"
-                            },
-                            "10.10.0.7": {
-                                "ansible_user": "ansible",
-                                "devices": [
-                                    "/dev/vdd",
-                                    "/dev/vde",
-                                    "/dev/vdc",
-                                    "/dev/vdb"
-                                ],
-                                "monitor_interface": "ens3"
-                            },
-                            "10.10.0.8": {
-                                "ansible_user": "ansible",
-                                "devices": [
-                                    "/dev/vdd",
-                                    "/dev/vde",
-                                    "/dev/vdc",
-                                    "/dev/vdb"
-                                ],
-                                "monitor_interface": "ens3"
-                            }
-                        }
-                    },
-                    "clients": [],
-                    "iscsi_gw": [],
-                    "mdss": [],
-                    "mons": [
-                        "10.10.0.2"
-                    ],
-                    "nfss": [],
-                    "osds": [
-                        "10.10.0.7",
-                        "10.10.0.8",
-                        "10.10.0.3",
-                        "10.10.0.4"
-                    ],
-                    "rbd_mirrors": [],
-                    "restapis": [
-                        "10.10.0.2"
-                    ],
-                    "rgws": []
-                }
+      "global_vars": {
+        "ceph_facts_template": "/usr/local/lib/python3.5/dist-packages/decapod_common/facts/ceph_facts_module.py.j2",
+        "ceph_stable": true,
+        "ceph_stable_distro_source": "jewel-xenial",
+        "ceph_stable_release": "jewel",
+        "ceph_stable_repo": "http://eu.mirror.fuel-infra.org/shrimp/ceph/apt",
+        "cluster": "ceph",
+        "cluster_network": "10.10.0.0/24",
+        "copy_admin_key": true,
+        "dmcrypt_dedicated_journal": true,
+        "dmcrypt_journal_collocation": false,
+        "fsid": "e0b82a0d-b669-4787-8f4d-84f6733e45cd",
+        "journal_collocation": false,
+        "journal_size": 512,
+        "max_open_files": 131072,
+        "nfs_file_gw": false,
+        "nfs_obj_gw": false,
+        "os_tuning_params": [
+          {
+            "name": "kernel.pid_max",
+            "value": 4194303
+          },
+          {
+            "name": "fs.file-max",
+            "value": 26234859
+          }
+        ],
+        "public_network": "10.10.0.0/24",
+        "raw_multi_journal": false
+      },
+      "inventory": {
+        "_meta": {
+          "hostvars": {
+            "10.10.0.10": {
+              "ansible_user": "ansible",
+              "devices": [
+                "/dev/vde",
+                "/dev/vdb"
+              ],
+              "monitor_interface": "ens3",
+              "raw_journal_devices": [
+                "/dev/vdd",
+                "/dev/vdc"
+              ]
             },
-            "name": "deploy",
-            "playbook_id": "cluster_deploy"
+            "10.10.0.11": {
+              "ansible_user": "ansible",
+              "devices": [
+                "/dev/vde",
+                "/dev/vdb"
+              ],
+              "monitor_interface": "ens3",
+              "raw_journal_devices": [
+                "/dev/vdd",
+                "/dev/vdc"
+              ]
+            },
+            "10.10.0.12": {
+              "ansible_user": "ansible",
+              "devices": [
+                "/dev/vde",
+                "/dev/vdb"
+              ],
+              "monitor_interface": "ens3",
+              "raw_journal_devices": [
+                "/dev/vdd",
+                "/dev/vdc"
+              ]
+            },
+            "10.10.0.8": {
+              "ansible_user": "ansible",
+              "devices": [
+                "/dev/vde",
+                "/dev/vdb"
+              ],
+              "monitor_interface": "ens3",
+              "raw_journal_devices": [
+                "/dev/vdd",
+                "/dev/vdc"
+              ]
+            },
+            "10.10.0.9": {
+              "ansible_user": "ansible",
+              "devices": [
+                "/dev/vde",
+                "/dev/vdb"
+              ],
+              "monitor_interface": "ens3",
+              "raw_journal_devices": [
+                "/dev/vdd",
+                "/dev/vdc"
+              ]
+            }
+          }
         },
-        "id": "fd76cea9-3efa-4432-854c-fee30ca79ddb",
-        "initiator_id": "9d010f3f-2ec0-4079-ae8c-f46415e2530c",
-        "model": "playbook_configuration",
-        "time_deleted": 0,
-        "time_updated": 1478174220,
-        "version": 2
+        "clients": [],
+        "iscsi_gw": [],
+        "mdss": [],
+        "mons": [
+          "10.10.0.9"
+        ],
+        "nfss": [],
+        "osds": [
+          "10.10.0.10",
+          "10.10.0.12",
+          "10.10.0.11",
+          "10.10.0.8"
+        ],
+        "rbd_mirrors": [],
+        "restapis": [
+          "10.10.0.9"
+        ],
+        "rgws": []
+      }
     }
+
 
 
 Parameter Description
@@ -224,12 +234,53 @@ Parameter Description
 
 **journal_collocation**
     This option defines if OSD will place its journal on the same disk
-    as data. Default is ``true``.
+    as data. Default is ``false``.
 
     If you want to have separate disks for journals (SSDs) and data
     (rotationals), set this to ``false``. In that case, you need to set
     ``raw_multi_journal`` setting to ``true`` and list journal disks
     as ``raw_journal_devices``.
+
+**raw_multi_journal**
+    This option is opposite to ``journal_collocation``. Important that
+    invariant ``raw_multi_journal == not journal_collocation`` has to
+    be present.
+
+**dmcrypt_journal_collocation**
+    This option has the same meaning as ``journal_collocation`` but
+    both journal and data disks are encrypted by dmcrypt.
+
+**dmcrypt_dedicated_journal**
+    This option has the same meaning as falsy *journal_collocation*: it
+    will place journal and data on different disks and encrypt them with
+    dmcrypt.
+
+.. note::
+    ceph-ansible supports 2 modes of deployment: with journal collocation
+    and on separate drives. Also with dmcrypt and without. 4 possible
+    variants.
+
+    Please find table below to understand which value combinations are
+    possible.
+
+    +-------------+-----------+-------------------------+-----------------------+---------------------------------+-------------------------------+--------------------------+-----------------------------+
+    | Collocation | Dmcrypt   | ``journal_collocation`` | ``raw_multi_journal`` | ``dmcrypt_journal_collocation`` | ``dmcrypt_dedicated_journal`` | Data Devices Option Name | Journal Devices Option Name |
+    +=============+===========+=========================+=======================+=================================+===============================+==========================+=============================+
+    | ``true``    | ``true``  | ``false``               | ``true``              | ``false``                       | ``false``                     | ``devices``              | -                           |
+    +-------------+-----------+-------------------------+-----------------------+---------------------------------+-------------------------------+--------------------------+-----------------------------+
+    | ``true``    | ``false`` | ``true``                | ``false``             | ``false``                       | ``false``                     | ``devices``              | -                           |
+    +-------------+-----------+-------------------------+-----------------------+---------------------------------+-------------------------------+--------------------------+-----------------------------+
+    | ``false``   | ``true``  | ``false``               | ``false``             | ``false``                       | ``true``                      | ``devices``              | ``raw_journal_devices``     |
+    +-------------+-----------+-------------------------+-----------------------+---------------------------------+-------------------------------+--------------------------+-----------------------------+
+    | ``false``   | ``false`` | ``false``               | ``true``              | ``false``                       | ``false``                     | ``devices``              | ``raw_journal_devices``     |
+    +-------------+-----------+-------------------------+-----------------------+---------------------------------+-------------------------------+--------------------------+-----------------------------+
+
+    Please notice different meaning of ``devices`` and
+    ``raw_journal_devices`` in different modes: if no collocation is
+    defined then ``devices`` means disks with data. Journals are placed
+    on ``raw_journal_devices`` disks. Otherwise, you need to define
+    ``devices`` only: in that case journal will be placed on the same
+    device as data one.
 
 **journal_size**
     OSD journal size in megabytes.
@@ -256,6 +307,15 @@ Parameter Description
 **monitor_interface**
     This options defines *NIC* on the host, which is connected to
     *public* network.
+
+**devices**
+    This option defines disks, where OSD data is going to be placed. If
+    collocation is enabled, then this also means journal devices,
+    ``raw_journal_devices`` is not used.
+
+**raw_journal_devices**
+    This option defines disks where journals for OSD should be placed.
+    If collocation is enabled, this option is not used.
 
 
 
