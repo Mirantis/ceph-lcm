@@ -34,12 +34,15 @@ Required Server List    Yes
 Avaialble Hints
 +++++++++++++++
 
-+---------+--------------------+---------------+-----------------------------------+
-| Hint    | Title              | Default Value | Description                       |
-+=========+====================+===============+===================================+
-| dmcrypt | Use dmcrypted OSDs | False         | This option defines if we need to |
-|         |                    |               | use dmcrypt for OSD devices.      |
-+---------+--------------------+---------------+-----------------------------------+
++-------------+------------------------------------------------+---------------+--------------------------------------------+
+| Hint        | Title                                          | Default Value | Description                                |
++=============+================================================+===============+============================================+
+| dmcrypt     | Use dmcrypted OSDs                             | False         | This option defines if we need to          |
+|             |                                                |               | use dmcrypt for OSD devices.               |
++-------------+------------------------------------------------+---------------+--------------------------------------------+
+| collocation | Collocate OSD data and journal on same devices | False         | This options defines if we need to         |
+|             |                                                |               | place journal and data on the same devices |
++-------------+------------------------------------------------+---------------+--------------------------------------------+
 
 
 
