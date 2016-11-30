@@ -8,7 +8,6 @@ install:
   distro_source: "jewel-xenial"
 
 journal:
-  collocation: true
   size: 100
 
 os:
