@@ -27,7 +27,9 @@ setuptools.setup(
     url="https://github.com/Mirantis/ceph-lcm",
     packages=setuptools.find_packages(),
     entry_points={
-        "decapod.playbooks": ["add_osd = decapod_add_osd.plugin:AddOSD"]
+        "decapod.playbooks": [
+            "add_osd = decapod_plugin_playbook_add_osd.plugin:AddOSD"
+        ]
     },
     python_requires=">= 3.4",
     include_package_data=True,

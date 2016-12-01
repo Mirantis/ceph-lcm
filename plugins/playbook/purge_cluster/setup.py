@@ -28,7 +28,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     entry_points={
         "decapod.playbooks": [
-            "purge_cluster = decapod_purge_cluster.plugin:PurgeCluster"
+            "purge_cluster = decapod_plugin_playbook_purge_cluster.plugin:PurgeCluster"  # NOQA
         ]
     },
     python_requires=">= 3.4",

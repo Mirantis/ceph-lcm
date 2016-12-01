@@ -28,7 +28,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     entry_points={
         "decapod.playbooks": [
-            "remove_osd = decapod_remove_osd.plugin:RemoveOSD"
+            "remove_osd = decapod_plugin_playbook_remove_osd.plugin:RemoveOSD"
         ]
     },
     python_requires=">= 3.4",

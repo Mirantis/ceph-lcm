@@ -23,7 +23,7 @@ REQUIREMENTS = (
 
 
 setuptools.setup(
-    name="decapod-plugin-alerts",
+    name="decapod-plugin-alerts-emails",
     description="Decapod email alerts plugin",
     long_description="",  # TODO
     version="0.2.0",
@@ -38,7 +38,7 @@ setuptools.setup(
     install_requires=REQUIREMENTS,
     zip_safe=False,
     entry_points={
-        "decapod.alerts": ["email = decapod_email_alerts.email:alert"]
+        "decapod.alerts": ["email = decapod_plugin_alerts_emails.email:alert"]
     },
     classifiers=(
         "Intended Audience :: Information Technology",

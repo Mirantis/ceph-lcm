@@ -28,7 +28,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     entry_points={
         "decapod.playbooks": [
-            "cluster_deploy = decapod_deploy_cluster.plugin:DeployCluster"  # NOQA
+            "cluster_deploy = decapod_plugin_playbook_deploy_cluster.plugin:DeployCluster"  # NOQA
         ]
     },
     python_requires=">= 3.4",

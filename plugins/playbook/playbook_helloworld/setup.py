@@ -28,7 +28,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     entry_points={
         "decapod.playbooks": [
-            "hello_world = decapod_helloworld.plugin:HelloWorld"
+            "hello_world = decapod_plugin_playbook_helloworld.plugin:HelloWorld"  # NOQA
         ]
     },
     python_requires=">= 3.4",
