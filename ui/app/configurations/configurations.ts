@@ -42,8 +42,8 @@ export class ConfigurationsComponent {
     });
   }
 
-  fetchData() {
-    this.data.configuration().findAll({
+  fetchData(): Promise<any> {
+    return this.data.configuration().findAll({
       filter: _.get(this.filter, 'query', {}),
       page: _.get(this.pager, 'page', 1)
     })
@@ -80,7 +80,7 @@ export class ConfigurationsComponent {
     }
   }
 
-  isCurrent(configuration: PlaybookConfiguration) {
+  isCurrent(configuration: PlaybookConfiguration): boolean {
     return this.shownConfiguration && this.shownConfiguration.id === configuration.id;
   }
 
@@ -90,6 +90,7 @@ export class ConfigurationsComponent {
 
   getConfigurationVersions(configuration: PlaybookConfiguration, reread: boolean = false) {
     if (!this.configurationVersions[configuration.id] || reread) {
+      this.configurationVersions[configuration.id] = [];
       this.data.configuration().getVersions(configuration.id)
         .then(
           (versions: pagedResult) => {
@@ -97,7 +98,6 @@ export class ConfigurationsComponent {
           },
           (error: any) => this.data.handleResponseError(error)
         );
-      this.configurationVersions[configuration.id] = [];
     }
     return this.configurationVersions[configuration.id];
   }

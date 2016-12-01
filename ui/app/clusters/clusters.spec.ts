@@ -61,30 +61,32 @@ describe('Clusters Component', () => {
         });
     });
 
-    it('displays received data in the tabular view', inject([DataService], (data: DataService) => {
+    it('displays received data in the tabular view', done => {
       expect(component.clusters.length).toEqual(amount);
       expect(clustersTable).not.toBeNull();
       expect(noClustersDiv).toBeNull();
-    }));
+      done();
+    });
 
-    it('displays exactly perPage records per page', inject([DataService], (data: DataService) => {
+    it('displays exactly perPage records per page', done => {
       let perPage = component.pagedData.per_page;
       let clusterRows = fixture.nativeElement.querySelectorAll('.clusters div.box');
       expect(perPage).toBeGreaterThan(0);
       expect(clusterRows.length).toEqual(perPage);
-    }));
+      done();
+    });
 
-    it('makes request for data upon page switching', inject([DataService], (data: DataService) => {
+    it('makes request for data upon page switching', done => {
       dom.select('ul.pagination li:nth-child(3) a')
         .then(function() {
           expect(this.innerText).toEqual('3');
         })
         .click();
-      fixture.detectChanges();
       expect(dataService.cluster().findAll).toHaveBeenCalledWith(jasmine.objectContaining({page: 3}));
-    }));
+      done();
+    });
 
-    it('allows cluster name editing', inject([DataService], (data: DataService) => {
+    it('allows cluster name editing', done => {
       let dummyClusterName = 'new cluster name';
 
       dom.select('.clusters a .edit-icon').parent().click();
@@ -92,9 +94,9 @@ describe('Clusters Component', () => {
       fixture.detectChanges();
       component.newCluster.data.name = dummyClusterName;
       dom.click('.modal-footer .btn-primary');
-      fixture.detectChanges();
       expect(dataService.cluster().postUpdate).toHaveBeenCalled();
-    }));
+      done();
+    });
 
     it('lets expand single cluster\'s configuration', () => {
       let expandCluster = (number?: number) => {
@@ -102,7 +104,6 @@ describe('Clusters Component', () => {
           dom.select('.clusters .box:nth-child(' + number + ') a .glyphicon-triangle-right').parent();
         }
         dom.click();
-        fixture.detectChanges();
       };
       expect(component.shownClusterId).toBeNull();
       expandCluster(3);

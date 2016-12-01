@@ -10,21 +10,22 @@ describe('Login Component', () => {
   let component: LoginComponent;
 
   beforeEach(
-    async(() => {
+    done => {
       return TestBed.configureTestingModule({
         imports: [AppModule],
         providers: [
           {provide: APP_BASE_HREF, useValue : '/'},
           AuthService
         ]
-      }).compileComponents()
-    })
+      })
+      .compileComponents()
+      .then(done);
+    }
   );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
-
     fixture.detectChanges();
   });
 
@@ -56,7 +57,7 @@ describe('Login Component', () => {
       expect(component.loginError).toBeNull();
     });
 
-    it('is correctly printed', () => {
+    it('is correctly displayed', () => {
       component.resetErrors();
       expect(component.getErrorMessage()).toBe('');
 
@@ -94,16 +95,15 @@ describe('Login Component', () => {
     });
 
     it('passes provided credentials to the backend as is', () => {
-        authService = fixture.debugElement.injector.get(AuthService);
-        authService.login = jasmine.createSpy('login').and.returnValue(Promise.resolve({}));
+      authService = fixture.debugElement.injector.get(AuthService);
+      authService.login = jasmine.createSpy('login').and.returnValue(Promise.resolve({}));
 
-        component.username = login;
-        component.password = password;
-        fixture.detectChanges();
+      component.username = login;
+      component.password = password;
+      fixture.detectChanges();
 
-        submitButton.click();
-        expect(authService.login).toHaveBeenCalledWith(login, password);
-      }
-    );
+      submitButton.click();
+      expect(authService.login).toHaveBeenCalledWith(login, password);
+    });
   });
 });

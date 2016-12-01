@@ -1,11 +1,12 @@
-import { BaseModel } from '../app/models';
+import { Record } from 'js-data';
 import { pagedResult } from '../app/services/data';
-import { Cluster } from '../app/models';
+import { Cluster, Playbook, PlaybookConfiguration, Server, Execution, ExecutionStep } from '../app/models';
 import * as _ from 'lodash';
 
 function createFakeModelData(index: number): Object {
   return {
     id: 'id' + index,
+    name: 'Dummy Name ' + index,
     data: {
       name: 'Dummy Name ' + index,
       execution_id: 'dummy_execution_id_' + index,
@@ -19,10 +20,13 @@ function createFakeModelData(index: number): Object {
   }
 }
 
+export var amount = 50;
+export var itemsPerPage = 10;
+
 export function createFakeData(
   howMany: number,
-  Model: {new(params?: Object): BaseModel},
-  perPage = 10
+  Model: {new(params?: Object): Record},
+  perPage: number = itemsPerPage
 ): pagedResult {
   let result = {
     page: 1,
@@ -35,43 +39,73 @@ export function createFakeData(
   return result;
 }
 
-export var amount = 50;
-
 export class MockDataService {
-  findAll = jasmine.createSpy('findAll');
-  find = jasmine.createSpy('find');
-  postCreate = jasmine.createSpy('postCreate');
-  postUpdate = jasmine.createSpy('postUpdate');
-
   mappers: any[] = [];
-  mapperFactory(Model: {new(params?: Object): BaseModel}, name: string): any {
-    if (this.mappers[name]) return this.mappers[name];
-    return {
-      findAll: this.findAll.and.returnValue(
-        Promise.resolve(createFakeData(amount, Model))
-      ),
-      find: this.find.and.returnValue(
-        Promise.resolve(_.first(createFakeData(1, Model).items))
-      ),
-      postUpdate: this.postUpdate.and.returnValue(
-        Promise.resolve()
-      ),
-      postCreate: this.postCreate.and.returnValue(
-        Promise.resolve()
-      ),
-      create: this.postCreate.and.returnValue(
-        Promise.resolve()
-      ),
-      update: this.postCreate.and.returnValue(
-        Promise.resolve()
-      ),
-      destroy: this.postCreate.and.returnValue(
-        Promise.resolve()
-      )
-    };
+  spies: Object = {};
+
+  produceSpies(entityName: string, methodName: string): jasmine.Spy {
+    let spyName = entityName + ':' + methodName;
+    if (!this.spies[spyName]) {
+      this.spies[spyName] = jasmine.createSpy(spyName);
+    }
+    return this.spies[spyName];
+  }
+
+  mapperFactory(Model: {new(params?: Object): Record}, name: string): any {
+    if (!this.mappers[name]) {
+      this.mappers[name] = {
+        findAll: this.produceSpies(name, 'findAll').and.returnValue(
+          Promise.resolve(createFakeData(amount, Model))
+        ),
+        find: this.produceSpies(name, 'find').and.returnValue(
+          Promise.resolve(_.first(createFakeData(1, Model).items))
+        ),
+        postUpdate: this.produceSpies(name, 'postUpdate').and.returnValue(
+          Promise.resolve()
+        ),
+        postCreate: this.produceSpies(name, 'postCreate').and.returnValue(
+          Promise.resolve()
+        ),
+        create: this.produceSpies(name, 'create').and.returnValue(
+          Promise.resolve()
+        ),
+        update: this.produceSpies(name, 'update').and.returnValue(
+          Promise.resolve()
+        ),
+        destroy: this.produceSpies(name, 'destroy').and.returnValue(
+          Promise.resolve()
+        ),
+        getVersions: this.produceSpies(name, 'getVersions').and.returnValue(
+          Promise.resolve(createFakeData(10, Model))
+        ),
+        getVersion: this.produceSpies(name, 'getVersion').and.returnValue(
+          Promise.resolve(createFakeData(1, Model).items[0])
+        ),
+        getLogs: this.produceSpies(name, 'getLogs').and.returnValue(
+          Promise.resolve(createFakeData(amount, ExecutionStep))
+        )
+      };
+    }
+    return this.mappers[name];
   }
 
   cluster() {
     return this.mapperFactory(Cluster, 'cluster');
+  }
+
+  configuration() {
+    return this.mapperFactory(PlaybookConfiguration, 'configuration');
+  }
+
+  playbook() {
+    return this.mapperFactory(Playbook, 'playbook');
+  }
+
+  server() {
+    return this.mapperFactory(Server, 'server');
+  }
+
+  execution() {
+    return this.mapperFactory(Execution, 'execution');
   }
 }

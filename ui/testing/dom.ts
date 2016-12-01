@@ -8,21 +8,28 @@ export class DOMHelper {
   fixture: ComponentFixture<Component>;
   element: HTMLElement;
 
+  private checkElement() {
+    if (!this.element) {
+      throw 'No element selected!';
+    }
+  }
+
   public get isVisible(): boolean {
     return !!this.element;
   }
 
   public get innerText(): string {
-    if (!this.element) {
-      throw 'No element selected!';
-    }
+    this.checkElement();
     return this.element.textContent;
   }
 
+  public get innerHTML(): string {
+    this.checkElement();
+    return this.element.innerHTML;
+  }
+
   public get value(): string {
-    if (!this.element) {
-      throw 'No element selected!';
-    }
+    this.checkElement();
     return (this.element as HTMLInputElement).value;
   }
 
@@ -37,30 +44,29 @@ export class DOMHelper {
   }
 
   parent(): DOMHelper {
+    this.checkElement();
     this.element = this.element.parentElement;
     return this;
   }
 
   setValue(value: string): Promise<any> {
-    if (this.isVisible) {
-      console.log((this.element as HTMLInputElement).value);
-      (this.element as HTMLInputElement).value = value;
-      this.element.dispatchEvent(new Event('input'));
-      this.fixture.detectChanges();
-      return this.fixture.whenStable();
-    }
-    throw 'No element selected';
+    this.checkElement();
+    (this.element as HTMLInputElement).value = value;
+    this.element.dispatchEvent(new Event('input'));
+    this.fixture.detectChanges();
+    return this.fixture.whenStable();
   }
 
   click(css?: string): DOMHelper {
     if (!css && !this.isVisible) {
-      throw 'No element to click selected';
+      throw 'No element selected to click on';
     }
     if (css) {
       return this.select(css).click();
     }
 
     (this.element as HTMLButtonElement).click();
+    this.fixture.detectChanges();
     return this;
   }
 
