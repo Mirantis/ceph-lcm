@@ -1,0 +1,18 @@
+---
+# Configuration for add_mon
+
+
+max_open_files: 131072
+copy_admin_key: true
+
+install:
+  source: "stable"
+  release: "jewel"
+  repo: "http://eu.mirror.fuel-infra.org/shrimp/ceph/apt"
+  distro_source: "jewel-xenial"
+
+os:
+  kernel:
+    pid_max: 4194303
+  fs:
+    file-max: 26234859
