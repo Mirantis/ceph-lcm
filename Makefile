@@ -67,6 +67,12 @@ endef
 
 # -----------------------------------------------------------------------------
 
+clean:
+	git reset --hard && git submodule foreach --recursive git reset --hard && \
+		git clean -xfd && git submodule foreach --recursive git clean -xfd
+
+# -----------------------------------------------------------------------------
+
 make_egg_directory: make_output_directory
 	mkdir -p "$(EGGS_DIR)" || true
 

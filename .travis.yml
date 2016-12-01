@@ -11,6 +11,10 @@ env:
   - TOXENV=deadcode
   - TOXENV=devenv-lint
   - TOXENV=docs
+  - TOXENV=ui-build
+
+before_install:
+  - nvm install 6
 
 install:
   - pip install tox coverage
