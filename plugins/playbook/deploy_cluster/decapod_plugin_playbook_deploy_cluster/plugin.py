@@ -46,6 +46,11 @@ HINTS_SCHEMA = {
         "typename": "boolean",
         "type": "boolean",
         "default_value": False
+    },
+    "rest_api": {
+        "description": "Setup Ceph RestAPI",
+        "typename": "boolean",
+        "default_value": False
     }
 }
 """Schema for playbook hints."""
@@ -182,9 +187,10 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
             "nfss": [],
             "rbd_mirrors": [],
             "clients": [],
-            "iscsi_gw": []
+            "iscsi_gw": [],
+            "restapis": []
         }
-        if self.config["rest_api"]:
+        if hints["rest_api"]:
             result["restapis"] = result["mons"]
 
         return result
