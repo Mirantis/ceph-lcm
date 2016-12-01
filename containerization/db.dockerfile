@@ -1,11 +1,11 @@
 # vi: set ft=dockerfile :
 
 
-FROM mongo:3.2.10
+FROM mongo:3.2
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
-LABEL description="Base image with database for Decapod" version="0.2" vendor="Mirantis"
+LABEL description="Base image with database for Decapod" version="0.2.0" vendor="Mirantis"
 
 
 COPY containerization/files/mongod.conf /etc/mongod.conf

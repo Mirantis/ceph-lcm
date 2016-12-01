@@ -18,7 +18,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapod-ansible==0.1.0",
+    "decapod-ansible>=0.2,<0.3",
     "PyMongo[tls]>=3.3,<3.4",
     "PyYAML>=3.11,<5",
     "ipaddr>=2.1,<2.2"
@@ -29,7 +29,7 @@ setuptools.setup(
     name="decapod-monitoring",
     description="Custom monitoring plugin for Decapod",
     long_description="",  # TODO
-    version="0.1.0",
+    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

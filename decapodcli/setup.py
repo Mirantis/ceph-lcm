@@ -18,7 +18,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapodlib==0.1.0",
+    "decapodlib>=0.2,<0.3",
     "click>=6,<7",
     "six>=1.10",
     "backports.csv"
@@ -29,7 +29,7 @@ setuptools.setup(
     name="decapod-cli",
     description="Decapod CLI",
     long_description="",  # TODO
-    version="0.1.0",
+    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

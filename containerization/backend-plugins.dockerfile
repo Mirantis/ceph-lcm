@@ -5,7 +5,7 @@ FROM decapod-base
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
-LABEL description="Base image with plugins for Decapod" version="0.2" vendor="Mirantis"
+LABEL description="Base image with plugins for Decapod" version="0.2.0" vendor="Mirantis"
 
 
 COPY output/eggs /eggs

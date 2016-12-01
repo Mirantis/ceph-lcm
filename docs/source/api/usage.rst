@@ -36,7 +36,7 @@ To install from wheel, do following:
 
 .. code-block:: bash
 
-    $ pip install decapodlib-0.1.0-py2.py3-none-any.whl
+    $ pip install decapodlib-*-py2.py3-none-any.whl
 
 .. note::
 

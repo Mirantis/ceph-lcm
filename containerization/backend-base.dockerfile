@@ -5,7 +5,7 @@ FROM ubuntu:xenial
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
-LABEL description="Base image of Decapod" version="0.2" vendor="Mirantis"
+LABEL description="Base image of Decapod" version="0.2.0" vendor="Mirantis"
 
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
