@@ -34,7 +34,7 @@ setuptools.setup(
     python_requires=">= 3.4",
     include_package_data=True,
     package_data={
-        "decapod_hello_world": [
+        "decapod_plugin_playbook_helloworld": [
             "config.yaml",
             "playbook.yaml",
             "roles/*"

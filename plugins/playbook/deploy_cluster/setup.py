@@ -34,7 +34,7 @@ setuptools.setup(
     python_requires=">= 3.4",
     include_package_data=True,
     package_data={
-        "decapod_deploy_cluster": [
+        "decapod_plugin_playbook_deploy_cluster": [
             "config.yaml",
             "playbook.yaml",
             "templates/*"

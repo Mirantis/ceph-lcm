@@ -1,2 +1,2 @@
-include decapod_remove_osd/config.yaml
-include decapod_remove_osd/playbook.yaml
+include decapod_plugin_playbook_remove_osd/config.yaml
+include decapod_plugin_playbook_remove_osd/playbook.yaml

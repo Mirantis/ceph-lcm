@@ -34,7 +34,7 @@ setuptools.setup(
     python_requires=">= 3.4",
     include_package_data=True,
     package_data={
-        "decapod_remove_osd": [
+        "decapod_plugin_playbook_remove_osd": [
             "config.yaml",
             "playbook.yaml"
         ]

@@ -45,7 +45,7 @@ RUN set -x \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapodlib*.whl \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_common*.whl \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_docker*.whl \
-    && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_plugin_server_discovery*.whl \
+    && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_plugin_playbook_server_discovery*.whl \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_plugin_alerts*.whl \
     && rm -r /eggs \
     && apt-get clean \

@@ -1,1 +1,1 @@
-include decapod_server_discovery/config.yaml
+include decapod_plugin_playbook_server_discovery/config.yaml
