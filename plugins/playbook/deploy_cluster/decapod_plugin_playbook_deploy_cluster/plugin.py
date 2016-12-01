@@ -51,6 +51,14 @@ HINTS_SCHEMA = {
         "description": "Setup Ceph RestAPI",
         "typename": "boolean",
         "default_value": False
+    },
+    "mon_count": {
+        "description": "How many monitors to deploy",
+        "typename": "integer",
+        "type": "number",
+        "multipleOf": 1.0,
+        "minimum": 1,
+        "default_value": 3
     }
 }
 """Schema for playbook hints."""
@@ -176,11 +184,12 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
         return inventory
 
     def get_inventory_groups(self, servers, hints):
-        mon = min(servers, key=diskutils.get_server_storage_size)
-        osds = [srv for srv in servers if srv is not mon]
+        servers = sorted(servers, key=diskutils.get_server_storage_size)
+        mons = servers[:hints["mon_count"]]
+        osds = servers[hints["mon_count"]:]
 
         result = {
-            "mons": [mon],
+            "mons": mons,
             "osds": osds,
             "rgws": [],
             "mdss": [],
