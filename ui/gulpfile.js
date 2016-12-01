@@ -22,7 +22,7 @@ gulp.task('bundle:libs', function () {
     'node_modules/reflect-metadata/Reflect.js',
     'node_modules/systemjs/dist/system.src.js',
     'systemjs.config.js'
-    ])
+  ])
     .pipe(concat('vendors.js'))
     .pipe(minify({
       ext: {
