@@ -1,7 +1,7 @@
 {
-  "name": "ceph-lcm",
-  "version": "1.0.0",
-  "description": "CEPH LCM",
+  "name": "decapod",
+  "version": "0.2.0",
+  "description": "Decapod",
   "watch": {
     "compile-less": {
       "patterns": [

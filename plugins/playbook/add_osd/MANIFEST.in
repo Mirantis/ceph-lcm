@@ -1,2 +1,2 @@
-include decapod_add_osd/config.yaml
-include decapod_add_osd/playbook.yaml
+include decapod_plugin_playbook_add_osd/config.yaml
+include decapod_plugin_playbook_add_osd/playbook.yaml

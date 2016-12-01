@@ -44,7 +44,8 @@ def new_task(configure_model):
 @pytest.yield_fixture
 def no_connect():
     patcher = unittest.mock.patch(
-        "decapod_server_discovery.plugin.verbose_create_connection")
+        "decapod_plugin_playbook_server_discovery."
+        "plugin.verbose_create_connection")
     with patcher:
         yield
 

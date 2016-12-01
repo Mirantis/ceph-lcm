@@ -21,27 +21,27 @@ import setuptools
 setuptools.setup(
     name="decapod-plugin-playbook-deploy-cluster",
     description="Deploy cluster plugin for Decapod",
-    version="0.1.0",
+    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
     packages=setuptools.find_packages(),
     entry_points={
         "decapod.playbooks": [
-            "cluster_deploy = decapod_deploy_cluster.plugin:DeployCluster"  # NOQA
+            "cluster_deploy = decapod_plugin_playbook_deploy_cluster.plugin:DeployCluster"  # NOQA
         ]
     },
     python_requires=">= 3.4",
     include_package_data=True,
     package_data={
-        "decapod_deploy_cluster": [
+        "decapod_plugin_playbook_deploy_cluster": [
             "config.yaml",
             "playbook.yaml",
             "templates/*"
         ]
     },
     install_requires=[
-        "decapod_common>=0.1,<0.2"
+        "decapod_common>=0.2,<0.3"
     ],
     zip_safe=False
 )

@@ -5,7 +5,7 @@ FROM decapod-base-plugins
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
-LABEL description="Controller service for Decapod" version="0.2" vendor="Mirantis"
+LABEL description="Controller service for Decapod" version="0.2.0" vendor="Mirantis"
 
 
 COPY output/eggs /eggs

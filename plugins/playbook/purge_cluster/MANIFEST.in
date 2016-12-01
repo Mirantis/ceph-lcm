@@ -1,2 +1,2 @@
-include decapod_purge_cluster/config.yaml
-include decapod_purge_cluster/playbook.yaml
+include decapod_plugin_playbook_purge_cluster/config.yaml
+include decapod_plugin_playbook_purge_cluster/playbook.yaml

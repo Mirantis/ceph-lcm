@@ -1,2 +1,2 @@
-include decapod_deploy_cluster/config.yaml
-include decapod_deploy_cluster/playbook.yaml
+include decapod_plugin_playbook_deploy_cluster/config.yaml
+include decapod_plugin_playbook_deploy_cluster/playbook.yaml

@@ -78,7 +78,8 @@ plugins:
         - "bigboss@example.com"
       from: "errors@example.com"
   playbooks:
-    disabled: []
+    disabled:
+      - hello_world
 
 
 # Default Python logging is used.

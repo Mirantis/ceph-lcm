@@ -18,7 +18,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapod-common>=0.1,<0.2",
+    "decapod-common>=0.2,<0.3",
 )
 
 
@@ -26,7 +26,7 @@ setuptools.setup(
     name="decapod-migrations",
     description="Decapod migration scripts",
     long_description="",  # TODO
-    version="0.1.0",
+    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

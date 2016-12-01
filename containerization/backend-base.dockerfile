@@ -5,7 +5,7 @@ FROM ubuntu:xenial
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
-LABEL description="Base image of Decapod" version="0.2" vendor="Mirantis"
+LABEL description="Base image of Decapod" version="0.2.0" vendor="Mirantis"
 
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
@@ -45,7 +45,7 @@ RUN set -x \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapodlib*.whl \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_common*.whl \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_docker*.whl \
-    && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_plugin_server_discovery*.whl \
+    && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_plugin_playbook_server_discovery*.whl \
     && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_plugin_alerts*.whl \
     && rm -r /eggs \
     && apt-get clean \

@@ -5,7 +5,7 @@ FROM decapod-controller
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
-LABEL description="Different cron jobs for Decapod" version="0.2" vendor="Mirantis"
+LABEL description="Different cron jobs for Decapod" version="0.2.0" vendor="Mirantis"
 
 
 COPY output/eggs /eggs
