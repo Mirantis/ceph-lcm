@@ -16,12 +16,19 @@
 
 from decapod_common import log
 from decapod_common import playbook_plugin
+from decapod_common import playbook_plugin_hints
+from decapod_common.models import server
 
 
 DESCRIPTION = """\
 {{ cookiecutter.description }}
 """.strip()
 """Plugin description."""
+
+HINTS_SCHEMA = {
+
+}
+"""Schema for playbook hints."""
 
 LOG = log.getLogger(__name__)
 """Logger."""
@@ -34,8 +41,16 @@ class {{ cookiecutter.plugin_class_name }}(playbook_plugin.CephAnsiblePlaybook):
     PUBLIC = {{ cookiecutter.is_public }}
     REQUIRED_SERVER_LIST = {{ cookiecutter.required_server_list }}
 
+    HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
+
     def on_pre_execute(self, task):
         super().on_pre_execute(task)
+
+        playbook_config = self.get_playbook_configuration(task)
+        config = playbook_config.configuration["inventory"]
+        cluster = playbook_config.cluster
+        servers = playbook_config.servers
+        servers = {srv.ip: srv for srv in servers}
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
         super().on_post_execute(task, exc_value, exc_type, exc_tb)

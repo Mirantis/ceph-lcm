@@ -12,14 +12,14 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Setup script for {{ cookiecutter.plugin_display_name }} plugin."""
+"""Setup script for {{ cookiecutter.package }} plugin."""
 
 
 import setuptools
 
 
 setuptools.setup(
-    name="decapod-plugin-playbook-{{ cookiecutter.package }}",
+    name="{{ cookiecutter.package|replace('_', '-') }}",
     description="{{ cookiecutter.description }}",
     version="0.2.0",
     author="Sergey Arkhipov",
