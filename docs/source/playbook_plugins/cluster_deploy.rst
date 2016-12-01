@@ -44,6 +44,9 @@ Avaialble Hints
 | collocation | Collocate OSD data and journal on same devices | False         | This options defines if we need to         |
 |             |                                                |               | place journal and data on the same devices |
 +-------------+------------------------------------------------+---------------+--------------------------------------------+
+| rest_api    | Setup Ceph RestAPI                             | False         | This option defines if we need to install  |
+|             |                                                |               | RestAPI for Ceph.                          |
++-------------+------------------------------------------------+---------------+--------------------------------------------+
 
 
 
