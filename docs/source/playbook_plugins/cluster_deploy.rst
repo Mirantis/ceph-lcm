@@ -47,6 +47,9 @@ Avaialble Hints
 | rest_api    | Setup Ceph RestAPI                             | False         | This option defines if we need to install  |
 |             |                                                |               | RestAPI for Ceph.                          |
 +-------------+------------------------------------------------+---------------+--------------------------------------------+
+| mon_count   | How many monitors to deploy                    | 1             | This options defines count of monitors     |
+|             |                                                |               | Decapod needs to deploy.                   |
++-------------+------------------------------------------------+---------------+--------------------------------------------+
 
 
 
