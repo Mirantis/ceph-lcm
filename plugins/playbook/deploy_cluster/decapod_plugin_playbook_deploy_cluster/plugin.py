@@ -58,7 +58,7 @@ HINTS_SCHEMA = {
         "type": "number",
         "multipleOf": 1.0,
         "minimum": 1,
-        "default_value": 1
+        "default_value": 3
     }
 }
 """Schema for playbook hints."""
