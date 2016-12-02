@@ -21,12 +21,7 @@ export class WizardComponent {
   @Input() servers: Server[];
   @Output() callback = new EventEmitter();
 
-  newConfiguration: PlaybookConfiguration = new PlaybookConfiguration({
-    data: {
-      server_ids: [],
-      hints: []
-    }
-  });
+  newConfiguration: PlaybookConfiguration;
   jsonConfiguration: string;
   serversRequired: boolean = false;
   readonly: boolean = false;
@@ -34,11 +29,22 @@ export class WizardComponent {
   hintsValidity: {[key: string]: boolean} = {};
   hints: {[key: string]: Hint} = {};
 
+  resetConfiguration() {
+    this.newConfiguration = new PlaybookConfiguration({
+      data: {
+        name: '',
+        server_ids: [],
+        hints: []
+      }
+    });
+  }
+
   constructor(
     private data: DataService,
     private error: ErrorService,
     private modal: Modal
   ) {
+    this.resetConfiguration();
   }
 
   validateStep() {
@@ -115,12 +121,7 @@ export class WizardComponent {
       this.initForEditing(configuration);
     } else {
       this.step = 1;
-      this.newConfiguration = new PlaybookConfiguration({
-        data: {
-          server_ids: [],
-          hints: []
-        }
-      });
+      this.resetConfiguration();
     }
   }
 
