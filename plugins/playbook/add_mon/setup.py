@@ -40,7 +40,7 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "decapod_common=>0.2,<0.3"
+        "decapod_common>=0.2,<0.3"
     ],
     zip_safe=False
 )
