@@ -24,5 +24,4 @@
 - hosts: mons
   become: true
   roles:
-    - ceph-fetch-keys
     - ceph-mon
