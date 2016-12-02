@@ -17,8 +17,12 @@
 import pkg_resources
 
 from decapod_common import log
+from decapod_common import networkutils
 from decapod_common import playbook_plugin
+from decapod_common.models import kv
 from decapod_common.models import server
+
+from . import exceptions
 
 
 DESCRIPTION = """\
@@ -28,6 +32,12 @@ Add monitor to the cluster
 
 LOG = log.getLogger(__name__)
 """Logger."""
+
+
+def get_monitor_secret(secret_id):
+    secret = kv.KV.find("monitor_secret", [secret_id])
+    if secret:
+        return secret[0]
 
 
 class AddMon(playbook_plugin.CephAnsiblePlaybook):
@@ -69,8 +79,31 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
 
         return result
 
+    def get_dynamic_inventory(self):
+        if not self.playbook_config:
+            raise exceptions.UnknownPlaybookConfiguration()
+
+        configuration = self.playbook_config.configuration
+        inventory = configuration["inventory"]
+        secret = get_monitor_secret(configuration["global_vars"]["fsid"])
+        if not secret:
+            raise exceptions.SecretWasNotFound(
+                configuration["global_vars"]["fsid"])
+
+        all_hosts = set()
+        for name, group_vars in inventory.items():
+            if name == "_meta":
+                continue
+            all_hosts.update(group_vars)
+
+        for hostname in all_hosts:
+            dct = inventory["_meta"]["hostvars"].setdefault(hostname, {})
+            dct["monitor_secret"] = secret.value
+
+        return inventory
+
     def make_inventory(self, cluster, servers, hints):
-        groups = self.get_inventory_groups(cluster, servers)
+        groups = self.get_inventory_groups(cluster, servers, hints)
         inventory = {"_meta": {"hostvars": {}}}
 
         for name, group_servers in groups.items():
@@ -80,6 +113,8 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
                 hostvars = inventory["_meta"]["hostvars"].setdefault(
                     srv.ip, {})
                 hostvars["ansible_user"] = srv.username
+                hostvars["monitor_interface"] = \
+                    networkutils.get_public_network_if(srv, servers)
 
         return inventory
 
