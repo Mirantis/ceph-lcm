@@ -49,7 +49,6 @@ describe('Wizard Component', () => {
 
   beforeEach(
     done => {
-      DataService
       return TestBed.configureTestingModule({
         imports: [AppModule],
         providers: [
@@ -263,7 +262,5 @@ describe('Wizard Component', () => {
         });
       });
     });
-
   });
-
 });

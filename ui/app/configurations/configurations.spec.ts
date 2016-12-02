@@ -40,7 +40,6 @@ describe('Playbook (Plugin) Configuration Component', () => {
 
   beforeEach(
     done => {
-      DataService
       return TestBed.configureTestingModule({
         imports: [AppModule],
         providers: [

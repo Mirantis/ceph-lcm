@@ -15,8 +15,9 @@
 * limitations under the License.
 */
 
-import { inject, TestBed, ComponentFixture } from '@angular/core/testing';
+import { async, inject, TestBed, ComponentFixture } from '@angular/core/testing';
 import { APP_BASE_HREF } from '@angular/common';
+import { Router } from '@angular/router';
 
 import { NameAndClusterStep } from './name_and_cluster';
 import { AppModule } from '../../app.module';
@@ -35,7 +36,9 @@ describe('Configuration wizard: name and cluster step component', () => {
   let dom: DOMHelper;
 
   beforeEach(
-    done => TestBed.configureTestingModule({
+    done => {
+      DataService
+      return TestBed.configureTestingModule({
         imports: [AppModule],
         providers: [
           {provide: APP_BASE_HREF, useValue: '/'},
@@ -43,7 +46,8 @@ describe('Configuration wizard: name and cluster step component', () => {
         ]
       })
       .compileComponents()
-      .then(done)
+      .then(done);
+    }
   );
 
   beforeEach(() => {
@@ -72,11 +76,5 @@ describe('Configuration wizard: name and cluster step component', () => {
     expect(component.isShownInDeck()).toBeTruthy();
     component.model = new BaseModel({id: 'Some ID'});
     expect(component.isShownInDeck()).toBeFalsy();
-  });
-
-  it('fetches clusters to bind the DDL', () => {
-    let dataService = fixture.debugElement.injector.get(DataService);
-    component.fetchData();
-    expect(dataService.cluster().findAll).toHaveBeenCalledWith({});
   });
 });

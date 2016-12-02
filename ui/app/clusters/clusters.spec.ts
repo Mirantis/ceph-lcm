@@ -38,7 +38,6 @@ describe('Clusters Component', () => {
 
   beforeEach(
     done => {
-      DataService
       return TestBed.configureTestingModule({
         imports: [AppModule],
         providers: [

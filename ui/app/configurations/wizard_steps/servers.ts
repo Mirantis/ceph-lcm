@@ -73,5 +73,4 @@ export class ServersStep extends WizardStepBase {
   areAllServersSelected() {
     return this.model.data.server_ids.length === this.servers.length;
   }
-
 }

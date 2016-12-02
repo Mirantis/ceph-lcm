@@ -82,5 +82,4 @@ export class JsonConfigurationStep extends WizardStepBase {
   isReadOnly() {
     return this.model.version !== this.configuration.version;
   }
-
 }
