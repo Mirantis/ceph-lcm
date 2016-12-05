@@ -35,8 +35,9 @@ def clean_collection(configure_model, pymongo_connection):
 def test_create_reset_model(reset_token, new_user, pymongo_connection,
                             freeze_time):
     assert reset_token.user_id == new_user.model_id
-    assert reset_token.expires_at == int(freeze_time.return_value) \
-        + password_reset.CONF["common"]["password_reset_ttl_in_seconds"]
+    assert int(reset_token.expires_at.timestamp()) == \
+        int(freeze_time.return_value) +\
+        password_reset.CONF["common"]["password_reset_ttl_in_seconds"]
 
     db_model = pymongo_connection.db.password_reset.find_one(
         {"_id": reset_token._id}
@@ -63,7 +64,7 @@ def test_get_expired_token_model(reset_token, freeze_time):
 def test_consume_delete_expired(reset_token, freeze_time, pymongo_connection):
     collection = pymongo_connection.db.password_reset
 
-    freeze_time.return_value = reset_token.expires_at + 1
+    freeze_time.return_value = reset_token.expires_at.timestamp() + 1
     with pytest.raises(exceptions.PasswordResetExpiredError):
         reset_token.consume(pytest.faux.gen_alphanumeric())
 

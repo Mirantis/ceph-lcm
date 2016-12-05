@@ -75,7 +75,7 @@ class PasswordReset(generic.Base):
     @classmethod
     def create(cls, user_id, ttl=None):
         ttl = ttl or CONF["common"]["password_reset_ttl_in_seconds"]
-        expires_at = timeutils.current_unix_timestamp() + ttl
+        expires_at = timeutils.ttl(ttl)
         new_password_reset = cls()
         new_password_reset.user_id = user_id
         new_password_reset.expires_at = expires_at
@@ -93,7 +93,7 @@ class PasswordReset(generic.Base):
         document = cls.collection().find_one(
             {
                 "_id": token,
-                "expires_at": {"$gte": timeutils.current_unix_timestamp()}
+                "expires_at": {"$gte": timeutils.datenow()}
             }
         )
         if not document:
@@ -103,6 +103,16 @@ class PasswordReset(generic.Base):
         instance.update(document)
 
         return instance
+
+    @classmethod
+    def ensure_index(cls):
+        super().ensure_index()
+
+        cls.collection().create_index(
+            "expires_at",
+            expireAfterSeconds=0,
+            name="index_pwreset_ttl"
+        )
 
     def __init__(self):
         super().__init__()
@@ -114,7 +124,7 @@ class PasswordReset(generic.Base):
     def consume(self, new_password):
         self.delete()
 
-        if self.expires_at < timeutils.current_unix_timestamp():
+        if self.expires_at < timeutils.datenow():
             raise exceptions.PasswordResetExpiredError
 
         user_model = user.UserModel.find_by_model_id(self.user_id)
