@@ -39,7 +39,8 @@ def test_create_token_in_db(configure_model, pymongo_connection, freeze_time):
     assert new_token.time_created == current_time
     assert not new_token.time_deleted
     assert new_token.initiator_id == new_token.user_id
-    assert new_token.expires_at == current_time + new_token.default_ttl
+    assert int(new_token.expires_at.timestamp()) \
+        == current_time + new_token.default_ttl
 
 
 def test_create_token_different(configure_model):
@@ -65,7 +66,7 @@ def test_token_api_specific_fields(configure_model):
         "time_updated": new_token.time_created,
         "version": new_token.version,
         "data": {
-            "expires_at": new_token.expires_at,
+            "expires_at": int(new_token.expires_at.timestamp()),
             "user": None
         }
     }

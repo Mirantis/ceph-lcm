@@ -22,7 +22,6 @@ from decapod_common import log
 from decapod_common import timeutils
 from decapod_common.models import password_reset
 from decapod_common.models import task
-from decapod_common.models import token
 
 
 CONF = config.make_controller_config()
@@ -30,23 +29,6 @@ CONF = config.make_controller_config()
 
 LOG = log.getLogger(__name__)
 """Logger."""
-
-
-@cliutils.configure
-def clean_expired_tokens():
-    """This function swipe out expired tokens from DB."""
-
-    timestamp = timeutils.current_unix_timestamp()
-
-    result = token.TokenModel.collection().delete_many(
-        {"expires_at": {"$lt": timestamp}}
-    )
-
-    LOG.info(
-        "Clean expired tokens. Removed all tokens pre %d (%s). "
-        "Cleaned %d tokens.",
-        timestamp, time.ctime(timestamp), result.deleted_count
-    )
 
 
 @cliutils.configure

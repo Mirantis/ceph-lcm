@@ -14,6 +14,7 @@
 """Common pytest fixtures for all tests."""
 
 
+import datetime
 import unittest.mock as mock
 import uuid
 
@@ -60,6 +61,9 @@ def freeze_time(monkeypatch):
 
     monkeypatch.setattr("time.time", mocked)
     monkeypatch.setattr("time.monotonic", mocked)
+    monkeypatch.setattr(
+        "decapod_common.timeutils.datenow",
+        lambda: datetime.datetime.fromtimestamp(mocked.return_value))
 
     return mocked
 
