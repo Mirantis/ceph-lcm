@@ -21,7 +21,6 @@ from decapod_common import config
 from decapod_common import log
 from decapod_common import timeutils
 from decapod_common.models import password_reset
-from decapod_common.models import task
 
 
 CONF = config.make_controller_config()
@@ -29,29 +28,6 @@ CONF = config.make_controller_config()
 
 LOG = log.getLogger(__name__)
 """Logger."""
-
-
-@cliutils.configure
-def clean_old_tasks():
-    """This function removes old finished tasks from database."""
-
-    timestamp = timeutils.current_unix_timestamp()
-    old_limit = timestamp - CONF["cron"]["clean_finished_tasks_after_seconds"]
-    limit_condition = {"$gt": 0, "$lte": old_limit}
-    query = {
-        "$or": [
-            {"time.completed": limit_condition},
-            {"time.cancelled": limit_condition},
-            {"time_failed": limit_condition}
-        ]
-    }
-
-    result = task.Task.collection().delete_many(query)
-
-    LOG.info(
-        "Clean old tasks. Removed all tasks pre %d (%s). Cleaned %d tasks.",
-        old_limit, time.ctime(old_limit), result.deleted_count
-    )
 
 
 @cliutils.configure
