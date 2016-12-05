@@ -75,7 +75,7 @@ def test_create_task_in_db(task_type, configure_model, pymongo_connection,
 
     db_task = pymongo_connection.db.task.find_one({"_id": new_task._id})
     assert db_task
-
+    assert task.TTL_FIELDNAME not in db_task
     assert db_task == new_task.get_state()
 
 
@@ -160,12 +160,14 @@ def test_bounce_task(task_type, configure_model, pymongo_connection,
 
     db_task = pymongo_connection.db.task.find_one({"_id": new_task._id})
     assert db_task
+    assert task.TTL_FIELDNAME not in db_task
 
     assert db_task == new_task.get_state()
 
 
 @pytest.mark.parametrize("task_type", task.TaskType)
-def test_fail_task_error_message(task_type, configure_model):
+def test_fail_task_error_message(task_type, configure_model,
+                                 pymongo_connection):
     executor_id = pytest.faux.gen_uuid()
     message = pytest.faux.gen_iplum()
     new_task = task.Task(task_type, executor_id).create()
@@ -173,6 +175,10 @@ def test_fail_task_error_message(task_type, configure_model):
     new_task.fail(message)
 
     assert new_task.error == message
+
+    db_task = pymongo_connection.db.task.find_one({"_id": new_task._id})
+    assert db_task
+    assert task.TTL_FIELDNAME in db_task
 
 
 @pytest.mark.parametrize("task_type", task.TaskType)
@@ -186,7 +192,8 @@ def test_finish_not_started_task(task_type, finish_action, configure_model):
 
 
 @pytest.mark.parametrize("task_type", task.TaskType)
-def test_cancel_not_started_task(task_type, configure_model, freeze_time):
+def test_cancel_not_started_task(task_type, configure_model, freeze_time,
+                                 pymongo_connection):
     executor_id = pytest.faux.gen_uuid()
     new_task = task.Task(task_type, executor_id).create()
 
@@ -194,6 +201,10 @@ def test_cancel_not_started_task(task_type, configure_model, freeze_time):
 
     assert not new_task.time_started
     assert new_task.time_cancelled == int(freeze_time.return_value)
+
+    db_task = pymongo_connection.db.task.find_one({"_id": new_task._id})
+    assert db_task
+    assert task.TTL_FIELDNAME in db_task
 
 
 @pytest.mark.parametrize("task_type", task.TaskType)
@@ -253,7 +264,8 @@ def test_get_by_execution_id(task_type, configure_model):
     ("complete", execution.ExecutionState.completed),
     ("fail", execution.ExecutionState.failed)
 ))
-def test_plugin_finish(action, state, new_pcmodel, new_execution):
+def test_plugin_finish(action, state, new_pcmodel, new_execution,
+                       pymongo_connection):
     new_task = task.PlaybookPluginTask(
         new_pcmodel.playbook_id, new_pcmodel._id, new_execution.model_id)
     new_task.create()
@@ -271,3 +283,7 @@ def test_plugin_finish(action, state, new_pcmodel, new_execution):
     assert new_execution.state == state
 
     assert all(srv.lock is None for srv in new_pcmodel.servers)
+
+    db_task = pymongo_connection.db.task.find_one({"_id": new_task._id})
+    assert db_task
+    assert task.TTL_FIELDNAME in db_task

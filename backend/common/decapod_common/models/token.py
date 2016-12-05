@@ -19,8 +19,6 @@ and expired tokens are invalid.
 """
 
 
-import datetime
-
 import bson.objectid
 
 from decapod_common import config
@@ -126,8 +124,7 @@ class TokenModel(generic.Model):
     def make_db_document_specific_fields(self):
         expires_at = self.expires_at
         if not expires_at:
-            expires_at = timeutils.datenow() \
-                + datetime.timedelta(seconds=self.default_ttl)
+            expires_at = timeutils.ttl(self.default_ttl)
 
         return {
             "user_id": self.user_id,

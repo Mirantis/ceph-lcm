@@ -36,3 +36,10 @@ def timer():
 
 def datenow():
     return datetime.datetime.utcnow().replace(microsecond=0)
+
+
+def ttl(offset):
+    if not isinstance(offset, datetime.timedelta):
+        offset = datetime.timedelta(seconds=int(offset))
+
+    return datenow() + offset
