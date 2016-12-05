@@ -12,15 +12,15 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Setup script for {{ cookiecutter.package }} plugin."""
+"""Setup script for decapod_plugin_playbook_add_mon plugin."""
 
 
 import setuptools
 
 
 setuptools.setup(
-    name="{{ cookiecutter.package|replace('_', '-') }}",
-    description="{{ cookiecutter.description }}",
+    name="decapod-plugin-playbook-add-mon",
+    description="Add monitor to the cluster",
     version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
@@ -28,19 +28,19 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     entry_points={
         "decapod.playbooks": [
-            "{{ cookiecutter.entry_point }} = {{ cookiecutter.package }}.plugin:{{ cookiecutter.plugin_class_name }}"
+            "add_mon = decapod_plugin_playbook_add_mon.plugin:AddMon"
         ]
     },
     python_requires=">= 3.4",
     include_package_data=True,
     package_data={
-        "{{ cookiecutter.package }}": [
+        "decapod_plugin_playbook_add_mon": [
             "config.yaml",
             "playbook.yaml"
         ]
     },
     install_requires=[
-        "decapod_common=>0.2,<0.3"
+        "decapod_common>=0.2,<0.3"
     ],
     zip_safe=False
 )

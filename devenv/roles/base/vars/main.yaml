@@ -6,6 +6,7 @@ apt_packages:
   - ack-grep
   - aria2
   - build-essential
+  - cookiecutter
   - curl
   - devscripts
   - emacs24-nox

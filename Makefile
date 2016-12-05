@@ -92,7 +92,7 @@ make_output_directory:
 
 build_debs: build_deb_decapodlib build_deb_decapodcli build_deb_ansible \
     build_deb_common build_deb_controller build_deb_api build_deb_migration \
-    build_deb_monitoring build_deb_emails build_deb_add_osd \
+    build_deb_monitoring build_deb_emails build_deb_add_osd build_deb_add_mon \
     build_deb_deploy_cluster build_deb_helloworld build_deb_purge_cluster \
     build_deb_remove_osd build_deb_server_discovery build_debs_external
 
@@ -128,6 +128,9 @@ build_deb_emails: clean_debs make_deb_directory
 build_deb_add_osd: clean_debs make_deb_directory
 	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/add_osd","$(DEB_DIR)")
 
+build_deb_add_mon: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/add_mon","$(DEB_DIR)")
+
 build_deb_deploy_cluster: clean_debs make_deb_directory
 	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/deploy_cluster","$(DEB_DIR)")
 
@@ -155,11 +158,16 @@ clean_debs:
 # -----------------------------------------------------------------------------
 
 
-build_eggs: build_backend_eggs build_decapodlib_eggs build_decapodcli_eggs build_plugins_eggs
-build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs build_ansible_eggs build_monitoring_eggs build_migration_eggs build_docker_eggs
+build_eggs: build_backend_eggs build_decapodlib_eggs build_decapodcli_eggs \
+	build_plugins_eggs
+build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs \
+	build_ansible_eggs build_monitoring_eggs build_migration_eggs \
+	build_docker_eggs
 build_plugins_eggs: build_alerts_eggs build_playbook_eggs
 build_alerts_eggs: build_email_eggs
-build_playbook_eggs: build_deploy_cluster_eggs build_helloworld_eggs build_server_discovery_eggs build_add_osd_eggs build_remove_osd_eggs build_purge_cluster_eggs
+build_playbook_eggs: build_deploy_cluster_eggs build_helloworld_eggs \
+	build_server_discovery_eggs build_add_osd_eggs build_add_mon_eggs \
+	build_remove_osd_eggs build_purge_cluster_eggs
 
 build_api_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/backend/api","$(EGGS_DIR)")
@@ -202,6 +210,9 @@ build_server_discovery_eggs: clean_eggs make_egg_directory
 
 build_add_osd_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/plugins/playbook/add_osd","$(EGGS_DIR)")
+
+build_add_mon_eggs: clean_eggs make_egg_directory
+	$(call build_egg,"$(ROOT_DIR)/plugins/playbook/add_mon","$(EGGS_DIR)")
 
 build_remove_osd_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/plugins/playbook/remove_osd","$(EGGS_DIR)")
