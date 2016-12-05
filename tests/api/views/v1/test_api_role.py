@@ -14,8 +14,6 @@
 """This module has tests for /v1/role API."""
 
 
-import uuid
-
 import pytest
 
 from decapod_common.models import role
@@ -108,12 +106,22 @@ def test_api_create_broken_parameter(name, sudo_client_v1, valid_request):
     assert response.status_code == 400
 
 
-@pytest.mark.parametrize("prm", (1, str(uuid.uuid4()), {}, [], None))
+@pytest.mark.parametrize("prm", (1, {}, [], None))
 def test_api_create_role_broken_permission(prm, sudo_client_v1, valid_request):
     valid_request["permissions"][0]["permissions"].append(prm)
     response = sudo_client_v1.post("/v1/role/", data=valid_request)
 
     assert response.status_code == 400
+
+
+def test_api_create_role_unknwon_permission(sudo_client_v1, valid_request):
+    wtf_permission = pytest.faux.gen_uuid()
+    valid_request["permissions"][0]["permissions"].append(wtf_permission)
+    response = sudo_client_v1.post("/v1/role/", data=valid_request)
+
+    assert response.status_code == 200
+    for prm in response.json["data"]["permissions"]:
+        assert wtf_permission not in prm["permissions"]
 
 
 def test_api_create_role_unknown_class(sudo_client_v1, sudo_role,

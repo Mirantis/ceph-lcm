@@ -17,8 +17,13 @@
 import collections
 
 from decapod_common import exceptions
+from decapod_common import log
 from decapod_common import plugins
 from decapod_common.models import generic
+
+
+LOG = log.getLogger(__name__)
+"""Logger.."""
 
 
 class PermissionSet:
@@ -40,13 +45,16 @@ class PermissionSet:
         if key not in self.KNOWN_PERMISSIONS:
             raise ValueError("Unknown permission class {0}".format(key))
 
+        valid_values = []
         for v in value:
             if v not in self.KNOWN_PERMISSIONS[key]:
-                raise ValueError(
-                    "Unknown permission value {0} for class {1}".format(v, key)
-                )
+                LOG.warning(
+                    "Unknown permission value {0} for class {1}".format(
+                        v, key))
+            else:
+                valid_values.append(v)
 
-        self.permissions[key] = set(value)
+        self.permissions[key] = set(valid_values)
 
     def __getitem__(self, key):
         return self.permissions[key]

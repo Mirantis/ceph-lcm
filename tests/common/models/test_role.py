@@ -55,9 +55,8 @@ class TestPermisionSet(object):
             role.PermissionSet([{"name": "api", "permissions": ["1"]}])
 
         role.PermissionSet.add_permission("api", "2")
-
-        with pytest.raises(ValueError):
-            role.PermissionSet([{"name": "api", "permissions": ["1"]}])
+        pset = role.PermissionSet([{"name": "api", "permissions": ["1", "2"]}])
+        assert pset["api"] == {"2"}
 
     def test_init_with_known_permissions(self):
         role.PermissionSet.add_permission("api", "2")
@@ -86,9 +85,8 @@ class TestPermisionSet(object):
 class TestRoleModel(object):
 
     def test_set_unknown_permissions(self):
-        with pytest.raises(ValueError):
-            role.RoleModel().permissions = [
-                {"name": "api", "permissions": ["1"]}]
+        role.RoleModel().permissions = [
+            {"name": "api", "permissions": ["1"]}]
 
     def test_set_get(self):
         model = role.RoleModel()
