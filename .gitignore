@@ -76,6 +76,5 @@ ssl.key
 ssl.crt
 ssl-dhparam.pem
 config.yaml
-deb_dist
 mongodb-ca.crt
 mongodb.pem
