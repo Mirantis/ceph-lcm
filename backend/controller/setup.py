@@ -42,8 +42,7 @@ setuptools.setup(
     entry_points={
         "console_scripts": [
             "decapod-controller = decapod_controller.daemon:main",
-            "decapod-inventory = decapod_controller.inventory:main",
-            "decapod-cron-clean-old-pwtokens = decapod_controller.cron:clean_expired_password_resets"  # NOQA
+            "decapod-inventory = decapod_controller.inventory:main"
         ]
     },
     classifiers=(
