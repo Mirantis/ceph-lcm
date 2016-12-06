@@ -32,73 +32,89 @@
 
     <template [ngSwitchCase]="2">
       <h1>Select Playbook</h1>
-      <div class="row">
+      <div class="">
         <div class="col-xs-12 grid">
           <div class="grid-line table-help">
-            <div class="col-xs-1"></div>
-            <div class="col-xs-3">Name</div>
-            <div class="col-xs-5">Description</div>
-            <div class="col-xs-3">Servers Required</div>
+            <div class="col-xs-9">Name</div>
+            <div class="col-xs-3 text-right">Servers Required</div>
           </div>
 
           <div class="grid-line" *ngFor="let playbook of getAllowedPlaybooks()">
-            <div class="col-xs-1">
-              <input
-                (click)="selectPlaybook(playbook)"
-                id="playbook"
-                name="playbook"
-                [value]="playbook.id"
-                [checked]="newConfiguration.data.playbook_id === playbook.id"
-                type="radio"
-                required
-              >
+            <div class="col-xs-11 name">
+              <label title="{{playbook.description}}">
+                <input
+                  (click)="selectPlaybook(playbook)"
+                  id="playbook"
+                  name="playbook"
+                  [value]="playbook.id"
+                  [checked]="newConfiguration.data.playbook_id === playbook.id"
+                  type="radio"
+                  required
+                > {{playbook.name|trim_by:60}}
+              </label>
             </div>
-            <div class="col-xs-3 name">
-              <a (click)="selectPlaybook(playbook)">
-                {{playbook.name}}
-              </a>
-            </div>
-            <div class="col-xs-6 parameter">{{playbook.description}}</div>
-            <div class="col-xs-2 icon">
+            <div class="col-xs-1 icon">
               <span *ngIf="playbook.required_server_list" class="glyphicon glyphicon-ok"></span>
             </div>
           </div>
+          <!-- No playbooks case -->
+          <input
+            type="hidden"
+            name="playbook_check"
+            [(ngModel)]="newConfiguration.data.playbook_id"
+            required
+          >
         </div>
       </div>
     </template>
 
     <template [ngSwitchCase]="3">
-      <h1>Select Servers</h1>
-      <div class="row">
+      <h1>{{selectedPlaybook.name}} Parameters</h1>
+      <div class="">
         <div class="col-xs-12 grid">
           <div class="grid-line table-help">
-            <div class="col-xs-1">
-              <input
-                id="select_all"
-                name="select_all"
-                (click)="toggleSelectAll(this)"
-                [checked]="areAllServersSelected()"
-                type="checkbox"
-                required
-              >
+            <div class="col-xs-10">Parameter</div>
+            <div class="col-xs-2 text-right">Value</div>
+          </div>
+          <hint
+            *ngFor="let hint of selectedPlaybook.hints"
+            [scheme]="addHintValue(hint)"
+            (callback)="registerHint($event)"
+          ></hint>
+        </div>
+      </div>
+    </template>
+
+    <template [ngSwitchCase]="4">
+      <h1>Select Servers</h1>
+      <div>
+        <div class="col-xs-12 grid">
+          <div class="grid-line table-help">
+            <div class="col-xs-11 name">
+              <label>
+                <input
+                  id="select_all"
+                  name="select_all"
+                  (click)="toggleSelectAll(this)"
+                  [checked]="areAllServersSelected()"
+                  type="checkbox"
+                  required
+                > Select All
+              </label>
             </div>
-            <div class="col-xs-10">Select All</div>
-            <div class="col-xs-1"></div>
+            <div class="col-xs-1 text-right">Info</div>
           </div>
 
           <div class="grid-line" *ngFor="let server of servers">
-            <div class="col-xs-1">
-              <input
-                type="checkbox"
-                (change)="toggleServer(server)"
-                [checked]="isServerSelected(server)"
-                required
-              >
-            </div>
-            <div class="col-xs-10 name">
-              <a (click)="toggleServer(server)">
-                {{server.data.name}}
-              </a>
+            <div class="col-xs-11 name">
+              <label>
+                <input
+                  type="checkbox"
+                  (change)="toggleServer(server)"
+                  [checked]="isServerSelected(server)"
+                  required
+                > {{server.data.name|trim_by:60}}
+              </label>
             </div>
             <div class="col-xs-1 icon">
               <span class="glyphicon glyphicon-info-sign"></span>
@@ -109,7 +125,7 @@
     </template>
   </form>
   <form #editConfigurationForm="ngForm" [ngSwitch]="step">
-    <template [ngSwitchCase]="4">
+    <template [ngSwitchCase]="5">
       <h1>Configuration</h1>
       <div class="form-group" [ngClass]="{'has-error': !isJSONValid()}">
         <textarea
@@ -124,22 +140,22 @@
   </form>
 </div>
 <div class="modal-footer">
-  <button class="btn btn-default pull-left" (click)="modal.close()">
-    {{step === 4 ? 'Close': 'Cancel'}}
+  <button class="btn btn-default pull-left" (click)="modal.close();step=1">
+    {{step === 5 ? 'Close': 'Cancel'}}
   </button>
   <button
-    *ngIf="step > 1 && step < 4"
+    *ngIf="step > 1 && step < 5"
     class="btn btn-default"
-    (click)="backward()"
-    [disabled]="!newConfigurationForm.form.valid"
+    (click)="backward((step === 4 && skipHints()) ? 2 : 1)"
+    [disabled]="!newConfigurationForm.form.valid || !hintsAreValid()"
   >
       &nbsp;<span class="glyphicon glyphicon-menu-left"></span>&nbsp;
   </button>
   <button
     *ngIf="!isSaveButtonShown()"
     class="btn btn-primary"
-    (click)="forward()"
-    [disabled]="!newConfigurationForm.form.valid"
+    (click)="forward((step === 2 && skipHints()) ? 2 : 1)"
+    [disabled]="!newConfigurationForm.form.valid || !hintsAreValid()"
   >
     Next
   </button>

@@ -443,7 +443,9 @@ label {
 .grid {
   background-color: @white;
   border: 1px solid @background - 50%;
-  margin: 0;
+  margin: 0 0 20px 0;
+  padding-left: 0px;
+  padding-right: 0px;
 
   .grid-header {
     button.btn-link {
@@ -461,6 +463,8 @@ label {
   .grid-line {
     border: 1px solid @background - 50%;
     border-width: 1px 0 0 0;
+    padding-left: 15px;
+    padding-right: 15px;
 
     &.group {
       background-color: @white - 10%;
@@ -487,17 +491,28 @@ label {
       padding: 4px 0px 4px 15px;
       overflow: hidden;
       line-height: 30px;
-      input[type=radio], input[type=checkbox] {
-        margin: 8px 4px 0 0;
-        float: right;
+
+      &:first-child {
+        padding-left: 0px;
       }
-      input[type=checkbox] {
-        margin: 9px 2px 0 0;
+
+      .boolean {
+        text-align: right;
+      }
+
+      input[type=radio], input[type=checkbox] {
+        margin: 10px 4px 0 4px;
+      }
+
+      input[type=text], input[type=number] {
+        height: 31px;
       }
     }
 
     .icon {
       padding-top: 10px;
+      margin-top: 2px;
+      text-align: right;
       .text-primary;
     }
 
