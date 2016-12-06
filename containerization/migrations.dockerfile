@@ -32,4 +32,3 @@ RUN set -x \
 
 
 ENTRYPOINT ["dockerize", "-wait", "tcp://database:27017", "--", "decapod-migrations"]
-CMD ["apply"]
