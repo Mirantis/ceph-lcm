@@ -1,2 +1,3 @@
+include shrimp_deploy_cluster/ceph-rest-api.service
 include shrimp_deploy_cluster/config.yaml
 include shrimp_deploy_cluster/playbook.yaml

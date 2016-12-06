@@ -98,3 +98,25 @@
 
   - name: Enable ceph.target
     command: systemctl enable ceph.target
+
+
+# By default rest-api starts with nohup, it is not that user wants.
+- hosts: restapis
+  become: true
+  tasks:
+  - name: Create dependencies directory for ceph-target
+    file: path=/etc/systemd/system/ceph.target.wants state=directory
+
+  - name: Upload service file
+    copy:
+      src: "{{ restapi_template_local_path }}"
+      dest: /lib/systemd/system/ceph-rest-api.service
+
+  - name: Add rest-api to ceph-target.wants
+    file:
+      src: /lib/systemd/system/ceph-rest-api.service
+      dest: /etc/systemd/system/ceph.target.wants/ceph-rest-api.service
+      state: link
+
+  - name: Enable ceph-rest-api target
+    command: systemctl enable ceph-rest-api.service

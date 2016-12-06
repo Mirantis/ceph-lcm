@@ -37,6 +37,7 @@ setuptools.setup(
         "shrimp_deploy_cluster": [
             "config.yaml",
             "playbook.yaml",
+            "ceph-rest-api.service",
             "templates/*"
         ]
     },
