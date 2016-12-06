@@ -8,7 +8,8 @@ MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 LABEL description="Base image with frontend for Decapod" version="0.2.0" vendor="Mirantis"
 
 
-RUN apk add --update ca-certificates openssl \
+RUN set -x \
+  && apk add --update ca-certificates openssl \
   && update-ca-certificates \
   && wget https://github.com/jwilder/dockerize/releases/download/v0.3.0/dockerize-linux-amd64-v0.3.0.tar.gz \
   && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.3.0.tar.gz \

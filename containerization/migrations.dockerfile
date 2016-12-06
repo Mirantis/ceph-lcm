@@ -20,10 +20,10 @@ RUN set -x \
       python3-dev \
       python3-pip \
   && pip3 install --compile --no-cache-dir --disable-pip-version-check \
-      decapod_migrations*.whl \
-      decapod_api*.whl \
-      decapod_controller*.whl \
-      decapod_controller*.whl \
+      /eggs/decapod_migrations*.whl \
+      /eggs/decapod_api*.whl \
+      /eggs/decapod_controller*.whl \
+      /eggs/decapod_controller*.whl \
   && rm -r /eggs \
   && apt-get clean \
   && apt-get purge -y libffi-dev python3-pip python3-dev gcc \
