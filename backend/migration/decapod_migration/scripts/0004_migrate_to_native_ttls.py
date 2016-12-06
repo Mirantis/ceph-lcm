@@ -41,11 +41,16 @@ def migrator(model):
         def inner_decorator():
             collection = model.collection()
             requests = []
+
             func(collection, requests)
+            if not requests:
+                print("{0.__name__}: nothing to do")
+                return
+
             result = collection.bulk_write(requests)
             print(
                 "{0.__name__} update: updated {1}, all {2}".format(
-                    model, result.updated_count, len(requests)))
+                    model, result.modified_count, len(requests)))
             print("{0.__name__} raw result: {1}".format(
                 model, result.bulk_api_result))
 
@@ -55,12 +60,13 @@ def migrator(model):
 
 @migrator(token.TokenModel)
 def migrate_tokens(collection, requests):
-    for item in collection.find({}, fields=["_id", "expires_at"]):
+    for item in collection.find({}, projection=["_id", "expires_at"]):
         request = pymongo.UpdateOne(
             {"_id": item["_id"]},
             {
                 "$set": {
-                    "expires_at": datetime.utcfromtimestamp(item["expires_at"])
+                    "expires_at": datetime.datetime.utcfromtimestamp(
+                        item["expires_at"])
                 }
             }
         )
@@ -70,14 +76,16 @@ def migrate_tokens(collection, requests):
 @migrator(task.Task)
 def migrate_tasks(collection, requests):
     query = {
-        "time.completed": {"$ne": 0},
-        "time.cancelled": {"$ne": 0},
-        "time.failed": {"$ne": 0}
+        "$or": [
+            {"time.completed": {"$ne": 0}},
+            {"time.cancelled": {"$ne": 0}},
+            {"time.failed": {"$ne": 0}}
+        ]
     }
     ttl = CONF["cron"]["clean_finished_tasks_after_seconds"]
-    ttl = datetime.timedelta(ttl)
+    ttl = datetime.timedelta(seconds=ttl)
 
-    for item in collection.find(query, fields=["_id", "time"]):
+    for item in collection.find(query, projection=["_id", "time"]):
         expired_at = max(item["time"].values())
         expired_at = datetime.datetime.utcfromtimestamp(expired_at) + ttl
         request = pymongo.UpdateOne(
@@ -89,12 +97,13 @@ def migrate_tasks(collection, requests):
 
 @migrator(password_reset.PasswordReset)
 def migrate_pwresets(collection, requests):
-    for item in collection.find({}, fields=["_id", "expires_at"]):
+    for item in collection.find({}, projection=["_id", "expires_at"]):
         request = pymongo.UpdateOne(
             {"_id": item["_id"]},
             {
                 "$set": {
-                    "expires_at": datetime.utcfromtimestamp(item["expires_at"])
+                    "expires_at": datetime.datetime.utcfromtimestamp(
+                        item["expires_at"])
                 }
             }
         )
@@ -104,15 +113,6 @@ def migrate_pwresets(collection, requests):
 with wsgi.application.app_context():
     generic.configure_models(db.MongoDB())
 
-    password_reset.PasswordReset.collection().create_index(
-        "expires_at",
-        expireAfterSeconds=0,
-        name="index_pwreset_ttl")
-    task.Task.collection().create_index(
-        task.TTL_FIELDNAME,
-        expireAfterSeconds=0,
-        name="index_task_ttl")
-    token.TokenModel.collection().create_index(
-        "expires_at",
-        expireAfterSeconds=0,
-        name="index_token_ttl")
+    migrate_tasks()
+    migrate_tokens()
+    migrate_pwresets()
