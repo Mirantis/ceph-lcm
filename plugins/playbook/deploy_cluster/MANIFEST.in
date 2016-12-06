@@ -1,2 +1,3 @@
+include decapod_plugin_playbook_deploy_cluster/ceph-rest-api.service
 include decapod_plugin_playbook_deploy_cluster/config.yaml
 include decapod_plugin_playbook_deploy_cluster/playbook.yaml

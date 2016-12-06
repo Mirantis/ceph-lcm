@@ -37,6 +37,7 @@ setuptools.setup(
         "decapod_plugin_playbook_deploy_cluster": [
             "config.yaml",
             "playbook.yaml",
+            "ceph-rest-api.service",
             "templates/*"
         ]
     },
