@@ -23,6 +23,9 @@ RUN set -x \
   && wget --no-check-certificate https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64.deb \
   && dpkg -i dumb-init_1.2.0_amd64.deb \
   && rm dumb-init_*.deb \
+  && wget --no-check-certificate https://github.com/jwilder/dockerize/releases/download/v0.3.0/dockerize-linux-amd64-v0.3.0.tar.gz \
+  && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.3.0.tar.gz \
+  && rm dockerize-linux-amd64-v0.3.0.tar.gz \
   && apt-get clean \
   && apt-get purge -y wget \
   && apt-get autoremove -y \

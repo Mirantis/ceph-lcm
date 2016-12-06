@@ -39,4 +39,4 @@ RUN set -x \
 
 
 ENTRYPOINT ["/usr/bin/dumb-init", "-c", "--"]
-CMD ["decapod-controller"]
+CMD ["dockerize", "-wait", "tcp://database:27017", "--", "decapod-controller"]

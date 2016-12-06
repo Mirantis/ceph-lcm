@@ -35,4 +35,4 @@ RUN set -x \
 EXPOSE 8000
 
 ENTRYPOINT ["/usr/bin/dumb-init", "-c", "--"]
-CMD ["sh", "-c", "decapod-migrations apply && uwsgi /etc/decapod-api-uwsgi.ini"]
+CMD ["dockerize", "-wait", "tcp://database:27017", "--", "sh", "-c", "decapod-migrations apply && uwsgi /etc/decapod-api-uwsgi.ini"]
