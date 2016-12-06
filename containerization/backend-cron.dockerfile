@@ -39,4 +39,4 @@ RUN set -x \
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "caddy -conf '/etc/caddy/config' & cron && tail -F /var/log/cron.log"]
+CMD ["dockerize", "-wait", "tcp://database:27017", "--", "sh", "-c", "caddy -conf '/etc/caddy/config' & cron && tail -F /var/log/cron.log"]
