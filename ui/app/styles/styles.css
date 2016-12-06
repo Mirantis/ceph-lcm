@@ -7500,7 +7500,9 @@ a.box > div.state.off:focus {
 .grid {
   background-color: #ffffff;
   border: 1px solid #acb0b2;
-  margin: 0;
+  margin: 0 0 20px 0;
+  padding-left: 0px;
+  padding-right: 0px;
 }
 .grid .grid-header button.btn-link {
   vertical-align: baseline;
@@ -7519,6 +7521,8 @@ a.grid .grid-header button.btn-link:focus {
 .grid .grid-line {
   border: 1px solid #acb0b2;
   border-width: 1px 0 0 0;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 .grid .grid-line.group {
   background-color: #f5f5f5;
@@ -7559,20 +7563,31 @@ a.grid .grid-header.unreachable:focus {
   overflow: hidden;
   line-height: 30px;
 }
+.grid .grid-line > div:first-child,
+.grid .grid-header > div:first-child {
+  padding-left: 0px;
+}
+.grid .grid-line > div .boolean,
+.grid .grid-header > div .boolean {
+  text-align: right;
+}
 .grid .grid-line > div input[type=radio],
 .grid .grid-header > div input[type=radio],
 .grid .grid-line > div input[type=checkbox],
 .grid .grid-header > div input[type=checkbox] {
-  margin: 8px 4px 0 0;
-  float: right;
+  margin: 10px 4px 0 4px;
 }
-.grid .grid-line > div input[type=checkbox],
-.grid .grid-header > div input[type=checkbox] {
-  margin: 9px 2px 0 0;
+.grid .grid-line > div input[type=text],
+.grid .grid-header > div input[type=text],
+.grid .grid-line > div input[type=number],
+.grid .grid-header > div input[type=number] {
+  height: 31px;
 }
 .grid .grid-line .icon,
 .grid .grid-header .icon {
   padding-top: 10px;
+  margin-top: 2px;
+  text-align: right;
   color: #337ab7;
   color: #565C63;
 }

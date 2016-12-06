@@ -5,7 +5,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Modal } from '../directives';
 import { DataService } from '../services/data';
 import { ErrorService } from '../services/error';
-import { Playbook, Cluster, Server, PlaybookConfiguration } from '../models';
+import { Playbook, Cluster, Server, PlaybookConfiguration, PermissionGroup, Hint } from '../models';
 import globals = require('../services/globals');
 
 var formatJSON = require('format-json');
@@ -30,6 +30,9 @@ export class WizardComponent {
   jsonConfiguration: string;
   serversRequired: boolean = false;
   readonly: boolean = false;
+  selectedPlaybook: Playbook = null;
+  hintsValidity: {[key: string]: boolean} = {};
+  hints: {[key: string]: Hint} = {};
 
   constructor(
     private data: DataService,
@@ -38,31 +41,50 @@ export class WizardComponent {
   ) {
   }
 
-  validateServersStep() {
-    if (this.step === 3) {
-      // If switched to servers selection screen - make initial validation
-      this.getValidationSummary();
-    } else {
-      // Otherwize clear errors from the previous steps
-      this.error.clear();
+  validateStep() {
+    this.error.clear();
+    switch (this.step) {
+      case 3:
+        // Playbook hints screen
+        this.hintsValidity = {};
+        break;
+      case 4:
+        // If switched to servers selection screen - make initial validation
+        this.getValidationSummary();
+        break;
     }
   }
 
-  forward() {
-    this.step += 1;
-    this.validateServersStep();
+  hintsAreValid() {
+    return _.reduce(this.hintsValidity, (result: boolean, isValid: boolean) => {
+      return result && isValid;
+    }, true);
   }
 
-  backward() {
-    this.step -= 1;
-    this.validateServersStep();
+  addHintValue(hint: Hint): Hint {
+    let keptHint = this.hints[hint.id];
+    hint.value = keptHint ? keptHint.value : hint.default_value;
+    return hint;
+  }
+
+  forward(steps = 1) {
+    this.step += steps;
+    this.validateStep();
+  }
+
+  backward(steps = 1) {
+    this.step -= steps;
+    this.validateStep();
   }
 
   getAllowedPlaybooks(): Playbook[] {
     if (!globals.loggedUserRole) {
       return [];
     }
-    var playbooksPermissions = _.find(globals.loggedUserRole.data.permissions, {name: 'playbook'});
+    var playbooksPermissions = _.find(
+      globals.loggedUserRole.data.permissions,
+      {name: 'playbook'}
+    ) || new PermissionGroup();
     return _.filter(
       this.playbooks,
       (playbook) => _.includes(playbooksPermissions.permissions, playbook.id)
@@ -70,12 +92,18 @@ export class WizardComponent {
   }
 
   selectPlaybook(playbook: Playbook) {
+    if (this.selectedPlaybook !== playbook) {
+      this.hintsValidity = {};
+      this.newConfiguration.data.hints = [] as [Hint];
+      this.hints = {};
+    }
     this.serversRequired = playbook.required_server_list;
     this.newConfiguration.data.playbook_id = playbook.id;
+    this.selectedPlaybook = playbook;
   }
 
   initForEditing(configuration: PlaybookConfiguration) {
-    this.step = 4;
+    this.step = 5;
     this.newConfiguration = configuration;
     this.jsonConfiguration = formatJSON.plain(this.newConfiguration.data.configuration);
   }
@@ -97,14 +125,20 @@ export class WizardComponent {
   }
 
   isSaveButtonShown() {
-    return this.step >= 3 || (this.step === 2 && !this.serversRequired);
+    return this.step >= 4 || (
+      this.step === 2 &&
+      !this.serversRequired &&
+      this.selectedPlaybook &&
+      !this.selectedPlaybook.hints.length
+    );
   }
 
   isSaveButtonDisabled(newConfigurationForm: FormGroup, editConfigurationForm: FormGroup) {
     return (this.step === 2 && !this.newConfiguration.data.playbook_id) ||
-      (this.step === 3 && !this.areSomeServersSelected()) ||
-      (this.step < 4 && !newConfigurationForm.valid) ||
-      (this.step === 4 && !editConfigurationForm.valid) ||
+      (this.step === 3 && !this.hintsAreValid()) ||
+      (this.step === 4 && !this.areSomeServersSelected()) ||
+      (this.step < 5 && !newConfigurationForm.valid) ||
+      (this.step === 5 && !editConfigurationForm.valid) ||
       !this.isJSONValid();
   }
 
@@ -112,6 +146,16 @@ export class WizardComponent {
     this.newConfiguration.data.server_ids = this.areAllServersSelected() ?
       [] : _.map(this.servers, 'id') as string[];
     this.getValidationSummary();
+  }
+
+  skipHints() {
+    return !_.get(this.selectedPlaybook, 'hints.length', 0);
+  }
+
+  registerHint(data: {id: string, value: any, isValid: true}) {
+    this.hints[data.id] = {id: data.id, value: data.value} as Hint;
+    this.newConfiguration.data.hints = _.values(this.hints) as [Hint];
+    this.hintsValidity[data.id] = data.isValid;
   }
 
   // TODO: Use Server type here
@@ -168,7 +212,7 @@ export class WizardComponent {
       .then(
         (configuration: Object) => {
           this.callback.emit();
-          if (this.step !== 4) {
+          if (this.step !== 5) {
             // Seems jsdata returns the payload as a part of create response.
             // Unneeded values should be removed.
             let pureConfig = new PlaybookConfiguration(
@@ -184,5 +228,4 @@ export class WizardComponent {
         (error: any) => this.data.handleResponseError(error)
       );
   }
-
 }

@@ -68,11 +68,13 @@ declare module './models' {
     }
   }
 
-  interface Hint {
-    description: string,
+  export interface Hint {
     id: string,
-    type: string,
-    values: [string]
+    description?: string,
+    type?: 'string' | 'integer' | 'select' | 'boolean',
+    default_value?: any,
+    values?: [string],
+    value?: any
   }
 
   interface Server extends BaseModel {

@@ -1,0 +1,47 @@
+<div class="grid-line">
+  <div class="col-xs-10 name" [ngClass]="{false: 'text-danger'}[isValid]">
+    <label
+      class="control-label"
+      for="{{scheme.id}}"
+      title="{{scheme.description}}"
+    >{{scheme.description|trim_by:60}}</label>
+  </div>
+  <div class="col-xs-2">
+    <div
+      class="form-group"
+      [ngClass]="{false: 'has-error'}[isValid]"
+      *ngIf="isInput()"
+    >
+      <input
+        *ngIf="scheme.type === 'string' || scheme.type === 'integer'"
+        type="{{ {string: 'text', integer: 'text'}[scheme.type] }}"
+        class="form-control"
+        name="{{scheme.id}}"
+        id="{{scheme.id}}"
+        (change)="onChange()"
+        (keyup)="value=$event.target.value;onChange()"
+        [(ngModel)]="value"
+        required>
+      <select
+        *ngIf="scheme.type === 'select'"
+        class="form-control"
+        name="{{scheme.id}}"
+        id="{{scheme.id}}"
+        (change)="onChange()"
+        [(ngModel)]="value"
+        required>
+          <option *ngFor="let value of scheme.values">{{value}}</option>
+      </select>
+
+    </div>
+    <div class="boolean" *ngIf="!isInput()">
+      <input
+        type="checkbox"
+        name="{{scheme.id}}"
+        id="{{scheme.id}}"
+        (change)="onChange()"
+        [(ngModel)]="value"
+        required>
+    </div>
+  </div>
+<div>
