@@ -24,6 +24,7 @@ import bson.objectid
 import pymongo
 import pymongo.errors
 
+from decapod_common import config
 from decapod_common import exceptions
 from decapod_common import log
 from decapod_common import retryutils
@@ -59,6 +60,12 @@ TASK_TEMPLATE = {
 
 LOG = log.getLogger(__name__)
 """Logger."""
+
+CONF = config.make_config()
+"""Config."""
+
+TTL_FIELDNAME = "remove_at"
+"""TTL field for task."""
 
 BOUNCE_TIMEOUT = 5  # seconds
 """Time when bounced task is out of fetch."""
@@ -154,6 +161,10 @@ class Task(generic.Base):
     @property
     def id(self):
         return self._id
+
+    @property
+    def default_ttl(self):
+        return CONF["cron"]["clean_finished_tasks_after_seconds"]
 
     def new_time_bounce(self):
         left_bound = timeutils.current_unix_timestamp() + BOUNCE_TIMEOUT
@@ -316,7 +327,10 @@ class Task(generic.Base):
             "time.completed": 0,
             "time.cancelled": 0,
         }
-        setfields = {"time.cancelled": timeutils.current_unix_timestamp()}
+        setfields = {
+            "time.cancelled": timeutils.current_unix_timestamp(),
+            TTL_FIELDNAME: timeutils.ttl(self.default_ttl)
+        }
 
         return self._update(query, setfields,
                             exceptions.CannotCancelTaskError)
@@ -330,7 +344,10 @@ class Task(generic.Base):
             "time.cancelled": 0,
             "time.started": {"$ne": 0}
         }
-        setfields = {"time.completed": timeutils.current_unix_timestamp()}
+        setfields = {
+            "time.completed": timeutils.current_unix_timestamp(),
+            TTL_FIELDNAME: timeutils.ttl(self.default_ttl)
+        }
 
         return self._update(query, setfields,
                             exceptions.CannotCompleteTaskError)
@@ -346,7 +363,8 @@ class Task(generic.Base):
         }
         setfields = {
             "time.failed": timeutils.current_unix_timestamp(),
-            "error": error_message
+            "error": error_message,
+            TTL_FIELDNAME: timeutils.ttl(self.default_ttl)
         }
 
         return self._update(query, setfields, exceptions.CannotFailTask)
@@ -398,6 +416,11 @@ class Task(generic.Base):
                 ("time.failed", generic.SORT_ASC)
             ],
             name="index_time"
+        )
+        collection.create_index(
+            TTL_FIELDNAME,
+            expireAfterSeconds=0,
+            name="index_task_ttl"
         )
 
     @classmethod

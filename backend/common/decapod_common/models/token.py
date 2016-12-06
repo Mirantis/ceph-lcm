@@ -66,7 +66,7 @@ class TokenModel(generic.Model):
 
         query = {
             "model_id": token_id,
-            "expires_at": {"$gte": timeutils.current_unix_timestamp()}
+            "expires_at": {"$gte": timeutils.datenow()}
         }
 
         document = cls.collection().find_one(query)
@@ -103,6 +103,11 @@ class TokenModel(generic.Model):
             unique=True,
             name="index_unique_token_id"
         )
+        collection.create_index(
+            "expires_at",
+            expireAfterSeconds=0,
+            name="index_token_ttl"
+        )
 
     @property
     def default_ttl(self):
@@ -119,7 +124,7 @@ class TokenModel(generic.Model):
     def make_db_document_specific_fields(self):
         expires_at = self.expires_at
         if not expires_at:
-            expires_at = timeutils.current_unix_timestamp() + self.default_ttl
+            expires_at = timeutils.ttl(self.default_ttl)
 
         return {
             "user_id": self.user_id,
@@ -131,7 +136,7 @@ class TokenModel(generic.Model):
     def make_api_specific_fields(self, *args, **kwargs):
         return {
             "user": self.user,
-            "expires_at": self.expires_at
+            "expires_at": self.expires_at.timestamp()
         }
 
 
