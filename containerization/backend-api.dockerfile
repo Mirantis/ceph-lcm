@@ -23,7 +23,6 @@ RUN set -x \
     python3-dev \
     python3-pip \
   && pip3 install --compile --no-cache-dir --disable-pip-version-check -c /constraints.txt uwsgi \
-  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_migrations*.whl \
   && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_api*.whl \
   && rm -r /eggs /constraints.txt \
   && apt-get clean \
@@ -35,4 +34,4 @@ RUN set -x \
 EXPOSE 8000
 
 ENTRYPOINT ["/usr/bin/dumb-init", "-c", "--"]
-CMD ["dockerize", "-wait", "tcp://database:27017", "--", "sh", "-c", "decapod-migrations apply && uwsgi /etc/decapod-api-uwsgi.ini"]
+CMD ["dockerize", "-wait", "tcp://database:27017", "--", "uwsgi", "/etc/decapod-api-uwsgi.ini"]
