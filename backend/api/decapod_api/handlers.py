@@ -23,7 +23,6 @@ import uuid
 
 import flask
 import flask.json
-import six
 import werkzeug.exceptions
 
 from decapod_api import exceptions
@@ -78,7 +77,7 @@ def error_to_json(error):
 
         json_error.code = error.code
         json_error.description = error.description
-        json_error.error_name = six.text_type(error)
+        json_error.error_name = str(error)
     else:
         LOG.exception("Unmanaged error: %s", error)
         json_error = exceptions.InternalServerError()
