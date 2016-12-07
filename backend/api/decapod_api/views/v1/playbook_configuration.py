@@ -56,6 +56,7 @@ POST_SCHEMA = {
                 "value": {
                     "oneOf": [
                         {"$ref": "#/definitions/non_empty_string"},
+                        {"$ref": "#/definitions/positive_integer"},
                         {"type": "boolean"},
                         {"type": "array"}
                     ]
