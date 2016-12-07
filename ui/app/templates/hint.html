@@ -14,7 +14,7 @@
     >
       <input
         *ngIf="scheme.type === 'string' || scheme.type === 'integer'"
-        type="{{ {string: 'text', integer: 'text'}[scheme.type] }}"
+        type="{{ {string: 'text', integer: 'number'}[scheme.type] }}"
         class="form-control"
         name="{{scheme.id}}"
         id="{{scheme.id}}"

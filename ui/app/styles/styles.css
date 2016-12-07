@@ -7555,6 +7555,10 @@ a.grid .grid-header.unreachable:focus {
   border-width: 0;
   margin-bottom: 0;
 }
+.grid .grid-line label,
+.grid .grid-header label {
+  text-transform: none;
+}
 .grid .grid-line > div,
 .grid .grid-header > div {
   display: block;
