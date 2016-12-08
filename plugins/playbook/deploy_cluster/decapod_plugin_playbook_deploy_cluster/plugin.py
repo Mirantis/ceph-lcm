@@ -158,7 +158,8 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
             "decapod_common", "facts/ceph_facts_module.py.j2")
         result["restapi_template_local_path"] = \
             pkg_resources.resource_filename(
-                "shrimp_deploy_cluster", "ceph-rest-api.service")
+                "decapod_plugin_playbook_deploy_cluster",
+                "ceph-rest-api.service")
 
         return result
 
