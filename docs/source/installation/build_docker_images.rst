@@ -24,48 +24,6 @@ re-a-dns-server-for-use-by-docker>`_.
 
 
 
-Debian / Ubuntu 14.04 build packages installation
--------------------------------------------------
-
-First, you need to install build dependencies:
-
-.. code-block:: bash
-
-    $ sudo apt-get update
-    $ sudo apt-get install -y curl git python python-pip \
-      python-setuptools make
-
-Next, you need to install ``node>=4.x`` and ``npm``.
-Unfortunately, trusty and debian stable have obsolete
-versions in their repositories, so follow this guide:
-https://github.com/nodesource/distributions#debian-and-ubuntu-based-distributions
-
-Also, you need to update setuptools to version ``>=26`` (previous
-versions have critical bugs in building wheels with big sets of package
-data).
-
-.. code-block:: bash
-
-    $ sudo pip install 'setuptools>=26'
-
-
-
-Ubuntu 16.04 installation
---------------------------
-
-Please follow the same guide as for trusty installation, but you do
-not need to install external node: valid packages are in the official
-repository now.
-
-.. code-block:: bash
-
-    $ sudo apt update
-    $ sudo apt install -y nodejs nodejs-legacy npm
-
-Updating of setuptools is also required.
-
-
-
 Cloning of source code repository
 ---------------------------------
 
