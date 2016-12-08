@@ -252,7 +252,7 @@ build_container_controller: build_container_plugins
 build_container_cron: build_container_controller
 	docker build -f "$(ROOT_DIR)/containerization/backend-cron.dockerfile" --tag $(CONTAINER_CRON_NAME) --rm "$(ROOT_DIR)"
 
-build_container_frontend: build_ui
+build_container_frontend:
 	docker build -f "$(ROOT_DIR)/containerization/frontend.dockerfile" --tag $(CONTAINER_FRONTEND_NAME) --pull --rm "$(ROOT_DIR)"
 
 build_container_cli: build_eggs
@@ -264,7 +264,7 @@ build_container_db:
 build_container_db_data:
 	docker build -f "$(ROOT_DIR)/containerization/db-data.dockerfile" --tag $(CONTAINER_DB_DATA_NAME) --pull --rm "$(ROOT_DIR)"
 
-build_container_base: build_eggs
+build_container_base:
 	docker build -f "$(ROOT_DIR)/containerization/backend-base.dockerfile" --tag $(CONTAINER_BASE_NAME) --pull --rm "$(ROOT_DIR)"
 
 build_container_plugins: build_container_base

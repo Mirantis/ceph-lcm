@@ -6,14 +6,14 @@ MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
 COPY containerization/files/decapod-cli.sh /usr/bin/decapod-cli
-COPY output/eggs /eggs
+COPY decapodlib                            /project/lib
+COPY decapodcli                            /project/cli
 
 
 RUN set -x \
-  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapodlib*.whl \
-  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_cli*.whl \
+  && pip3 install --compile --no-cache-dir --disable-pip-version-check /project/* \
   && chmod 0755 /usr/bin/decapod-cli \
-  && rm -r /eggs
+  && rm -r /project
 
 
 ENTRYPOINT ["/bin/sh", "/usr/bin/decapod-cli"]
