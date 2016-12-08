@@ -32,8 +32,12 @@ RUN set -x \
   && rm -r /var/lib/apt/lists/*
 
 
-COPY output/eggs /eggs
-COPY config.yaml /etc/decapod/config.yaml
+COPY backend/common                    /project/common
+COPY backend/docker                    /project/docker
+COPY decapodlib                        /project/decapodlib
+COPY plugins/playbook/server_discovery /project/server_discovery
+COPY plugins/alerts/emails             /project/emails
+COPY config.yaml                       /etc/decapod/config.yaml
 
 
 RUN set -x \
@@ -45,13 +49,9 @@ RUN set -x \
       libyaml-dev \
       python3-dev \
       python3-pip \
-    && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapodlib*.whl \
-    && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_common*.whl \
-    && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_docker*.whl \
-    && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_plugin_playbook_server_discovery*.whl \
-    && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_plugin_alerts*.whl \
-    && rm -r /eggs \
+    && pip3 install --compile --no-cache-dir --disable-pip-version-check /project/* \
     && apt-get clean \
     && apt-get purge -y libffi-dev libssl-dev libyaml-dev gcc python3-dev python3-pip \
     && apt-get autoremove -y \
+    && rm -r /project \
     && rm -r /var/lib/apt/lists/*

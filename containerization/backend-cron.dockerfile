@@ -8,8 +8,8 @@ MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 LABEL description="Different cron jobs for Decapod" version="0.2.0" vendor="Mirantis"
 
 
-COPY output/eggs /eggs
-COPY containerization/files/crontab /decapod
+COPY backend/monitoring                    /project/monitoring
+COPY containerization/files/crontab        /decapod
 COPY containerization/files/cron-caddyfile /etc/caddy/config
 
 
@@ -21,7 +21,7 @@ RUN set -x \
     gcc \
     python-dev \
     python-pip \
-  && pip install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_monitoring*.whl \
+  && pip2 install --compile --no-cache-dir --disable-pip-version-check /project/monitoring \
   && curl --silent --show-error --fail --location \
     --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
     "https://caddyserver.com/download/build?os=linux&arch=amd64&features=" | \
@@ -30,7 +30,7 @@ RUN set -x \
   && mkdir -p /www \
   && cat /decapod | crontab - \
   && mkfifo /var/log/cron.log \
-  && rm -r /decapod /eggs \
+  && rm -r /decapod /project \
   && apt-get clean \
   && apt-get purge -y gcc python-dev python-pip curl \
   && apt-get autoremove -y \

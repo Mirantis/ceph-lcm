@@ -17,10 +17,10 @@ RUN set -x \
 
 
 COPY containerization/files/nginx.conf /etc/nginx/nginx.conf
-COPY ssl.key /ssl/ssl.key
-COPY ssl.crt /ssl/ssl.crt
-COPY ssl-dhparam.pem /ssl/dhparam.pem
-COPY ui/build /static
+COPY ssl.key                           /ssl/ssl.key
+COPY ssl.crt                           /ssl/ssl.crt
+COPY ssl-dhparam.pem                   /ssl/dhparam.pem
+COPY ui/build                          /static
 
 
 CMD ["dockerize", "-wait", "tcp://api:8000", "--", "nginx", "-g", "daemon off;"]

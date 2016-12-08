@@ -8,8 +8,8 @@ MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 LABEL description="API service for Decapod" version="0.2.0" vendor="Mirantis"
 
 
-COPY output/eggs /eggs
-COPY constraints.txt /constraints.txt
+COPY backend/api                      /project/api
+COPY constraints.txt                  /constraints.txt
 COPY containerization/files/uwsgi.ini /etc/decapod-api-uwsgi.ini
 
 
@@ -23,8 +23,8 @@ RUN set -x \
     python3-dev \
     python3-pip \
   && pip3 install --compile --no-cache-dir --disable-pip-version-check -c /constraints.txt uwsgi \
-  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_api*.whl \
-  && rm -r /eggs /constraints.txt \
+  && pip3 install --compile --no-cache-dir --disable-pip-version-check /project/api \
+  && rm -r /project /constraints.txt \
   && apt-get clean \
   && apt-get purge -y libffi-dev libpcre3-dev python3-dev python3-pip gcc \
   && apt-get autoremove -y \

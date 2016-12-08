@@ -8,7 +8,8 @@ MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 LABEL description="Controller service for Decapod" version="0.2.0" vendor="Mirantis"
 
 
-COPY output/eggs /eggs
+COPY backend/ansible         /project/ansible
+COPY backend/controller      /project/controller
 COPY ansible_ssh_keyfile.pem /root/.ssh/id_rsa
 
 
@@ -26,10 +27,11 @@ RUN set -x \
     python-dev \
     python-pip \
     python-setuptools \
-  && pip2 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_ansible*.whl \
-  && pip3 install --compile --no-cache-dir --disable-pip-version-check /eggs/decapod_controller*.whl \
+  && pip2 install --compile --no-cache-dir --disable-pip-version-check --upgrade 'setuptools>=26' \
+  && pip2 install --compile --no-cache-dir --disable-pip-version-check /project/ansible \
+  && pip3 install --compile --no-cache-dir --disable-pip-version-check /project/controller \
   && /usr/local/bin/decapod-ansible-deploy-config \
-  && rm -r /eggs \
+  && rm -r /project \
   && chmod 700 /root/.ssh/ \
   && chmod 600 /root/.ssh/id_rsa \
   && apt-get clean \
