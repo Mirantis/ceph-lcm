@@ -27,9 +27,9 @@ RUN set -x \
     python-dev \
     python-pip \
     python-setuptools \
-  && pip2 install --compile --no-cache-dir --disable-pip-version-check --upgrade 'setuptools>=26' \
-  && pip2 install --compile --no-cache-dir --disable-pip-version-check /project/ansible \
-  && pip3 install --compile --no-cache-dir --disable-pip-version-check /project/controller \
+  && pip2 install --upgrade 'setuptools>=26' \
+  && pip2 install --no-cache-dir /project/ansible \
+  && pip3 install --no-cache-dir /project/controller \
   && /usr/local/bin/decapod-ansible-deploy-config \
   && rm -r /project \
   && chmod 700 /root/.ssh/ \

@@ -32,6 +32,7 @@ RUN set -x \
   && rm -r /var/lib/apt/lists/*
 
 
+COPY containerization/files/pip.conf   /root/.config/pip/pip.conf
 COPY backend/common                    /project/common
 COPY backend/docker                    /project/docker
 COPY decapodlib                        /project/decapodlib
@@ -49,7 +50,7 @@ RUN set -x \
       libyaml-dev \
       python3-dev \
       python3-pip \
-    && pip3 install --compile --no-cache-dir --disable-pip-version-check /project/* \
+    && pip3 --no-cache-dir install /project/* \
     && apt-get clean \
     && apt-get purge -y libffi-dev libssl-dev libyaml-dev gcc python3-dev python3-pip \
     && apt-get autoremove -y \
