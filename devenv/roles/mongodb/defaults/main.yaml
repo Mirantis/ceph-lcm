@@ -2,6 +2,6 @@
 # Vars for mongodb
 
 repo_key: EA312927
-mongodb_version: 3.2.10
+mongodb_version: 3.2.11
 in_memory: false
 db_path: /var/lib/mongodb
