@@ -10,6 +10,7 @@ LABEL description="Base image with frontend for Decapod" version="0.2.0" vendor=
 
 COPY containerization/files/debian_apt.list /etc/apt/sources.list
 COPY containerization/files/nginx.conf      /etc/nginx/nginx.conf
+COPY containerization/files/npmrc           /root/.npmrc
 COPY ssl.crt                                /ssl/ssl.crt
 COPY ssl-dhparam.pem                        /ssl/dhparam.pem
 COPY ssl.key                                /ssl/ssl.key
@@ -32,7 +33,7 @@ RUN set -x \
   && rm -rf /ui/build /ui/node_modules \
   && PATH=/node-v6.9.2-linux-x64/bin:$PATH sh -c 'cd /ui && npm install && npm run build && npm cache clean' \
   && mv /ui/build/* /static \
-  && rm -rf /ui node-v6.9.2-linux*
+  && rm -rf /ui /root/.npmrc node-v6.9.2-linux*
 
 
 CMD ["dockerize", "-wait", "tcp://api:8000", "--", "nginx", "-g", "daemon off;"]
