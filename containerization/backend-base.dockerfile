@@ -10,14 +10,14 @@ LABEL description="Base image of Decapod" version="0.2.0" vendor="Mirantis"
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
 
-COPY backend/common                         /project/common
-COPY backend/docker                         /project/docker
-COPY config.yaml                            /etc/decapod/config.yaml
-COPY containerization/files/pip.conf        /root/.config/pip/pip.conf
-COPY containerization/files/ubuntu_apt.list /etc/apt/sources.list
-COPY decapodlib                             /project/decapodlib
-COPY plugins/alerts/emails                  /project/emails
-COPY plugins/playbook/server_discovery      /project/server_discovery
+COPY backend/common                                          /project/common
+COPY backend/docker                                          /project/docker
+COPY config.yaml                                             /etc/decapod/config.yaml
+COPY containerization/files/package_managers/pip.conf        /root/.config/pip/pip.conf
+COPY containerization/files/package_managers/ubuntu_apt.list /etc/apt/sources.list
+COPY decapodlib                                              /project/decapodlib
+COPY plugins/alerts/emails                                   /project/emails
+COPY plugins/playbook/server_discovery                       /project/server_discovery
 
 
 RUN set -x \

@@ -8,13 +8,13 @@ MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 LABEL description="Base image with frontend for Decapod" version="0.2.0" vendor="Mirantis"
 
 
-COPY containerization/files/debian_apt.list /etc/apt/sources.list
-COPY containerization/files/nginx.conf      /etc/nginx/nginx.conf
-COPY containerization/files/npmrc           /root/.npmrc
-COPY ssl.crt                                /ssl/ssl.crt
-COPY ssl-dhparam.pem                        /ssl/dhparam.pem
-COPY ssl.key                                /ssl/ssl.key
-COPY ui                                     /ui
+COPY containerization/files/nginx.conf                       /etc/nginx/nginx.conf
+COPY containerization/files/package_managers/debian_apt.list /etc/apt/sources.list
+COPY containerization/files/package_managers/npmrc           /root/.npmrc
+COPY ssl.crt                                                 /ssl/ssl.crt
+COPY ssl-dhparam.pem                                         /ssl/dhparam.pem
+COPY ssl.key                                                 /ssl/ssl.key
+COPY ui                                                      /ui
 
 
 RUN set -x \
