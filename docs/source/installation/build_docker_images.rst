@@ -45,7 +45,7 @@ Building a development version
 There is little difference between production and development build.
 The difference is only in SSH private keys, SSL certificate and
 configuration file. In development variant, they are pregenerated and
-placed in containerization/files directory of the source code.
+placed in ``containerization/files`` directory of the source code.
 
 To build development images, just execute the following command:
 
@@ -156,7 +156,7 @@ Configuration
 -------------
 
 Configuration for Decapod is done in YAML [#YAML]_ format. Please check
-the example in ``containerization/files/config.yaml``.
+the example in ``containerization/files/devconfigs/config.yaml``.
 
 
 

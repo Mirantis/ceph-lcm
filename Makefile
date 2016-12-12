@@ -7,7 +7,6 @@ DEB_DIR    := $(OUTPUT_DIR)/debs
 
 CONTAINER_API_NAME        := decapod-api
 CONTAINER_BASE_NAME       := decapod-base
-CONTAINER_CLI_NAME        := decapod-cli
 CONTAINER_CONTROLLER_NAME := decapod-controller
 CONTAINER_CRON_NAME       := decapod-cron
 CONTAINER_DB_NAME         := decapod-db
@@ -255,9 +254,6 @@ build_container_cron: build_container_controller
 build_container_frontend:
 	docker build -f "$(ROOT_DIR)/containerization/frontend.dockerfile" --tag $(CONTAINER_FRONTEND_NAME) --pull --rm "$(ROOT_DIR)"
 
-build_container_cli: build_eggs
-	docker build -f "$(ROOT_DIR)/containerization/cli.dockerfile" --tag $(CONTAINER_CLI_NAME) --pull --rm "$(ROOT_DIR)"
-
 build_container_db:
 	docker build -f "$(ROOT_DIR)/containerization/db.dockerfile" --tag $(CONTAINER_DB_NAME) --pull --rm "$(ROOT_DIR)"
 
@@ -309,11 +305,11 @@ html_docs: make_docs_directory
 
 
 copy_example_keys:
-	cp "$(ROOT_DIR)/containerization/files/ansible_ssh_keyfile.pem" "$(ROOT_DIR)" && \
-	cp "$(ROOT_DIR)/containerization/files/nginx-selfsigned.key" "$(ROOT_DIR)/ssl.key" && \
-	cp "$(ROOT_DIR)/containerization/files/nginx-selfsigned.crt" "$(ROOT_DIR)/ssl.crt" && \
-	cp "$(ROOT_DIR)/containerization/files/nginx-dhparam.pem" "$(ROOT_DIR)/ssl-dhparam.pem" && \
-	cp "$(ROOT_DIR)/containerization/files/config.yaml" "$(ROOT_DIR)" && \
-	cp "$(ROOT_DIR)/containerization/files/mongodb.pem" "$(ROOT_DIR)" && \
-	cp "$(ROOT_DIR)/containerization/files/mongodb-ca.crt" "$(ROOT_DIR)" && \
+	cp "$(ROOT_DIR)/containerization/files/devconfigs/ansible_ssh_keyfile.pem" "$(ROOT_DIR)" && \
+	cp "$(ROOT_DIR)/containerization/files/devconfigs/nginx-selfsigned.key" "$(ROOT_DIR)/ssl.key" && \
+	cp "$(ROOT_DIR)/containerization/files/devconfigs/nginx-selfsigned.crt" "$(ROOT_DIR)/ssl.crt" && \
+	cp "$(ROOT_DIR)/containerization/files/devconfigs/nginx-dhparam.pem" "$(ROOT_DIR)/ssl-dhparam.pem" && \
+	cp "$(ROOT_DIR)/containerization/files/devconfigs/config.yaml" "$(ROOT_DIR)" && \
+	cp "$(ROOT_DIR)/containerization/files/devconfigs/mongodb.pem" "$(ROOT_DIR)" && \
+	cp "$(ROOT_DIR)/containerization/files/devconfigs/mongodb-ca.crt" "$(ROOT_DIR)" && \
 	chmod 0600 "$(ROOT_DIR)/ansible_ssh_keyfile.pem"

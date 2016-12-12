@@ -21,7 +21,7 @@ RUN set -x \
       libffi-dev \
       python3-dev \
       python3-pip \
-  && pip3 install --compile --no-cache-dir --disable-pip-version-check /project/* \
+  && pip3 install --no-cache-dir /project/* \
   && rm -r /project \
   && apt-get clean \
   && apt-get purge -y libffi-dev python3-pip python3-dev gcc \

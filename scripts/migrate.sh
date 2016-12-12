@@ -14,17 +14,23 @@
 set -eu -o pipefail
 
 
-while getopts ":h" opt; do
+db_container="cephlcm_database_1"
+
+
+while getopts "c:h" opt; do
   case $opt in
     h)
       echo "Run Decapod migrations."
       echo ""
       echo "This command runs decapod-migration CLI script, connected "
       echo "to correct database"
-      echi "Use --help command to get help from CLI script."
+      echo "Use --help command to get help from CLI script."
       echo ""
-      echo "${0} container_with_db_data command" >&2
+      echo "${0} [-c container_with_db_data] command" >&2
       exit 0
+      ;;
+    c)
+      db_container="${OPTARG}"
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -34,8 +40,9 @@ while getopts ":h" opt; do
 done
 
 
-db_container="${1:-cephlcm_database_1}"
-command="${@:2}"
+shift $(($OPTIND - 1))
+command="$@"
+
 
 docker run \
     --rm \

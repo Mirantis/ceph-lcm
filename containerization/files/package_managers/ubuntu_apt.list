@@ -1,0 +1,10 @@
+deb http://us.archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe
+deb http://us.archive.ubuntu.com/ubuntu/ xenial main restricted universe
+deb http://us.archive.ubuntu.com/ubuntu/ xenial-proposed main restricted universe
+deb http://us.archive.ubuntu.com/ubuntu/ xenial-security main restricted universe
+deb http://us.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe
+deb-src http://us.archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe
+deb-src http://us.archive.ubuntu.com/ubuntu/ xenial main restricted universe
+deb-src http://us.archive.ubuntu.com/ubuntu/ xenial-proposed main restricted universe
+deb-src http://us.archive.ubuntu.com/ubuntu/ xenial-security main restricted universe
+deb-src http://us.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe
