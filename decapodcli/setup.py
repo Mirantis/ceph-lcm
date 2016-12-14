@@ -24,12 +24,20 @@ REQUIREMENTS = (
     "backports.csv"
 )
 
+NEXT_VERSION = open("NEXT_VERSION").read().strip()
+
+
+def next_version(version):
+    return "{next_version}.dev{distance}-{tag}".format(
+        next_version=NEXT_VERSION,
+        distance=version.distance,
+        tag=version.node)
+
 
 setuptools.setup(
     name="decapod-cli",
     description="Decapod CLI",
     long_description="",  # TODO
-    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",
@@ -48,6 +56,13 @@ setuptools.setup(
     extras_require={
         "simplejson": ["simplejson"],
         "color": ["pygments"]
+    },
+    setup_requires=["setuptools_scm"],
+    use_scm_version={
+        "version_scheme": next_version,
+        "local_scheme": "dirty-tag",
+        "root": "..",
+        "relative_to": __file__
     },
     classifiers=(
         "Intended Audience :: Information Technology",

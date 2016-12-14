@@ -23,12 +23,23 @@ REQUIREMENTS = (
     "PyYAML>3.10,<4"
 )
 
+NEXT_VERSION = open("NEXT_VERSION").read().strip()
+
+
+def next_version(version):
+    next_one = "{next_version}.dev{distance}-{tag}".format(
+        next_version=NEXT_VERSION,
+        distance=version.distance,
+        tag=version.node
+    )
+
+    return next_one
+
 
 setuptools.setup(
     name="decapodlib",
     description="Decapod client library",
     long_description="",  # TODO
-    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",
@@ -40,6 +51,13 @@ setuptools.setup(
     install_requires=REQUIREMENTS,
     extras_require={
         "simplejson": ["simplejson"]
+    },
+    setup_requires=["setuptools_scm"],
+    use_scm_version={
+        "version_scheme": next_version,
+        "local_scheme": "dirty-tag",
+        "root": "..",
+        "relative_to": __file__
     },
     zip_safe=True,
     classifiers=(
