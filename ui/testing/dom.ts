@@ -37,7 +37,6 @@ export class DOMHelper {
     this.fixture = componentFixture;
   }
 
-
   select(css: string): DOMHelper {
      this.element = this.fixture.nativeElement.querySelector(css);
      return this;
