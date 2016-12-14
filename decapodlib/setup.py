@@ -27,6 +27,9 @@ NEXT_VERSION = open("NEXT_VERSION").read().strip()
 
 
 def next_version(version):
+    if version.distance == 0:
+        return NEXT_VERSION
+
     next_one = "{next_version}.dev{distance}-{tag}".format(
         next_version=NEXT_VERSION,
         distance=version.distance,

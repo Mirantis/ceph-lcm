@@ -21,6 +21,18 @@ REQUIREMENTS = (
     "decapod-common>=0.2,<0.3",
 )
 
+NEXT_VERSION = open("NEXT_VERSION").read().strip()
+
+
+def next_version(version):
+    if version.distance == 0:
+        return NEXT_VERSION
+
+    return "{next_version}.dev{distance}-{tag}".format(
+        next_version=NEXT_VERSION,
+        distance=version.distance,
+        tag=version.node)
+
 
 setuptools.setup(
     name="decapod-migrations",
@@ -45,6 +57,13 @@ setuptools.setup(
     },
     entry_points={
         "console_scripts": ["decapod-migrations = decapod_migration.cli:main"]
+    },
+    setup_requires=["setuptools_scm"],
+    use_scm_version={
+        "version_scheme": next_version,
+        "local_scheme": "dirty-tag",
+        "root": "../..",
+        "relative_to": __file__
     },
     classifiers=(
         "Intended Audience :: Information Technology",

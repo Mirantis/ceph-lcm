@@ -23,6 +23,18 @@ REQUIREMENTS = (
     "jsonschema>=2.5,<2.6"
 )
 
+NEXT_VERSION = open("NEXT_VERSION").read().strip()
+
+
+def next_version(version):
+    if version.distance == 0:
+        return NEXT_VERSION
+
+    return "{next_version}.dev{distance}-{tag}".format(
+        next_version=NEXT_VERSION,
+        distance=version.distance,
+        tag=version.node)
+
 
 setuptools.setup(
     name="decapod-api",
@@ -39,6 +51,13 @@ setuptools.setup(
     python_requires=">=3.4",
     install_requires=REQUIREMENTS,
     zip_safe=True,
+    setup_requires=["setuptools_scm"],
+    use_scm_version={
+        "version_scheme": next_version,
+        "local_scheme": "dirty-tag",
+        "root": "../..",
+        "relative_to": __file__
+    },
     classifiers=(
         "Intended Audience :: Information Technology",
         "Intended Audience :: System Administrators",

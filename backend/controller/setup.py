@@ -23,6 +23,18 @@ REQUIREMENTS = (
     "lockfile>=0.12,<0.13"
 )
 
+NEXT_VERSION = open("NEXT_VERSION").read().strip()
+
+
+def next_version(version):
+    if version.distance == 0:
+        return NEXT_VERSION
+
+    return "{next_version}.dev{distance}-{tag}".format(
+        next_version=NEXT_VERSION,
+        distance=version.distance,
+        tag=version.node)
+
 
 setuptools.setup(
     name="decapod-controller",
@@ -44,6 +56,13 @@ setuptools.setup(
             "decapod-controller = decapod_controller.daemon:main",
             "decapod-inventory = decapod_controller.inventory:main"
         ]
+    },
+    setup_requires=["setuptools_scm"],
+    use_scm_version={
+        "version_scheme": next_version,
+        "local_scheme": "dirty-tag",
+        "root": "../..",
+        "relative_to": __file__
     },
     classifiers=(
         "Intended Audience :: Information Technology",
