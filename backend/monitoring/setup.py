@@ -41,7 +41,6 @@ setuptools.setup(
     name="decapod-monitoring",
     description="Custom monitoring plugin for Decapod",
     long_description="",  # TODO
-    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

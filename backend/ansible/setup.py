@@ -39,7 +39,6 @@ setuptools.setup(
     name="decapod-ansible",
     description="Decapod Ansible files",
     long_description="",  # TODO
-    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

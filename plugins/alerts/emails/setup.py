@@ -21,12 +21,23 @@ REQUIREMENTS = (
     "decapod-common>=0.2,<0.3",
 )
 
+NEXT_VERSION = open("NEXT_VERSION").read().strip()
+
+
+def next_version(version):
+    if version.distance == 0:
+        return NEXT_VERSION
+
+    return "{next_version}.dev{distance}-{tag}".format(
+        next_version=NEXT_VERSION,
+        distance=version.distance,
+        tag=version.node)
+
 
 setuptools.setup(
     name="decapod-plugin-alerts-emails",
     description="Decapod email alerts plugin",
     long_description="",  # TODO
-    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",
@@ -39,6 +50,13 @@ setuptools.setup(
     zip_safe=False,
     entry_points={
         "decapod.alerts": ["email = decapod_plugin_alerts_emails.email:alert"]
+    },
+    setup_requires=["setuptools_scm"],
+    use_scm_version={
+        "version_scheme": next_version,
+        "local_scheme": "dirty-tag",
+        "root": "../../..",
+        "relative_to": __file__
     },
     classifiers=(
         "Intended Audience :: Information Technology",

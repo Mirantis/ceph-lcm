@@ -18,10 +18,22 @@
 import setuptools
 
 
+NEXT_VERSION = open("NEXT_VERSION").read().strip()
+
+
+def next_version(version):
+    if version.distance == 0:
+        return NEXT_VERSION
+
+    return "{next_version}.dev{distance}-{tag}".format(
+        next_version=NEXT_VERSION,
+        distance=version.distance,
+        tag=version.node)
+
+
 setuptools.setup(
     name="{{ cookiecutter.package|replace('_', '-') }}",
     description="{{ cookiecutter.description }}",
-    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
@@ -42,5 +54,12 @@ setuptools.setup(
     install_requires=[
         "decapod_common=>0.2,<0.3"
     ],
+    setup_requires=["setuptools_scm"],
+    use_scm_version={
+        "version_scheme": next_version,
+        "local_scheme": "dirty-tag",
+        "root": "../../..",
+        "relative_to": __file__
+    },
     zip_safe=False
 )
