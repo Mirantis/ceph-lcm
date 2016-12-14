@@ -1,7 +1,9 @@
 <div class="modal-body">
-  <form #newConfigurationForm="ngForm" [ngSwitch]="step">
-
-    <template [ngSwitchCase]="1">
+  <form #model="ngForm">
+    <pre>{{ getConfigData() }}</pre>
+    <div #step_container></div>
+  </form>
+    <!--template [ngSwitchCase]="1">
       <h1>Configuration Properties</h1>
       <div class="form-group">
         <label class="control-label" for="configuration_name">Configuration Name</label>
@@ -21,9 +23,14 @@
           name="configuration_cluster"
           id="configuration_cluster"
           placeholder="Cluster"
-          [(ngModel)]="newConfiguration.data.cluster_id"
-          required>
-          <option *ngFor="let cluster of clusters" [value]="cluster.id">
+          [ngModel]="newConfiguration.data.cluster_id"
+          (ngModelChange)="newConfiguration.data.cluster_id = $event.target.value"
+          required
+        >
+          <option
+            *ngFor="let cluster of clusters"
+            [value]="cluster.id"
+          >
             {{cluster.data.name}}
           </option>
         </select>
@@ -57,7 +64,6 @@
               <span *ngIf="playbook.required_server_list" class="glyphicon glyphicon-ok"></span>
             </div>
           </div>
-          <!-- No playbooks case -->
           <input
             type="hidden"
             name="playbook_check"
@@ -137,33 +143,30 @@
         ></textarea>
       </div>
     </template>
-  </form>
+  </form-->
 </div>
 <div class="modal-footer">
   <button class="btn btn-default pull-left" (click)="modal.close();step=1">
-    {{step === 5 ? 'Close': 'Cancel'}}
+    Discard
   </button>
   <button
-    *ngIf="step > 1 && step < 5"
     class="btn btn-default"
-    (click)="backward((step === 4 && skipHints()) ? 2 : 1)"
-    [disabled]="!newConfigurationForm.form.valid || !hintsAreValid()"
+    (click)="go(-1)"
+    [disabled]="getStep(-1) === null"
   >
       &nbsp;<span class="glyphicon glyphicon-menu-left"></span>&nbsp;
   </button>
   <button
-    *ngIf="!isSaveButtonShown()"
     class="btn btn-primary"
-    (click)="forward((step === 2 && skipHints()) ? 2 : 1)"
-    [disabled]="!newConfigurationForm.form.valid || !hintsAreValid()"
+    (click)="go(1)"
+    [disabled]="getStep(1) === null || !stepIsValid()"
   >
     Next
   </button>
   <button
-    *ngIf="isSaveButtonShown() && !readonly"
     class="btn btn-primary"
     (click)="save()"
-    [disabled]="isSaveButtonDisabled(newConfigurationForm, editConfigurationForm)"
+    [disabled]="!modelIsValid()"
   >
     Save changes
   </button>

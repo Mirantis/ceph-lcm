@@ -1,0 +1,33 @@
+<step [title]="'Configuration Playbook'">
+  <div class="col-xs-12 grid">
+    <div class="grid-line table-help">
+      <div class="col-xs-9">Name</div>
+      <div class="col-xs-3 text-right">Servers Required</div>
+    </div>
+
+    <div class="grid-line" *ngFor="let playbook of getAllowedPlaybooks()">
+      <div class="col-xs-11 name">
+        <label title="{{playbook.description}}">
+          <input
+            (click)="selectPlaybook(playbook)"
+            id="playbook"
+            name="playbook"
+            [value]="playbook.id"
+            [checked]="model.data.playbook_id === playbook.id"
+            type="radio"
+            required
+          > {{playbook.name|trim_by:60}}
+        </label>
+      </div>
+      <div class="col-xs-1 icon">
+        <span *ngIf="playbook.required_server_list" class="glyphicon glyphicon-ok"></span>
+      </div>
+    </div>
+    <input
+      type="hidden"
+      name="playbook_check"
+      [ngModel]="model.data.playbook_id"
+      required
+    >
+  </div>
+</step>
