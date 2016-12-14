@@ -4,13 +4,15 @@ import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Modal, Filter, Pager } from '../directives';
 import { DataService, pagedResult } from '../services/data';
-import { Cluster, Server, Playbook, PlaybookConfiguration, Execution } from '../models';
+import { BaseModel, Cluster, Server, Playbook, PlaybookConfiguration, Execution } from '../models';
 import { WizardComponent } from './wizard';
+import { WizardStepBase, NameAndClusterStep, PlaybookStep, HintsStep } from './wizard_steps';
 
 @Component({
   templateUrl: './app/templates/configurations.html'
 })
 export class ConfigurationsComponent {
+  model: PlaybookConfiguration = this.cleanModel();
 
   configurations: PlaybookConfiguration[] = null;
   clusters: Cluster[] = [];
@@ -18,11 +20,17 @@ export class ConfigurationsComponent {
   servers: Server[] = [];
   shownConfiguration: PlaybookConfiguration = null;
   configurationVersions: {[key: string]: PlaybookConfiguration[]} = {};
-  clone: PlaybookConfiguration = null;
   @ViewChild(WizardComponent) wizard: WizardComponent;
   @ViewChild(Filter) filter: Filter;
   @ViewChild(Pager) pager: Pager;
   pagedData: pagedResult = {} as pagedResult;
+
+  configurationCreationSteps = [
+    NameAndClusterStep,
+    PlaybookStep,
+    HintsStep
+  ];
+
 
   constructor(
     private data: DataService,
@@ -56,20 +64,57 @@ export class ConfigurationsComponent {
       );
   }
 
-  editConfiguration(configuration: PlaybookConfiguration = null, readonly = false) {
-    this.clone = configuration;
-    if (!configuration) {
-        Promise.all([
-          this.data.cluster().findAll({})
-            .then((clusters: pagedResult) => this.clusters = clusters.items),
-          this.data.playbook().findAll({})
-            .then((playbooks: pagedResult) => this.playbooks = playbooks.items),
-          this.data.server().findAll({})
-            .then((servers: pagedResult) => this.servers = servers.items)
-        ]).catch((error: any) => this.data.handleResponseError(error));
-    }
-    this.wizard.init(configuration, readonly);
+  cleanModel(): PlaybookConfiguration {
+    return this.model = new PlaybookConfiguration({
+      data: {
+        name: '',
+        server_ids: [],
+        hints: []
+      }
+    });
+  }
+
+  editConfiguration(configuration: PlaybookConfiguration = null) {
+    this.model = configuration ? configuration.clone() : this.cleanModel();
+    // if (!configuration) {
+    //     Promise.all([
+    //       this.data.cluster().findAll({})
+    //         .then((clusters: pagedResult) => this.clusters = clusters.items),
+    //       this.data.playbook().findAll({})
+    //         .then((playbooks: pagedResult) => this.playbooks = playbooks.items),
+    //       this.data.server().findAll({})
+    //         .then((servers: pagedResult) => this.servers = servers.items)
+    //     ]).catch((error: any) => this.data.handleResponseError(error));
+    // }
+    this.wizard.init(configuration);
     this.modal.show();
+  }
+
+  save(model: BaseModel) {
+    var savePromise: Promise<BaseModel>;
+    if (model.id) {
+      // Update configuration
+      // model.data.configuration = JSON.parse(this.jsonConfiguration);
+      savePromise = this.data.configuration().postUpdate(model.id, model);
+    } else {
+      // Create new configuration
+      savePromise = this.data.configuration().postCreate(model);
+    }
+    return savePromise
+      .then(
+        (configuration: Object) => {
+          // Seems jsdata returns the payload as a part of create response.
+          // Unneeded values should be removed.
+          let pureConfig = new BaseModel(
+            _.omit(configuration, ['playbook_id', 'cluster_id', 'name', 'server_ids'])
+          );
+          this.wizard.init(pureConfig);
+          this.refreshConfigurations();
+        }
+      )
+      .catch(
+        (error: any) => this.data.handleResponseError(error)
+      );
   }
 
   refreshConfigurations() {

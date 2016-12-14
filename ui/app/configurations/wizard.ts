@@ -1,11 +1,15 @@
 import * as _ from 'lodash';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component, Input, Output, EventEmitter, ComponentRef, ReflectiveInjector, Injector,
+  ViewChild, ViewChildren, ViewContainerRef, ComponentFactoryResolver, ComponentFactory
+} from '@angular/core';
 
 import { Modal } from '../directives';
-import { DataService } from '../services/data';
 import { ErrorService } from '../services/error';
-import { Playbook, Cluster, Server, PlaybookConfiguration, PermissionGroup, Hint } from '../models';
+import { WizardService } from '../services/wizard';
+import { BaseModel, Playbook, Cluster, Server, PlaybookConfiguration, PermissionGroup, Hint } from '../models';
+import { JSONString } from '../pipes';
 import globals = require('../services/globals');
 
 var formatJSON = require('format-json');
@@ -15,218 +19,209 @@ var formatJSON = require('format-json');
   templateUrl: './app/templates/wizard.html'
 })
 export class WizardComponent {
-  step: number = 1;
-  @Input() playbooks: Playbook[];
-  @Input() clusters: Cluster[];
-  @Input() servers: Server[];
-  @Output() callback = new EventEmitter();
+  @Input() model: BaseModel = new BaseModel({data: {}});
+  @Input() steps: any[] = [];
+  @Output() saveHandler = new EventEmitter();
+  @ViewChild('step_container', {read: ViewContainerRef}) stepContainer: ViewContainerRef;
 
-  newConfiguration: PlaybookConfiguration;
-  jsonConfiguration: string;
-  serversRequired: boolean = false;
-  readonly: boolean = false;
-  selectedPlaybook: Playbook = null;
-  hintsValidity: {[key: string]: boolean} = {};
-  hints: {[key: string]: Hint} = {};
+  step: number = 0;
+  stepComponents: ComponentRef<any>[] = [];
 
-  resetConfiguration() {
-    this.newConfiguration = new PlaybookConfiguration({
-      data: {
-        name: '',
-        server_ids: [],
-        hints: []
-      }
+  // jsonConfiguration: string;
+  // serversRequired: boolean = false;
+  // readonly: boolean = false;
+  // selectedPlaybook: Playbook = null;
+
+  constructor(
+    private error: ErrorService,
+    private modal: Modal,
+    private resolver: ComponentFactoryResolver,
+    private injector: Injector,
+    private wizard: WizardService
+  ) {
+    wizard.model.subscribe((model: BaseModel) => {
+      this.model = model;
     });
   }
 
-  constructor(
-    private data: DataService,
-    private error: ErrorService,
-    private modal: Modal
-  ) {
-    this.resetConfiguration();
+  getConfigData() {
+    return new JSONString().transform(_.get(this.model, 'data', ''));
   }
 
-  validateStep() {
-    this.error.clear();
-    switch (this.step) {
-      case 3:
-        // Playbook hints screen
-        this.hintsValidity = {};
-        break;
-      case 4:
-        // If switched to servers selection screen - make initial validation
-        this.getValidationSummary();
-        break;
+  getVisibleSteps() {
+    return _.filter(this.stepComponents, (component: any) => {
+      return component.instance.isShownInDeck();
+    });
+  }
+
+  modelIsValid(): boolean {
+    return !_.some(this.getVisibleSteps(), (step: any) => {
+      return !step.instance.isValid();
+    });
+  }
+
+  stepIsValid(): boolean {
+    return this.stepComponents[this.step].instance.isValid();
+  }
+
+  ngAfterViewInit() {
+    this.stepContainer.clear();
+    this.steps.forEach((component: any) => {
+      let componentFactory: ComponentFactory<any> = this.resolver.resolveComponentFactory(component);
+      let componentRef = componentFactory.create(this.injector);
+      this.stepContainer.insert(componentRef.hostView);
+      this.stepComponents.push(componentRef);
+    });
+    this.init();
+  }
+
+  ngOnDestroy() {
+    this.stepComponents.forEach((componentRef: ComponentRef<any>) => {
+      componentRef.destroy();
+    });
+  }
+
+  init(configuration: BaseModel = null) {
+    this.stepComponents.forEach((component: any) => {
+      component.instance.model = this.model;
+    });
+    this.step = _.indexOf(this.stepComponents, _.first(this.getVisibleSteps()));
+    if (this.step >= 0) {
+      this.go();
     }
   }
 
-  hintsAreValid() {
-    return _.reduce(this.hintsValidity, (result: boolean, isValid: boolean) => {
-      return result && isValid;
-    }, true);
+  renderStep() {
+    this.wizard.currentStep.emit(this.stepComponents[this.step]);
   }
 
-  addHintValue(hint: Hint): Hint {
-    let keptHint = this.hints[hint.id];
-    hint.value = keptHint ? keptHint.value : hint.default_value;
-    return hint;
-  }
-
-  forward(steps = 1) {
-    this.step += steps;
-    this.validateStep();
-  }
-
-  backward(steps = 1) {
-    this.step -= steps;
-    this.validateStep();
-  }
-
-  getAllowedPlaybooks(): Playbook[] {
-    if (!globals.loggedUserRole) {
-      return [];
+  getStep(offset: number): number {
+    let visibleSteps = this.getVisibleSteps();
+    let visibleIndex = _.indexOf(visibleSteps, this.stepComponents[this.step]);
+    let nextIndex = offset + visibleIndex;
+    if (visibleIndex < 0 || nextIndex < 0 || nextIndex >= visibleSteps.length) {
+      return null;
     }
-    var playbooksPermissions = _.find(
-      globals.loggedUserRole.data.permissions,
-      {name: 'playbook'}
-    ) || new PermissionGroup();
-    return _.filter(
-      this.playbooks,
-      (playbook) => _.includes(playbooksPermissions.permissions, playbook.id)
-    );
+    return _.indexOf(visibleSteps, visibleSteps[nextIndex]);
   }
 
-  selectPlaybook(playbook: Playbook) {
-    if (this.selectedPlaybook !== playbook) {
-      this.hintsValidity = {};
-      this.newConfiguration.data.hints = [] as [Hint];
-      this.hints = {};
-    }
-    this.serversRequired = playbook.required_server_list;
-    this.newConfiguration.data.playbook_id = playbook.id;
-    this.selectedPlaybook = playbook;
-  }
-
-  initForEditing(configuration: PlaybookConfiguration) {
-    this.step = 5;
-    this.newConfiguration = configuration;
-    this.jsonConfiguration = formatJSON.plain(this.newConfiguration.data.configuration);
-  }
-
-  init(configuration: PlaybookConfiguration = null, readonly = false) {
-    this.serversRequired = false;
-    this.readonly = readonly;
-    if (configuration) {
-      this.initForEditing(configuration);
-    } else {
-      this.step = 1;
-      this.resetConfiguration();
-    }
-  }
-
-  isSaveButtonShown() {
-    return this.step >= 4 || (
-      this.step === 2 &&
-      !this.serversRequired &&
-      this.selectedPlaybook &&
-      !this.selectedPlaybook.hints.length
-    );
-  }
-
-  isSaveButtonDisabled(newConfigurationForm: FormGroup, editConfigurationForm: FormGroup) {
-    return (this.step === 2 && !this.newConfiguration.data.playbook_id) ||
-      (this.step === 3 && !this.hintsAreValid()) ||
-      (this.step === 4 && !this.areSomeServersSelected()) ||
-      (this.step < 5 && !newConfigurationForm.valid) ||
-      (this.step === 5 && !editConfigurationForm.valid) ||
-      !this.isJSONValid();
-  }
-
-  toggleSelectAll() {
-    this.newConfiguration.data.server_ids = this.areAllServersSelected() ?
-      [] : _.map(this.servers, 'id') as string[];
-    this.getValidationSummary();
-  }
-
-  skipHints() {
-    return !_.get(this.selectedPlaybook, 'hints.length', 0);
-  }
-
-  registerHint(data: {id: string, value: any, isValid: true}) {
-    this.hints[data.id] = {id: data.id, value: data.value} as Hint;
-    this.newConfiguration.data.hints = _.values(this.hints) as [Hint];
-    this.hintsValidity[data.id] = data.isValid;
-  }
-
-  // TODO: Use Server type here
-  toggleServer(server: any) {
-    var server_ids = this.newConfiguration.data.server_ids;
-    this.newConfiguration.data.server_ids = this.isServerSelected(server) ?
-      _.without(server_ids, server.id) : server_ids.concat(server.id);
-    this.getValidationSummary();
-  }
-
-  isServerSelected(server: any) {
-    return _.includes(this.newConfiguration.data.server_ids, server.id);
-  }
-
-  areSomeServersSelected() {
-    return this.newConfiguration.data.server_ids.length;
-  }
-
-  areAllServersSelected() {
-    return this.newConfiguration.data.server_ids.length === this.servers.length;
-  }
-
-  isJSONValid() {
-    if (_.isUndefined(this.jsonConfiguration)) {
-      return true;
-    }
-    try {
-      JSON.parse(this.jsonConfiguration);
-    } catch (e) {
-      return false;
-    }
-    return true;
-  }
-
-  getValidationSummary() {
-    this.error.clear();
-    if (!this.areSomeServersSelected()) {
-      this.error.add('Validation Error', 'Servers selection is required');
+  go(offset: number = 0) {
+    let nextIndex = this.getStep(offset);
+    if (!_.isNull(nextIndex)) {
+      this.step = nextIndex;
+      this.renderStep();
     }
   }
 
   save() {
-    this.error.clear();
-    var savePromise: Promise<PlaybookConfiguration>;
-    if (this.newConfiguration.id) {
-      // Update configuration
-      this.newConfiguration.data.configuration = JSON.parse(this.jsonConfiguration);
-      savePromise = this.data.configuration().postUpdate(this.newConfiguration.id, this.newConfiguration);
-    } else {
-      // Create new configuration
-      savePromise = this.data.configuration().postCreate(this.newConfiguration);
-    }
-    return savePromise
-      .then(
-        (configuration: Object) => {
-          this.callback.emit();
-          if (this.step !== 5) {
-            // Seems jsdata returns the payload as a part of create response.
-            // Unneeded values should be removed.
-            let pureConfig = new PlaybookConfiguration(
-              _.omit(configuration, ['playbook_id', 'cluster_id', 'name', 'server_ids'])
-            );
-            this.initForEditing(pureConfig);
-          } else {
-            this.modal.close();
-          }
-        }
-      )
-      .catch(
-        (error: any) => this.data.handleResponseError(error)
-      );
+    this.saveHandler.emit(this.model);
   }
+
+
+
+
+
+
+
+
+
+
+  // validateStep() {
+  //   this.error.clear();
+  //   switch (this.step) {
+  //     case 3:
+  //       // Playbook hints screen
+  //       this.hintsValidity = {};
+  //       break;
+  //     case 4:
+  //       // If switched to servers selection screen - make initial validation
+  //       this.getValidationSummary();
+  //       break;
+  //   }
+  // }
+
+  // hintsAreValid() {
+  //   return _.reduce(this.hintsValidity, (result: boolean, isValid: boolean) => {
+  //     return result && isValid;
+  //   }, true);
+  // }
+
+
+
+
+
+  // initForEditing(configuration: BaseModel) {
+  //   this.step = 5;
+  //   this.model = configuration;
+  //   this.jsonConfiguration = formatJSON.plain(this.model.data.configuration);
+  // }
+
+  // isSaveButtonShown() {
+  //   return this.step >= 4 || (
+  //     this.step === 2 &&
+  //     !this.serversRequired &&
+  //     this.selectedPlaybook &&
+  //     !this.selectedPlaybook.hints.length
+  //   );
+  // }
+
+  // isSaveButtonDisabled(modelForm: FormGroup, editConfigurationForm: FormGroup) {
+  //   return (this.step === 2 && !this.model.data.playbook_id) ||
+  //     (this.step === 3 && !this.hintsAreValid()) ||
+  //     (this.step === 4 && !this.areSomeServersSelected()) ||
+  //     (this.step < 5 && !modelForm.valid) ||
+  //     (this.step === 5 && !editConfigurationForm.valid) ||
+  //     !this.isJSONValid();
+  // }
+
+  // toggleSelectAll() {
+  //   this.model.data.server_ids = this.areAllServersSelected() ?
+  //     [] : _.map(this.servers, 'id') as string[];
+  //   this.getValidationSummary();
+  // }
+
+  // skipHints() {
+  //   return !_.get(this.selectedPlaybook, 'hints.length', 0);
+  // }
+
+
+  // // TODO: Use Server type here
+  // toggleServer(server: any) {
+  //   var server_ids = this.model.data.server_ids;
+  //   this.model.data.server_ids = this.isServerSelected(server) ?
+  //     _.without(server_ids, server.id) : server_ids.concat(server.id);
+  //   this.getValidationSummary();
+  // }
+
+  // isServerSelected(server: any) {
+  //   return _.includes(this.model.data.server_ids, server.id);
+  // }
+
+  // areSomeServersSelected() {
+  //   return this.model.data.server_ids.length;
+  // }
+
+  // areAllServersSelected() {
+  //   return this.model.data.server_ids.length === this.servers.length;
+  // }
+
+  // isJSONValid() {
+  //   if (_.isUndefined(this.jsonConfiguration)) {
+  //     return true;
+  //   }
+  //   try {
+  //     JSON.parse(this.jsonConfiguration);
+  //   } catch (e) {
+  //     return false;
+  //   }
+  //   return true;
+  // }
+
+  // getValidationSummary() {
+  //   this.error.clear();
+  //   if (!this.areSomeServersSelected()) {
+  //     this.error.add('Validation Error', 'Servers selection is required');
+  //   }
+  // }
+
 }
