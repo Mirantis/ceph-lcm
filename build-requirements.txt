@@ -3,6 +3,7 @@
 pip
 pygments-style-github
 setuptools
+setuptools_scm
 Sphinx
 sphinx-rtd-theme
 wheel
