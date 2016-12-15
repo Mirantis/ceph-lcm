@@ -21,7 +21,6 @@ import setuptools
 setuptools.setup(
     name="decapod-plugin-playbook-server-discovery",
     description="Server discovery plugin for Decapod",
-    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
@@ -39,7 +38,14 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "decapod_common>=0.2,<0.3"
+        "decapod_common ~= 0.2.0.dev0"  # BUMPVERSION
     ],
+    setup_requires=["decapod-buildtools ~= 0.2.0.dev0"],  # BUMPVERSION
+    use_scm_version={
+        "version_scheme": "decapod-version",
+        "local_scheme": "decapod-local",
+        "root": "../../..",
+        "relative_to": __file__
+    },
     zip_safe=False
 )

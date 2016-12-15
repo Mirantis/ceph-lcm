@@ -5,4 +5,4 @@ FROM tianon/true
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
-LABEL description="Base image with database data for Decapod" version="0.2.0" vendor="Mirantis"
+LABEL version="0.2.0" description="Base image with database data for Decapod" vendor="Mirantis"

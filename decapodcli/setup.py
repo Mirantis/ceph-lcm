@@ -18,7 +18,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapodlib>=0.2,<0.3",
+    "decapodlib ~= 0.2.0.dev0",  # BUMPVERSION
     "click>=6,<7",
     "six>=1.10",
     "backports.csv"
@@ -29,7 +29,6 @@ setuptools.setup(
     name="decapod-cli",
     description="Decapod CLI",
     long_description="",  # TODO
-    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",
@@ -48,6 +47,13 @@ setuptools.setup(
     extras_require={
         "simplejson": ["simplejson"],
         "color": ["pygments"]
+    },
+    setup_requires=["decapod-buildtools ~= 0.2.0.dev0"],  # BUMPVERSION
+    use_scm_version={
+        "version_scheme": "decapod-version",
+        "local_scheme": "decapod-local",
+        "root": "..",
+        "relative_to": __file__
     },
     classifiers=(
         "Intended Audience :: Information Technology",

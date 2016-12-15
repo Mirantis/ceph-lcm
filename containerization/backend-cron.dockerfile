@@ -5,12 +5,14 @@ FROM decapod-controller
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
-LABEL description="Different cron jobs for Decapod" version="0.2.0" vendor="Mirantis"
+LABEL version="0.2.0" description="Different cron jobs for Decapod" vendor="Mirantis"
 
 
 COPY backend/monitoring                    /project/monitoring
-COPY containerization/files/crontab        /decapod
+COPY buildtools                            /project/buildtools
 COPY containerization/files/cron-caddyfile /etc/caddy/config
+COPY containerization/files/crontab        /decapod
+COPY .git                                  /project/.git
 
 
 RUN set -x \
@@ -19,8 +21,13 @@ RUN set -x \
     cron \
     curl \
     gcc \
+    git \
     python-dev \
     python-pip \
+    \
+    # workaround for https://github.com/pypa/pip/issues/4180
+  && ln -s /project/.git /tmp/.git && ln -s /project/.git /.git \
+  && pip2 install --no-cache-dir /project/buildtools \
   && pip2 install --no-cache-dir /project/monitoring \
   && curl --silent --show-error --fail --location \
     --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
@@ -30,9 +37,9 @@ RUN set -x \
   && mkdir -p /www \
   && cat /decapod | crontab - \
   && mkfifo /var/log/cron.log \
-  && rm -r /decapod /project \
+  && rm -r /decapod /project /tmp/.git /.git \
   && apt-get clean \
-  && apt-get purge -y gcc python-dev python-pip curl \
+  && apt-get purge -y git gcc python-dev python-pip curl \
   && apt-get autoremove -y \
   && rm -r /var/lib/apt/lists/*
 

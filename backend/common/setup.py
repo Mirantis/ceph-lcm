@@ -29,7 +29,6 @@ setuptools.setup(
     name="decapod-common",
     description="Decapod common package",
     long_description="",  # TODO
-    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",
@@ -51,6 +50,13 @@ setuptools.setup(
         "console_scripts": [
             "decapod-lock = decapod_common.cliutils:mongolock_cli"
         ]
+    },
+    setup_requires=["decapod-buildtools ~= 0.2.0.dev0"],  # BUMPVERSION
+    use_scm_version={
+        "version_scheme": "decapod-version",
+        "local_scheme": "decapod-local",
+        "root": "../..",
+        "relative_to": __file__
     },
     classifiers=(
         "Intended Audience :: Information Technology",

@@ -28,7 +28,6 @@ setuptools.setup(
     name="decapodlib",
     description="Decapod client library",
     long_description="",  # TODO
-    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",
@@ -40,6 +39,13 @@ setuptools.setup(
     install_requires=REQUIREMENTS,
     extras_require={
         "simplejson": ["simplejson"]
+    },
+    setup_requires=["decapod-buildtools ~= 0.2.0.dev0"],  # BUMPVERSION
+    use_scm_version={
+        "version_scheme": "decapod-version",
+        "local_scheme": "decapod-local",
+        "root": "..",
+        "relative_to": __file__
     },
     zip_safe=True,
     classifiers=(

@@ -12,9 +12,11 @@ env:
   - TOXENV=devenv-lint
   - TOXENV=docs
   - TOXENV=ui-build
+  - TOXENV=eggs-build
 
 before_install:
   - nvm install 6
+  - cd buildtools && python setup.py egg_info && cd -
 
 install:
   - pip install tox coverage

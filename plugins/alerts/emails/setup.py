@@ -18,7 +18,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapod-common>=0.2,<0.3",
+    "decapod-common ~= 0.2.0.dev0",  # BUMPVERSION
 )
 
 
@@ -26,7 +26,6 @@ setuptools.setup(
     name="decapod-plugin-alerts-emails",
     description="Decapod email alerts plugin",
     long_description="",  # TODO
-    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",
@@ -39,6 +38,13 @@ setuptools.setup(
     zip_safe=False,
     entry_points={
         "decapod.alerts": ["email = decapod_plugin_alerts_emails.email:alert"]
+    },
+    setup_requires=["decapod-buildtools ~= 0.2.0.dev0"],  # BUMPVERSION
+    use_scm_version={
+        "version_scheme": "decapod-version",
+        "local_scheme": "decapod-local",
+        "root": "../../..",
+        "relative_to": __file__
     },
     classifiers=(
         "Intended Audience :: Information Technology",

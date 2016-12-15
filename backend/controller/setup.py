@@ -18,7 +18,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapod-common>=0.2,<0.3",
+    "decapod-common ~= 0.2.0.dev0",  # BUMPVERSION
     "python-daemon>=2.1,<2.2",
     "lockfile>=0.12,<0.13"
 )
@@ -28,7 +28,6 @@ setuptools.setup(
     name="decapod-controller",
     description="Ceph Lifecycle Management controller service",
     long_description="",  # TODO
-    version="0.2.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",
@@ -44,6 +43,13 @@ setuptools.setup(
             "decapod-controller = decapod_controller.daemon:main",
             "decapod-inventory = decapod_controller.inventory:main"
         ]
+    },
+    setup_requires=["decapod-buildtools ~= 0.2.0.dev0"],  # BUMPVERSION
+    use_scm_version={
+        "version_scheme": "decapod-version",
+        "local_scheme": "decapod-local",
+        "root": "../..",
+        "relative_to": __file__
     },
     classifiers=(
         "Intended Audience :: Information Technology",
