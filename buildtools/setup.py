@@ -24,7 +24,7 @@ REQUIREMENTS = (
 
 setuptools.setup(
     name="decapod-buildtools",
-    version="0.2.0.dev500",
+    version="0.2.0",  # BUMPVERSION
     description="Decapod build tools",
     long_description="",  # TODO
     author="Sergey Arkhipov",
@@ -34,7 +34,7 @@ setuptools.setup(
     license="Apache2",
     url="https://github.com/Mirantis/ceph-lcm",
     packages=setuptools.find_packages(),
-    python_requires=">=3.4",
+    python_requires=">=2.7",
     install_requires=REQUIREMENTS,
     zip_safe=True,
     entry_points={

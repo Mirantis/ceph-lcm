@@ -18,22 +18,10 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapod-common>=0.2,<0.3",
+    "decapod-common ~= 0.2.0",  # BUMPVERSION
     "python-daemon>=2.1,<2.2",
     "lockfile>=0.12,<0.13"
 )
-
-NEXT_VERSION = open("NEXT_VERSION").read().strip()
-
-
-def next_version(version):
-    if version.distance == 0:
-        return NEXT_VERSION
-
-    return "{next_version}.dev{distance}-{tag}".format(
-        next_version=NEXT_VERSION,
-        distance=version.distance,
-        tag=version.node)
 
 
 setuptools.setup(
@@ -56,10 +44,10 @@ setuptools.setup(
             "decapod-inventory = decapod_controller.inventory:main"
         ]
     },
-    setup_requires=["setuptools_scm"],
+    setup_requires=["decapod-buildtools ~= 0.2.0"],  # BUMPVERSION
     use_scm_version={
-        "version_scheme": next_version,
-        "local_scheme": "dirty-tag",
+        "version_scheme": "decapod-version",
+        "local_scheme": "decapod-local",
         "root": "../..",
         "relative_to": __file__
     },

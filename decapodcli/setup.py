@@ -18,23 +18,11 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapodlib>=0.2,<0.3",
+    "decapodlib ~= 0.2.0",  # BUMPVERSION
     "click>=6,<7",
     "six>=1.10",
     "backports.csv"
 )
-
-NEXT_VERSION = open("NEXT_VERSION").read().strip()
-
-
-def next_version(version):
-    if version.distance == 0:
-        return NEXT_VERSION
-
-    return "{next_version}.dev{distance}-{tag}".format(
-        next_version=NEXT_VERSION,
-        distance=version.distance,
-        tag=version.node)
 
 
 setuptools.setup(
@@ -60,10 +48,10 @@ setuptools.setup(
         "simplejson": ["simplejson"],
         "color": ["pygments"]
     },
-    setup_requires=["setuptools_scm"],
+    setup_requires=["decapod-buildtools ~= 0.2.0"],  # BUMPVERSION
     use_scm_version={
-        "version_scheme": next_version,
-        "local_scheme": "dirty-tag",
+        "version_scheme": "decapod-version",
+        "local_scheme": "decapod-local",
         "root": "..",
         "relative_to": __file__
     },

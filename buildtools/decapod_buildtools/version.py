@@ -38,7 +38,7 @@ def local_scheme(version):
     if not version.distance:
         return ""
 
-    scheme = "+t{0}".format(version.node)
+    scheme = "+{0}".format(version.node)
     if version.dirty:
         scheme += ".dirty"
 

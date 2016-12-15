@@ -18,19 +18,6 @@
 import setuptools
 
 
-NEXT_VERSION = open("NEXT_VERSION").read().strip()
-
-
-def next_version(version):
-    if version.distance == 0:
-        return NEXT_VERSION
-
-    return "{next_version}.dev{distance}-{tag}".format(
-        next_version=NEXT_VERSION,
-        distance=version.distance,
-        tag=version.node)
-
-
 setuptools.setup(
     name="decapod-plugin-playbook-add-osd",
     description="Add OSD plugin for Decapod",
@@ -52,12 +39,12 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "decapod_common>=0.2,<0.3",
+        "decapod_common ~= 0.2.0"  # BUMPVERSION
     ],
-    setup_requires=["setuptools_scm"],
+    setup_requires=["decapod-buildtools ~= 0.2.0"],  # BUMPVERSION
     use_scm_version={
-        "version_scheme": next_version,
-        "local_scheme": "dirty-tag",
+        "version_scheme": "decapod-version",
+        "local_scheme": "decapod-local",
         "root": "../../..",
         "relative_to": __file__
     },

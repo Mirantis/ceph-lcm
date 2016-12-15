@@ -18,23 +18,11 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapod-ansible>=0.2,<0.3",
+    "decapod-ansible ~= 0.2.0",  # BUMPVERSION
     "PyMongo[tls]>=3.3,<3.4",
     "PyYAML>=3.11,<5",
     "ipaddr>=2.1,<2.2"
 )
-
-NEXT_VERSION = open("NEXT_VERSION").read().strip()
-
-
-def next_version(version):
-    if version.distance == 0:
-        return NEXT_VERSION
-
-    return "{next_version}.dev{distance}-{tag}".format(
-        next_version=NEXT_VERSION,
-        distance=version.distance,
-        tag=version.node)
 
 
 setuptools.setup(
@@ -63,10 +51,10 @@ setuptools.setup(
         ]
     },
     zip_safe=True,
-    setup_requires=["setuptools_scm"],
+    setup_requires=["decapod-buildtools ~= 0.2.0"],  # BUMPVERSION
     use_scm_version={
-        "version_scheme": next_version,
-        "local_scheme": "dirty-tag",
+        "version_scheme": "decapod-version",
+        "local_scheme": "decapod-local",
         "root": "../..",
         "relative_to": __file__
     },
