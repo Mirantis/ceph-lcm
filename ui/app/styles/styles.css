@@ -7099,6 +7099,9 @@ a:hover {
 a:hover > .glyphicon {
   opacity: 1;
 }
+textarea {
+  resize: none;
+}
 .text-muted {
   color: #acb0b2;
 }

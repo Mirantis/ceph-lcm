@@ -6,7 +6,8 @@ import { Modal, Filter, Pager } from '../directives';
 import { DataService, pagedResult } from '../services/data';
 import { BaseModel, Cluster, Server, Playbook, PlaybookConfiguration, Execution } from '../models';
 import { WizardComponent } from './wizard';
-import { WizardStepBase, NameAndClusterStep, PlaybookStep, HintsStep, ServersStep } from './wizard_steps';
+import { WizardStepBase } from './wizard_steps';
+import { NameAndClusterStep, PlaybookStep, HintsStep, ServersStep, JsonConfigurationStep } from './wizard_steps/index';
 
 @Component({
   templateUrl: './app/templates/configurations.html'
@@ -29,7 +30,8 @@ export class ConfigurationsComponent {
     NameAndClusterStep,
     PlaybookStep,
     HintsStep,
-    ServersStep
+    ServersStep,
+    JsonConfigurationStep
   ];
 
 
@@ -66,18 +68,12 @@ export class ConfigurationsComponent {
   }
 
   cleanModel(): PlaybookConfiguration {
-    return new PlaybookConfiguration({
-      // data: {
-      //   name: '',
-      //   server_ids: [],
-      //   hints: []
-      // }
-    });
+    return new PlaybookConfiguration({});
   }
 
   editConfiguration(configuration: PlaybookConfiguration = null) {
     this.model = configuration ? configuration.clone() : this.cleanModel();
-    this.wizard.init();
+    this.wizard.init(this.model);
     this.modal.show();
   }
 
@@ -100,7 +96,7 @@ export class ConfigurationsComponent {
             _.omit(configuration, ['playbook_id', 'cluster_id', 'name', 'server_ids'])
           );
           this.model = pureConfig;
-          this.wizard.init();
+          this.wizard.init(this.model);
           this.refreshConfigurations();
         }
       )

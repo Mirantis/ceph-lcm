@@ -1,25 +1,22 @@
 import * as _ from 'lodash';
-import { FormControl, FormGroup } from '@angular/forms';
 import {
-  Component, Input, Output, EventEmitter, ComponentRef, ReflectiveInjector, Injector,
+  Component, Input, Output, EventEmitter, ComponentRef, Injector,
   ViewChild, ViewChildren, ViewContainerRef, ComponentFactoryResolver, ComponentFactory
 } from '@angular/core';
 
 import { Modal } from '../directives';
 import { ErrorService } from '../services/error';
 import { WizardService } from '../services/wizard';
-import { BaseModel, Playbook, Cluster, Server, PlaybookConfiguration, PermissionGroup, Hint } from '../models';
+import { BaseModel } from '../models';
 import { JSONString } from '../pipes';
 import globals = require('../services/globals');
-
-var formatJSON = require('format-json');
 
 @Component({
   selector: 'wizard',
   templateUrl: './app/templates/wizard.html'
 })
 export class WizardComponent {
-  @Input() model: BaseModel = new BaseModel({data: {}});
+  model: BaseModel = new BaseModel({data: {}});
   filledModel: BaseModel;
   @Input() steps: any[] = [];
   @Output() saveHandler = new EventEmitter();
@@ -27,8 +24,6 @@ export class WizardComponent {
 
   step: number = 0;
   stepComponents: ComponentRef<any>[] = [];
-
-  // jsonConfiguration: string;
 
   constructor(
     private error: ErrorService,
@@ -70,7 +65,7 @@ export class WizardComponent {
       this.stepContainer.insert(componentRef.hostView);
       this.stepComponents.push(componentRef);
     });
-    this.init();
+    this.init(new BaseModel({}));
   }
 
   ngOnDestroy() {
@@ -79,7 +74,8 @@ export class WizardComponent {
     });
   }
 
-  init() {
+  init(model: BaseModel) {
+    this.model = model;
     this.stepComponents.forEach((component: any) => {
       component.instance.model = this.model;
       component.instance.init();
@@ -115,60 +111,4 @@ export class WizardComponent {
   save() {
     this.saveHandler.emit(this.filledModel);
   }
-
-
-
-
-
-
-
-
-
-
-
-  // toggleSelectAll() {
-  //   this.model.data.server_ids = this.areAllServersSelected() ?
-  //     [] : _.map(this.servers, 'id') as string[];
-  //   this.getValidationSummary();
-  // }
-
-  // // TODO: Use Server type here
-  // toggleServer(server: any) {
-  //   var server_ids = this.model.data.server_ids;
-  //   this.model.data.server_ids = this.isServerSelected(server) ?
-  //     _.without(server_ids, server.id) : server_ids.concat(server.id);
-  //   this.getValidationSummary();
-  // }
-
-  // isServerSelected(server: any) {
-  //   return _.includes(this.model.data.server_ids, server.id);
-  // }
-
-  // areSomeServersSelected() {
-  //   return this.model.data.server_ids.length;
-  // }
-
-  // areAllServersSelected() {
-  //   return this.model.data.server_ids.length === this.servers.length;
-  // }
-
-  // isJSONValid() {
-  //   if (_.isUndefined(this.jsonConfiguration)) {
-  //     return true;
-  //   }
-  //   try {
-  //     JSON.parse(this.jsonConfiguration);
-  //   } catch (e) {
-  //     return false;
-  //   }
-  //   return true;
-  // }
-
-  // getValidationSummary() {
-  //   this.error.clear();
-  //   if (!this.areSomeServersSelected()) {
-  //     this.error.add('Validation Error', 'Servers selection is required');
-  //   }
-  // }
-
 }

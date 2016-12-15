@@ -1,0 +1,12 @@
+<step [title]="'Playbook Configuration JSON'">
+  <div class="form-group" [ngClass]="{'has-error': !isValid()}">
+    <textarea
+      class="form-control mono"
+      rows="10"
+      name="configuration"
+      [(ngModel)]="jsonConfiguration"
+      (ngModelChange)="applyChanges($event)"
+      [readonly]="isReadOnly()"
+    ></textarea>
+  </div>
+</step>
