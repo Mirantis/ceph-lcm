@@ -12,34 +12,47 @@ import globals = require('../services/globals');
 
 var formatJSON = require('format-json');
 
-
+// Transpiler component responsible for step visibility
+// Every wizard step should be wrapped into the <step> tag
 @Component({
   selector: 'step',
   template: `<div *ngIf="isSelected()"><h1>{{title}}</h1><ng-content></ng-content></div>`
 })
 export class WizardStepContainer {
   @Input() title: string = '';
-  isVisible = false;
-  activeStep: ComponentRef<any>;
+  private activeStep: ComponentRef<any>;
+
   isSelected(): boolean {
-    return this.activeStep && this.activeStep.instance && this.activeStep.instance.stepContainer === this;
+    // console.log(222, this.activeStep.componentType.name);
+    return _.get(this.activeStep, 'instance.stepContainer.title') === this.title;
   }
+
   constructor(wizard: WizardService) {
     wizard.currentStep.subscribe((activeStep: ComponentRef<any>) => {
       this.activeStep = activeStep;
     });
   }
-};
+}
 
 
+// Base wizard step class
 export class WizardStepBase {
   @ViewChild(WizardStepContainer) stepContainer: WizardStepContainer;
   model: BaseModel;
 
-  public getSharedData(key: string, defaultValue?: any): any {
+  initModelProperty(key: string, defaultValue: any) {
+    if (!_.get(this.model, key)) {
+      _.set(this.model, key, defaultValue);
+    }
+  }
+
+  init() {}
+
+  getSharedData(key: string, defaultValue?: any): any {
     return _.get(this.wizard.sharedData, key, defaultValue);
   }
-  public setSharedData(key: string, value: any) {
+
+  setSharedData(key: string, value: any) {
     this.wizard.sharedData[key] = value;
     this.wizard.sharedDataUpdated.emit(key);
   }
@@ -52,18 +65,27 @@ export class WizardStepBase {
     return true;
   }
 
-  constructor(private wizard: WizardService) {}
+  constructor(private wizard: WizardService) {
+    this.init();
+  }
 
   ngDoCheck() {
     this.wizard.model.emit(this.model);
   }
 }
 
+
+// Configuration name and cluster selection
 @Component({
   templateUrl: './app/templates/wizard_steps/name_and_cluster.html'
 })
 export class NameAndClusterStep extends WizardStepBase {
   clusters: Cluster[] = [];
+
+  init() {
+    this.initModelProperty('data.name', '');
+    this.initModelProperty('data.cluster_id', '');
+  }
 
   isValid() {
     return !!_.get(this.model, 'data.name') && !!_.get(this.model, 'data.cluster_id');
@@ -75,6 +97,7 @@ export class NameAndClusterStep extends WizardStepBase {
         this.clusters = clusters.items;
       });
   }
+
   constructor(wizard: WizardService, private data: DataService) {
     super(wizard);
     this.fetchData();
@@ -82,6 +105,7 @@ export class NameAndClusterStep extends WizardStepBase {
 }
 
 
+// Playbook selection
 @Component({
   templateUrl: './app/templates/wizard_steps/playbook.html'
 })
@@ -93,6 +117,11 @@ export class PlaybookStep extends WizardStepBase {
   }
   public set selectedPlaybook(playbook: Playbook) {
     this.setSharedData('selectedPlaybook', playbook);
+  }
+
+  init() {
+    this.selectedPlaybook = null;
+    this.initModelProperty('data.playbook_id', '');
   }
 
   constructor(wizard: WizardService, private data: DataService) {
@@ -131,11 +160,12 @@ export class PlaybookStep extends WizardStepBase {
       this.selectedPlaybook = playbook;
       this.model.data.hints = playbook.hints;
       this.model.data.playbook_id = playbook.id;
-      console.log(this.model.data.hints.length, playbook.hints.length);
     }
   }
 }
 
+
+// Playbook configuration (hints) - omitted if playbook has no hints
 @Component({
   templateUrl: './app/templates/wizard_steps/hints.html'
 })
@@ -144,13 +174,19 @@ export class HintsStep extends WizardStepBase {
   hints: {[key: string]: Hint} = {};
   selectedPlaybook: Playbook;
 
+  init() {
+    this.hints = {};
+    this.hintsValidity = {};
+    this.selectedPlaybook = null;
+    this.initModelProperty('data.hints', []);
+  }
+
   constructor(wizard: WizardService, private data: DataService) {
     super(wizard);
     wizard.sharedDataUpdated.subscribe((key: string) => {
       if (key === 'selectedPlaybook') {
+        this.init();
         this.selectedPlaybook = this.getSharedData('selectedPlaybook');
-        this.hints = {};
-        this.hintsValidity = {};
       }
     });
   }
@@ -175,3 +211,41 @@ export class HintsStep extends WizardStepBase {
     this.hintsValidity[data.id] = data.isValid;
   }
 }
+
+
+// Playbook selection
+@Component({
+  templateUrl: './app/templates/wizard_steps/servers.html'
+})
+export class ServersStep extends WizardStepBase {
+  servers: Server[] = [];
+
+  init() {
+    this.initModelProperty('data.server_ids', []);
+  }
+
+  constructor(wizard: WizardService, private data: DataService) {
+    super(wizard);
+    this.fetchData();
+  }
+
+  fetchData() {
+    return this.data.server().findAll({})
+      .then((servers: pagedResult) => this.servers = servers.items);
+  }
+
+  isShownInDeck() {
+    let selectedPlaybook: Playbook = this.getSharedData('selectedPlaybook');
+    return _.get(selectedPlaybook, 'required_server_list', false);
+  }
+
+  isValid() {
+    return !_.isEmpty(_.get(this.model, 'data.server_ids', []));
+  }
+
+  areAllServersSelected() {
+    return this.model.data.server_ids.length === this.servers.length;
+  }
+
+}
+
