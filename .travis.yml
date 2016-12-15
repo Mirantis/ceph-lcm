@@ -12,6 +12,7 @@ env:
   - TOXENV=devenv-lint
   - TOXENV=docs
   - TOXENV=ui-build
+  - TOXENV=eggs-build
 
 before_install:
   - nvm install 6
