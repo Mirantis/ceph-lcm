@@ -1,0 +1,37 @@
+<step [title]="'Servers Selection'">
+  <div>
+    <div class="col-xs-12 grid">
+      <div class="grid-line table-help">
+        <div class="col-xs-11 name">
+          <label>
+            <input
+              id="select_all"
+              name="select_all"
+              (click)="toggleSelectAll(this)"
+              [checked]="areAllServersSelected()"
+              type="checkbox"
+              required
+            > SELECT ALL
+          </label>
+        </div>
+        <div class="col-xs-1 text-right">Info</div>
+      </div>
+
+      <div class="grid-line" *ngFor="let server of servers">
+        <div class="col-xs-11 name">
+          <label>
+            <input
+              type="checkbox"
+              (change)="toggleServer(server)"
+              [checked]="isServerSelected(server)"
+              required
+            > {{server.data.name|trim_by:60}}
+          </label>
+        </div>
+        <div class="col-xs-1 icon">
+          <span class="glyphicon glyphicon-info-sign"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</step>

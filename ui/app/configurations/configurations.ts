@@ -6,7 +6,7 @@ import { Modal, Filter, Pager } from '../directives';
 import { DataService, pagedResult } from '../services/data';
 import { BaseModel, Cluster, Server, Playbook, PlaybookConfiguration, Execution } from '../models';
 import { WizardComponent } from './wizard';
-import { WizardStepBase, NameAndClusterStep, PlaybookStep, HintsStep } from './wizard_steps';
+import { WizardStepBase, NameAndClusterStep, PlaybookStep, HintsStep, ServersStep } from './wizard_steps';
 
 @Component({
   templateUrl: './app/templates/configurations.html'
@@ -28,7 +28,8 @@ export class ConfigurationsComponent {
   configurationCreationSteps = [
     NameAndClusterStep,
     PlaybookStep,
-    HintsStep
+    HintsStep,
+    ServersStep
   ];
 
 
@@ -65,28 +66,18 @@ export class ConfigurationsComponent {
   }
 
   cleanModel(): PlaybookConfiguration {
-    return this.model = new PlaybookConfiguration({
-      data: {
-        name: '',
-        server_ids: [],
-        hints: []
-      }
+    return new PlaybookConfiguration({
+      // data: {
+      //   name: '',
+      //   server_ids: [],
+      //   hints: []
+      // }
     });
   }
 
   editConfiguration(configuration: PlaybookConfiguration = null) {
     this.model = configuration ? configuration.clone() : this.cleanModel();
-    // if (!configuration) {
-    //     Promise.all([
-    //       this.data.cluster().findAll({})
-    //         .then((clusters: pagedResult) => this.clusters = clusters.items),
-    //       this.data.playbook().findAll({})
-    //         .then((playbooks: pagedResult) => this.playbooks = playbooks.items),
-    //       this.data.server().findAll({})
-    //         .then((servers: pagedResult) => this.servers = servers.items)
-    //     ]).catch((error: any) => this.data.handleResponseError(error));
-    // }
-    this.wizard.init(configuration);
+    this.wizard.init();
     this.modal.show();
   }
 
@@ -108,7 +99,8 @@ export class ConfigurationsComponent {
           let pureConfig = new BaseModel(
             _.omit(configuration, ['playbook_id', 'cluster_id', 'name', 'server_ids'])
           );
-          this.wizard.init(pureConfig);
+          this.model = pureConfig;
+          this.wizard.init();
           this.refreshConfigurations();
         }
       )
