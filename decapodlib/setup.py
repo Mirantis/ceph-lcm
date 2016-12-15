@@ -30,10 +30,9 @@ def next_version(version):
     if version.distance == 0:
         return NEXT_VERSION
 
-    next_one = "{next_version}.dev{distance}-{tag}".format(
+    next_one = "{next_version}.dev{distance}".format(
         next_version=NEXT_VERSION,
-        distance=version.distance,
-        tag=version.node
+        distance=version.distance
     )
 
     return next_one

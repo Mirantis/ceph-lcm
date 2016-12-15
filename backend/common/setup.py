@@ -31,10 +31,9 @@ def next_version(version):
     if version.distance == 0:
         return NEXT_VERSION
 
-    return "{next_version}.dev{distance}-{tag}".format(
+    return "{next_version}.dev{distance}".format(
         next_version=NEXT_VERSION,
-        distance=version.distance,
-        tag=version.node)
+        distance=version.distance)
 
 
 setuptools.setup(
