@@ -18,15 +18,14 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "requests[security,socks]>=2.12,<2.13",
-    "six>=1.10",
-    "PyYAML>3.10,<4"
+    "setuptools_scm",
 )
 
 
 setuptools.setup(
-    name="decapodlib",
-    description="Decapod client library",
+    name="decapod-buildtools",
+    version="0.2.0.dev500",
+    description="Decapod build tools",
     long_description="",  # TODO
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
@@ -35,26 +34,22 @@ setuptools.setup(
     license="Apache2",
     url="https://github.com/Mirantis/ceph-lcm",
     packages=setuptools.find_packages(),
-    python_requires=">=2.7",
+    python_requires=">=3.4",
     install_requires=REQUIREMENTS,
-    extras_require={
-        "simplejson": ["simplejson"]
-    },
-    setup_requires=["decapod-buildtools"],
-    use_scm_version={
-        "version_scheme": "decapod-version",
-        "local_scheme": "decapod-local",
-        "root": "..",
-        "relative_to": __file__
-    },
     zip_safe=True,
+    entry_points={
+        "setuptools_scm.version_scheme": [
+            "decapod-version = decapod_buildtools.version:version_scheme"
+        ],
+        "setuptools_scm.local_scheme": [
+            "decapod-local = decapod_buildtools.version:local_scheme"
+        ]
+    },
     classifiers=(
         "Intended Audience :: Information Technology",
         "Intended Audience :: System Administrators",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5"
     )
