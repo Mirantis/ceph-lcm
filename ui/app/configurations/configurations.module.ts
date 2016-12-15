@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 
 import {
   ConfigurationsComponent, WizardComponent, HintComponent,
-  WizardStepContainer, NameAndClusterStep, PlaybookStep, HintsStep
+  WizardStepContainer, NameAndClusterStep, PlaybookStep, HintsStep, ServersStep
 } from './index';
 import { WizardService } from '../services/wizard';
 import { SharedModule } from '../shared.module';
@@ -14,7 +14,7 @@ import { SharedModule } from '../shared.module';
   declarations: [
     ConfigurationsComponent,
     WizardComponent,
-    WizardStepContainer, NameAndClusterStep, PlaybookStep, HintsStep,
+    WizardStepContainer, NameAndClusterStep, PlaybookStep, HintsStep, ServersStep,
     HintComponent
   ],
   imports: [
@@ -24,7 +24,7 @@ import { SharedModule } from '../shared.module';
     SharedModule
   ],
   entryComponents: [
-    NameAndClusterStep, PlaybookStep, HintsStep
+    NameAndClusterStep, PlaybookStep, HintsStep, ServersStep
   ],
   providers: [
     WizardService
@@ -32,7 +32,7 @@ import { SharedModule } from '../shared.module';
   exports: [
     ConfigurationsComponent,
     WizardComponent,
-    WizardStepContainer, NameAndClusterStep, PlaybookStep, HintsStep,
+    WizardStepContainer, NameAndClusterStep, PlaybookStep, HintsStep, ServersStep,
     HintComponent
   ]
 })
