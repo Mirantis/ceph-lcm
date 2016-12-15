@@ -1,0 +1,11 @@
+{
+    "version": "0.2.0",
+    "dev": true,
+    "filenames": {
+        "buildtools/setup.py": [
+            {
+                "search": "\\d+.\\d+\\.\\d+(?:\\.(?:dev|post)\\d+)?(?=\\\"[^#]*#.*?BUMPVERSION)"
+            }
+        ]
+    }
+}

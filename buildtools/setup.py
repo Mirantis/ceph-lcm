@@ -43,6 +43,9 @@ setuptools.setup(
         ],
         "setuptools_scm.local_scheme": [
             "decapod-local = decapod_buildtools.version:local_scheme"
+        ],
+        "console_scripts": [
+            "decapod-bumpversion = decapod_buildtools.bumpver:main"
         ]
     },
     classifiers=(

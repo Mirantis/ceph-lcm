@@ -1,6 +1,5 @@
 # Common build requirements
 
-bumpversion
 pip
 pygments-style-github
 setuptools
