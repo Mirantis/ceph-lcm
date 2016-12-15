@@ -28,6 +28,11 @@
     # This is to update requirements
     - skip_ansible_lint
 
+- name: Install buildtools
+  command: bash -ic "pyenv activate {{ venv }} && pip install -c constraints.txt -e ./buildtools"
+  tags:
+    - skip_ansible_lint
+
 - name: Update PyEnv virtualenv
   command: bash -ic "pyenv activate {{ venv }} && pip install -e {{ item }} -c constraints.txt"
            chdir=/vagrant
