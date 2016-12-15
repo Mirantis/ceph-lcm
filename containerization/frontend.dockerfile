@@ -5,7 +5,7 @@ FROM nginx:stable
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
-LABEL description="Base image with frontend for Decapod" version="0.2.0" vendor="Mirantis"
+LABEL version="0.2.0" description="Base image with frontend for Decapod" vendor="Mirantis"
 
 
 COPY containerization/files/nginx.conf                       /etc/nginx/nginx.conf

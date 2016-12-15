@@ -5,7 +5,7 @@ FROM decapod-base-plugins
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
-LABEL description="API service for Decapod" version="0.2.0" vendor="Mirantis"
+LABEL version="0.2.0" description="API service for Decapod" vendor="Mirantis"
 
 
 COPY backend/api                      /project/api

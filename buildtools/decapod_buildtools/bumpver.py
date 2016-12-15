@@ -54,9 +54,6 @@ def get_options():
         action="store_true",
         default=False,
         help="Bump to development strategy.")
-    parser.add_argument(
-        "new_version",
-        help="New version of Decapod.")
 
     return parser.parse_args()
 

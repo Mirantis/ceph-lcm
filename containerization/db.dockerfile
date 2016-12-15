@@ -5,7 +5,7 @@ FROM mongo:3.2
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
-LABEL description="Base image with database for Decapod" version="0.2.0" vendor="Mirantis"
+LABEL version="0.2.0" description="Base image with database for Decapod" vendor="Mirantis"
 
 
 COPY containerization/files/db-moshell.sh                    /usr/bin/moshell
