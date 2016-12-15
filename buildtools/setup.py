@@ -24,7 +24,7 @@ REQUIREMENTS = (
 
 setuptools.setup(
     name="decapod-buildtools",
-    version="0.2.0",  # BUMPVERSION
+    version="0.2.0.dev0",  # BUMPVERSION
     description="Decapod build tools",
     long_description="",  # TODO
     author="Sergey Arkhipov",

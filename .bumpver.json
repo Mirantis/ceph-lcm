@@ -99,7 +99,8 @@
         ],
         "ui/package.json": [
             {
-                "search": "(?<=version\\\": \\\")\\d+.\\d+\\.\\d+(?:\\.(?:dev|post)\\d+)?"
+                "search": "(?<=version\\\": \\\")\\d+.\\d+\\.\\d+(?:\\.(?:dev|post)\\d+)?",
+                "dev": false
             }
         ],
         "containerization/backend-api.dockerfile": [

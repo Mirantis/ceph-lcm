@@ -51,7 +51,7 @@ setuptools.setup(
             "decapod-lock = decapod_common.cliutils:mongolock_cli"
         ]
     },
-    setup_requires=["decapod-buildtools ~= 0.2.0"],  # BUMPVERSION
+    setup_requires=["decapod-buildtools ~= 0.2.0.dev0"],  # BUMPVERSION
     use_scm_version={
         "version_scheme": "decapod-version",
         "local_scheme": "decapod-local",

@@ -18,7 +18,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapod-common ~= 0.2.0",  # BUMPVERSION
+    "decapod-common ~= 0.2.0.dev0",  # BUMPVERSION
     "Flask>=0.11,<0.12",
     "jsonschema>=2.5,<2.6"
 )
@@ -38,7 +38,7 @@ setuptools.setup(
     python_requires=">=3.4",
     install_requires=REQUIREMENTS,
     zip_safe=True,
-    setup_requires=["decapod-buildtools ~= 0.2.0"],  # BUMPVERSION
+    setup_requires=["decapod-buildtools ~= 0.2.0.dev0"],  # BUMPVERSION
     use_scm_version={
         "version_scheme": "decapod-version",
         "local_scheme": "decapod-local",

@@ -18,7 +18,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapod-common ~= 0.2.0",  # BUMPVERSION
+    "decapod-common ~= 0.2.0.dev0",  # BUMPVERSION
 )
 
 
@@ -45,7 +45,7 @@ setuptools.setup(
     entry_points={
         "console_scripts": ["decapod-migrations = decapod_migration.cli:main"]
     },
-    setup_requires=["decapod-buildtools ~= 0.2.0"],  # BUMPVERSION
+    setup_requires=["decapod-buildtools ~= 0.2.0.dev0"],  # BUMPVERSION
     use_scm_version={
         "version_scheme": "decapod-version",
         "local_scheme": "decapod-local",
