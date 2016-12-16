@@ -97,9 +97,10 @@ def log(ctx, execution_id, client):
     execution."""
 
     response = client.get_execution_log(execution_id,
-                                        headers={"Content-Type": "text/plain"})
-
+                                        headers={"Content-Type": "text/plain"},
+                                        raw_response=True, stream=True)
     if ctx.obj["pager"]:
-        click.echo_via_pager(response)
+        click.echo_via_pager(response.text)
     else:
-        click.echo(response)
+        for line in response.iter_lines(decode_unicode=True):
+            click.echo(line)
