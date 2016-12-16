@@ -143,7 +143,10 @@ def json_response(func):
 
     @six.wraps(func)
     def decorator(*args, **kwargs):
+        raw_response = kwargs.pop("raw_response", False)
         response = func(*args, **kwargs)
+        if raw_response:
+            return response
 
         if isinstance(response, dict):
             return response
