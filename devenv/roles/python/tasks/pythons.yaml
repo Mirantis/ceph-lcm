@@ -30,6 +30,7 @@
 
 - name: Install buildtools
   command: bash -ic "pyenv activate {{ venv }} && pip install -c constraints.txt -e ./buildtools"
+           chdir=/vagrant
   tags:
     - skip_ansible_lint
 

@@ -5,64 +5,80 @@ IMAGES_DIR := $(OUTPUT_DIR)/images
 DOCS_DIR   := $(OUTPUT_DIR)/docs
 DEB_DIR    := $(OUTPUT_DIR)/debs
 
-CONTAINER_API_NAME        := decapod-api
-CONTAINER_BASE_NAME       := decapod-base
-CONTAINER_CONTROLLER_NAME := decapod-controller
-CONTAINER_CRON_NAME       := decapod-cron
-CONTAINER_DB_NAME         := decapod-db
-CONTAINER_DB_DATA_NAME    := decapod-db-data
-CONTAINER_FRONTEND_NAME   := decapod-frontend
-CONTAINER_PLUGINS_NAME    := decapod-base-plugins
-CONTAINER_MIGRATIONS_NAME := decapod-migrations
+IMAGE_VERSION    ?= latest
+PIP_INDEX_URL    ?= https://pypi.python.org/simple/
+NPM_REGISTRY_URL ?= https://registry.npmjs.org/
+
+CONTAINER_API_NAME        := decapod/api
+CONTAINER_BASE_NAME       := decapod/base
+CONTAINER_CONTROLLER_NAME := decapod/controller
+CONTAINER_CRON_NAME       := decapod/cron
+CONTAINER_DB_NAME         := decapod/db
+CONTAINER_DB_DATA_NAME    := decapod/db-data
+CONTAINER_FRONTEND_NAME   := decapod/frontend
+CONTAINER_PLUGINS_NAME    := decapod/base-plugins
+CONTAINER_MIGRATIONS_NAME := decapod/migrations
 
 # -----------------------------------------------------------------------------
 
 define build_egg
-    cd $(1) && rm -rf dist && python setup.py bdist_wheel && cp dist/* $(2) && rm -rf dist build
+	cd $(1) && rm -rf dist && python setup.py bdist_wheel && cp dist/* $(2) && rm -rf dist build
 endef
 
 define build_deb
-    cd $(2) && python setup.py \
-        --command-packages=stdeb.command sdist_dsc $(1) && \
-    cd deb_dist && \
-    cd `find . -maxdepth 1 -type d | grep -Ev \\\\.$$` && \
-    DEB_BUILD_OPTIONS=nocheck debuild -us -uc -b && \
-    mv ../*.deb $(3)
+	cd $(2) && python setup.py \
+		--command-packages=stdeb.command sdist_dsc $(1) && \
+	cd deb_dist && \
+	cd `find . -maxdepth 1 -type d | grep -Ev \\\\.$$` && \
+	DEB_BUILD_OPTIONS=nocheck debuild -us -uc -b && \
+	mv ../*.deb $(3)
 endef
 
 define build_external_deb
-    cd `mktemp -d` \
+	cd `mktemp -d` \
 		&& DEB_BUILD_OPTIONS=nocheck py2dsc-deb $(2) `pypi-download $(1) | cut -f 2 -d ' '` \
 		&& mv deb_dist/*.deb $(3) \
 		&& to_remove=`pwd` sh -c 'cd / && rm -rf $$to_remove'
 endef
 
 define build_deb_universal
-    $(call build_deb,--with-python2=True --with-python3=True,$(1),$(2))
+	$(call build_deb,--with-python2=True --with-python3=True,$(1),$(2))
 endef
 
 define build_deb_py2
-    $(call build_deb,--with-python2=True --with-python3=False,$(1),$(2))
+	$(call build_deb,--with-python2=True --with-python3=False,$(1),$(2))
 endef
 
 define build_deb_py3
-    $(call build_deb,--with-python2=False --with-python3=True,$(1),$(2))
+	$(call build_deb,--with-python2=False --with-python3=True,$(1),$(2))
 endef
 
 define build_external_deb_universal
-    $(call build_external_deb,$(1),--with-python2=True --with-python3=True,$(2))
+	$(call build_external_deb,$(1),--with-python2=True --with-python3=True,$(2))
 endef
 
 define build_external_deb_py2
-    $(call build_external_deb,$(1),--with-python2=True --with-python3=False,$(2))
+	$(call build_external_deb,$(1),--with-python2=True --with-python3=False,$(2))
 endef
 
 define build_external_deb_py3
-    $(call build_external_deb,$(1),--with-python2=False --with-python3=True,$(2))
+	$(call build_external_deb,$(1),--with-python2=False --with-python3=True,$(2))
+endef
+
+define build_image
+	docker build \
+		-f "$(ROOT_DIR)/containerization/$(1)" \
+		--tag $(2):latest \
+		--rm \
+		--build-arg "pip_index_url=$(PIP_INDEX_URL)" \
+		--build-arg "npm_registry_url=$(NPM_REGISTRY_URL)" \
+		$(3) \
+		"$(ROOT_DIR)" \
+	&& docker tag $(2):latest $(2):$(IMAGE_VERSION)
 endef
 
 define dump_image
-    docker save "$(1)" | bzip2 -c -9 > "$(2)/$(1).tar.bz2"
+	docker save "$(1)" | bzip2 -c -9 > "$(2)/$(1).tar.bz2"
 endef
 
 # -----------------------------------------------------------------------------
@@ -246,31 +262,31 @@ build_containers: build_container_api build_container_controller \
 build_containers_dev: copy_example_keys build_containers
 
 build_container_api: build_container_plugins
-	docker build -f "$(ROOT_DIR)/containerization/backend-api.dockerfile" --tag $(CONTAINER_API_NAME) --rm "$(ROOT_DIR)"
+	$(call build_image,backend-api.dockerfile,$(CONTAINER_API_NAME))
 
 build_container_controller: build_container_plugins
-	docker build -f "$(ROOT_DIR)/containerization/backend-controller.dockerfile" --tag $(CONTAINER_CONTROLLER_NAME) --rm "$(ROOT_DIR)"
+	$(call build_image,backend-controller.dockerfile,$(CONTAINER_CONTROLLER_NAME))
 
 build_container_cron: build_container_controller
-	docker build -f "$(ROOT_DIR)/containerization/backend-cron.dockerfile" --tag $(CONTAINER_CRON_NAME) --rm "$(ROOT_DIR)"
+	$(call build_image,backend-cron.dockerfile,$(CONTAINER_CRON_NAME))
 
 build_container_frontend:
-	docker build -f "$(ROOT_DIR)/containerization/frontend.dockerfile" --tag $(CONTAINER_FRONTEND_NAME) --pull --rm "$(ROOT_DIR)"
+	$(call build_image,frontend.dockerfile,$(CONTAINER_FRONTEND_NAME),--pull)
 
 build_container_db:
-	docker build -f "$(ROOT_DIR)/containerization/db.dockerfile" --tag $(CONTAINER_DB_NAME) --pull --rm "$(ROOT_DIR)"
+	$(call build_image,db.dockerfile,$(CONTAINER_DB_NAME),--pull)
 
 build_container_db_data:
-	docker build -f "$(ROOT_DIR)/containerization/db-data.dockerfile" --tag $(CONTAINER_DB_DATA_NAME) --pull --rm "$(ROOT_DIR)"
+	$(call build_image,db-data.dockerfile,$(CONTAINER_DB_DATA_NAME),--pull)
 
 build_container_base:
-	docker build -f "$(ROOT_DIR)/containerization/backend-base.dockerfile" --tag $(CONTAINER_BASE_NAME) --pull --rm "$(ROOT_DIR)"
+	$(call build_image,backend-base.dockerfile,$(CONTAINER_BASE_NAME),--pull)
 
 build_container_plugins: build_container_base
-	docker build -f "$(ROOT_DIR)/containerization/backend-plugins.dockerfile" --tag $(CONTAINER_PLUGINS_NAME) --rm "$(ROOT_DIR)"
+	$(call build_image,backend-plugins.dockerfile,$(CONTAINER_PLUGINS_NAME))
 
 build_container_migrations: build_container_plugins
-	docker build -f "$(ROOT_DIR)/containerization/migrations.dockerfile" --tag $(CONTAINER_MIGRATIONS_NAME) --rm "$(ROOT_DIR)"
+	$(call build_image,migrations.dockerfile,$(CONTAINER_MIGRATIONS_NAME))
 
 # -----------------------------------------------------------------------------
 
@@ -315,4 +331,6 @@ copy_example_keys:
 	cp "$(ROOT_DIR)/containerization/files/devconfigs/config.yaml" "$(ROOT_DIR)" && \
 	cp "$(ROOT_DIR)/containerization/files/devconfigs/mongodb.pem" "$(ROOT_DIR)" && \
 	cp "$(ROOT_DIR)/containerization/files/devconfigs/mongodb-ca.crt" "$(ROOT_DIR)" && \
+	cp "$(ROOT_DIR)/containerization/files/package_managers/debian_apt.list" "$(ROOT_DIR)" && \
+	cp "$(ROOT_DIR)/containerization/files/package_managers/ubuntu_apt.list" "$(ROOT_DIR)" && \
 	chmod 0600 "$(ROOT_DIR)/ansible_ssh_keyfile.pem"

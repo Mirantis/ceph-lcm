@@ -6,19 +6,30 @@ MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
 LABEL version="0.2.0" description="Base image of Decapod" vendor="Mirantis"
+ARG pip_index_url=
+ARG npm_registry_url=
 
-ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8 LANG=C.UTF-8 PIP_INDEX_URL=${pip_index_url:-https://pypi.python.org/simple/}
 
 
-COPY backend/common                                          /project/backend/common
-COPY backend/docker                                          /project/backend/docker
-COPY buildtools                                              /project/buildtools
-COPY config.yaml                                             /etc/decapod/config.yaml
-COPY containerization/files/package_managers/pip.conf        /root/.config/pip/pip.conf
-COPY containerization/files/package_managers/ubuntu_apt.list /etc/apt/sources.list
-COPY .git                                                    /project/.git
-COPY plugins/alerts/emails                                   /project/plugins/alerts/emails
-COPY plugins/playbook/server_discovery                       /project/plugins/playbook/server_discovery
+RUN set -x \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends \
+    apt-transport-https \
+    ca-certificates \
+  && apt-get clean \
+  && apt-get autoremove -y \
+  && rm -r /var/lib/apt/lists/*
+
+
+COPY backend/common                    /project/backend/common
+COPY backend/docker                    /project/backend/docker
+COPY buildtools                        /project/buildtools
+COPY config.yaml                       /etc/decapod/config.yaml
+COPY .git                              /project/.git
+COPY plugins/alerts/emails             /project/plugins/alerts/emails
+COPY plugins/playbook/server_discovery /project/plugins/playbook/server_discovery
+COPY ubuntu_apt.list                   /etc/apt/sources.list
 
 
 RUN set -x \
@@ -45,7 +56,7 @@ RUN set -x \
   && dpkg -i dumb-init_1.2.0_amd64.deb \
   && rm dumb-init_*.deb \
   && wget --no-check-certificate https://github.com/jwilder/dockerize/releases/download/v0.3.0/dockerize-linux-amd64-v0.3.0.tar.gz \
-  && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.3.0.tar.gz \
+  && tar -C /usr/local/bin -xzf dockerize-linux-amd64-v0.3.0.tar.gz \
   && rm dockerize-linux-amd64-v0.3.0.tar.gz \
   && pip3 install --no-cache-dir /project/buildtools \
   && pip3 --no-cache-dir install \

@@ -2,11 +2,13 @@
 
 
 
-FROM decapod-base-plugins
+FROM decapod/base-plugins
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
 LABEL version="0.2.0" description="Migration script for Decapod" vendor="Mirantis"
+ARG pip_index_url=
+ARG npm_registry_url=
 
 
 COPY backend/api        /project/api

@@ -15,6 +15,7 @@ apt_packages:
   - g++
   - gcc
   - git
+  - git-review
   - htop
   - httpie
   - iftop

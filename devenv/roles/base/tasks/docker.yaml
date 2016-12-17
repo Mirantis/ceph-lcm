@@ -39,12 +39,27 @@
   become: true
   user: name={{ ansible_user }} groups=docker append=yes
 
-- name: Enable DNS for docker
+- name: Ensure docker.service.d is created
   become: true
-  lineinfile: dest=/etc/default/docker
-              regexp="^DOCKER_OPTS="
-              insertafter="^#DOCKER_OPTS="
-              line='DOCKER_OPTS="--dns 8.8.8.8 --dns 8.8.4.4"'
+  file: path=/etc/systemd/system/docker.service.d state=directory
+
+- name: Ensure correct docker.conf for systemd is created
+  become: true
+  template:
+    src: docker.conf.j2
+    dest: /etc/systemd/system/docker.service.d/docker.conf
+
+- name: Reload systemd units
+  become: true
+  command: systemctl daemon-reload
+  tags:
+    - skip_ansible_lint
+
+- name: Restart docker
+  become: true
+  command: systemctl restart docker
+  tags:
+    - skip_ansible_lint
 
 - name: Install docker-compose
   become: true

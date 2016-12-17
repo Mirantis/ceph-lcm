@@ -1,11 +1,13 @@
 # vi: set ft=dockerfile :
 
 
-FROM decapod-base-plugins
+FROM decapod/base-plugins
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 
 LABEL version="0.2.0" description="Controller service for Decapod" vendor="Mirantis"
+ARG pip_index_url=
+ARG npm_registry_url=
 
 
 COPY ansible_ssh_keyfile.pem /root/.ssh/id_rsa

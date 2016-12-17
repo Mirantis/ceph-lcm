@@ -5,8 +5,8 @@
 VAGRANTFILE_API_VERSION = "2"
 
 CLOUD_CONFIG_USERNAME = "ansible"
-CLOUD_CONFIG_URL = "10.0.0.10:5000"
-CLOUD_CONFIG_KEY = "~/.ssh/id_rsa.pub"
+CLOUD_CONFIG_URL = "10.0.0.10:9999"
+CLOUD_CONFIG_KEY = "containerization/files/devconfigs/ansible_ssh_keyfile.pub"
 CLOUD_CONFIG_TOKEN = "26758c32-3421-4f3d-9603-e4b5337e7ecc"
 
 
@@ -18,37 +18,38 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     devbox.vm.hostname = "decapod"
     devbox.vm.network "private_network", ip: "10.0.0.10"
     devbox.vm.synced_folder ".", "/vagrant",
-      type: "nfs",
+      type:          "nfs",
       mount_options: ["rw", "vers=3", "noatime", "async"]
 
     devbox.vm.provider "virtualbox" do |vb, override|
       override.vm.box = "ubuntu/xenial64"
 
-      vb.gui = false
-      vb.memory = 3092
-      vb.cpus = 2
+      vb.gui    = false
+      vb.memory = 4096
+      vb.cpus   = 3
     end
 
     devbox.vm.provider "libvirt" do |lv, override|
       override.vm.box = "yk0/ubuntu-xenial"
 
-      lv.nested = false
-      lv.memory = 3092
-      lv.cpus = 2
-      lv.cpu_mode ="host-passthrough"
+      lv.nested               = false
+      lv.memory               = 4096
+      lv.cpus                 = 3
+      lv.cpu_mode             = "host-passthrough"
       lv.machine_virtual_size = 60
-      lv.disk_bus = "virtio"
-      lv.nic_model_type = "virtio"
+      lv.disk_bus             = "virtio"
+      lv.nic_model_type       = "virtio"
     end
 
     if Vagrant.has_plugin?("vagrant-cachier")
       devbox.cache.scope = :box
+
       devbox.cache.enable :apt
       devbox.cache.enable :apt_lists
       devbox.cache.enable :bower
       devbox.cache.enable :npm
       devbox.cache.enable :generic, {
-        "pip" => { :cache_dir => ".cache/pip" },
+        "pip"    => { :cache_dir => ".cache/pip" },
         "ccache" => { :cache_dir => ".ccache"  }
       }
       devbox.cache.synced_folder_opts = {
@@ -72,7 +73,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  ["mon", "osd0", "osd1", "osd2"].each_with_index do |host, idx|
+  ["node01", "node02", "node03", "node04", "node05"].each_with_index do |host, idx|
     config.vm.define "#{host}", autostart: false do |client|
       client.vm.hostname = "ceph-#{host}"
       client.vm.network "private_network", ip: "10.0.0.2#{idx}"
@@ -80,7 +81,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # http://foo-o-rama.com/vagrant--stdin-is-not-a-tty--fix.html
       client.vm.provision "fix-no-tty", type: "shell" do |s|
         s.privileged = false
-        s.inline = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
+        s.inline     = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
       end
 
       cloud_config_file = ""
@@ -98,26 +99,28 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
 
       client.vm.provision "copy-cloud-config",
-        type: "file",
-        source: cloud_config_file,
+        type:        "file",
+        source:      cloud_config_file,
         destination: "/tmp/user-data"
       client.vm.provision "cloud-init", type: "shell" do |s|
+        # http://www.whiteboardcoder.com/2016/04/install-cloud-init-on-ubuntu-and-use.html
+        # https://raymii.org/s/tutorials/Automating_Openstack_with_Cloud_init_run_a_script_on_VMs_first_boot.html
         s.privileged = true
-        s.inline = "mv /tmp/user-data /var/lib/cloud/seed/nocloud-net/user-data && rm -r /var/lib/cloud/instances/* && cloud-init init --local && cloud-init init && cloud-init modules"
+        s.inline     = "apt-get install -y cloud-init && rm -rf /var/lib/cloud/* && mkdir -p /var/lib/cloud/seed/nocloud-net/ && cd /var/lib/cloud/seed/nocloud-net && echo 'local-hostname: ceph-#{host}' > meta-data && mv /tmp/user-data user-data && cloud-init init --local && cloud-init init && cloud-init modules"
       end
 
       client.vm.provider "virtualbox" do |vb, override|
-        override.vm.box = "ubuntu/trusty64"
+        override.vm.box = "ubuntu/xenial64"
 
-        vb.gui = false
+        vb.gui    = false
         vb.memory = 512
-        vb.cpus = 2
+        vb.cpus   = 1
 
-        (0..1).each do |d|
+        (0..2).each do |d|
             disk_name = "#{host}-#{idx}-#{d}"
             vb.customize ["createhd",
                           "--filename", disk_name,
-                          "--size", "11000"] unless File.exist?("#{disk_name}.vdi")
+                          "--size", "5000"] unless File.exist?("#{disk_name}.vdi")
             vb.customize ["storageattach", :id,
                           '--storagectl', "SATAController",
                           "--port", 3 + d,
@@ -128,17 +131,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
 
       client.vm.provider "libvirt" do |lv, override|
-        override.vm.box = "alxgrh/ubuntu-trusty-x86_64"
+        override.vm.box = "yk0/ubuntu-xenial"
 
-        lv.nested = false
-        lv.memory = 512
-        lv.cpus = 2
-        lv.cpu_mode = "host-passthrough"
-        lv.disk_bus = "virtio"
+        lv.nested         = false
+        lv.memory         = 512
+        lv.cpus           = 1
+        lv.cpu_mode       = "host-passthrough"
+        lv.disk_bus       = "virtio"
         lv.nic_model_type = "virtio"
 
-        lv.storage :file, :size => "11G", :bus => "sata"
-        lv.storage :file, :size => "11G", :bus => "sata"
+        lv.storage :file, :size => "5G", :bus => "sata"
+        lv.storage :file, :size => "5G", :bus => "sata"
+        lv.storage :file, :size => "5G", :bus => "sata"
       end
     end
   end
