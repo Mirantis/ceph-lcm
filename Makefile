@@ -78,7 +78,7 @@ define build_image
 endef
 
 define dump_image
-	docker save "$(1)" | bzip2 -c -9 > "$(2)/$(1).tar.bz2"
+	mkdir -p "$(2)/`dirname $(1)`" && docker save "$(1):$(IMAGE_VERSION)" | bzip2 -c -9 > "$(2)/$(1)-$(IMAGE_VERSION).tar.bz2"
 endef
 
 # -----------------------------------------------------------------------------
