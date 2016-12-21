@@ -7,8 +7,8 @@ services:
       - api
       - cron
     ports:
-      - "9999:80"
-      - "10000:443"
+      - "9999:${DECAPOD_HTTP_PORT}"
+      - "10000:${DECAPOD_HTTPS_PORT}"
     restart: always
   api:
     image: "${DECAPOD_REGISTRY_URL}${DECAPOD_NAMESPACE}decapod/api:${DECAPOD_VERSION}"
