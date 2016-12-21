@@ -1,7 +1,7 @@
 # vi: set ft=dockerfile :
 
 
-FROM nginx:stable
+FROM docker-prod-virtual.docker.mirantis.net/nginx:stable
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 

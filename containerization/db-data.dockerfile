@@ -1,7 +1,7 @@
 # vi: set ft=dockerfile :
 
 
-FROM tianon/true
+FROM docker-prod-virtual.docker.mirantis.net/tianon/true
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 

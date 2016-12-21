@@ -1,7 +1,7 @@
 # vi: set ft=dockerfile :
 
 
-FROM ubuntu:xenial
+FROM docker-prod-virtual.docker.mirantis.net/ubuntu:xenial
 MAINTAINER Sergey Arkhipov <sarkhipov@mirantis.com>
 
 

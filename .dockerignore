@@ -5,3 +5,5 @@
 .cache/*
 .eggs/*
 ui/node_modules/*
+devenv/*
+output/*
