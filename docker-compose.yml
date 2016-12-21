@@ -2,7 +2,7 @@
 version: "2"
 services:
   frontend:
-    image: "decapod/frontend:${DECAPOD_VERSION}"
+    image: "${DECAPOD_REGISTRY_URL}${DECAPOD_NAMESPACE}decapod/frontend:${DECAPOD_VERSION}"
     links:
       - api
       - cron
@@ -11,26 +11,26 @@ services:
       - "10000:443"
     restart: always
   api:
-    image: "decapod/api:${DECAPOD_VERSION}"
+    image: "${DECAPOD_REGISTRY_URL}${DECAPOD_NAMESPACE}decapod/api:${DECAPOD_VERSION}"
     links:
       - database
     restart: "on-failure:5"
   controller:
-    image: "decapod/controller:${DECAPOD_VERSION}"
+    image: "${DECAPOD_REGISTRY_URL}${DECAPOD_NAMESPACE}decapod/controller:${DECAPOD_VERSION}"
     links:
       - database
     restart: "on-failure:5"
   database:
-    image: "decapod/db:${DECAPOD_VERSION}"
+    image: "${DECAPOD_REGISTRY_URL}${DECAPOD_NAMESPACE}decapod/db:${DECAPOD_VERSION}"
     volumes_from:
       - database_data
     restart: always
   database_data:
-    image: "decapod/db-data:${DECAPOD_VERSION}"
+    image: "${DECAPOD_REGISTRY_URL}${DECAPOD_NAMESPACE}decapod/db-data:${DECAPOD_VERSION}"
     volumes:
       - /data/db
   cron:
-    image: "decapod/cron:${DECAPOD_VERSION}"
+    image: "${DECAPOD_REGISTRY_URL}${DECAPOD_NAMESPACE}decapod/cron:${DECAPOD_VERSION}"
     links:
       - database
     restart: "on-failure:3"
