@@ -20,6 +20,7 @@ var formatJSON = require('format-json');
 })
 export class WizardComponent {
   @Input() model: BaseModel = new BaseModel({data: {}});
+  filledModel: BaseModel;
   @Input() steps: any[] = [];
   @Output() saveHandler = new EventEmitter();
   @ViewChild('step_container', {read: ViewContainerRef}) stepContainer: ViewContainerRef;
@@ -28,9 +29,6 @@ export class WizardComponent {
   stepComponents: ComponentRef<any>[] = [];
 
   // jsonConfiguration: string;
-  // serversRequired: boolean = false;
-  // readonly: boolean = false;
-  // selectedPlaybook: Playbook = null;
 
   constructor(
     private error: ErrorService,
@@ -40,12 +38,12 @@ export class WizardComponent {
     private wizard: WizardService
   ) {
     wizard.model.subscribe((model: BaseModel) => {
-      this.model = model;
+      this.filledModel = model;
     });
   }
 
   getConfigData() {
-    return new JSONString().transform(_.get(this.model, 'data', ''));
+    return new JSONString().transform(_.get(this.filledModel, 'data', ''));
   }
 
   getVisibleSteps() {
@@ -81,9 +79,10 @@ export class WizardComponent {
     });
   }
 
-  init(configuration: BaseModel = null) {
+  init() {
     this.stepComponents.forEach((component: any) => {
       component.instance.model = this.model;
+      component.instance.init();
     });
     this.step = _.indexOf(this.stepComponents, _.first(this.getVisibleSteps()));
     if (this.step >= 0) {
@@ -102,7 +101,7 @@ export class WizardComponent {
     if (visibleIndex < 0 || nextIndex < 0 || nextIndex >= visibleSteps.length) {
       return null;
     }
-    return _.indexOf(visibleSteps, visibleSteps[nextIndex]);
+    return _.indexOf(this.stepComponents, visibleSteps[nextIndex]);
   }
 
   go(offset: number = 0) {
@@ -114,7 +113,7 @@ export class WizardComponent {
   }
 
   save() {
-    this.saveHandler.emit(this.model);
+    this.saveHandler.emit(this.filledModel);
   }
 
 
@@ -126,64 +125,12 @@ export class WizardComponent {
 
 
 
-  // validateStep() {
-  //   this.error.clear();
-  //   switch (this.step) {
-  //     case 3:
-  //       // Playbook hints screen
-  //       this.hintsValidity = {};
-  //       break;
-  //     case 4:
-  //       // If switched to servers selection screen - make initial validation
-  //       this.getValidationSummary();
-  //       break;
-  //   }
-  // }
-
-  // hintsAreValid() {
-  //   return _.reduce(this.hintsValidity, (result: boolean, isValid: boolean) => {
-  //     return result && isValid;
-  //   }, true);
-  // }
-
-
-
-
-
-  // initForEditing(configuration: BaseModel) {
-  //   this.step = 5;
-  //   this.model = configuration;
-  //   this.jsonConfiguration = formatJSON.plain(this.model.data.configuration);
-  // }
-
-  // isSaveButtonShown() {
-  //   return this.step >= 4 || (
-  //     this.step === 2 &&
-  //     !this.serversRequired &&
-  //     this.selectedPlaybook &&
-  //     !this.selectedPlaybook.hints.length
-  //   );
-  // }
-
-  // isSaveButtonDisabled(modelForm: FormGroup, editConfigurationForm: FormGroup) {
-  //   return (this.step === 2 && !this.model.data.playbook_id) ||
-  //     (this.step === 3 && !this.hintsAreValid()) ||
-  //     (this.step === 4 && !this.areSomeServersSelected()) ||
-  //     (this.step < 5 && !modelForm.valid) ||
-  //     (this.step === 5 && !editConfigurationForm.valid) ||
-  //     !this.isJSONValid();
-  // }
 
   // toggleSelectAll() {
   //   this.model.data.server_ids = this.areAllServersSelected() ?
   //     [] : _.map(this.servers, 'id') as string[];
   //   this.getValidationSummary();
   // }
-
-  // skipHints() {
-  //   return !_.get(this.selectedPlaybook, 'hints.length', 0);
-  // }
-
 
   // // TODO: Use Server type here
   // toggleServer(server: any) {
