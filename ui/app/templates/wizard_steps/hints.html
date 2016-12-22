@@ -1,0 +1,13 @@
+<step [title]="'Playbook Properties'">
+  <div class="col-xs-12 grid" *ngIf="selectedPlaybook">
+    <div class="grid-line table-help">
+      <div class="col-xs-10">Parameter</div>
+      <div class="col-xs-2 text-right">Value</div>
+    </div>
+    <hint
+      *ngFor="let hint of selectedPlaybook.hints"
+      [scheme]="addHintValue(hint)"
+      (callback)="registerHint($event)"
+    ></hint>
+  </div>
+</step>
