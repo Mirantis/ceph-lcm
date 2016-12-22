@@ -1,0 +1,7 @@
+parameters:
+  instance_type: m1.small
+  image: TestVM
+  volumes_per_instance: 3
+  volume_size: 5
+  instance_count: 5
+  network: jenkins_ci_internal

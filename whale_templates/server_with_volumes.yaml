@@ -1,0 +1,52 @@
+heat_template_version: 2013-05-23
+
+parameters:
+  instance_type:
+    type: string
+    label: Instance Type
+    description: Type of flavor to use
+    constraints:
+      - allowed_values:
+        - m1.small
+        - m1.medium
+        - m1.large
+  image:
+    type: string
+    label: Image
+    description: Image to use for VMs (should be Ubuntu Xenial)
+  volumes_per_instance:
+    type: number
+    label: Volume count
+    description: Amount of volumes to attach per instance
+    default: 5
+    constraints:
+      - range: {min: 1, max: 1024}
+  volume_size:
+    type: number
+    label: Volume Size
+    description: Size of volume in GBs
+    default: 5
+    constraints:
+      - range: {min: 1, max: 1024}
+  network:
+    type: string
+    label: Network to use
+    description: Network to use for instances
+
+resources:
+  ceph_host:
+    type: OS::Nova::Server
+    properties:
+      image: {get_param: image}
+      flavor: {get_param: instance_type}
+      networks:
+        - network: {get_param: network}
+  ceph_volumes:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: {get_param: volumes_per_instance}
+      resource_def:
+        type: volume_with_attachment.yaml
+        properties:
+          volume_size: {get_param: volume_size}
+          instance_id: {get_resource: ceph_host}

@@ -78,3 +78,5 @@ ssl-dhparam.pem
 config.yaml
 mongodb-ca.crt
 mongodb.pem
+ubuntu_apt.list
+debian_apt.list

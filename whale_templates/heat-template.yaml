@@ -1,0 +1,56 @@
+heat_template_version: 2013-05-23
+description: Template for Whale system tests
+
+parameters:
+  instance_type:
+    type: string
+    label: Instance Type
+    description: Type of flavor to use
+    constraints:
+      - allowed_values:
+        - m1.small
+        - m1.medium
+        - m1.large
+  image:
+    type: string
+    label: Image
+    description: Image to use for VMs (should be Ubuntu Xenial)
+  volumes_per_instance:
+    type: number
+    label: Volume count
+    description: Amount of volumes to attach per instance
+    default: 5
+    constraints:
+      - range: {min: 1, max: 1024}
+  volume_size:
+    type: number
+    label: Volume Size
+    description: Size of volume in GBs
+    default: 5
+    constraints:
+      - range: {min: 1, max: 1024}
+  instance_count:
+    type: number
+    label: Amount of instances
+    description: Amount of instances per instance
+    default: 5
+    constraints:
+      - range: {min: 1, max: 1024}
+  network:
+    type: string
+    label: Network to use
+    description: Network to use for instances
+
+resources:
+  ceph_hosts:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: {get_param: instance_count}
+      resource_def:
+        type: server_with_volumes.yaml
+        properties:
+          volume_size: {get_param: volume_size}
+          volumes_per_instance: {get_param: volumes_per_instance}
+          image: {get_param: image}
+          instance_type: {get_param: instance_type}
+          network: {get_param: network}
