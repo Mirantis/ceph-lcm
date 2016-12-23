@@ -13,11 +13,12 @@ CONTAINER_API_NAME        := decapod/api
 CONTAINER_BASE_NAME       := decapod/base
 CONTAINER_CONTROLLER_NAME := decapod/controller
 CONTAINER_CRON_NAME       := decapod/cron
-CONTAINER_DB_NAME         := decapod/db
 CONTAINER_DB_DATA_NAME    := decapod/db-data
+CONTAINER_DB_NAME         := decapod/db
 CONTAINER_FRONTEND_NAME   := decapod/frontend
-CONTAINER_PLUGINS_NAME    := decapod/base-plugins
 CONTAINER_MIGRATIONS_NAME := decapod/migrations
+CONTAINER_PLUGINS_NAME    := decapod/base-plugins
+CONTAINER_UI_TESTS_NAME   := decapod/ui-tests
 
 # -----------------------------------------------------------------------------
 
@@ -288,6 +289,9 @@ build_container_plugins: build_container_base
 build_container_migrations: build_container_plugins
 	$(call build_image,migrations.dockerfile,$(CONTAINER_MIGRATIONS_NAME))
 
+build_container_ui_tests:
+	$(call build_image,ui-tests.dockerfile,$(CONTAINER_UI_TESTS_NAME),--pull)
+
 # -----------------------------------------------------------------------------
 
 
@@ -334,3 +338,16 @@ copy_example_keys:
 	cp "$(ROOT_DIR)/containerization/files/package_managers/debian_apt.list" "$(ROOT_DIR)" && \
 	cp "$(ROOT_DIR)/containerization/files/package_managers/ubuntu_apt.list" "$(ROOT_DIR)" && \
 	chmod 0600 "$(ROOT_DIR)/ansible_ssh_keyfile.pem"
+
+# -----------------------------------------------------------------------------
+
+run_container_ui_tests:
+	docker run \
+			-it \
+			--rm \
+			-v "$(ROOT_DIR)/ui:/ui" \
+			-w /ui \
+			-e "UID=$(shell id -u $(USER))" \
+			-e "GID=$(shell id -g $(USER))" \
+		$(CONTAINER_UI_TESTS_NAME) \
+		bash -c 'trap "chown -R $${UID}:$${GID} --from root:root /ui" EXIT && rm -rf node_modules && npm install && npm run test-once'

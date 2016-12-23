@@ -156,6 +156,12 @@
                 "search": "(?<=LABEL version=\\\")\\d+.\\d+.\\d+",
                 "dev": false
             }
+        ],
+        "containerization/ui-tests.dockerfile": [
+            {
+                "search": "(?<=LABEL version=\\\")\\d+.\\d+.\\d+",
+                "dev": false
+            }
         ]
     }
 }
