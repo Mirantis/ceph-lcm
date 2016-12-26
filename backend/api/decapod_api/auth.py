@@ -49,6 +49,7 @@ def require_authentication(func):
             LOG.warning("Cannot find not expired token %s", token_id)
             raise exceptions.Unauthorized
 
+        token_model.prolong()
         flask.g.token = token_model
 
         return func(*args, **kwargs)

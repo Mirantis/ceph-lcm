@@ -59,10 +59,13 @@ class AuthView(generic.ModelView):
         LOG.info("User %s (id:%s) has logged in",
                  username, token_model.user_id)
 
+        flask.g.token = token_model
+
         return token_model
 
     @auth.require_authentication
     def delete(self):
         auth.logout(flask.g.token)
-
         LOG.info("User with id %s has logged out", flask.g.token.user_id)
+
+        flask.g.token = None

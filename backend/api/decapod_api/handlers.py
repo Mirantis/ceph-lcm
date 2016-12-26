@@ -52,6 +52,16 @@ def set_global_request_id():
     flask.g.request_id = str(uuid.uuid4())
 
 
+def set_x_token_expires_header(response):
+    """This handler sets header for expired tokens."""
+
+    if hasattr(flask.g, "token") and flask.g.token:
+        response.headers.setdefault(
+            "X-Token-Expires", str(int(flask.g.token.expires_at.timestamp())))
+
+    return response
+
+
 def set_cache_control(response):
     if not (200 <= response.status_code <= 299):
         return response
@@ -97,6 +107,7 @@ def register_handlers(application):
 
     application.before_request(set_global_request_id)
     application.after_request(set_cache_control)
+    application.after_request(set_x_token_expires_header)
 
     application.json_encoder = JSONEncoder
 

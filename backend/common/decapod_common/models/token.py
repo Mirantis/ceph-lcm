@@ -115,6 +115,13 @@ class TokenModel(generic.Model):
 
         return int(CONF["api"]["token"]["ttl_in_seconds"])
 
+    def prolong(self, ttl=None):
+        self.expires_at = timeutils.ttl(ttl or self.default_ttl)
+        self.collection().update_one(
+            {"_id": self._id},
+            {"$set": {"expires_at": self.expires_at}}
+        )
+
     def update_from_db_document(self, structure):
         super().update_from_db_document(structure)
 
