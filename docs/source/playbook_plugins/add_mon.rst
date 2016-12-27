@@ -43,11 +43,11 @@ This plugin is tightly coupled with ceph-ansible versions. Please find
 table below for mapping between plugin version and corresponded version
 of ceph-ansible.
 
-==============    ================================================================
+==============    ============================================================
 Plugin Version    ceph-ansible Version
-==============    ================================================================
->=0.2,<0.3        `v2.0.0 Cow <https://github.com/ceph/ceph-ansible/tree/v2.0.0>`_
-==============    ================================================================
+==============    ============================================================
+>=0.2,<0.3        `v2.1.0 <https://github.com/ceph/ceph-ansible/tree/v2.1.0>`_
+==============    ============================================================
 
 
 Real World Example of Configuration
