@@ -1,9 +1,25 @@
 <div class="modal fade" [id]="id" tabindex="-1" role="dialog" aria-hidden="true"  aria-labelledby="modalLabel">
-  <div class="modal-dialog" [ngClass]="{'modal-lg': isLarge}" role="document">
+  <div
+    id="modal-dialog"
+    class="modal-dialog"
+    [ngClass]="{'modal-lg': isLarge}"
+    role="document"
+  >
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button
+          type="button"
+          class="close"
+          aria-label="Close"
+          (click)="close()"
+        >
           <span aria-hidden="true">&times;</span>
+        </button>
+        <button type="button" *ngIf="!isExpanded()" class="close tiny" aria-label="Expand" (click)="toggleLarge()">
+          <span aria-hidden="true" class="glyphicon glyphicon-resize-full"></span>
+        </button>
+        <button type="button" *ngIf="isExpanded()" class="close tiny" aria-label="Collapse" (click)="toggleLarge()">
+          <span aria-hidden="true" class="glyphicon glyphicon-resize-small"></span>
         </button>
         <h4 class="modal-title" id="modalLabel">{{title}}</h4>
       </div>
@@ -12,7 +28,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
         <p *ngFor="let error of errors">
-           <strong>{{error.error}}:</strong> {{error.message}}
+           {{error.message}}
         </p>
       </div>
       <ng-content></ng-content>

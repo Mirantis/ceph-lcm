@@ -41,13 +41,18 @@ describe('Clusters Component', () => {
     dom = new DOMHelper(fixture);
   });
 
-  it('allows new clusters creation', () => {
+  it('allows new clusters creation', done => {
     dom.click('.page-title .btn-primary')
       .then(() => {
         expect(dom.modal().isVisible).toBeTruthy();
-        dom.click('.modal-footer .btn-primary');
-        expect(dataService.cluster().postCreate).toHaveBeenCalledTimes(1);
-      })
+        expect(dom.select('#save').isDisabled).toBeTruthy('Save disabled if no name entered');
+        dom.select('#cluster_name').setValue('Dummy name')
+          .then(() => {
+            dom.click('#save');
+            expect(dataService.cluster().postCreate).toHaveBeenCalledTimes(1);
+            done();
+          });
+      });
   });
 
   describe('with existing clusters', () => {
@@ -92,7 +97,7 @@ describe('Clusters Component', () => {
       dom.select('.clusters a .edit-icon').parent().click();
       expect(dom.modal().isVisible).toBeTruthy();
       fixture.detectChanges();
-      component.newCluster.data.name = dummyClusterName;
+      component.model.data.name = dummyClusterName;
       dom.click('.modal-footer .btn-primary');
       expect(dataService.cluster().postUpdate).toHaveBeenCalled();
       done();

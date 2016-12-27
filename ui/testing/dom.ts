@@ -18,6 +18,10 @@ export class DOMHelper {
     return !!this.element;
   }
 
+  public get isDisabled(): boolean {
+    return (this.element as HTMLInputElement).disabled;
+  }
+
   public get innerText(): string {
     this.checkElement();
     return this.element.textContent;
@@ -26,6 +30,11 @@ export class DOMHelper {
   public get innerHTML(): string {
     this.checkElement();
     return this.element.innerHTML;
+  }
+
+  public get className(): string {
+    this.checkElement();
+    return this.element.className;
   }
 
   public get value(): string {

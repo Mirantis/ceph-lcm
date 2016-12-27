@@ -1,22 +1,20 @@
-<step [title]="'Configuration Properties'">
-  <div class="form-group">
-    <label class="control-label" for="configuration_name">Configuration Name</label>
+<step [title]="'Name and Cluster'">
+  <div class="form-group" [ngClass]="{'has-error': !model.data.name}">
+    <label class="control-label" for="configuration_name">Name</label>
     <input
       type="text"
       class="form-control"
       name="configuration_name"
       id="configuration_name"
-      placeholder="Name"
       [(ngModel)]="model.data.name"
       required>
   </div>
-  <div class="form-group">
+  <div class="form-group" [ngClass]="{'has-error': !model.data.cluster_id}">
     <label class="control-label" for="configuration_cluster">Cluster</label>
     <select
       class="form-control"
       name="configuration_cluster"
       id="configuration_cluster"
-      placeholder="Cluster"
       [(ngModel)]="model.data.cluster_id"
     >
       <option

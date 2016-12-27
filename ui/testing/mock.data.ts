@@ -58,7 +58,7 @@ export class MockDataService {
           Promise.resolve(createFakeData(amount, Model))
         ),
         find: this.produceSpies(name, 'find').and.returnValue(
-          Promise.resolve(_.first(createFakeData(1, Model).items))
+          Promise.resolve(_.head(createFakeData(1, Model).items))
         ),
         postUpdate: this.produceSpies(name, 'postUpdate').and.returnValue(
           Promise.resolve()

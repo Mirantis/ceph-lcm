@@ -1,155 +1,21 @@
 <div class="modal-body">
-  <form #model="ngForm">
-    <pre>{{ getConfigData() }}</pre>
+  <form #form="ngForm">
+    <pre *ngIf="debug">{{ stringified }}</pre>
     <div #step_container></div>
   </form>
-    <!--template [ngSwitchCase]="1">
-      <h1>Configuration Properties</h1>
-      <div class="form-group">
-        <label class="control-label" for="configuration_name">Configuration Name</label>
-        <input
-          type="text"
-          class="form-control"
-          name="configuration_name"
-          id="configuration_name"
-          placeholder="Name"
-          [(ngModel)]="newConfiguration.data.name"
-          required>
-      </div>
-      <div class="form-group">
-        <label class="control-label" for="configuration_cluster">Cluster</label>
-        <select
-          class="form-control"
-          name="configuration_cluster"
-          id="configuration_cluster"
-          placeholder="Cluster"
-          [ngModel]="newConfiguration.data.cluster_id"
-          (ngModelChange)="newConfiguration.data.cluster_id = $event.target.value"
-          required
-        >
-          <option
-            *ngFor="let cluster of clusters"
-            [value]="cluster.id"
-          >
-            {{cluster.data.name}}
-          </option>
-        </select>
-      </div>
-    </template>
-
-    <template [ngSwitchCase]="2">
-      <h1>Select Playbook</h1>
-      <div class="">
-        <div class="col-xs-12 grid">
-          <div class="grid-line table-help">
-            <div class="col-xs-9">Name</div>
-            <div class="col-xs-3 text-right">Servers Required</div>
-          </div>
-
-          <div class="grid-line" *ngFor="let playbook of getAllowedPlaybooks()">
-            <div class="col-xs-11 name">
-              <label title="{{playbook.description}}">
-                <input
-                  (click)="selectPlaybook(playbook)"
-                  id="playbook"
-                  name="playbook"
-                  [value]="playbook.id"
-                  [checked]="newConfiguration.data.playbook_id === playbook.id"
-                  type="radio"
-                  required
-                > {{playbook.name|trim_by:60}}
-              </label>
-            </div>
-            <div class="col-xs-1 icon">
-              <span *ngIf="playbook.required_server_list" class="glyphicon glyphicon-ok"></span>
-            </div>
-          </div>
-          <input
-            type="hidden"
-            name="playbook_check"
-            [(ngModel)]="newConfiguration.data.playbook_id"
-            required
-          >
-        </div>
-      </div>
-    </template>
-
-    <template [ngSwitchCase]="3">
-      <h1>{{selectedPlaybook.name}} Parameters</h1>
-      <div class="">
-        <div class="col-xs-12 grid">
-          <div class="grid-line table-help">
-            <div class="col-xs-10">Parameter</div>
-            <div class="col-xs-2 text-right">Value</div>
-          </div>
-          <hint
-            *ngFor="let hint of selectedPlaybook.hints"
-            [scheme]="addHintValue(hint)"
-            (callback)="registerHint($event)"
-          ></hint>
-        </div>
-      </div>
-    </template>
-
-    <template [ngSwitchCase]="4">
-      <h1>Select Servers</h1>
-      <div>
-        <div class="col-xs-12 grid">
-          <div class="grid-line table-help">
-            <div class="col-xs-11 name">
-              <label>
-                <input
-                  id="select_all"
-                  name="select_all"
-                  (click)="toggleSelectAll(this)"
-                  [checked]="areAllServersSelected()"
-                  type="checkbox"
-                  required
-                > SELECT ALL
-              </label>
-            </div>
-            <div class="col-xs-1 text-right">Info</div>
-          </div>
-
-          <div class="grid-line" *ngFor="let server of servers">
-            <div class="col-xs-11 name">
-              <label>
-                <input
-                  type="checkbox"
-                  (change)="toggleServer(server)"
-                  [checked]="isServerSelected(server)"
-                  required
-                > {{server.data.name|trim_by:60}}
-              </label>
-            </div>
-            <div class="col-xs-1 icon">
-              <span class="glyphicon glyphicon-info-sign"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </template>
-  </form>
-  <form #editConfigurationForm="ngForm" [ngSwitch]="step">
-    <template [ngSwitchCase]="5">
-      <h1>Configuration</h1>
-      <div class="form-group" [ngClass]="{'has-error': !isJSONValid()}">
-        <textarea
-          class="form-control mono"
-          rows="10"
-          name="configuration"
-          [(ngModel)]="jsonConfiguration"
-          [readonly]="readonly"
-        ></textarea>
-      </div>
-    </template>
-  </form-->
 </div>
 <div class="modal-footer">
-  <button class="btn btn-default pull-left" (click)="modal.close();step=1">
-    Discard
+  <button
+    id="close"
+    class="btn btn-default"
+    [ngClass]="{'pull-left': !isReadOnly || !isSingleStep}"
+    (click)="modal.close()"
+  >
+    {{ isReadOnly ? 'Close' : 'Discard' }}
   </button>
   <button
+    *ngIf="!isSingleStep"
+    id="previous"
     class="btn btn-default"
     (click)="go(-1)"
     [disabled]="getStep(-1) === null"
@@ -157,13 +23,17 @@
       &nbsp;<span class="glyphicon glyphicon-menu-left"></span>&nbsp;
   </button>
   <button
+    *ngIf="!isSingleStep"
+    id="next"
     class="btn btn-primary"
     (click)="go(1)"
     [disabled]="getStep(1) === null || !stepIsValid()"
   >
-    Next
+    &nbsp;<span class="glyphicon glyphicon-menu-right"></span>&nbsp;
   </button>
   <button
+    *ngIf="!isReadOnly"
+    id="save"
     class="btn btn-primary"
     (click)="save()"
     [disabled]="!modelIsValid()"

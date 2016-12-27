@@ -59,7 +59,7 @@
     "@types/bootstrap": "^3.3.32",
     "@types/jasmine": "^2.5.38",
     "@types/jquery": "^2.0.33",
-    "@types/lodash": "^4.14.38",
+    "@types/lodash": "^4.14.44",
     "@types/node": "^6.0.46",
     "@types/selenium-webdriver": "^2.53.34",
     "autoprefixer": "^6.5.0",

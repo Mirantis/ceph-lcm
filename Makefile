@@ -343,7 +343,6 @@ copy_example_keys:
 
 run_container_ui_tests:
 	docker run \
-			-it \
 			--rm \
 			-v "$(ROOT_DIR)/ui:/ui" \
 			-w /ui \

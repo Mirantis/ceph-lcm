@@ -7099,6 +7099,9 @@ a:hover {
 a:hover > .glyphicon {
   opacity: 1;
 }
+textarea {
+  resize: none;
+}
 .text-muted {
   color: #acb0b2;
 }
@@ -7648,6 +7651,10 @@ a.grid .grid-header .icon:focus {
 .modal-header .close {
   margin-top: 2px;
 }
+.modal-header .close.tiny {
+  font-size: 18px;
+  margin-right: 10px;
+}
 .modal-errors {
   background-color: #f2dede;
   border-color: #ebccd1;
@@ -7715,6 +7722,12 @@ a.grid .grid-header .icon:focus {
 }
 .modal-footer {
   border: 0;
+}
+.wizard-step .has-error .control-label {
+  color: inherit;
+}
+.wizard-step .has-error .form-control.ng-untouched {
+  border-color: inherit;
 }
 .login-background {
   position: absolute;

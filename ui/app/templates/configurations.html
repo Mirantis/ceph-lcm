@@ -83,8 +83,7 @@
 
 <modal [title]="'Playbook Configuration'">
   <wizard
-    [model]="model"
-    [steps]="configurationCreationSteps"
+    [steps]="configurationSteps"
     (saveHandler)="save($event)"
   ></wizard>
 </modal>

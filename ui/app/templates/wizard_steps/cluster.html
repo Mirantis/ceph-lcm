@@ -1,0 +1,12 @@
+<step [title]="'Cluster Name'">
+  <div class="form-group" [ngClass]="{'has-error': !model.data.name}">
+    <label class="control-label" for="configuration_name">Name</label>
+    <input
+      type="text"
+      class="form-control"
+      name="cluster_name"
+      id="cluster_name"
+      [(ngModel)]="model.data.name"
+      required>
+  </div>
+</step>

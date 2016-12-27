@@ -16,7 +16,7 @@ function isJsFile(path) {
 }
 
 function isSpecFile(path) {
-  return /wizard\.spec\.(.*\.)?js$/.test(path);
+  return /\.spec\.(.*\.)?js$/.test(path);
 }
 
 function isBuiltFile(path) {

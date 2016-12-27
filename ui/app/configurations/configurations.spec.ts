@@ -62,7 +62,7 @@ describe('Playbook (Plugin) Configuration Component', () => {
         expect(component.playbooks.length).toEqual(amount);
         let playbooks = component.getPlaybooksForFilter();
         expect(playbooks.length).toEqual(amount);
-        expect(_.first(playbooks)).toEqual(['Dummy Name 0', 'id0']);
+        expect(_.head(playbooks)).toEqual(['Dummy Name 0', 'id0']);
         done();
       });
   });

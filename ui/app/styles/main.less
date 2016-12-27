@@ -26,6 +26,10 @@ a {
   }
 }
 
+textarea {
+  resize: none;
+}
+
 .text-muted   {color:@background - 50%;}
 .text-primary {color: @text;}
 .text-info    {color: @blue;}
@@ -572,6 +576,10 @@ label {
   }
   .close {
     margin-top: 2px;
+    &.tiny {
+      font-size: 18px;
+      margin-right: 10px;
+    }
   }
 }
 .modal-errors {
@@ -612,6 +620,17 @@ label {
 }
 .modal-footer {
   border: 0;
+}
+
+.wizard-step {
+  .has-error {
+    .control-label {
+      color: inherit;
+    }
+    .form-control.ng-untouched {
+      border-color: inherit;
+    }
+  }
 }
 
 // LOGIN

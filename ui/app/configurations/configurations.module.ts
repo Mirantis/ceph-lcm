@@ -3,18 +3,16 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import {
-  ConfigurationsComponent, WizardComponent, HintComponent,
-  WizardStepContainer, NameAndClusterStep, PlaybookStep, HintsStep, ServersStep
-} from './index';
+import { ConfigurationsComponent, HintComponent } from './index';
+
+import { NameAndClusterStep, PlaybookStep, HintsStep, ServersStep, JsonConfigurationStep } from './wizard_steps/index';
 import { WizardService } from '../services/wizard';
 import { SharedModule } from '../shared.module';
 
 @NgModule({
   declarations: [
     ConfigurationsComponent,
-    WizardComponent,
-    WizardStepContainer, NameAndClusterStep, PlaybookStep, HintsStep, ServersStep,
+    NameAndClusterStep, PlaybookStep, HintsStep, ServersStep, JsonConfigurationStep,
     HintComponent
   ],
   imports: [
@@ -24,15 +22,14 @@ import { SharedModule } from '../shared.module';
     SharedModule
   ],
   entryComponents: [
-    NameAndClusterStep, PlaybookStep, HintsStep, ServersStep
+    NameAndClusterStep, PlaybookStep, HintsStep, ServersStep, JsonConfigurationStep
   ],
   providers: [
     WizardService
   ],
   exports: [
     ConfigurationsComponent,
-    WizardComponent,
-    WizardStepContainer, NameAndClusterStep, PlaybookStep, HintsStep, ServersStep,
+    NameAndClusterStep, PlaybookStep, HintsStep, ServersStep, JsonConfigurationStep,
     HintComponent
   ]
 })

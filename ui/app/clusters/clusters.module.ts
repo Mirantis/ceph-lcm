@@ -6,10 +6,11 @@ import { RouterModule } from '@angular/router';
 import { SharedModule } from '../shared.module';
 
 import { ClustersComponent } from './index';
+import { ClusterStep } from './wizard_steps/cluster';
 
 @NgModule({
   declarations: [
-    ClustersComponent
+    ClustersComponent, ClusterStep
   ],
   imports: [
     BrowserModule,
@@ -17,8 +18,11 @@ import { ClustersComponent } from './index';
     FormsModule,
     SharedModule
   ],
+  entryComponents: [
+    ClusterStep
+  ],
   exports: [
-    ClustersComponent
+    ClustersComponent, ClusterStep
   ]
 })
 export class ClustersModule { }

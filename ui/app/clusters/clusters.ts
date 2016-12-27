@@ -2,6 +2,8 @@ import { Component, ViewChild } from '@angular/core';
 import { Modal, Filter, Pager } from '../directives';
 import { DataService, pagedResult } from '../services/data';
 import { Cluster } from '../models';
+import { WizardComponent } from '../wizard';
+import { ClusterStep } from './wizard_steps/cluster';
 
 import * as _ from 'lodash';
 import * as $ from 'jquery';
@@ -11,11 +13,17 @@ import * as $ from 'jquery';
 })
 export class ClustersComponent {
   clusters: Cluster[] = null;
-  newCluster: Cluster = new Cluster({});
+  model: Cluster = new Cluster({});
+  @ViewChild(WizardComponent) wizard: WizardComponent;
   @ViewChild(Filter) filter: Filter;
   @ViewChild(Pager) pager: Pager;
   pagedData: pagedResult = {} as pagedResult;
   shownClusterId: string = null;
+
+  clusterSteps = [
+    ClusterStep
+  ];
+
 
   constructor(private data: DataService, private modal: Modal) {
     this.fetchData();
@@ -51,18 +59,19 @@ export class ClustersComponent {
   }
 
   editCluster(cluster: Cluster = null) {
-    this.newCluster = _.isNull(cluster) ? new Cluster({}) : cluster.clone();
+    this.model = cluster ? cluster.clone() : new Cluster({});
+    this.wizard.init(this.model);
     this.modal.show();
   }
 
-  save() {
+  save(model: Cluster) {
     var savePromise: Promise<any>;
-    if (this.newCluster.id) {
+    if (model.id) {
       // Update cluster
-      savePromise = this.data.cluster().postUpdate(this.newCluster.id, this.newCluster);
+      savePromise = this.data.cluster().postUpdate(model.id, model);
     } else {
       // Create new cluster
-      savePromise = this.data.cluster().postCreate(this.newCluster);
+      savePromise = this.data.cluster().postCreate(model);
     }
     return savePromise
       .then(

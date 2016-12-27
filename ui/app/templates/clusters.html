@@ -71,28 +71,10 @@
 </div>
 
 <modal
-  [title]="newCluster.id ? 'Edit Cluster' : 'Create New Cluster'"
+  [title]="model.id ? 'Edit Cluster' : 'Create New Cluster'"
 >
-  <div class="modal-body">
-    <form #newClusterForm="ngForm">
-      <div class="form-group">
-        <label for="cluster_name">Cluster Name</label>
-        <input
-          type="text"
-          class="form-control"
-          name="cluster_name"
-          id="cluster_name"
-          placeholder="Name"
-          [(ngModel)]="newCluster.data.name"
-          required>
-      </div>
-    </form>
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-default" (click)="modal.close()">Cancel</button>
-    <button
-      class="btn btn-primary"
-      (click)="save()"
-      [disabled]="!newClusterForm.form.valid">Save changes</button>
-  </div>
+  <wizard
+    [steps]="clusterSteps"
+    (saveHandler)="save($event)"
+  ></wizard>
 </modal>
