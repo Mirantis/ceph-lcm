@@ -1,0 +1,49 @@
+---
+# Playbook for telegraf_integration
+
+- name: Update Telegraf config for Ceph
+  hosts: telegraf
+  become: true
+  gather_facts: false
+
+  handlers:
+    - name: restart telegraf
+      systemd:
+        name: telegraf
+        state: restarted
+
+  tasks:
+    - name: Get state of configfile
+      stat:
+        path: "{{ configpath }}"
+      register: configstat
+
+    - fail:
+        msg: "Config file {{ configpath }} is not readable and writable"
+      when: configstat.stat.readable is not defined  or
+            not configstat.stat.readable             or
+            configstat.stat.writeable is not defined or
+            not configstat.stat.writeable            or
+            configstat.stat.isdir is not defined     or
+            configstat.stat.isdir
+
+    - name: Update config
+      blockinfile:
+        marker: "## {mark} DECAPOD TELEGRAF INTEGRATION PLUGIN"
+        backup: yes
+        insertafter: EOF
+        dest: "{{ configpath }}"
+        block: |
+          [[inputs.ceph]]
+            interval                  = {{ interval|to_json }}
+            ceph_binary               = {{ ceph_binary|to_json }}
+            socket_dir                = {{ socket_dir|to_json }}
+            mon_prefix                = {{ mon_prefix|to_json }}
+            osd_prefix                = {{ osd_prefix|to_json }}
+            socket_suffix             = {{ socket_suffix|to_json }}
+            ceph_user                 = {{ ceph_user|to_json }}
+            ceph_config               = {{ ceph_config|to_json }}
+            gather_admin_socket_stats = {{ gather_admin_socket_stats|bool|to_json }}
+            gather_cluster_stats      = {{ gather_cluster_stats|bool|to_json }}
+      notify:
+        - restart telegraf

@@ -10,12 +10,13 @@ ARG pip_index_url=
 ARG npm_registry_url=
 
 
-COPY .git                            /project/.git
-COPY plugins/playbook/add_mon        /project/add_mon
-COPY plugins/playbook/add_osd        /project/add_osd
-COPY plugins/playbook/deploy_cluster /project/deploy_cluster
-COPY plugins/playbook/purge_cluster  /project/purge_cluster
-COPY plugins/playbook/remove_osd     /project/remove_osd
+COPY .git                                  /project/.git
+COPY plugins/playbook/add_mon              /project/add_mon
+COPY plugins/playbook/add_osd              /project/add_osd
+COPY plugins/playbook/deploy_cluster       /project/deploy_cluster
+COPY plugins/playbook/purge_cluster        /project/purge_cluster
+COPY plugins/playbook/remove_osd           /project/remove_osd
+COPY plugins/playbook/telegraf_integration /project/telegraf_integration
 
 
 RUN set -x \

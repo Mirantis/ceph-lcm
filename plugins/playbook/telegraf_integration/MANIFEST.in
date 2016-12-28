@@ -1,0 +1,2 @@
+include decapod_plugin_playbook_telegraf_integration/config.yaml
+include decapod_plugin_playbook_telegraf_integration/plugin.yaml

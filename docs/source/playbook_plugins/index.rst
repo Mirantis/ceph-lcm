@@ -33,7 +33,7 @@ Official Plugins
    remove_osd
    add_mon
    purge_cluster
-
+   telegraf_integration
 
 
 
