@@ -68,7 +68,7 @@ describe('Configuration wizard: hints step component', () => {
 
   it('keeps hints values between the step switches', () => {
     let dummyId = 'id1';
-    let dummyHint = {id: dummyId, default_value: 2} as Hint;
+    let dummyHint: Hint = {id: dummyId, default_value: 2};
     component.addHintValue(dummyHint);
     expect(dummyHint.value).toBe(2);
     component.registerHint({id: dummyId, value: 1, isValid: true});
