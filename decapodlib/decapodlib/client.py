@@ -1609,7 +1609,7 @@ class V1Client(Client):
 
     @no_auth
     def get_info(self, **kwargs):
-        """This method fetches basic data from Shrimp API.
+        """This method fetches basic data from Decapod API.
 
         It makes no sense to use this method for anything, it is just a
         healthcheck that service actually works.
