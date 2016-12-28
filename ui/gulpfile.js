@@ -103,7 +103,7 @@ gulp.task('copy:images', function () {
 
 // Copy templates
 gulp.task('copy:templates', function () {
-  return gulp.src('app/templates/*.html')
+  return gulp.src('app/templates/**/*.html')
   .pipe(gulp.dest('build/app/templates'));
 });
 
@@ -132,7 +132,7 @@ gulp.task('modify:index', function () {
 
 // Modifies endpoint to be host-independent
 gulp.task('modify:endpoint', function () {
-  return gulp.src('build/js/*.js')
+  return gulp.src('build/js/**/*.js')
   .pipe(replace('http://localhost:9999/v', '/v'))
   .pipe(gulp.dest('build/js'));
 });
