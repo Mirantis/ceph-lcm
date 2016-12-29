@@ -94,12 +94,11 @@ module.exports = function(config) {
       dir: 'coverage/'
     },
 
-    // the default junit configuration
     junitReporter: {
       outputDir: '',
-      outputFile: undefined,
+      outputFile: "test-results.xml",
       suite: '',
-      useBrowserName: true,
+      useBrowserName: false,
       nameFormatter: undefined,
       classNameFormatter: undefined,
       properties: {}
