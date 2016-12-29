@@ -90,8 +90,10 @@ module.exports = function(config) {
 
     // karma coverage reporter configuration
     coverageReporter: {
-      type: 'html',
-      dir: 'coverage/'
+      type: 'text',
+      dir: '.',
+      subdir: '.',
+      file: 'test-coverage.txt'
     },
 
     junitReporter: {
