@@ -48,13 +48,18 @@ export class HintComponent implements OnChanges {
     switch(this.scheme.type) {
       case 'integer':
         tempResult = Math.round(this.value);
-        if (1 * this.value !== tempResult) {
+        if (+this.value !== tempResult) {
           this.isValid = false;
         }
         break;
       case 'boolean':
         tempResult = !!this.value;
         break;
+      case 'select':
+        tempResult = this.value;
+        if (!_.includes(this.scheme.values, this.value)) {
+          this.isValid = false;
+        }
       default:
         tempResult = this.value;
     }
