@@ -10,13 +10,7 @@ ARG pip_index_url=
 ARG npm_registry_url=
 
 
-COPY .git                                  /project/.git
-COPY plugins/playbook/add_mon              /project/add_mon
-COPY plugins/playbook/add_osd              /project/add_osd
-COPY plugins/playbook/deploy_cluster       /project/deploy_cluster
-COPY plugins/playbook/purge_cluster        /project/purge_cluster
-COPY plugins/playbook/remove_osd           /project/remove_osd
-COPY plugins/playbook/telegraf_integration /project/telegraf_integration
+COPY .git /project/.git
 
 
 RUN set -x \
@@ -29,7 +23,17 @@ RUN set -x \
     \
     # workaround for https://github.com/pypa/pip/issues/4180
   && ln -s /project/.git /tmp/.git && ln -s /project/.git /.git \
-  && pip3 install --no-cache-dir /project/* \
+  && cd /project \
+  && git reset --hard \
+  && git submodule update --init --recursive \
+  && scd -v \
+  && pip3 install --no-cache-dir \
+    /project/plugins/playbook/add_mon \
+    /project/plugins/playbook/add_osd \
+    /project/plugins/playbook/deploy_cluster \
+    /project/plugins/playbook/purge_cluster \
+    /project/plugins/playbook/remove_osd \
+    /project/plugins/playbook/telegraf_integration \
   && rm -r /project /tmp/.git /.git \
   && apt-get clean \
   && apt-get purge -y git python3-dev python3-pip gcc \

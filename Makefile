@@ -180,7 +180,7 @@ clean_debs:
 
 
 build_eggs: build_backend_eggs build_decapodlib_eggs build_decapodcli_eggs \
-	build_plugins_eggs build_buildtools_eggs
+	build_plugins_eggs
 build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs \
 	build_ansible_eggs build_monitoring_eggs build_migration_eggs \
 	build_docker_eggs
@@ -244,9 +244,6 @@ build_purge_cluster_eggs: clean_eggs make_egg_directory
 
 build_telegraf_integration_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/plugins/playbook/telegraf_integration","$(EGGS_DIR)")
-
-build_buildtools_eggs: clean_eggs make_egg_directory
-	$(call build_egg,"$(ROOT_DIR)/buildtools","$(EGGS_DIR)")
 
 clean_eggs:
 	rm -rf "$(OUTPUT_DIR)"

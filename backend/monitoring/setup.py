@@ -18,7 +18,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapod-ansible ~= 0.2.0.dev0",  # BUMPVERSION
+    "decapod-ansible~=0.2.dev1",
     "PyMongo[tls]>=3.3,<3.4",
     "PyYAML>=3.11,<5",
     "ipaddr>=2.1,<2.2"
@@ -29,6 +29,7 @@ setuptools.setup(
     name="decapod-monitoring",
     description="Custom monitoring plugin for Decapod",
     long_description="",  # TODO
+    version="0.2.0.dev1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",
@@ -51,13 +52,6 @@ setuptools.setup(
         ]
     },
     zip_safe=True,
-    setup_requires=["decapod-buildtools ~= 0.2.0.dev0"],  # BUMPVERSION
-    use_scm_version={
-        "version_scheme": "decapod-version",
-        "local_scheme": "decapod-local",
-        "root": "../..",
-        "relative_to": __file__
-    },
     classifiers=(
         "Intended Audience :: Information Technology",
         "Intended Audience :: System Administrators",

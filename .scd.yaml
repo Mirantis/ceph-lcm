@@ -1,0 +1,235 @@
+version:
+  number: "0.2.0.dev1"
+  scheme: git_pep440
+
+search_patterns:
+  setuppy: '(?<=version="){{ pep440 }}'
+  pycommon: '(?<=decapod-common~=){{ pep440 }}'
+  docker: '(?<=LABEL\sversion="){{ pep440 }}'
+  packagejson: '(?<=version":\s"){{ pep440 }}'
+  deb_common_min: '(?<=decapod-common\s\(>=\s){{ pep440 }}'
+  deb_common_max: '(?<=decapod-common\s\(<<\s){{ pep440 }}'
+
+replacement_patterns:
+  docker: "{{ major }}.{{ minor }}.{{ patch }}"
+  setuppy: "{{ full }}"
+  pycommon_mm: "{{ major }}.{{ minor }}{% if dev %}.dev{{ dev }}{% endif %}"
+  packagejson: "{{ major }}.{{ minor }}.{{ patch }}"
+  deb_common_max: "{{ major }}.{{ next_minor }}"
+  deb_common_min: "{{ major }}.{{ minor }}"
+
+defaults:
+  search: full
+  replacement: pep440
+
+files:
+  containerization/backend-api.dockerfile:
+    - search: docker
+      replace: docker
+  containerization/backend-base.dockerfile:
+    - search: docker
+      replace: docker
+  containerization/backend-controller.dockerfile:
+    - search: docker
+      replace: docker
+  containerization/backend-cron.dockerfile:
+    - search: docker
+      replace: docker
+  containerization/backend-plugins.dockerfile:
+    - search: docker
+      replace: docker
+  containerization/db-data.dockerfile:
+    - search: docker
+      replace: docker
+  containerization/db.dockerfile:
+    - search: docker
+      replace: docker
+  containerization/frontend.dockerfile:
+    - search: docker
+      replace: docker
+  containerization/migrations.dockerfile:
+    - search: docker
+      replace: docker
+  containerization/ui-tests.dockerfile:
+    - search: docker
+      replace: docker
+
+  ui/package.json:
+    - search: packagejson
+      replace: packagejson
+
+  decapodlib/setup.py:
+    - search: setuppy
+      replace: setuppy
+  decapodcli/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search_raw: '(?<=decapodlib~=){{ pep440 }}'
+      replace: pycommon_mm
+  backend/ansible/setup.py:
+    - search: setuppy
+      replace: setuppy
+  backend/api/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  backend/common/setup.py:
+    - search: setuppy
+      replace: setuppy
+  backend/controller/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  backend/docker/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  backend/migration/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  backend/monitoring/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search_raw: '(?<=decapod-ansible~=){{ pep440 }}'
+      replace: pycommon_mm
+  plugins/alerts/emails/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/__template__/{{cookiecutter.plugin_name}}/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/add_mon/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/add_osd/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/deploy_cluster/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/playbook_helloworld/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/purge_cluster/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/purge_cluster/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/remove_osd/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/server_discovery/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/telegraf_integration/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+
+  backend/api/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  backend/controller/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  backend/migration/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  backend/monitoring/stdeb.cfg:
+    - search_raw: '(?<=decapod-ansible\s\(>=\s){{ pep440 }}'
+      replace: deb_common_min
+    - search_raw: '(?<=decapod-ansible\s\(<<\s){{ pep440 }}'
+      replace: deb_common_max
+  decapodcli/stdeb.cfg:
+    - search_raw: '(?<=decapodlib\s\(>=\s){{ pep440 }}'
+      replace: deb_common_min
+    - search_raw: '(?<=decapodlib\s\(<<\s){{ pep440 }}'
+      replace: deb_common_max
+  decapodlib/stdeb.cfg:
+    - search_raw: '(?<=decapod-cli\s\(>=\s){{ pep440 }}'
+      replace: deb_common_min
+    - search_raw: '(?<=decapod-cli\s\(<<\s){{ pep440 }}'
+      replace: deb_common_max
+  plugins/alerts/emails/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/__template__/{{cookiecutter.plugin_name}}/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/add_mon/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/add_osd/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/deploy_cluster/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/playbook_helloworld/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/purge_cluster/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/remove_osd/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/server_discovery/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/telegraf_integration/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max

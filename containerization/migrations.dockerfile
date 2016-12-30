@@ -11,10 +11,7 @@ ARG pip_index_url=
 ARG npm_registry_url=
 
 
-COPY backend/api        /project/api
-COPY backend/controller /project/controller
-COPY backend/migration  /project/migration
-COPY .git               /.git
+COPY .git /project/.git
 
 
 RUN set -x \
@@ -28,7 +25,13 @@ RUN set -x \
     \
     # workaround for https://github.com/pypa/pip/issues/4180
   && ln -s /project/.git /tmp/.git && ln -s /project/.git /.git \
-  && pip3 install --no-cache-dir /project/* \
+  && cd /project \
+  && git reset --hard \
+  && scd -v \
+  && pip3 install --no-cache-dir \
+    /project/backend/api \
+    /project/backend/controller \
+    /project/backend/migration \
   && rm -r /project /.git /tmp/.git \
   && apt-get clean \
   && apt-get purge -y git libffi-dev python3-pip python3-dev gcc \

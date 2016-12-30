@@ -10,10 +10,7 @@ ARG pip_index_url=
 ARG npm_registry_url=
 
 
-COPY backend/api                      /project/api
-COPY constraints.txt                  /constraints.txt
-COPY containerization/files/uwsgi.ini /etc/decapod-api-uwsgi.ini
-COPY .git                             /project/.git
+COPY .git /project/.git
 
 
 RUN set -x \
@@ -29,9 +26,12 @@ RUN set -x \
     \
     # workaround for https://github.com/pypa/pip/issues/4180
   && ln -s /project/.git /tmp/.git && ln -s /project/.git /.git \
-  && pip3 install --no-cache-dir -c /constraints.txt uwsgi \
-  && pip3 install --no-cache-dir /project/api \
-  && rm -r /project /.git /tmp/.git /constraints.txt \
+  && cd /project \
+  && git reset --hard \
+  && scd -v \
+  && pip3 install --no-cache-dir -c /project/constraints.txt uwsgi \
+  && pip3 install --no-cache-dir /project/backend/api \
+  && rm -r /project /.git /tmp/.git \
   && apt-get clean \
   && apt-get purge -y git libffi-dev libpcre3-dev python3-dev python3-pip gcc \
   && apt-get autoremove -y \

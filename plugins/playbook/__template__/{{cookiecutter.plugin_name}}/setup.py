@@ -21,13 +21,14 @@ import setuptools
 setuptools.setup(
     name="{{ cookiecutter.package|replace('_', '-') }}",
     description="{{ cookiecutter.description }}",
+    version="0.2.0.dev1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
     packages=setuptools.find_packages(),
     entry_points={
         "decapod.playbooks": [
-            "{{ cookiecutter.entry_point }} = {{ cookiecutter.package }}.plugin:{{ cookiecutter.plugin_class_name }}"
+            "{{ cookiecutter.entry_point }} = {{ cookiecutter.package }}.plugin:{{ cookiecutter.plugin_class_name }}"  # NOQA
         ]
     },
     python_requires=">= 3.4",
@@ -39,14 +40,7 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "decapod_common ~= 0.2.0.dev0"  # BUMPVERSION
+        "decapod-common~=0.2.dev1"
     ],
-    setup_requires=["decapod-buildtools ~= 0.2.0.dev0"],  # BUMPVERSION
-    use_scm_version={
-        "version_scheme": "decapod-version",
-        "local_scheme": "decapod-local",
-        "root": "../../..",
-        "relative_to": __file__
-    },
     zip_safe=False
 )

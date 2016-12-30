@@ -10,11 +10,7 @@ ARG pip_index_url=
 ARG npm_registry_url=
 
 
-COPY backend/monitoring                    /project/monitoring
-COPY buildtools                            /project/buildtools
-COPY containerization/files/cron-caddyfile /etc/caddy/config
-COPY containerization/files/crontab        /decapod
-COPY .git                                  /project/.git
+COPY .git /project/.git
 
 
 RUN set -x \
@@ -29,17 +25,21 @@ RUN set -x \
     \
     # workaround for https://github.com/pypa/pip/issues/4180
   && ln -s /project/.git /tmp/.git && ln -s /project/.git /.git \
-  && pip2 install --no-cache-dir /project/buildtools \
-  && pip2 install --no-cache-dir /project/monitoring \
+  && cd /project \
+  && git reset --hard \
+  && scd -v \
+  && pip2 install --no-cache-dir /project/backend/monitoring \
   && curl --silent --show-error --fail --location \
     --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
     "https://caddyserver.com/download/build?os=linux&arch=amd64&features=" | \
     tar --no-same-owner -C /usr/bin/ -xz caddy \
   && chmod 0755 /usr/bin/caddy \
   && mkdir -p /www \
-  && cat /decapod | crontab - \
+  && cat /project/containerization/files/crontab | crontab - \
+  && mkdir -p /etc/caddy \
+  && mv /project/containerization/files/cron-caddyfile /etc/caddy/config \
   && mkfifo /var/log/cron.log \
-  && rm -r /decapod /project /tmp/.git /.git \
+  && rm -r /project /tmp/.git /.git \
   && apt-get clean \
   && apt-get purge -y git gcc python-dev python-pip curl \
   && apt-get autoremove -y \

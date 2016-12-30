@@ -27,6 +27,7 @@ setuptools.setup(
     name="decapod-ansible",
     description="Decapod Ansible files",
     long_description="",  # TODO
+    version="0.2.0.dev1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",
@@ -51,13 +52,6 @@ setuptools.setup(
         "console_scripts": [
             "decapod-ansible-deploy-config = decapod_ansible.generate_config:write_config"  # NOQA
         ]
-    },
-    setup_requires=["decapod-buildtools ~= 0.2.0.dev0"],  # BUMPVERSION
-    use_scm_version={
-        "version_scheme": "decapod-version",
-        "local_scheme": "decapod-local",
-        "root": "../..",
-        "relative_to": __file__
     },
     classifiers=(
         "Intended Audience :: Information Technology",

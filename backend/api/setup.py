@@ -18,7 +18,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapod-common ~= 0.2.0.dev0",  # BUMPVERSION
+    "decapod-common~=0.2.dev1",
     "Flask>=0.11,<0.12",
     "jsonschema>=2.5,<2.6"
 )
@@ -28,6 +28,7 @@ setuptools.setup(
     name="decapod-api",
     description="Decapod API service",
     long_description="",  # TODO
+    version="0.2.0.dev1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",
@@ -38,13 +39,6 @@ setuptools.setup(
     python_requires=">=3.4",
     install_requires=REQUIREMENTS,
     zip_safe=True,
-    setup_requires=["decapod-buildtools ~= 0.2.0.dev0"],  # BUMPVERSION
-    use_scm_version={
-        "version_scheme": "decapod-version",
-        "local_scheme": "decapod-local",
-        "root": "../..",
-        "relative_to": __file__
-    },
     classifiers=(
         "Intended Audience :: Information Technology",
         "Intended Audience :: System Administrators",

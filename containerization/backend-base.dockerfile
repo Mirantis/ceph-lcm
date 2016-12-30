@@ -22,14 +22,9 @@ RUN set -x \
   && rm -r /var/lib/apt/lists/*
 
 
-COPY backend/common                    /project/backend/common
-COPY backend/docker                    /project/backend/docker
-COPY buildtools                        /project/buildtools
-COPY config.yaml                       /etc/decapod/config.yaml
-COPY .git                              /project/.git
-COPY plugins/alerts/emails             /project/plugins/alerts/emails
-COPY plugins/playbook/server_discovery /project/plugins/playbook/server_discovery
-COPY ubuntu_apt.list                   /etc/apt/sources.list
+COPY config.yaml     /etc/decapod/config.yaml
+COPY .git            /project/.git
+COPY ubuntu_apt.list /etc/apt/sources.list
 
 
 RUN set -x \
@@ -52,17 +47,21 @@ RUN set -x \
     \
     # workaround for https://github.com/pypa/pip/issues/4180
   && ln -s /project/.git /tmp/.git && ln -s /project/.git /.git \
+  && cd /project \
+  && git reset --hard \
   && wget --no-check-certificate https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64.deb \
   && dpkg -i dumb-init_1.2.0_amd64.deb \
   && rm dumb-init_*.deb \
   && wget --no-check-certificate https://github.com/jwilder/dockerize/releases/download/v0.3.0/dockerize-linux-amd64-v0.3.0.tar.gz \
   && tar -C /usr/local/bin -xzf dockerize-linux-amd64-v0.3.0.tar.gz \
   && rm dockerize-linux-amd64-v0.3.0.tar.gz \
-  && pip3 install --no-cache-dir /project/buildtools \
+  && pip3 --no-cache-dir install scd[yaml] \
+  && scd -v \
   && pip3 --no-cache-dir install \
-    /project/backend/* \
-    /project/plugins/alerts/* \
-    /project/plugins/playbook/* \
+    /project/backend/common \
+    /project/backend/docker \
+    /project/plugins/alerts/emails \
+    /project/plugins/playbook/server_discovery \
   && apt-get clean \
   && apt-get purge -y git wget libffi-dev libssl-dev libyaml-dev gcc python3-dev python3-pip \
   && apt-get autoremove -y \

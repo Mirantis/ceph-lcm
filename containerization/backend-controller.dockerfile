@@ -11,9 +11,6 @@ ARG npm_registry_url=
 
 
 COPY ansible_ssh_keyfile.pem /root/.ssh/id_rsa
-COPY backend/ansible         /project/ansible
-COPY backend/controller      /project/controller
-COPY buildtools              /project/buildtools
 COPY .git                    /project/.git
 
 
@@ -35,10 +32,12 @@ RUN set -x \
     \
     # workaround for https://github.com/pypa/pip/issues/4180
   && ln -s /project/.git /tmp/.git && ln -s /project/.git /.git \
+  && cd /project \
+  && git reset --hard \
+  && scd -v \
   && pip2 install --no-cache-dir --upgrade 'setuptools>=26' \
-  && pip2 install --no-cache-dir /project/buildtools \
-  && pip2 install --no-cache-dir /project/ansible \
-  && pip3 install --no-cache-dir /project/controller \
+  && pip2 install --no-cache-dir /project/backend/ansible \
+  && pip3 install --no-cache-dir /project/backend/controller \
   && /usr/local/bin/decapod-ansible-deploy-config \
   && rm -r /project /tmp/.git /.git \
   && chmod 700 /root/.ssh/ \
