@@ -10,6 +10,8 @@ LABEL version="0.2.0" description="Migration script for Decapod" vendor="Miranti
 ARG pip_index_url=
 ARG npm_registry_url=
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 
 COPY .git /project/.git
 
@@ -22,20 +24,20 @@ RUN set -x \
     libffi-dev \
     python3-dev \
     python3-pip \
-    \
-    # workaround for https://github.com/pypa/pip/issues/4180
-  && ln -s /project/.git /tmp/.git && ln -s /project/.git /.git \
   && cd /project \
   && git reset --hard \
+  && echo "migrations=$(git rev-parse HEAD)" >> /etc/git-release \
   && scd -v \
-  && pip3 install --no-cache-dir \
-    /project/backend/api \
-    /project/backend/controller \
-    /project/backend/migration \
-  && rm -r /project /.git /tmp/.git \
+  && echo "migrations=$(scd -p)" >> /etc/decapod-release \
+  && pip3 install --no-cache-dir --disable-pip-version-check \
+    backend/api \
+    backend/controller \
+    backend/migration \
+  && cd / \
+  && rm -r /project \
   && apt-get clean \
   && apt-get purge -y git libffi-dev python3-pip python3-dev gcc \
-  && apt-get autoremove -y \
+  && apt-get autoremove --purge -y \
   && rm -r /var/lib/apt/lists/*
 
 

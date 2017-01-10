@@ -22,27 +22,27 @@ RUN set -x \
     git \
     python-dev \
     python-pip \
-    \
-    # workaround for https://github.com/pypa/pip/issues/4180
-  && ln -s /project/.git /tmp/.git && ln -s /project/.git /.git \
   && cd /project \
   && git reset --hard \
+  && echo "cron=$(git rev-parse HEAD)" >> /etc/git-release \
   && scd -v \
-  && pip2 install --no-cache-dir /project/backend/monitoring \
+  && echo "cron=$(scd -p)" >> /etc/decapod-release \
+  && pip2 install --no-cache-dir --disable-pip-version-check backend/monitoring \
   && curl --silent --show-error --fail --location \
     --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
     "https://caddyserver.com/download/build?os=linux&arch=amd64&features=" | \
     tar --no-same-owner -C /usr/bin/ -xz caddy \
   && chmod 0755 /usr/bin/caddy \
   && mkdir -p /www \
-  && cat /project/containerization/files/crontab | crontab - \
+  && cat containerization/files/crontab | crontab - \
   && mkdir -p /etc/caddy \
-  && mv /project/containerization/files/cron-caddyfile /etc/caddy/config \
+  && mv containerization/files/cron-caddyfile /etc/caddy/config \
   && mkfifo /var/log/cron.log \
-  && rm -r /project /tmp/.git /.git \
+  && cd / \
+  && rm -r /project \
   && apt-get clean \
   && apt-get purge -y git gcc python-dev python-pip curl \
-  && apt-get autoremove -y \
+  && apt-get autoremove --purge -y \
   && rm -r /var/lib/apt/lists/*
 
 

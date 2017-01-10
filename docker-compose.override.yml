@@ -1,0 +1,48 @@
+---
+version: "2"
+
+# This is example of overriding of Decapod files. All those overriding are
+# optional. If you do not need to modify configs or certificates, do not
+# modify them. Default configs will be used.
+#
+# Please check https://docs.docker.com/compose/extends/ for details on
+# overriding.
+#
+# Also, please check .env file for the list of settings, supported by
+# main docker-compose file.
+
+# services:
+#   frontend:
+#     volumes:
+#       # Diffie-Helman parameters for SSL in Nginx
+#       - ./containerization/files/devconfigs/nginx-dhparam.pem:/ssl/dhparam.pem:ro
+#       # SSL certificate for Nginx
+#       - ./containerization/files/devconfigs/nginx-selfsigned.crt:/ssl/ssl.crt:ro
+#       # Private SSL key for Nginx
+#       - ./containerization/files/devconfigs/nginx-selfsigned.key:/ssl/ssl.key:ro
+#
+#   database:
+#     volumes:
+#       # SSL certificate for MongoDB
+#       - ./containerization/files/devconfigs/mongodb-ca.crt:/certs/mongodb-ca.crt:ro
+#       # SSL keys for MongoDB
+#       - ./containerization/files/devconfigs/mongodb.pem:/certs/mongodb.pem:ro
+#
+#   api:
+#     volumes:
+#       # Decapod config
+#       - ./containerization/files/devconfigs/config.yaml:/etc/decapod/config.yaml:ro
+#
+#   controller:
+#     volumes:
+#       # Decapod config
+#       - ./containerization/files/devconfigs/config.yaml:/etc/decapod/config.yaml:ro
+#       # SSH private key for Ansible. You do not need to specify this volume
+#       # here if you do not want. It is enough to use DECAPOD_SSH_PRIVATE_KEY
+#       # environment variable.
+#       - ./containerization/files/devconfigs/ansible_ssh_keyfile.pem:/root/.ssh/id_rsa:ro
+#
+#   cron:
+#     volumes:
+#       # Decapod config
+#       - ./containerization/files/devconfigs/config.yaml:/etc/decapod/config.yaml:ro

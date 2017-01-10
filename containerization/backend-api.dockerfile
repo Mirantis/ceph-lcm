@@ -23,18 +23,19 @@ RUN set -x \
     libpcre3-dev \
     python3-dev \
     python3-pip \
-    \
-    # workaround for https://github.com/pypa/pip/issues/4180
-  && ln -s /project/.git /tmp/.git && ln -s /project/.git /.git \
   && cd /project \
   && git reset --hard \
+  && echo "api=$(git rev-parse HEAD)" >> /etc/git-release \
+  && cp containerization/files/uwsgi.ini /etc/decapod-api-uwsgi.ini \
+  && echo "api=$(scd -p)" >> /etc/decapod-release \
   && scd -v \
-  && pip3 install --no-cache-dir -c /project/constraints.txt uwsgi \
-  && pip3 install --no-cache-dir /project/backend/api \
-  && rm -r /project /.git /tmp/.git \
+  && pip3 install --no-cache-dir --disable-pip-version-check -c constraints.txt uwsgi \
+  && pip3 install --no-cache-dir --disable-pip-version-check backend/api \
+  && cd / \
+  && rm -r /project \
   && apt-get clean \
   && apt-get purge -y git libffi-dev libpcre3-dev python3-dev python3-pip gcc \
-  && apt-get autoremove -y \
+  && apt-get autoremove --purge -y \
   && rm -r /var/lib/apt/lists/*
 
 

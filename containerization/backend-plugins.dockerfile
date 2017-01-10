@@ -20,22 +20,22 @@ RUN set -x \
     git \
     python3-dev \
     python3-pip \
-    \
-    # workaround for https://github.com/pypa/pip/issues/4180
-  && ln -s /project/.git /tmp/.git && ln -s /project/.git /.git \
   && cd /project \
   && git reset --hard \
   && git submodule update --init --recursive \
+  && echo "plugins=$(git rev-parse HEAD)" >> /etc/git-release \
   && scd -v \
-  && pip3 install --no-cache-dir \
-    /project/plugins/playbook/add_mon \
-    /project/plugins/playbook/add_osd \
-    /project/plugins/playbook/deploy_cluster \
-    /project/plugins/playbook/purge_cluster \
-    /project/plugins/playbook/remove_osd \
-    /project/plugins/playbook/telegraf_integration \
-  && rm -r /project /tmp/.git /.git \
+  && echo "plugins=$(scd -p)" >> /etc/decapod-release \
+  && pip3 install --no-cache-dir --disable-pip-version-check \
+    plugins/playbook/add_mon \
+    plugins/playbook/add_osd \
+    plugins/playbook/deploy_cluster \
+    plugins/playbook/purge_cluster \
+    plugins/playbook/remove_osd \
+    plugins/playbook/telegraf_integration \
+  && cd / \
+  && rm -r /project \
   && apt-get clean \
   && apt-get purge -y git python3-dev python3-pip gcc \
-  && apt-get autoremove -y \
+  && apt-get autoremove --purge -y \
   && rm -r /var/lib/apt/lists/*

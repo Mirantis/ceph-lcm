@@ -20,6 +20,8 @@ services:
     links:
       - database
     restart: "on-failure:5"
+    volumes:
+      - "${DECAPOD_SSH_PRIVATE_KEY}:/root/.ssh/id_rsa:ro"
   database:
     image: "${DECAPOD_REGISTRY_URL}${DECAPOD_NAMESPACE}decapod/db:${DECAPOD_VERSION}"
     volumes_from:

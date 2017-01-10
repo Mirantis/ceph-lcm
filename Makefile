@@ -333,16 +333,8 @@ html_docs: make_docs_directory
 
 
 copy_example_keys:
-	cp "$(ROOT_DIR)/containerization/files/devconfigs/ansible_ssh_keyfile.pem" "$(ROOT_DIR)" && \
-	cp "$(ROOT_DIR)/containerization/files/devconfigs/nginx-selfsigned.key" "$(ROOT_DIR)/ssl.key" && \
-	cp "$(ROOT_DIR)/containerization/files/devconfigs/nginx-selfsigned.crt" "$(ROOT_DIR)/ssl.crt" && \
-	cp "$(ROOT_DIR)/containerization/files/devconfigs/nginx-dhparam.pem" "$(ROOT_DIR)/ssl-dhparam.pem" && \
-	cp "$(ROOT_DIR)/containerization/files/devconfigs/config.yaml" "$(ROOT_DIR)" && \
-	cp "$(ROOT_DIR)/containerization/files/devconfigs/mongodb.pem" "$(ROOT_DIR)" && \
-	cp "$(ROOT_DIR)/containerization/files/devconfigs/mongodb-ca.crt" "$(ROOT_DIR)" && \
 	cp "$(ROOT_DIR)/containerization/files/package_managers/debian_apt.list" "$(ROOT_DIR)" && \
-	cp "$(ROOT_DIR)/containerization/files/package_managers/ubuntu_apt.list" "$(ROOT_DIR)" && \
-	chmod 0600 "$(ROOT_DIR)/ansible_ssh_keyfile.pem"
+	cp "$(ROOT_DIR)/containerization/files/package_managers/ubuntu_apt.list" "$(ROOT_DIR)"
 
 # -----------------------------------------------------------------------------
 

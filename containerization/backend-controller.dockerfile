@@ -10,8 +10,7 @@ ARG pip_index_url=
 ARG npm_registry_url=
 
 
-COPY ansible_ssh_keyfile.pem /root/.ssh/id_rsa
-COPY .git                    /project/.git
+COPY .git /project/.git
 
 
 RUN set -x \
@@ -29,22 +28,23 @@ RUN set -x \
     python-dev \
     python-pip \
     python-setuptools \
-    \
-    # workaround for https://github.com/pypa/pip/issues/4180
-  && ln -s /project/.git /tmp/.git && ln -s /project/.git /.git \
+  && mkdir -p /root/.ssh \
   && cd /project \
   && git reset --hard \
+  && git submodule update --init --recursive \
+  && echo "controller=$(git rev-parse HEAD)" >> /etc/git-release \
+  && echo "controller=$(scd -p)" >> /etc/decapod-release \
   && scd -v \
-  && pip2 install --no-cache-dir --upgrade 'setuptools>=26' \
-  && pip2 install --no-cache-dir /project/backend/ansible \
-  && pip3 install --no-cache-dir /project/backend/controller \
+  && pip2 install --no-cache-dir --disable-pip-version-check --upgrade 'setuptools>=26' \
+  && pip2 install --no-cache-dir --disable-pip-version-check backend/ansible \
+  && pip3 install --no-cache-dir --disable-pip-version-check backend/controller \
   && /usr/local/bin/decapod-ansible-deploy-config \
-  && rm -r /project /tmp/.git /.git \
+  && cd / \
+  && rm -r /project \
   && chmod 700 /root/.ssh/ \
-  && chmod 600 /root/.ssh/id_rsa \
   && apt-get clean \
   && apt-get purge -y git libssl-dev libffi-dev python-pip python-dev gcc python3-dev python3-pip \
-  && apt-get autoremove -y \
+  && apt-get autoremove --purge -y \
   && rm -r /var/lib/apt/lists/*
 
 

@@ -73,21 +73,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  config.vm.define "prom", autostart: false do |client|
-    client.vm.hostname = "prometheus"
-    client.vm.network "private_network", ip: "10.0.0.30"
-    client.vm.provider "libvirt" do |lv, override|
-      override.vm.box = "yk0/ubuntu-xenial"
-      lv.nested         = false
-      lv.memory         = 2048
-      lv.cpus           = 2
-      lv.cpu_mode       = "host-passthrough"
-      lv.disk_bus       = "virtio"
-      lv.nic_model_type = "virtio"
-    end
-
-  end
-
   ["node01", "node02", "node03", "node04", "node05"].each_with_index do |host, idx|
     config.vm.define "#{host}", autostart: false do |client|
       client.vm.hostname = "ceph-#{host}"
