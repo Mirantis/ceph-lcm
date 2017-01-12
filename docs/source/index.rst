@@ -32,6 +32,7 @@ Contents
    cli
    ui/index.rst
    ceph_node
+   repository
    playbook_plugins/index.rst
    api/index.rst
 
