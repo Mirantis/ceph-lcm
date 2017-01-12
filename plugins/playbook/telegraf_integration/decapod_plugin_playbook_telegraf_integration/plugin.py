@@ -48,8 +48,12 @@ class TelegrafIntegration(playbook_plugin.CephAnsiblePlaybook):
         return global_vars, inventory
 
     def make_global_vars(self, cluster, servers, hints):
-        result = {"configpath": self.config["configpath"]}
+        result = {
+            "configpath": self.config["configpath"],
+            "install": self.config["need_to_install"],
+        }
         result.update(self.config["settings"])
+        result.update(self.config["role"])
 
         return result
 

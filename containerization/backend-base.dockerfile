@@ -37,12 +37,12 @@ RUN set -x \
     libssl-dev \
     libyaml-0-2 \
     libyaml-dev \
-    python3.5 \
+    python3 \
     python3-dev \
     python3-pip \
-    python3-setuptools \
     git \
     wget \
+  && pip3 --no-cache-dir --disable-pip-version-check install 'setuptools==32.3.1' \
   && cd /project \
   && git reset --hard \
   && echo "base=$(git rev-parse HEAD)" > /etc/git-release \

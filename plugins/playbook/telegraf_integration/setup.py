@@ -36,7 +36,8 @@ setuptools.setup(
     package_data={
         "decapod_plugin_playbook_telegraf_integration": [
             "config.yaml",
-            "playbook.yaml"
+            "playbook.yaml",
+            "dj-wasabi.telegraf/*"
         ]
     },
     install_requires=[

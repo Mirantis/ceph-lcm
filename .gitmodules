@@ -1,3 +1,6 @@
 [submodule "ceph-ansible"]
 	path = backend/ansible/decapod_ansible/ceph-ansible
 	url = https://github.com/ceph/ceph-ansible.git
+[submodule "telegraf_role"]
+	path = plugins/playbook/telegraf_integration/decapod_plugin_playbook_telegraf_integration/dj-wasabi.telegraf
+	url = https://github.com/dj-wasabi/ansible-telegraf.git

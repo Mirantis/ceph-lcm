@@ -1,6 +1,13 @@
 ---
 # Playbook for telegraf_integration
 
+- name: Install Telegraf
+  hosts: telegraf
+  become: true
+  roles:
+    - role: dj-wasabi.telegraf
+      when: install
+
 - name: Update Telegraf config for Ceph
   hosts: telegraf
   become: true

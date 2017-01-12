@@ -38,6 +38,8 @@
 
 
 configpath: /etc/telegraf/telegraf.conf
+need_to_install: false
+
 settings:
   interval: 1m
   ceph_binary: /usr/bin/ceph
@@ -49,3 +51,37 @@ settings:
   ceph_config: /etc/ceph/ceph.conf
   gather_admin_socket_stats: true
   gather_cluster_stats: true
+
+role:
+  telegraf_agent_version: 1.1.2
+  telegraf_agent_interval: 10
+  telegraf_agent_debug: false
+  telegraf_agent_round_interval: true
+  telegraf_agent_flush_interval: 10
+  telegraf_agent_flush_jitter: 0
+  telegraf_agent_collection_jitter: 0
+  telegraf_agent_metric_batch_size: 1000
+  telegraf_agent_metric_buffer_limit: 10000
+  telegraf_agent_quiet: false
+  telegraf_agent_logfile: ""
+  telegraf_agent_omit_hostname: false
+  telegraf_agent_deb_url: "https://dl.influxdata.com/telegraf/releases/telegraf_1.1.2_amd64.deb"
+  telegraf_agent_tags: {}
+  telegraf_agent_output:
+    - type: influxdb
+      config:
+        - urls = ["http://localhost:8086"]
+        - database = "telegraf"
+        - precision = "s"
+  telegraf_plugins_default:
+    - plugin: cpu
+      config:
+        - percpu = true
+    - plugin: disk
+    - plugin: io
+    - plugin: mem
+    - plugin: net
+    - plugin: system
+    - plugin: swap
+    - plugin: netstat
+  telegraf_plugins_extra: {}
