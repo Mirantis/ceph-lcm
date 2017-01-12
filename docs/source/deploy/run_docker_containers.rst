@@ -492,6 +492,122 @@ Please check `official guide
 docker-compose for details.
 
 
+Running Migration
+-----------------
+
+If you run Decapod first time or upgrade from previous version, it is
+required to apply migrations. Migrations are the similar as migrations
+(an in most cases, they are simple DB migrations).
+
+Migration running is idempotent operation and you are free to execute it
+safely any time. If some migration was applied, Decapod won't reapply it
+again.
+
+On the first boot migrations are required to get root user. Otherwise,
+Decapod will start with empty database and it won't be possible to
+perform any operations within.
+
+To run migrations, please find script in :file:`./scripts` directory,
+it is called :file:`migrate.sh`. This script require the name of your
+database container. To get it, please use ``docker ps`` command.
+
+::
+
+  $ docker ps
+  CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS              PORTS                                          NAMES
+  c1db50a0791e        decapod/frontend:latest     "dockerize -wait tcp:"   3 seconds ago       Up 1 seconds        0.0.0.0:9999->80/tcp, 0.0.0.0:10000->443/tcp   vagrant_frontend_1
+  e6c1a0f55b91        decapod/controller:latest   "/usr/bin/dumb-init -"   6 seconds ago       Up 2 seconds                                                       vagrant_controller_1
+  4b28ba7700e0        decapod/api:latest          "/usr/bin/dumb-init -"   6 seconds ago       Up 3 seconds        8000/tcp                                       vagrant_api_1
+  3773a206c796        decapod/cron:latest         "/usr/bin/dumb-init -"   6 seconds ago       Up 3 seconds        8000/tcp                                       vagrant_cron_1
+  adafe8f5eacb        decapod/db:latest           "/entrypoint.sh --con"   7 seconds ago       Up 6 seconds        27017/tcp                                      vagrant_database_1
+
+As you can see, I have database container running with the name
+*vagrant_database_1*, let's use it
+
+::
+
+  $ ./scripts/migrate.sh -c vagrant_database_1 apply
+  2017/01/12 10:27:35 Waiting for host: database:27017
+  2017/01/12 10:27:35 Connected to tcp://database:27017
+  2017-01-12 10:27:36 [DEBUG   ] (        lock.py:116  ): Lock applying_migrations was acquire by locker 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66
+  2017-01-12 10:27:36 [DEBUG   ] (        lock.py:181  ): Prolong thread for locker applying_migrations of lock 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66 has been started. Thread MongoLock prolonger 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66 for applying_migrations, ident 140202530297600
+  2017-01-12 10:27:36 [INFO    ] (         cli.py:87   ): Run migration 0000_index_models.py
+  2017-01-12 10:27:36 [INFO    ] (   migrators.py:69   ): Run /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0000_index_models.py. Pid 21
+  2017-01-12 10:27:41 [DEBUG   ] (        lock.py:162  ): Lock applying_migrations was proloned by locker 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66.
+  2017-01-12 10:27:42 [INFO    ] (   migrators.py:74   ): /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0000_index_models.py has been finished. Exit code 0
+  2017-01-12 10:27:42 [INFO    ] (         cli.py:175  ): Save result of 0000_index_models.py migration (result MigrationState.ok)
+  2017-01-12 10:27:42 [INFO    ] (         cli.py:87   ): Run migration 0001_insert_default_role.py
+  2017-01-12 10:27:42 [INFO    ] (   migrators.py:69   ): Run /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0001_insert_default_role.py. Pid 28
+  2017-01-12 10:27:43 [INFO    ] (   migrators.py:74   ): /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0001_insert_default_role.py has been finished. Exit code 0
+  2017-01-12 10:27:43 [INFO    ] (         cli.py:175  ): Save result of 0001_insert_default_role.py migration (result MigrationState.ok)
+  2017-01-12 10:27:43 [INFO    ] (         cli.py:87   ): Run migration 0002_insert_default_user.py
+  2017-01-12 10:27:43 [INFO    ] (   migrators.py:69   ): Run /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0002_insert_default_user.py. Pid 36
+  2017-01-12 10:27:44 [INFO    ] (   migrators.py:74   ): /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0002_insert_default_user.py has been finished. Exit code 0
+  2017-01-12 10:27:44 [INFO    ] (         cli.py:175  ): Save result of 0002_insert_default_user.py migration (result MigrationState.ok)
+  2017-01-12 10:27:44 [INFO    ] (         cli.py:87   ): Run migration 0003_native_ttl_index.py
+  2017-01-12 10:27:44 [INFO    ] (   migrators.py:69   ): Run /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0003_native_ttl_index.py. Pid 164
+  2017-01-12 10:27:45 [INFO    ] (   migrators.py:74   ): /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0003_native_ttl_index.py has been finished. Exit code 0
+  2017-01-12 10:27:45 [INFO    ] (         cli.py:175  ): Save result of 0003_native_ttl_index.py migration (result MigrationState.ok)
+  2017-01-12 10:27:45 [INFO    ] (         cli.py:87   ): Run migration 0004_migrate_to_native_ttls.py
+  2017-01-12 10:27:45 [INFO    ] (   migrators.py:69   ): Run /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0004_migrate_to_native_ttls.py. Pid 172
+  2017-01-12 10:27:46 [INFO    ] (   migrators.py:74   ): /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0004_migrate_to_native_ttls.py has been finished. Exit code 0
+  2017-01-12 10:27:46 [INFO    ] (         cli.py:175  ): Save result of 0004_migrate_to_native_ttls.py migration (result MigrationState.ok)
+  2017-01-12 10:27:46 [DEBUG   ] (        lock.py:200  ): Prolong thread for locker applying_migrations of lock 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66 has been stopped. Thread MongoLock prolonger 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66 for applying_migrations, ident 140202530297600
+  2017-01-12 10:27:46 [DEBUG   ] (        lock.py:122  ): Try to release lock applying_migrations by locker 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66.
+  2017-01-12 10:27:46 [DEBUG   ] (        lock.py:138  ): Lock applying_migrations was released by locker 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66.
+  2017/01/12 10:27:46 Command finished successfully.
+
+You can get a list of applied migrations with ``list all`` option.
+
+::
+
+  $ ./scripts/migrate.sh -c vagrant_database_1 list all
+  2017/01/12 10:30:03 Waiting for host: database:27017
+  2017/01/12 10:30:03 Connected to tcp://database:27017
+  [applied]     0000_index_models.py
+  [applied]     0001_insert_default_role.py
+  [applied]     0002_insert_default_user.py
+  [applied]     0003_native_ttl_index.py
+  [applied]     0004_migrate_to_native_ttls.py
+  2017/01/12 10:30:03 Command finished successfully.
+
+And the details of the certain migration with ``show`` option.
+
+::
+
+  $ ./scripts/migrate.sh -c vagrant_database_1 show 0000_index_models.py
+  2017/01/12 10:30:58 Waiting for host: database:27017
+  2017/01/12 10:30:58 Connected to tcp://database:27017
+  Name:           0000_index_models.py
+  Result:         ok
+  Executed at:    Thu Jan 12 10:27:42 2017
+  SHA1 of script: 4aebfd8e375ef9cbf27d4f456583178bf6721688
+
+  -- Stdout:
+
+  -- Stderr:
+
+  2017/01/12 10:30:59 Command finished successfully.
+
+To get a help, please run script without arguments.
+
+::
+
+  $ ./scripts/migrate.sh -c vagrant_database_1
+  2017/01/12 10:31:56 Waiting for host: database:27017
+  2017/01/12 10:31:56 Connected to tcp://database:27017
+  usage: decapod-migrations [-h] {list,apply,show} ...
+
+  Run migrations again Decapod database.
+
+  positional arguments:
+    {list,apply,show}
+
+    optional arguments:
+      -h, --help         show this help message and exit
+  2017/01/12 10:31:56 Command finished successfully.
+
+
 .. rubric:: Footnotes
 
 .. [#PEM] https://tools.ietf.org/html/rfc1421
