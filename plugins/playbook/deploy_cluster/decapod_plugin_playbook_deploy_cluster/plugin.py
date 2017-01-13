@@ -21,6 +21,7 @@ from decapod_common import log
 from decapod_common import networkutils
 from decapod_common import playbook_plugin
 from decapod_common import playbook_plugin_hints
+from decapod_common.models import cluster_data
 
 from . import exceptions
 from . import monitor_secret
@@ -80,12 +81,12 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
         super().on_pre_execute(task)
 
         playbook_config = self.get_playbook_configuration(task)
-        config = playbook_config.configuration["inventory"]
+        config = playbook_config.configuration
         cluster = playbook_config.cluster
         servers = playbook_config.servers
         servers = {srv.ip: srv for srv in servers}
 
-        for name, group_vars in config.items():
+        for name, group_vars in config["inventory"].items():
             if name == "_meta" or not group_vars:
                 continue
             group_servers = [servers[ip] for ip in group_vars]
@@ -93,6 +94,18 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
 
         if cluster.configuration.changed:
             cluster.save()
+
+        # Save persistent cluster data. We will override existing settings
+        # because cluster is created from scratch using this plugin.
+        global_vars = config["global_vars"].copy()
+        global_vars.pop("ceph_facts_template", None)
+        global_vars.pop("restapi_template_local_path", None)
+
+        data = cluster_data.ClusterData.find_one(cluster.model_id)
+        data.global_vars = global_vars
+        data.host_vars = config["inventory"].get("_meta", {}).get(
+            "hostvars", {})
+        data.save()
 
     def make_playbook_configuration(self, cluster, servers, hints):
         if cluster.configuration.state or cluster.server_list:

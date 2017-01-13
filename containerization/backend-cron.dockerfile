@@ -25,8 +25,8 @@ RUN set -x \
   && cd /project \
   && git reset --hard \
   && echo "cron=$(git rev-parse HEAD)" >> /etc/git-release \
-  && scd -v \
-  && echo "cron=$(scd -p)" >> /etc/decapod-release \
+  && echo "cron=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
+  && scd -s git_pep440 -v \
   && pip2 install --no-cache-dir --disable-pip-version-check backend/monitoring \
   && curl --silent --show-error --fail --location \
     --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \

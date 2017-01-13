@@ -19,6 +19,7 @@ import pkg_resources
 from decapod_common import log
 from decapod_common import networkutils
 from decapod_common import playbook_plugin
+from decapod_common.models import cluster_data
 from decapod_common.models import kv
 from decapod_common.models import server
 
@@ -65,14 +66,22 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
         if cluster.configuration.changed:
             cluster.save()
 
+        data = cluster_data.ClusterData.find_one(cluster.model_id)
+        hostvars = config.get("_meta", {}).get("hostvars", {})
+        for hostname, values in hostvars.items():
+            data.update_host_vars(hostname, values)
+        data.save()
+
     def make_playbook_configuration(self, cluster, servers, hints):
-        global_vars = self.make_global_vars(cluster, servers, hints)
-        inventory = self.make_inventory(cluster, servers, hints)
+        data = cluster_data.ClusterData.find_one(cluster.model_id)
+        global_vars = self.make_global_vars(cluster, data, servers, hints)
+        inventory = self.make_inventory(cluster, data, servers, hints)
 
         return global_vars, inventory
 
-    def make_global_vars(self, cluster, servers, hints):
+    def make_global_vars(self, cluster, data, servers, hints):
         result = super().make_global_vars(cluster, servers, hints)
+        result.update(data.global_vars)
 
         result["ceph_facts_template"] = pkg_resources.resource_filename(
             "decapod_common", "facts/ceph_facts_module.py.j2")
@@ -102,7 +111,7 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
 
         return inventory
 
-    def make_inventory(self, cluster, servers, hints):
+    def make_inventory(self, cluster, data, servers, hints):
         groups = self.get_inventory_groups(cluster, servers, hints)
         inventory = {"_meta": {"hostvars": {}}}
 
@@ -112,9 +121,13 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
 
                 hostvars = inventory["_meta"]["hostvars"].setdefault(
                     srv.ip, {})
-                hostvars["ansible_user"] = srv.username
-                hostvars["monitor_interface"] = \
-                    networkutils.get_public_network_if(srv, servers)
+                hostvars.update(data.get_host_vars(srv.ip))
+
+                if "ansible_user" not in hostvars:
+                    hostvars["ansible_user"] = srv.username
+                if "monitor_interface" not in hostvars:
+                    hostvars["monitor_interface"] = \
+                        networkutils.get_public_network_if(srv, servers)
 
         return inventory
 

@@ -33,9 +33,9 @@ RUN set -x \
   && git reset --hard \
   && git submodule update --init --recursive \
   && echo "controller=$(git rev-parse HEAD)" >> /etc/git-release \
-  && echo "controller=$(scd -p)" >> /etc/decapod-release \
-  && scd -v \
-  && pip2 install --no-cache-dir --disable-pip-version-check --upgrade 'setuptools>=26' \
+  && echo "controller=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
+  && scd -s git_pep440 -v \
+  && pip2 install --no-cache-dir --disable-pip-version-check --upgrade 'setuptools==32.3.1' \
   && pip2 install --no-cache-dir --disable-pip-version-check backend/ansible \
   && pip3 install --no-cache-dir --disable-pip-version-check backend/controller \
   && /usr/local/bin/decapod-ansible-deploy-config \

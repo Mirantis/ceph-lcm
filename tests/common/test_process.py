@@ -81,7 +81,7 @@ def test_command_result(proc):
     proc.options["-c"] = ""
     result = proc.run()
 
-    time.sleep(1)
+    time.sleep(2)
 
     assert result.pid
     assert result.returncode == os.EX_OK
@@ -102,7 +102,7 @@ def test_command_result_running(proc):
     assert str(result)
     assert repr(result)
 
-    time.sleep(2.5)
+    time.sleep(3.5)
 
     assert result.pid
     assert result.returncode == os.EX_OK

@@ -19,7 +19,7 @@ import setuptools
 
 REQUIREMENTS = (
     "decapod-common~=0.2.dev1",
-    "Flask>=0.11,<0.12",
+    "Flask>=0.12,<0.13",
     "jsonschema>=2.5,<2.6"
 )
 

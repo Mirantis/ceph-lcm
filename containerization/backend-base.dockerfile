@@ -54,9 +54,9 @@ RUN set -x \
   && wget --no-check-certificate https://github.com/jwilder/dockerize/releases/download/v0.3.0/dockerize-linux-amd64-v0.3.0.tar.gz \
   && tar -C /usr/local/bin -xzf dockerize-linux-amd64-v0.3.0.tar.gz \
   && rm dockerize-linux-amd64-v0.3.0.tar.gz \
-  && pip3 --no-cache-dir --disable-pip-version-check install 'scd[yaml]~=1.1' \
-  && echo "base=$(scd -p)" > /etc/decapod-release \
-  && scd -v \
+  && pip3 --no-cache-dir --disable-pip-version-check install 'scd[yaml]~=1.2' \
+  && echo "base=$(scd -s git_pep440 -p)" > /etc/decapod-release \
+  && scd -s git_pep440 -v \
   && pip3 --no-cache-dir --disable-pip-version-check install \
     backend/common \
     backend/docker \

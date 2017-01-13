@@ -1,6 +1,8 @@
+config: 1
+
 version:
   number: "0.2.0.dev1"
-  scheme: git_pep440
+  scheme: pep440
 
 search_patterns:
   setuppy: '(?<=version="){{ pep440 }}'

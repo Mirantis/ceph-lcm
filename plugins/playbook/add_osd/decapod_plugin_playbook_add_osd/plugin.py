@@ -21,6 +21,7 @@ from decapod_common import log
 from decapod_common import networkutils
 from decapod_common import playbook_plugin
 from decapod_common import playbook_plugin_hints
+from decapod_common.models import cluster_data
 from decapod_common.models import server
 
 from . import exceptions
@@ -80,18 +81,26 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
         if cluster.configuration.changed:
             cluster.save()
 
+        data = cluster_data.ClusterData.find_one(cluster.model_id)
+        hostvars = config.get("_meta", {}).get("hostvars", {})
+        for hostname, values in hostvars.items():
+            data.update_host_vars(hostname, values)
+        data.save()
+
     def make_playbook_configuration(self, cluster, servers, hints):
         cluster_config = cluster.configuration.make_api_structure()
         if not cluster_config.get("mons"):
             raise exceptions.NoMonitorsError(cluster.model_id)
 
-        global_vars = self.make_global_vars(cluster, servers, hints)
-        inventory = self.make_inventory(cluster, servers, hints)
+        data = cluster_data.ClusterData.find_one(cluster.model_id)
+        global_vars = self.make_global_vars(cluster, data, servers, hints)
+        inventory = self.make_inventory(cluster, data, servers, hints)
 
         return global_vars, inventory
 
-    def make_global_vars(self, cluster, servers, hints):
+    def make_global_vars(self, cluster, data, servers, hints):
         result = super().make_global_vars(cluster, servers, hints)
+        result.update(data.global_vars)
 
         result["journal_collocation"] = False
         result["dmcrypt_journal_collocation"] = False
@@ -107,13 +116,14 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
         else:
             result["raw_multi_journal"] = True
 
-        result["journal_size"] = self.config["journal"]["size"]
+        if "journal_size" not in result:
+            result["journal_size"] = self.config["journal"]["size"]
         result["ceph_facts_template"] = pkg_resources.resource_filename(
             "decapod_common", "facts/ceph_facts_module.py.j2")
 
         return result
 
-    def make_inventory(self, cluster, servers, hints):
+    def make_inventory(self, cluster, data, servers, hints):
         groups = self.get_inventory_groups(cluster, servers, hints)
         inventory = {"_meta": {"hostvars": {}}}
         all_servers = server.ServerModel.cluster_servers(cluster.model_id)
@@ -124,9 +134,13 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
 
                 hostvars = inventory["_meta"]["hostvars"].setdefault(
                     srv.ip, {})
-                hostvars["ansible_user"] = srv.username
-                hostvars["monitor_interface"] = networkutils.get_public_network_if(  # NOQA
-                    srv, all_servers)
+                hostvars.update(data.get_host_vars(srv.ip))
+
+                if "ansible_user" not in hostvars:
+                    hostvars["ansible_user"] = srv.username
+                if "monitor_interface" not in hostvars:
+                    hostvars["monitor_interface"] = \
+                        networkutils.get_public_network_if(srv, all_servers)
 
                 if hints["collocation"]:
                     hostvars["devices"] = diskutils.get_devices(srv)

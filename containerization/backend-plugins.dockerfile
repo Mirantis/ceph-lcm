@@ -24,8 +24,8 @@ RUN set -x \
   && git reset --hard \
   && git submodule update --init --recursive \
   && echo "plugins=$(git rev-parse HEAD)" >> /etc/git-release \
-  && scd -v \
-  && echo "plugins=$(scd -p)" >> /etc/decapod-release \
+  && echo "plugins=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
+  && scd -s git_pep440 -v \
   && pip3 install --no-cache-dir --disable-pip-version-check \
     plugins/playbook/add_mon \
     plugins/playbook/add_osd \

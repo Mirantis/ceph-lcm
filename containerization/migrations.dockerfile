@@ -27,8 +27,8 @@ RUN set -x \
   && cd /project \
   && git reset --hard \
   && echo "migrations=$(git rev-parse HEAD)" >> /etc/git-release \
-  && scd -v \
-  && echo "migrations=$(scd -p)" >> /etc/decapod-release \
+  && echo "migrations=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
+  && scd -s git_pep440 -v \
   && pip3 install --no-cache-dir --disable-pip-version-check \
     backend/api \
     backend/controller \
