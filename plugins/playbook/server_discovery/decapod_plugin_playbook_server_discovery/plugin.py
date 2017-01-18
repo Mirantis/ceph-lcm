@@ -17,8 +17,7 @@
 
 
 import json
-import os
-import os.path
+import pathlib
 import re
 import shutil
 import socket
@@ -84,11 +83,11 @@ class ServerDiscovery(playbook_plugin.Ansible):
     def compose_command(self, task):
         super().compose_command(task)
 
-        self.proc.options["--tree"] = self.tempdir
+        self.proc.options["--tree"] = str(self.tempdir)
         self.proc.args.append("new")
 
     def on_pre_execute(self, task):
-        self.tempdir = tempfile.mkdtemp()
+        self.tempdir = pathlib.Path(tempfile.mkdtemp())
         self.wait_for_host(task.data["host"])
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
@@ -98,18 +97,15 @@ class ServerDiscovery(playbook_plugin.Ansible):
                          exc_type, exc_value)
                 return
 
-            filenames = [os.path.join(self.tempdir, name)
-                         for name in os.listdir(self.tempdir)]
-            if len(filenames) != 1:
+            files = list(self.tempdir.iterdir())
+            if len(files) != 1:
                 raise RuntimeError(
                     "One file has to be present in temporary directory. "
-                    "Found: {0!r}".format(filenames))
-            filename = filenames[0]
+                    "Found: {0!r}".format(files))
 
-            with open(filename, "r") as filefp:
-                return self.create_server(task, json.load(filefp))
+            return self.create_server(task, json.loads(files[0].read_text()))
         finally:
-            shutil.rmtree(self.tempdir)
+            shutil.rmtree(str(self.tempdir))
 
     def create_server(self, task, json_result):
         facts = json_result["ansible_facts"]

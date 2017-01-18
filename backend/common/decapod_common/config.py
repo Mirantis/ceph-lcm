@@ -19,7 +19,7 @@
 import functools
 import logging
 import os
-import os.path
+import pathlib
 
 import pkg_resources
 
@@ -31,19 +31,16 @@ except Exception as exc:
     from yaml import SafeLoader as YAMLLoader
 
 
-HOME = os.path.expanduser("~")
-"""Home directory"""
-
 USER_CONFIG_HOME = os.getenv(
-    "XDG_CONFIG_HOME", os.path.join(HOME, ".config")
+    "XDG_CONFIG_HOME", pathlib.Path.home().joinpath(".config")
 )
 """User config directory according to XDG specification."""
 
 CONFIG_FILES = (
-    "decapod.yaml",
-    os.path.join(USER_CONFIG_HOME, "decapod.yaml"),
-    os.path.join(HOME, ".decapod.yaml"),
-    os.path.join("/", "etc", "decapod", "config.yaml"),
+    pathlib.Path.cwd().joinpath("decapod.yaml"),
+    USER_CONFIG_HOME.joinpath("decapod.yaml"),
+    pathlib.Path.home().joinpath(".decapod.yaml"),
+    pathlib.Path(pathlib.Path.cwd().root, "etc", "decapod", "config.yaml"),
     pkg_resources.resource_filename("decapod_common", "configs/defaults.yaml")
 )
 """A list of config files in order to load/parse them."""
@@ -136,7 +133,7 @@ make_config = make_controller_config
 def parse_configs(filenames):
     for filename in filenames:
         try:
-            return yaml_load(filename)
+            return yaml_load(str(filename))
         except IOError as exc:
             logging.info("Cannot open %s: %s", filename, exc)
         except Exception as exc:

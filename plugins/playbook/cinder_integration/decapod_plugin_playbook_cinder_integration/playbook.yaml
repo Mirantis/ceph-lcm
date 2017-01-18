@@ -1,0 +1,58 @@
+---
+# Copyright (c) 2016 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- hosts: mons
+  become: true
+  gather_facts: false
+  force_handlers: true
+
+  handlers:
+    - name: remove_keyring
+      file:
+        path: "/tmp/{{ item.key }}.keyring"
+        state: absent
+      with_dict: "{{ clients }}"
+      delegate_to: "{{ mon_host }}"
+
+  tasks:
+    - set_fact: mon_host="{{ groups['mons'].0 }}"
+
+    - name: Create OSD pool
+      command: "ceph --cluster {{ cluster }} osd pool create {{ item.key }} {{ item.value }}"
+      with_dict: "{{ pools }}"
+      delegate_to: "{{ mon_host }}"
+
+    - name: Create OSD auth keyring
+      command: "ceph --cluster {{ cluster }} auth get-or-create client.{{ item.key }}{% for name, perm in item.value.items() %} {{ name }} {{ perm|quote }}{% endfor %} -o /tmp/{{ item.key }}.keyring"
+      with_dict: "{{ clients }}"
+      delegate_to: "{{ mon_host }}"
+      notify: remove_keyring
+
+    - name: Fetch ceph.conf
+      fetch:
+        src: /etc/ceph/ceph.conf
+        dest: "{{ fetch_directory }}/"
+        flat: yes
+      delegate_to: "{{ mon_host }}"
+
+    - name: Fetch keyring
+      fetch:
+        src: "/tmp/{{ item.key }}.keyring"
+        dest: "{{ fetch_directory }}/"
+        flat: yes
+      with_dict: "{{ clients }}"
+      delegate_to: "{{ mon_host }}"

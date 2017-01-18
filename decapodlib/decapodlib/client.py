@@ -1728,3 +1728,24 @@ class V1Client(Client):
         url = self._make_url("/v1/password_reset/{0}/".format(reset_token))
         payload = {"password": new_password}
         return self._session.post(url, json=payload, **kwargs)
+
+    def get_cinder_integration(self, cluster_id, root="/etc/ceph", **kwargs):
+        """This method fetches data for integration with Cinder.
+
+        This method does ``GET /v1/cinder_integration/{cluster_id}``
+        endpoint call.
+
+        :param str cluster_id: UUID4 (:rfc:`4122`) in string form
+            of cluster's ID
+        :param str root: Root on file system where files should be stored.
+        :return: Integration data
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
+        params = make_query_params(root=root or None)
+        url = self._make_url("/v1/cinder_integration/{0}/".format(cluster_id))
+        return self._session.get(url, params=params, **kwargs)

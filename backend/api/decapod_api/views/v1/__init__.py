@@ -19,6 +19,7 @@
 import flask
 
 from decapod_api.views.v1 import auth
+from decapod_api.views.v1 import cinder_integration
 from decapod_api.views.v1 import cluster
 from decapod_api.views.v1 import execution
 from decapod_api.views.v1 import info
@@ -39,6 +40,7 @@ BLUEPRINT = flask.Blueprint(BLUEPRINT_NAME, __name__)
 
 
 auth.AuthView.register_to(BLUEPRINT)
+cinder_integration.CinderIntegrationView.register_to(BLUEPRINT)
 cluster.ClusterView.register_to(BLUEPRINT)
 execution.ExecutionStepsLog.register_to(BLUEPRINT)
 execution.ExecutionStepsView.register_to(BLUEPRINT)

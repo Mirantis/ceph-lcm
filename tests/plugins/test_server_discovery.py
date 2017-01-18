@@ -18,7 +18,6 @@
 
 import getopt
 import json
-import os.path
 import shutil
 import unittest.mock
 
@@ -104,17 +103,17 @@ def test_compose_command(new_task, plugin):
     else:
         assert opts["--m"] == plugin.MODULE
     if "--tree" in opts:
-        assert opts["--tree"] == plugin.tempdir
+        assert opts["--tree"] == str(plugin.tempdir)
     else:
-        assert opts["--t"] == plugin.tempdir
+        assert opts["--t"] == str(plugin.tempdir)
 
 
 def test_on_pre_execute(new_task, plugin):
     assert not plugin.tempdir
     plugin.on_pre_execute(new_task)
 
-    assert os.path.isdir(plugin.tempdir)
-    assert not os.listdir(plugin.tempdir)
+    assert plugin.tempdir.is_dir()
+    assert not list(plugin.tempdir.iterdir())
 
 
 def test_on_post_execute_ok(new_task, plugin):
@@ -128,7 +127,7 @@ def test_on_post_execute_ok(new_task, plugin):
         "changed": False
     }
 
-    with open(os.path.join(plugin.tempdir, "localhost"), "w") as resfp:
+    with plugin.tempdir.joinpath("localhost").open("w") as resfp:
         json.dump(object_to_dump, resfp)
 
     srv = plugin.on_post_execute(new_task, None, None, None)
@@ -155,7 +154,7 @@ def test_on_post_execute_fail(new_task, plugin, pymongo_connection):
         "changed": False
     }
 
-    with open(os.path.join(plugin.tempdir, "localhost"), "w") as resfp:
+    with plugin.tempdir.joinpath("localhost").open("w") as resfp:
         json.dump(object_to_dump, resfp)
 
     srv = plugin.on_post_execute(new_task, ValueError(), ValueError, None)

@@ -18,7 +18,7 @@
 
 import hashlib
 import os
-import os.path
+import pathlib
 import subprocess
 
 from decapod_common import log
@@ -38,13 +38,13 @@ class MigrationScript:
 
     @property
     def name(self):
-        return os.path.basename(self.path)
+        return self.path.name
 
     @property
     def script_hash(self):
         hasher = hashlib.sha1()
 
-        with open(self.path, "rb") as filefp:
+        with self.path.open("rb") as filefp:
             while True:
                 data = filefp.read(1024)
                 hasher.update(data)
@@ -62,7 +62,7 @@ class MigrationScript:
             return
 
         self.process = subprocess.Popen(
-            [self.path],
+            [str(self.path)],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=True
@@ -85,9 +85,8 @@ class MigrationScript:
 
 
 def get_migration_scripts(directory):
-    files = [os.path.join(directory, name) for name in os.listdir(directory)]
-    files = [name for name in files
-             if os.path.isfile(name) and os.access(name, os.R_OK | os.X_OK)]
-    files = sorted(files)
-
-    return [MigrationScript(name) for name in files]
+    return sorted(
+        (MigrationScript(name) for name in pathlib.Path(directory).iterdir()
+         if name.is_file() and os.access(str(name), os.R_OK | os.X_OK)),
+        key=lambda item: item.name
+    )

@@ -1,0 +1,2 @@
+include decapod_plugin_playbook_cinder_integration/config.yaml
+include decapod_plugin_playbook_cinder_integration/plugin.yaml

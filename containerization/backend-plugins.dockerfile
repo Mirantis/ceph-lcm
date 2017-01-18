@@ -43,6 +43,7 @@ RUN set -x \
   && pip3 install --no-cache-dir --disable-pip-version-check \
     plugins/playbook/add_mon \
     plugins/playbook/add_osd \
+    plugins/playbook/cinder_integration \
     plugins/playbook/deploy_cluster \
     plugins/playbook/purge_cluster \
     plugins/playbook/remove_osd \

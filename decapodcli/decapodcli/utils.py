@@ -20,6 +20,8 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import logging
+import random
+import time
 
 import click
 import six
@@ -106,3 +108,17 @@ def colorize(text, color, lexer):
     colorized = pygments.highlight(text, lexer_obj, formatter_obj)
 
     return colorized
+
+
+def sleep_with_jitter(work_for=None, max_jitter=20):
+    current_time = start_time = time.time()
+    jitter = 0
+
+    while work_for < 0 or (current_time < start_time + work_for):
+        # https://www.awsarchitectureblog.com/2015/03/backoff.html
+        jitter = min(max_jitter, jitter + 1)
+        yield current_time - start_time
+        time.sleep(random.uniform(0, jitter))
+        current_time = time.time()
+
+    yield current_time - start_time

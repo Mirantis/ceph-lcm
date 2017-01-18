@@ -19,6 +19,9 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import errno
+import os
+
 import click
 
 from decapodcli import decorators
@@ -101,4 +104,35 @@ def delete(cluster_id, client):
     history will be accessible.
     """
 
-    return client.delete_cluster(cluster_id)
+    return client.delete_cluster(str(cluster_id))
+
+
+@click.argument("cluster-id", type=click.UUID)
+@decorators.command(cluster)
+@click.option(
+    "--root",
+    default="/etc/ceph",
+    help="Root of files on filesystem."
+)
+@click.option(
+    "--store",
+    is_flag=True,
+    help="Store files on FS."
+)
+def cinder_integration(cluster_id, root, store, client):
+    """Requests data for Cinder integration for cluster from Decapod."""
+
+    integration = client.get_cinder_integration(str(cluster_id), root=root)
+
+    if store:
+        try:
+            os.makedirs(root)
+        except Exception as exc:
+            if exc.errno != errno.EEXIST:
+                raise
+
+        for filename, data in integration.items():
+            with open(filename, "w") as ffp:
+                ffp.write(data)
+
+    return integration
