@@ -43,6 +43,7 @@ RUN set -x \
     python-pip \
     python-setuptools \
   && mkdir -p /root/.ssh \
+  && chmod 700 /root/.ssh \
   && cd /project \
   && git reset --hard \
   && git submodule update --init --recursive \
@@ -52,10 +53,11 @@ RUN set -x \
   && pip2 install --no-cache-dir --disable-pip-version-check --upgrade 'setuptools==32.3.1' \
   && pip2 install --no-cache-dir --disable-pip-version-check backend/ansible \
   && pip3 install --no-cache-dir --disable-pip-version-check backend/controller \
+  && cp containerization/files/devconfigs/ansible_ssh_keyfile.pem /root/.ssh/id_rsa \
+  && chmod 0600 /root/.ssh/id_rsa \
   && /usr/local/bin/decapod-ansible-deploy-config \
   && cd / \
   && rm -r /project \
-  && chmod 700 /root/.ssh/ \
   && apt-get clean \
   && apt-get purge -y git libssl-dev libffi-dev python-pip python-dev gcc python3-dev python3-pip \
   && apt-get autoremove --purge -y \
