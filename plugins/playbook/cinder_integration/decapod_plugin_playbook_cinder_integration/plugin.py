@@ -16,8 +16,6 @@
 """Playbook plugin for Cinder Integration plugin for Decapod."""
 
 
-import pathlib
-
 from decapod_common import log
 from decapod_common import playbook_plugin
 from decapod_common import playbook_plugin_hints
@@ -72,15 +70,14 @@ class CinderIntegration(playbook_plugin.CephAnsiblePlaybook):
                 raise exc_value
 
             configuration = self.get_playbook_configuration(task)
-            fetchdir = pathlib.Path(self.fetchdir)
 
-            integration = cinder_integration.CinderIntegration.find_one(
+            cint = cinder_integration.CinderIntegration.find_one(
                 configuration.cluster_id)
-            integration.keyrings.clear()
-            integration.config = fetchdir.joinpath("ceph.conf").read_text()
-            for filename in fetchdir.glob("*.keyring"):
-                integration.keyrings[filename.name] = filename.read_text()
-            integration.save()
+            cint.keyrings.clear()
+            cint.config = self.fetchdir.joinpath("ceph.conf").read_text()
+            for filename in self.fetchdir.glob("*.keyring"):
+                cint.keyrings[filename.name] = filename.read_text()
+            cint.save()
         finally:
             super().on_post_execute(task, exc_value, exc_type, exc_tb)
 

@@ -16,11 +16,10 @@
 """Playbook plugin to deploy Ceph cluster."""
 
 
-import pkg_resources
-
 from decapod_common import diskutils
 from decapod_common import log
 from decapod_common import networkutils
+from decapod_common import pathutils
 from decapod_common import playbook_plugin
 from decapod_common import playbook_plugin_hints
 from decapod_common.models import cluster_data
@@ -169,12 +168,11 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
             result["raw_multi_journal"] = True
 
         result["journal_size"] = self.config["journal"]["size"]
-        result["ceph_facts_template"] = pkg_resources.resource_filename(
-            "decapod_common", "facts/ceph_facts_module.py.j2")
-        result["restapi_template_local_path"] = \
-            pkg_resources.resource_filename(
-                "decapod_plugin_playbook_deploy_cluster",
-                "ceph-rest-api.service")
+        result["ceph_facts_template"] = str(pathutils.resource(
+            "decapod_common", "facts", "ceph_facts_module.py.j2"))
+        result["restapi_template_local_path"] = str(pathutils.resource(
+            "decapod_plugin_playbook_deploy_cluster",
+            "ceph-rest-api.service"))
 
         return result
 

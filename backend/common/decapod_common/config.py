@@ -18,12 +18,10 @@
 
 import functools
 import logging
-import os
-import pathlib
-
-import pkg_resources
 
 import yaml
+
+from decapod_common import pathutils
 
 try:
     from yaml import CSafeLoader as YAMLLoader
@@ -31,17 +29,12 @@ except Exception as exc:
     from yaml import SafeLoader as YAMLLoader
 
 
-USER_CONFIG_HOME = os.getenv(
-    "XDG_CONFIG_HOME", pathlib.Path.home().joinpath(".config")
-)
-"""User config directory according to XDG specification."""
-
 CONFIG_FILES = (
-    pathlib.Path.cwd().joinpath("decapod.yaml"),
-    USER_CONFIG_HOME.joinpath("decapod.yaml"),
-    pathlib.Path.home().joinpath(".decapod.yaml"),
-    pathlib.Path(pathlib.Path.cwd().root, "etc", "decapod", "config.yaml"),
-    pkg_resources.resource_filename("decapod_common", "configs/defaults.yaml")
+    pathutils.CWD.joinpath("decapod.yaml"),
+    pathutils.XDG_CONFIG_HOME.joinpath("decapod", "config.yaml"),
+    pathutils.HOME.joinpath(".decapod.yaml"),
+    pathutils.ROOT.joinpath("etc", "decapod", "config.yaml"),
+    pathutils.resource("decapod_common", "configs", "defaults.yaml")
 )
 """A list of config files in order to load/parse them."""
 
@@ -133,7 +126,7 @@ make_config = make_controller_config
 def parse_configs(filenames):
     for filename in filenames:
         try:
-            return yaml_load(str(filename))
+            return yaml_load(filename)
         except IOError as exc:
             logging.info("Cannot open %s: %s", filename, exc)
         except Exception as exc:
@@ -143,5 +136,5 @@ def parse_configs(filenames):
 
 
 def yaml_load(filename):
-    with open(filename, "rt") as yamlfp:
+    with filename.open("rt") as yamlfp:
         return yaml.load(yamlfp, Loader=YAMLLoader)

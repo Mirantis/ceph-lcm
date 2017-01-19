@@ -22,14 +22,12 @@ import functools
 import os
 import shutil
 import sys
-import tempfile
-
-import pkg_resources
 
 from decapod_common import config
 from decapod_common import exceptions
 from decapod_common import log
 from decapod_common import networkutils
+from decapod_common import pathutils
 from decapod_common import playbook_plugin_hints
 from decapod_common import process
 from decapod_common.models import task
@@ -73,7 +71,7 @@ class Base(metaclass=abc.ABCMeta):
         self.proc = None
 
     def get_filename(self, filename):
-        return pkg_resources.resource_filename(self.module_name, filename)
+        return pathutils.resource(self.module_name, filename)
 
     def load_config(self, cnf):
         return load_config(self.get_filename(cnf or self.config_filename))
@@ -168,7 +166,7 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
     def compose_command(self, task):
         self.proc = process.AnsiblePlaybook(self.entry_point, task)
-        self.proc.args.append(self.get_filename(self.playbook_filename))
+        self.proc.args.append(str(self.get_filename(self.playbook_filename)))
         self.proc.options["-vvv"] = process.NO_VALUE
 
         if self.BECOME:
@@ -241,16 +239,16 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
         self.fetchdir = None
 
     def on_pre_execute(self, task):
-        self.fetchdir = tempfile.mkdtemp()
+        self.fetchdir = pathutils.tempdir()
         super().on_pre_execute(task)
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
-        shutil.rmtree(self.fetchdir)
+        pathutils.remove(self.fetchdir)
         super().on_post_execute(task, exc_value, exc_type, exc_tb)
 
     def get_extra_vars(self, task):
         config = super().get_extra_vars(task)
-        config["fetch_directory"] = self.fetchdir
+        config["fetch_directory"] = str(self.fetchdir)
 
         return config
 

@@ -17,13 +17,11 @@
 
 
 import json
-import pathlib
 import re
-import shutil
 import socket
-import tempfile
 
 from decapod_common import log
+from decapod_common import pathutils
 from decapod_common import playbook_plugin
 from decapod_common import retryutils
 from decapod_common.models import server
@@ -87,7 +85,7 @@ class ServerDiscovery(playbook_plugin.Ansible):
         self.proc.args.append("new")
 
     def on_pre_execute(self, task):
-        self.tempdir = pathlib.Path(tempfile.mkdtemp())
+        self.tempdir = pathutils.tempdir()
         self.wait_for_host(task.data["host"])
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
@@ -105,7 +103,7 @@ class ServerDiscovery(playbook_plugin.Ansible):
 
             return self.create_server(task, json.loads(files[0].read_text()))
         finally:
-            shutil.rmtree(str(self.tempdir))
+            pathutils.remove(self.tempdir)
 
     def create_server(self, task, json_result):
         facts = json_result["ansible_facts"]

@@ -16,11 +16,10 @@
 """Playbook plugin to add OSD to cluster."""
 
 
-import pkg_resources
-
 from decapod_common import diskutils
 from decapod_common import log
 from decapod_common import networkutils
+from decapod_common import pathutils
 from decapod_common import playbook_plugin
 from decapod_common import playbook_plugin_hints
 from decapod_common.models import cluster_data
@@ -120,8 +119,9 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
 
         if "journal_size" not in result:
             result["journal_size"] = self.config["journal"]["size"]
-        result["ceph_facts_template"] = pkg_resources.resource_filename(
-            "decapod_common", "facts/ceph_facts_module.py.j2")
+        result["ceph_facts_template"] = pathutils.resource(
+            "decapod_common", "facts", "ceph_facts_module.py.j2")
+        result["ceph_facts_template"] = str(result["ceph_facts_template"])
 
         return result
 

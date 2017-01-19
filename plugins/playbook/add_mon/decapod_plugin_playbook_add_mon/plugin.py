@@ -16,10 +16,9 @@
 """Playbook plugin for Add monitor to the cluster."""
 
 
-import pkg_resources
-
 from decapod_common import log
 from decapod_common import networkutils
+from decapod_common import pathutils
 from decapod_common import playbook_plugin
 from decapod_common.models import cluster_data
 from decapod_common.models import kv
@@ -85,8 +84,9 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
         result = super().make_global_vars(cluster, servers, hints)
         result.update(data.global_vars)
 
-        result["ceph_facts_template"] = pkg_resources.resource_filename(
-            "decapod_common", "facts/ceph_facts_module.py.j2")
+        result["ceph_facts_template"] = pathutils.resource(
+            "decapod_common", "facts", "ceph_facts_module.py.j2")
+        result["ceph_facts_template"] = str(result["ceph_facts_template"])
 
         return result
 
