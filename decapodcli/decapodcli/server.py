@@ -19,6 +19,7 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import logging
 import sys
 
 import click
@@ -181,3 +182,44 @@ def delete(server_id, client):
     """
 
     return client.delete_server(server_id)
+
+
+@click.argument("limit", type=int)
+@decorators.command(server)
+@click.option(
+    "-t", "--timeout",
+    type=int,
+    default=-1,
+    help="Timeout of waiting. Negative number means to wait infinitely"
+         " (default value)."
+)
+@click.option(
+    "-p", "--precise",
+    is_flag=True,
+    help="Wait for precise amount of servers."
+)
+def wait_until(client, timeout, precise, limit):
+    """Wait until specified amount of servers are discovered.
+
+    Wait for servers to appear in the list. Will exit when specified amount
+    of servers is distinguished, "at least". For example, if limit is 5, but
+    10 servers are discovered, it means that goal is reached.
+
+    Also, there is an optional flag, "precise" if user wait for precise amount
+    of machines.
+    """
+
+    response = {"total": 0}
+    for attempt, _ in enumerate(utils.sleep_with_jitter(timeout), start=1):
+        logging.info("Wait %d time", attempt)
+
+        response = client.get_servers(page=1, per_page=1)
+        logging.info("Servers discovered %d", response["total"])
+
+        if precise:
+            if response["total"] == limit:
+                return []
+        elif response["total"] >= limit:
+            return []
+
+    raise ValueError("There are {0} are discovered.".format(response["total"]))
