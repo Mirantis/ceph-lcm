@@ -36,6 +36,8 @@ CONTAINER_MIGRATIONS_NAME := decapod/migrations
 CONTAINER_PLUGINS_NAME    := decapod/base-plugins
 CONTAINER_UI_TESTS_NAME   := decapod/ui-tests
 
+INTERNAL_CI_DOCKER_REGISTRY := docker-prod-virtual.docker.mirantis.net
+
 # -----------------------------------------------------------------------------
 
 define build_egg
@@ -354,6 +356,7 @@ copy_example_keys:
 
 # -----------------------------------------------------------------------------
 
+
 run_container_ui_tests:
 	docker run \
 			--rm \
@@ -363,3 +366,20 @@ run_container_ui_tests:
 			-e "GID=$(shell id -g $(USER))" \
 		$(CONTAINER_UI_TESTS_NAME) \
 		bash -c 'trap "chown -R $${UID}:$${GID} --from root:root /ui" EXIT && rm -rf node_modules && npm install && npm run test-once'
+
+# -----------------------------------------------------------------------------
+
+
+docker_registry_use_dockerhub:
+	sed -i 's?^FROM[^:]*?FROM ubuntu?' "$(ROOT_DIR)/containerization/backend-base.dockerfile" && \
+	sed -i 's?^FROM[^:]*?FROM tianon/true?' "$(ROOT_DIR)/containerization/db-data.dockerfile" && \
+	sed -i 's?^FROM[^:]*?FROM mongo?' "$(ROOT_DIR)/containerization/db.dockerfile" && \
+	sed -i 's?^FROM[^:]*?FROM nginx?' "$(ROOT_DIR)/containerization/frontend.dockerfile" && \
+	sed -i 's?^FROM[^:]*?FROM ubuntu?' "$(ROOT_DIR)/containerization/ui-tests.dockerfile"
+
+docker_registry_use_internal_ci:
+	sed -i "s?^FROM[^:]*?FROM $(INTERNAL_CI_DOCKER_REGISTRY)/ubuntu?" "$(ROOT_DIR)/containerization/backend-base.dockerfile" && \
+	sed -i "s?^FROM[^:]*?FROM $(INTERNAL_CI_DOCKER_REGISTRY)/tianon/true?" "$(ROOT_DIR)/containerization/db-data.dockerfile" && \
+	sed -i "s?^FROM[^:]*?FROM $(INTERNAL_CI_DOCKER_REGISTRY)/mongo?" "$(ROOT_DIR)/containerization/db.dockerfile" && \
+	sed -i "s?^FROM[^:]*?FROM $(INTERNAL_CI_DOCKER_REGISTRY)/nginx?" "$(ROOT_DIR)/containerization/frontend.dockerfile" && \
+	sed -i "s?^FROM[^:]*?FROM $(INTERNAL_CI_DOCKER_REGISTRY)/ubuntu?" "$(ROOT_DIR)/containerization/ui-tests.dockerfile"
