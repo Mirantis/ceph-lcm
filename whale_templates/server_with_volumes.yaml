@@ -41,6 +41,7 @@ resources:
       flavor: {get_param: instance_type}
       networks:
         - network: {get_param: network}
+      user_data: {get_file: 'user_data.txt'}
   ceph_volumes:
     type: OS::Heat::ResourceGroup
     properties:
