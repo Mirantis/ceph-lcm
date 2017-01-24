@@ -60,8 +60,8 @@ class RoleView(generic.VersionedCRUDView):
     """Implementation of view for /v1/role API."""
 
     decorators = [
-        auth.require_authorization("api", "view_role"),
-        auth.require_authentication
+        auth.AUTH.require_authorization("api", "view_role"),
+        auth.AUTH.require_authentication
     ]
 
     NAME = "role"
@@ -76,11 +76,11 @@ class RoleView(generic.VersionedCRUDView):
     def get_item(self, item_id, item, *args):
         return item
 
-    @auth.require_authorization("api", "view_role_versions")
+    @auth.AUTH.require_authorization("api", "view_role_versions")
     def get_versions(self, item_id):
         return role.RoleModel.list_versions(str(item_id), self.pagination)
 
-    @auth.require_authorization("api", "view_role_versions")
+    @auth.AUTH.require_authorization("api", "view_role_versions")
     def get_version(self, item_id, version):
         model = role.RoleModel.find_version(str(item_id), int(version))
 
@@ -90,7 +90,7 @@ class RoleView(generic.VersionedCRUDView):
 
         return model
 
-    @auth.require_authorization("api", "edit_role")
+    @auth.AUTH.require_authorization("api", "edit_role")
     @validators.with_model(role.RoleModel)
     @validators.require_schema(MODEL_SCHEMA)
     @validators.no_updates_on_default_fields
@@ -121,7 +121,7 @@ class RoleView(generic.VersionedCRUDView):
 
         return item
 
-    @auth.require_authorization("api", "create_role")
+    @auth.AUTH.require_authorization("api", "create_role")
     @validators.require_schema(POST_SCHEMA)
     def post(self):
         try:
@@ -147,7 +147,7 @@ class RoleView(generic.VersionedCRUDView):
 
         return role_model
 
-    @auth.require_authorization("api", "delete_role")
+    @auth.AUTH.require_authorization("api", "delete_role")
     @validators.with_model(role.RoleModel)
     def delete(self, item_id, item):
         try:

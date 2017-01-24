@@ -45,3 +45,10 @@ def ttl(offset):
         offset = datetime.timedelta(seconds=int(offset))
 
     return datenow() + offset
+
+
+def keystone_to_utc(data):
+    dtime = datetime.datetime.strptime(data, "%Y-%m-%dT%H:%M:%S.%fZ")
+    dtime = dtime.replace(tzinfo=datetime.timezone.utc)
+
+    return dtime

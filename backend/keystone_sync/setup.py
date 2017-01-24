@@ -21,14 +21,13 @@ import setuptools
 
 REQUIREMENTS = (
     "decapod-common~=0.2.dev1",
-    "Flask>=0.12,<0.13",
-    "jsonschema>=2.5,<2.6"
+    "python-keystoneclient>=3.9,<4"
 )
 
 
 setuptools.setup(
-    name="decapod-api",
-    description="Decapod API service",
+    name="decapod-keystone-sync",
+    description="User synchronisator with Keystone",
     long_description="",  # TODO
     version="0.2.0.dev1",
     author="Sergey Arkhipov",
@@ -38,12 +37,14 @@ setuptools.setup(
     license="Apache2",
     url="https://github.com/Mirantis/ceph-lcm",
     packages=setuptools.find_packages(),
-    extras_require={
-        "keystone": ["python-keystoneclient>=3.9,<4"]
-    },
     python_requires=">=3.4",
     install_requires=REQUIREMENTS,
-    zip_safe=True,
+    zip_safe=False,
+    entry_points={
+        "console_scripts": [
+            "decapod-keystone-sync = decapod_keystone_sync.cli:main"
+        ]
+    },
     classifiers=(
         "Intended Audience :: Information Technology",
         "Intended Audience :: System Administrators",

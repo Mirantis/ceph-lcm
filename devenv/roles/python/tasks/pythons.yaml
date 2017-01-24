@@ -53,11 +53,13 @@
   with_items:
     - backend/common
     - backend/migration
-    - backend/api
+    - 'backend/api[keystone]'
     - backend/controller
     - plugins/alerts/emails
     - plugins/playbook/server_discovery
     - plugins/playbook/playbook_helloworld
+    - decapodlib
+    - 'decapodcli[color]'
   tags:
     # This is to update requirements
     - skip_ansible_lint

@@ -58,8 +58,8 @@ class ExecutionView(generic.VersionedCRUDView):
     """Implementation of view for /v1/execution API."""
 
     decorators = [
-        auth.require_authorization("api", "view_execution"),
-        auth.require_authentication
+        auth.AUTH.require_authorization("api", "view_execution"),
+        auth.AUTH.require_authentication
     ]
 
     NAME = "execution"
@@ -74,7 +74,7 @@ class ExecutionView(generic.VersionedCRUDView):
     def get_item(self, item_id, item, *args):
         return item
 
-    @auth.require_authorization("api", "view_execution_version")
+    @auth.AUTH.require_authorization("api", "view_execution_version")
     def get_versions(self, item_id):
         return execution.ExecutionModel.list_versions(
             str(item_id), self.pagination
@@ -91,7 +91,7 @@ class ExecutionView(generic.VersionedCRUDView):
 
         return model
 
-    @auth.require_authorization("api", "create_execution")
+    @auth.AUTH.require_authorization("api", "create_execution")
     @validators.require_schema(POST_SCHEMA)
     def post(self):
         pc_id = self.request_json["playbook_configuration"]["id"]
@@ -108,8 +108,8 @@ class ExecutionView(generic.VersionedCRUDView):
                 pc_id, pc_version
             )
 
-        auth.check_auth_permission(flask.g.token.user,
-                                   "playbook", config.playbook_id)
+        auth.AUTH.check_auth_permission(flask.g.token.user,
+                                        "playbook", config.playbook_id)
 
         model = execution.ExecutionModel.create(config, self.initiator_id)
         LOG.info(
@@ -135,7 +135,7 @@ class ExecutionView(generic.VersionedCRUDView):
 
         return model
 
-    @auth.require_authorization("api", "delete_execution")
+    @auth.AUTH.require_authorization("api", "delete_execution")
     @validators.with_model(execution.ExecutionModel)
     def delete(self, item_id, item):
         if item.state == execution.ExecutionState.created:
@@ -181,9 +181,9 @@ class ExecutionStepsView(generic.CRUDView):
     MODEL_NAME = "execution_step"
 
     decorators = [
-        auth.require_authorization("api", "view_execution"),
-        auth.require_authorization("api", "view_execution_steps"),
-        auth.require_authentication
+        auth.AUTH.require_authorization("api", "view_execution"),
+        auth.AUTH.require_authorization("api", "view_execution_steps"),
+        auth.AUTH.require_authentication
     ]
 
     @classmethod
@@ -211,9 +211,9 @@ class ExecutionStepsLog(generic.View):
     NAME = "execution_step_log"
 
     decorators = [
-        auth.require_authorization("api", "view_execution"),
-        auth.require_authorization("api", "view_execution_steps"),
-        auth.require_authentication
+        auth.AUTH.require_authorization("api", "view_execution"),
+        auth.AUTH.require_authorization("api", "view_execution_steps"),
+        auth.AUTH.require_authentication
     ]
 
     @classmethod

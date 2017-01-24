@@ -38,6 +38,17 @@ api:
     level: "DEBUG"
     handlers:
       - "stderr_debug"
+  auth:
+    # type: native
+    # parameters: {}
+    type: keystone
+    parameters:
+      auth_url: http://keystone:5000/v3
+      username: admin
+      password: nomoresecret
+      project_domain_name: default
+      project_name: admin
+      user_domain_name: default
 
 
 controller:

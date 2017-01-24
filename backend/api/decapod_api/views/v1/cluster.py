@@ -60,8 +60,8 @@ class ClusterView(generic.VersionedCRUDView):
     """Implementation of view for /v1/cluster API."""
 
     decorators = [
-        auth.require_authorization("api", "view_cluster"),
-        auth.require_authentication
+        auth.AUTH.require_authorization("api", "view_cluster"),
+        auth.AUTH.require_authentication
     ]
 
     NAME = "cluster"
@@ -76,12 +76,12 @@ class ClusterView(generic.VersionedCRUDView):
     def get_item(self, item_id, item, *args):
         return item
 
-    @auth.require_authorization("api", "view_cluster_versions")
+    @auth.AUTH.require_authorization("api", "view_cluster_versions")
     def get_versions(self, item_id):
         return cluster.ClusterModel.list_versions(
             str(item_id), self.pagination)
 
-    @auth.require_authorization("api", "view_cluster_versions")
+    @auth.AUTH.require_authorization("api", "view_cluster_versions")
     def get_version(self, item_id, version):
         model = cluster.ClusterModel.find_version(str(item_id), int(version))
 
@@ -91,7 +91,7 @@ class ClusterView(generic.VersionedCRUDView):
 
         return model
 
-    @auth.require_authorization("api", "edit_cluster")
+    @auth.AUTH.require_authorization("api", "edit_cluster")
     @validators.with_model(cluster.ClusterModel)
     @validators.require_schema(MODEL_SCHEMA)
     @validators.no_updates_on_default_fields
@@ -120,7 +120,7 @@ class ClusterView(generic.VersionedCRUDView):
 
         return item
 
-    @auth.require_authorization("api", "create_cluster")
+    @auth.AUTH.require_authorization("api", "create_cluster")
     @validators.require_schema(POST_SCHEMA)
     def post(self):
         try:
@@ -142,7 +142,7 @@ class ClusterView(generic.VersionedCRUDView):
 
         return cluster_model
 
-    @auth.require_authorization("api", "delete_cluster")
+    @auth.AUTH.require_authorization("api", "delete_cluster")
     @validators.with_model(cluster.ClusterModel)
     def delete(self, item_id, item):
         try:

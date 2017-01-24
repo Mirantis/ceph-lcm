@@ -38,7 +38,7 @@ class PlaybookView(generic.ModelView):
     """
 
     decorators = [
-        auth.require_authentication
+        auth.AUTH.require_authentication
     ]
 
     NAME = "playbook"

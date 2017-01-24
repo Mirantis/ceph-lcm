@@ -45,6 +45,7 @@ class UserModel(generic.Model):
         self.email = None
         self.full_name = ""
         self.role = None
+        self.external_id = None
         self._permissions = collections.defaultdict(set)
 
     role = properties.ModelProperty(
@@ -54,7 +55,7 @@ class UserModel(generic.Model):
 
     @classmethod
     def make_user(cls, login, password, email, full_name, role,
-                  initiator_id=None):
+                  initiator_id=None, external_id=None):
         """Creates new user model, storing it into database."""
 
         model = cls()
@@ -65,6 +66,7 @@ class UserModel(generic.Model):
         model.full_name = full_name
         model.role = role
         model.initiator = initiator_id
+        model.external_id = external_id
 
         try:
             model.save()
@@ -81,6 +83,21 @@ class UserModel(generic.Model):
         """
 
         query = {"login": login, "is_latest": True, "time_deleted": 0}
+        document = cls.collection().find_one(query)
+        if not document:
+            return None
+
+        model = cls()
+        model.update_from_db_document(document)
+
+        return model
+
+    @classmethod
+    def find_by_external_id(cls, external_id, include_deleted=False):
+        query = {"external_id": str(external_id), "is_latest": True}
+        if not include_deleted:
+            query["time_deleted"] = 0
+
         document = cls.collection().find_one(query)
         if not document:
             return None
@@ -148,6 +165,7 @@ class UserModel(generic.Model):
         self.email = structure["email"]
         self.full_name = structure["full_name"]
         self.role = structure["role_id"]
+        self.external_id = structure["external_id"]
         self._permissions = None
 
     def make_db_document_specific_fields(self):
@@ -157,7 +175,8 @@ class UserModel(generic.Model):
             "password_hash": self.password_hash,
             "email": self.email,
             "initiator_id": self.initiator_id,
-            "role_id": self.role_id
+            "role_id": self.role_id,
+            "external_id": self.external_id
         }
 
     def make_api_specific_fields(self, *args, **kwargs):

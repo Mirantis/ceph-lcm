@@ -44,7 +44,7 @@ RUN set -x \
   && echo "migrations=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
   && scd -s git_pep440 -v \
   && pip3 install --no-cache-dir --disable-pip-version-check \
-    backend/api \
+    backend/api[keystone] \
     backend/controller \
     backend/migration \
   && cd / \

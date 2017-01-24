@@ -78,8 +78,8 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
     """Implementation of view for /v1/playbook_configuration API."""
 
     decorators = [
-        auth.require_authorization("api", "view_playbook_configuration"),
-        auth.require_authentication
+        auth.AUTH.require_authorization("api", "view_playbook_configuration"),
+        auth.AUTH.require_authentication
     ]
 
     NAME = "playbook_configuration"
@@ -96,13 +96,15 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
     def get_item(self, item_id, item, *args):
         return item
 
-    @auth.require_authorization("api", "view_playbook_configuration_version")
+    @auth.AUTH.require_authorization(
+        "api", "view_playbook_configuration_version")
     def get_versions(self, item_id):
         return playbook_configuration.PlaybookConfigurationModel.list_versions(
             str(item_id), self.pagination
         )
 
-    @auth.require_authorization("api", "view_playbook_configuration_version")
+    @auth.AUTH.require_authorization(
+        "api", "view_playbook_configuration_version")
     def get_version(self, item_id, version):
         model = playbook_configuration.PlaybookConfigurationModel.find_version(
             str(item_id), int(version)
@@ -114,7 +116,7 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
 
         return model
 
-    @auth.require_authorization("api", "edit_playbook_configuration")
+    @auth.AUTH.require_authorization("api", "edit_playbook_configuration")
     @validators.with_model(playbook_configuration.PlaybookConfigurationModel)
     @validators.require_schema(MODEL_SCHEMA)
     @validators.no_updates_on_default_fields
@@ -146,7 +148,7 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
 
         return item
 
-    @auth.require_authorization("api", "create_playbook_configuration")
+    @auth.AUTH.require_authorization("api", "create_playbook_configuration")
     @validators.require_schema(POST_SCHEMA)
     def post(self):
         cluster_model = self.get_cluster_model(self.request_json["cluster_id"])
@@ -179,7 +181,7 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
 
         return pcmodel
 
-    @auth.require_authorization("api", "delete_playbook_confuiguration")
+    @auth.AUTH.require_authorization("api", "delete_playbook_confuiguration")
     @validators.with_model(playbook_configuration.PlaybookConfigurationModel)
     def delete(self, item_id, item):
         try:

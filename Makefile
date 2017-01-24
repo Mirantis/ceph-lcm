@@ -25,16 +25,17 @@ IMAGE_VERSION    ?= latest
 PIP_INDEX_URL    ?= https://pypi.python.org/simple/
 NPM_REGISTRY_URL ?= https://registry.npmjs.org/
 
-CONTAINER_API_NAME        := decapod/api
-CONTAINER_BASE_NAME       := decapod/base
-CONTAINER_CONTROLLER_NAME := decapod/controller
-CONTAINER_CRON_NAME       := decapod/cron
-CONTAINER_DB_DATA_NAME    := decapod/db-data
-CONTAINER_DB_NAME         := decapod/db
-CONTAINER_FRONTEND_NAME   := decapod/frontend
-CONTAINER_MIGRATIONS_NAME := decapod/migrations
-CONTAINER_PLUGINS_NAME    := decapod/base-plugins
-CONTAINER_UI_TESTS_NAME   := decapod/ui-tests
+CONTAINER_API_NAME           := decapod/api
+CONTAINER_BASE_NAME          := decapod/base
+CONTAINER_CONTROLLER_NAME    := decapod/controller
+CONTAINER_CRON_NAME          := decapod/cron
+CONTAINER_DB_DATA_NAME       := decapod/db-data
+CONTAINER_DB_NAME            := decapod/db
+CONTAINER_FRONTEND_NAME      := decapod/frontend
+CONTAINER_MIGRATIONS_NAME    := decapod/migrations
+CONTAINER_PLUGINS_NAME       := decapod/base-plugins
+CONTAINER_UI_TESTS_NAME      := decapod/ui-tests
+CONTAINER_TEST_KEYSTONE_NAME := decapod/keystone
 
 INTERNAL_CI_DOCKER_REGISTRY := docker-prod-virtual.docker.mirantis.net
 
@@ -155,6 +156,9 @@ build_deb_api: clean_debs make_deb_directory
 build_deb_migration: clean_debs make_deb_directory
 	$(call build_deb_py3,"$(ROOT_DIR)/backend/migration","$(DEB_DIR)")
 
+build_deb_keystone_sync: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/backend/keystone_sync","$(DEB_DIR)")
+
 build_deb_monitoring: clean_debs make_deb_directory
 	$(call build_deb_py2,"$(ROOT_DIR)/backend/monitoring","$(DEB_DIR)")
 
@@ -201,7 +205,7 @@ build_eggs: build_backend_eggs build_decapodlib_eggs build_decapodcli_eggs \
 	build_plugins_eggs
 build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs \
 	build_ansible_eggs build_monitoring_eggs build_migration_eggs \
-	build_docker_eggs
+	build_docker_eggs build_keystone_sync_eggs
 build_plugins_eggs: build_alerts_eggs build_playbook_eggs
 build_alerts_eggs: build_email_eggs
 build_playbook_eggs: build_deploy_cluster_eggs build_helloworld_eggs \
@@ -226,6 +230,9 @@ build_monitoring_eggs: clean_eggs make_egg_directory
 
 build_migration_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/backend/migration","$(EGGS_DIR)")
+
+build_keystone_sync_eggs: clean_eggs make_egg_directory
+	$(call build_egg,"$(ROOT_DIR)/backend/keystone_sync","$(EGGS_DIR)")
 
 build_docker_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/backend/docker","$(EGGS_DIR)")
@@ -314,6 +321,9 @@ build_container_migrations: build_container_plugins
 
 build_container_ui_tests:
 	$(call build_image,ui-tests.dockerfile,$(CONTAINER_UI_TESTS_NAME),--pull)
+
+build_container_test_keystone:
+	$(call build_image,test-keystone.dockerfile,$(CONTAINER_TEST_KEYSTONE_NAME),--pull)
 
 # -----------------------------------------------------------------------------
 

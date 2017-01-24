@@ -16,6 +16,7 @@
 """Implementation of password reset API."""
 
 
+from decapod_api import auth
 from decapod_api import exceptions as http_exceptions
 from decapod_api import validators
 from decapod_api.views import generic
@@ -61,6 +62,10 @@ class PasswordReset(generic.View):
 
     NAME = "password_reset"
     ENDPOINT = "/password_reset/"
+
+    decorators = [
+        auth.disable_if_read_only
+    ]
 
     @classmethod
     def register_to(cls, application):

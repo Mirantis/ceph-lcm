@@ -54,7 +54,7 @@ class AuthView(generic.ModelView):
 
         LOG.info("Attempt to login user %s", username)
 
-        token_model = auth.authenticate(username, password)
+        token_model = auth.AUTH.authenticate(username, password)
         if not token_model:
             raise exceptions.Unauthorized
 
@@ -65,9 +65,9 @@ class AuthView(generic.ModelView):
 
         return token_model
 
-    @auth.require_authentication
+    @auth.AUTH.require_authentication
     def delete(self):
-        auth.logout(flask.g.token)
+        auth.AUTH.logout(flask.g.token)
         LOG.info("User with id %s has logged out", flask.g.token.user_id)
 
         flask.g.token = None

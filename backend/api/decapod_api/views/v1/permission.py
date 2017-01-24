@@ -24,8 +24,8 @@ from decapod_common.models import role
 class PermissionView(generic.ModelView):
 
     decorators = [
-        auth.require_authorization("api", "view_role"),
-        auth.require_authentication
+        auth.AUTH.require_authorization("api", "view_role"),
+        auth.AUTH.require_authentication
     ]
 
     NAME = "permission"

@@ -89,6 +89,11 @@ files:
       replace: setuppy
     - search: pycommon
       replace: pycommon_mm
+  backend/keystone_sync/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
   backend/migration/setup.py:
     - search: setuppy
       replace: setuppy
@@ -166,6 +171,11 @@ files:
     - search: deb_common_max
       replace: deb_common_max
   backend/controller/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  backend/keystone_sync/stdeb.cfg:
     - search: deb_common_min
       replace: deb_common_min
     - search: deb_common_max

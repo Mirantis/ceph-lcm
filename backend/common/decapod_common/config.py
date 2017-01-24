@@ -82,6 +82,14 @@ class ApiConfig(Config):
 
         return config
 
+    @property
+    def auth_type(self):
+        return self["api"].get("auth", {}).get("type", "native")
+
+    @property
+    def auth_parameters(self):
+        return self["api"].get("auth", {}).get("parameters", {})
+
 
 class ControllerConfig(Config):
 

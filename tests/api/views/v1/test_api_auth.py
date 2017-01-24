@@ -113,6 +113,22 @@ def test_logout_ok(client_v1):
     assert response.json == {}
 
 
+def test_bearer_token(client_v1):
+    login = pytest.faux.gen_alphanumeric()
+    password = pytest.faux.gen_alphanumeric()
+    make_user(login, password)
+
+    client_v1.LOGIN = login
+    client_v1.PASSWORD = password
+
+    client_v1.login()
+    client_v1.logout()
+
+    client_v1.login()
+    client_v1.auth_token = "Bearer {0}".format(client_v1.auth_token)
+    client_v1.logout()
+
+
 @pytest.mark.parametrize("was_logged_in", (True, False))
 @pytest.mark.parametrize("token", (None, "", "1"))
 def test_logout_without_correct_token(was_logged_in, token, client_v1):

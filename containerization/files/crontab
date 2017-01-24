@@ -1,3 +1,4 @@
 PATH=/bin:/usr/bin:/usr/local/bin
 
 */10 * * * * flock -xn /usr/local/bin/decapod-collect-data timeout --foreground -k 3m 2m /usr/local/bin/decapod-collect-data > /var/log/cron.log 2>&1
+*/10 * * * * flock -xn /usr/local/bin/decapod-keystone-sync /usr/local/bin/decapod-keystone-sync > /var/log/cron.log 2>&1

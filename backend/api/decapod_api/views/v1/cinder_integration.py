@@ -32,8 +32,8 @@ LOG = log.getLogger(__name__)
 class CinderIntegrationView(generic.CRUDView):
 
     decorators = [
-        auth.require_authorization("api", "view_cinder"),
-        auth.require_authentication
+        auth.AUTH.require_authorization("api", "view_cinder"),
+        auth.AUTH.require_authentication
     ]
 
     NAME = "cinder_integration"

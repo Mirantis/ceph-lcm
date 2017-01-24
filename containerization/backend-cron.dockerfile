@@ -34,6 +34,8 @@ RUN set -x \
     curl \
     gcc \
     git \
+    python3-dev \
+    python3-pip \
     python-dev \
     python-pip \
   && cd /project \
@@ -41,6 +43,7 @@ RUN set -x \
   && echo "cron=$(git rev-parse HEAD)" >> /etc/git-release \
   && echo "cron=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
   && scd -s git_pep440 -v \
+  && pip3 install --no-cache-dir --disable-pip-version-check backend/api backend/keystone_sync \
   && pip2 install --no-cache-dir --disable-pip-version-check backend/monitoring \
   && curl --silent --show-error --fail --location \
     --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
@@ -55,7 +58,7 @@ RUN set -x \
   && cd / \
   && rm -r /project \
   && apt-get clean \
-  && apt-get purge -y git gcc python-dev python-pip curl \
+  && apt-get purge -y git gcc python3-pip python3-dev python-dev python-pip curl \
   && apt-get autoremove --purge -y \
   && rm -r /var/lib/apt/lists/*
 

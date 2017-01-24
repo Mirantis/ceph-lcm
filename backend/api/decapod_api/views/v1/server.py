@@ -75,9 +75,11 @@ LOG = log.getLogger(__name__)
 def require_create_server_authorization(func):
     """Special authorization decorator for server create."""
 
-    normal_decorated_func = auth.require_authorization("api", "create_server")
+    normal_decorated_func = auth.AUTH.require_authorization(
+        "api", "create_server")
     normal_decorated_func = normal_decorated_func(func)
-    normal_decorated_func = auth.require_authentication(normal_decorated_func)
+    normal_decorated_func = auth.AUTH.require_authentication(
+        normal_decorated_func)
 
     @functools.wraps(func)
     def decorator(*args, **kwargs):
@@ -97,26 +99,26 @@ class ServerView(generic.VersionedCRUDView):
     ENDPOINT = "/server/"
     PARAMETER_TYPE = "uuid"
 
-    @auth.require_authentication
-    @auth.require_authorization("api", "view_server")
+    @auth.AUTH.require_authentication
+    @auth.AUTH.require_authorization("api", "view_server")
     def get_all(self):
         return server.ServerModel.list_models(self.pagination)
 
-    @auth.require_authentication
-    @auth.require_authorization("api", "view_server")
+    @auth.AUTH.require_authentication
+    @auth.AUTH.require_authorization("api", "view_server")
     @validators.with_model(server.ServerModel)
     def get_item(self, item_id, item, *args):
         return item
 
-    @auth.require_authentication
-    @auth.require_authorization("api", "view_server")
-    @auth.require_authorization("api", "view_server_versions")
+    @auth.AUTH.require_authentication
+    @auth.AUTH.require_authorization("api", "view_server")
+    @auth.AUTH.require_authorization("api", "view_server_versions")
     def get_versions(self, item_id):
         return server.ServerModel.list_versions(str(item_id), self.pagination)
 
-    @auth.require_authentication
-    @auth.require_authorization("api", "view_server")
-    @auth.require_authorization("api", "view_server_versions")
+    @auth.AUTH.require_authentication
+    @auth.AUTH.require_authorization("api", "view_server")
+    @auth.AUTH.require_authorization("api", "view_server_versions")
     def get_version(self, item_id, version):
         model = server.ServerModel.find_version(str(item_id), int(version))
 
@@ -127,9 +129,9 @@ class ServerView(generic.VersionedCRUDView):
 
         return model
 
-    @auth.require_authentication
-    @auth.require_authorization("api", "view_server")
-    @auth.require_authorization("api", "edit_server")
+    @auth.AUTH.require_authentication
+    @auth.AUTH.require_authorization("api", "view_server")
+    @auth.AUTH.require_authorization("api", "edit_server")
     @validators.with_model(server.ServerModel)
     @validators.require_schema(MODEL_SCHEMA)
     @validators.no_updates_on_default_fields
@@ -182,9 +184,9 @@ class ServerView(generic.VersionedCRUDView):
 
         return {}
 
-    @auth.require_authentication
-    @auth.require_authorization("api", "view_server")
-    @auth.require_authorization("api", "delete_server")
+    @auth.AUTH.require_authentication
+    @auth.AUTH.require_authorization("api", "view_server")
+    @auth.AUTH.require_authorization("api", "delete_server")
     @validators.with_model(server.ServerModel)
     def delete(self, item_id, item):
         try:

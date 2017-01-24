@@ -44,7 +44,7 @@ RUN set -x \
   && echo "api=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
   && scd -s git_pep440 -v \
   && pip3 install --no-cache-dir --disable-pip-version-check -c constraints.txt uwsgi \
-  && pip3 install --no-cache-dir --disable-pip-version-check backend/api \
+  && pip3 install --no-cache-dir --disable-pip-version-check backend/api[keystone] \
   && cd / \
   && rm -r /project \
   && apt-get clean \
