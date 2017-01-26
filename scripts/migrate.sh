@@ -48,6 +48,5 @@ command="$@"
 
 docker run \
     --rm \
-    -it \
     --network "container:${db_container}" \
     decapod/migrations $command
