@@ -24,7 +24,9 @@ ARG pip_index_url=
 ARG npm_registry_url=
 
 
+COPY containerization/files/db-backup.sh              /usr/bin/backup
 COPY containerization/files/db-moshell.sh             /usr/bin/moshell
+COPY containerization/files/db-restore.sh             /usr/bin/restore
 COPY containerization/files/devconfigs/mongodb-ca.crt /certs/mongodb-ca.crt
 COPY containerization/files/devconfigs/mongodb.pem    /certs/mongodb.pem
 COPY containerization/files/mongod.conf               /etc/mongod.conf
