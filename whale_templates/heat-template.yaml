@@ -40,6 +40,10 @@ parameters:
     type: string
     label: Network to use
     description: Network to use for instances
+  public_ip_pool_name:
+    type: string
+    label: Floating IP pool
+    description: The name of the pool with floating IPs to assign
 
 resources:
   ceph_hosts:
@@ -54,3 +58,9 @@ resources:
           image: {get_param: image}
           instance_type: {get_param: instance_type}
           network: {get_param: network}
+          public_ip_pool_name: {get_param: public_ip_pool_name}
+
+outputs:
+  host_ips:
+    description: Floating IPs of created hosts
+    value: {get_attr: [ceph_hosts, host_ip]}
