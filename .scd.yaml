@@ -7,6 +7,7 @@ version:
 search_patterns:
   setuppy: '(?<=version="){{ pep440 }}'
   pycommon: '(?<=decapod-common~=){{ pep440 }}'
+  decapodlib: '(?<=decapodlib~=){{ pep440 }}'
   docker: '(?<=LABEL\sversion="){{ pep440 }}'
   packagejson: '(?<=version":\s"){{ pep440 }}'
   deb_common_min: '(?<=decapod-common\s\(>=\s){{ pep440 }}'
@@ -34,12 +35,6 @@ files:
   containerization/backend-controller.dockerfile:
     - search: docker
       replace: docker
-  containerization/backend-cron.dockerfile:
-    - search: docker
-      replace: docker
-  containerization/backend-plugins.dockerfile:
-    - search: docker
-      replace: docker
   containerization/db-data.dockerfile:
     - search: docker
       replace: docker
@@ -47,9 +42,6 @@ files:
     - search: docker
       replace: docker
   containerization/frontend.dockerfile:
-    - search: docker
-      replace: docker
-  containerization/migrations.dockerfile:
     - search: docker
       replace: docker
   containerization/ui-tests.dockerfile:
@@ -66,7 +58,16 @@ files:
   decapodcli/setup.py:
     - search: setuppy
       replace: setuppy
-    - search_raw: '(?<=decapodlib~=){{ pep440 }}'
+    - search: decapodlib
+      replace: pycommon_mm
+  backend/admin/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: decapodlib
+      replace: pycommon_mm
+    - search_raw: '(?<=decapod-api~=){{ pep440 }}'
+      replace: pycommon_mm
+    - search_raw: '(?<=decapod-controller~=){{ pep440 }}'
       replace: pycommon_mm
   backend/ansible/setup.py:
     - search: setuppy
@@ -85,16 +86,6 @@ files:
     - search: pycommon
       replace: pycommon_mm
   backend/docker/setup.py:
-    - search: setuppy
-      replace: setuppy
-    - search: pycommon
-      replace: pycommon_mm
-  backend/keystone_sync/setup.py:
-    - search: setuppy
-      replace: setuppy
-    - search: pycommon
-      replace: pycommon_mm
-  backend/migration/setup.py:
     - search: setuppy
       replace: setuppy
     - search: pycommon
@@ -175,12 +166,7 @@ files:
       replace: deb_common_min
     - search: deb_common_max
       replace: deb_common_max
-  backend/keystone_sync/stdeb.cfg:
-    - search: deb_common_min
-      replace: deb_common_min
-    - search: deb_common_max
-      replace: deb_common_max
-  backend/migration/stdeb.cfg:
+  backend/admin/stdeb.cfg:
     - search: deb_common_min
       replace: deb_common_min
     - search: deb_common_max

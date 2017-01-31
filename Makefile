@@ -28,14 +28,20 @@ NPM_REGISTRY_URL ?= https://registry.npmjs.org/
 CONTAINER_API_NAME           := decapod/api
 CONTAINER_BASE_NAME          := decapod/base
 CONTAINER_CONTROLLER_NAME    := decapod/controller
-CONTAINER_CRON_NAME          := decapod/cron
 CONTAINER_DB_DATA_NAME       := decapod/db-data
 CONTAINER_DB_NAME            := decapod/db
 CONTAINER_FRONTEND_NAME      := decapod/frontend
-CONTAINER_MIGRATIONS_NAME    := decapod/migrations
-CONTAINER_PLUGINS_NAME       := decapod/base-plugins
 CONTAINER_UI_TESTS_NAME      := decapod/ui-tests
 CONTAINER_TEST_KEYSTONE_NAME := decapod/keystone
+CONTAINER_ADMIN_NAME         := decapod/admin
+
+# Deprecated, will be removed soon.
+#
+# Base plugins are merged into base container, cron and migrations - to
+# admin.
+CONTAINER_CRON_NAME       := decapod/cron
+CONTAINER_MIGRATIONS_NAME := decapod/migrations
+CONTAINER_PLUGINS_NAME    := decapod/base-plugins
 
 INTERNAL_CI_DOCKER_REGISTRY := docker-prod-virtual.docker.mirantis.net
 
@@ -127,7 +133,7 @@ make_output_directory:
 # -----------------------------------------------------------------------------
 
 build_debs: build_deb_decapodlib build_deb_decapodcli build_deb_ansible \
-    build_deb_common build_deb_controller build_deb_api build_deb_migration \
+    build_deb_common build_deb_controller build_deb_api build_deb_admin \
     build_deb_monitoring build_deb_emails build_deb_add_osd build_deb_add_mon \
     build_deb_deploy_cluster build_deb_helloworld build_deb_purge_cluster \
     build_deb_remove_osd build_deb_server_discovery build_debs_external \
@@ -153,11 +159,8 @@ build_deb_controller: clean_debs make_deb_directory
 build_deb_api: clean_debs make_deb_directory
 	$(call build_deb_py3,"$(ROOT_DIR)/backend/api","$(DEB_DIR)")
 
-build_deb_migration: clean_debs make_deb_directory
-	$(call build_deb_py3,"$(ROOT_DIR)/backend/migration","$(DEB_DIR)")
-
-build_deb_keystone_sync: clean_debs make_deb_directory
-	$(call build_deb_py3,"$(ROOT_DIR)/backend/keystone_sync","$(DEB_DIR)")
+build_deb_admin: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/backend/admin","$(DEB_DIR)")
 
 build_deb_monitoring: clean_debs make_deb_directory
 	$(call build_deb_py2,"$(ROOT_DIR)/backend/monitoring","$(DEB_DIR)")
@@ -204,8 +207,8 @@ clean_debs:
 build_eggs: build_backend_eggs build_decapodlib_eggs build_decapodcli_eggs \
 	build_plugins_eggs
 build_backend_eggs: build_api_eggs build_common_eggs build_controller_eggs \
-	build_ansible_eggs build_monitoring_eggs build_migration_eggs \
-	build_docker_eggs build_keystone_sync_eggs
+	build_ansible_eggs build_monitoring_eggs \
+	build_docker_eggs build_admin_eggs
 build_plugins_eggs: build_alerts_eggs build_playbook_eggs
 build_alerts_eggs: build_email_eggs
 build_playbook_eggs: build_deploy_cluster_eggs build_helloworld_eggs \
@@ -228,11 +231,8 @@ build_ansible_eggs: clean_eggs make_egg_directory
 build_monitoring_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/backend/monitoring","$(EGGS_DIR)")
 
-build_migration_eggs: clean_eggs make_egg_directory
-	$(call build_egg,"$(ROOT_DIR)/backend/migration","$(EGGS_DIR)")
-
-build_keystone_sync_eggs: clean_eggs make_egg_directory
-	$(call build_egg,"$(ROOT_DIR)/backend/keystone_sync","$(EGGS_DIR)")
+build_admin_eggs: clean_eggs make_egg_directory
+	$(call build_egg,"$(ROOT_DIR)/backend/admin","$(EGGS_DIR)")
 
 build_docker_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/backend/docker","$(EGGS_DIR)")
@@ -289,17 +289,21 @@ clean_ui:
 
 build_containers: build_container_api build_container_controller \
 	build_container_frontend build_container_db build_container_db_data \
-	build_container_cron build_container_migrations
+	build_container_admin build_container_migrations build_container_cron \
+	build_container_plugins
 build_containers_dev: copy_example_keys build_containers
 
-build_container_api: build_container_plugins
+build_container_api: build_container_base
 	$(call build_image,backend-api.dockerfile,$(CONTAINER_API_NAME))
 
-build_container_controller: build_container_plugins
+build_container_controller: build_container_base
 	$(call build_image,backend-controller.dockerfile,$(CONTAINER_CONTROLLER_NAME))
 
-build_container_cron: build_container_controller
-	$(call build_image,backend-cron.dockerfile,$(CONTAINER_CRON_NAME))
+build_container_admin: build_container_base
+	$(call build_image,backend-admin.dockerfile,$(CONTAINER_ADMIN_NAME))
+
+build_container_base:
+	$(call build_image,backend-base.dockerfile,$(CONTAINER_BASE_NAME),--pull)
 
 build_container_frontend:
 	$(call build_image,frontend.dockerfile,$(CONTAINER_FRONTEND_NAME),--pull)
@@ -310,26 +314,28 @@ build_container_db:
 build_container_db_data:
 	$(call build_image,db-data.dockerfile,$(CONTAINER_DB_DATA_NAME),--pull)
 
-build_container_base:
-	$(call build_image,backend-base.dockerfile,$(CONTAINER_BASE_NAME),--pull)
-
-build_container_plugins: build_container_base
-	$(call build_image,backend-plugins.dockerfile,$(CONTAINER_PLUGINS_NAME))
-
-build_container_migrations: build_container_plugins
-	$(call build_image,migrations.dockerfile,$(CONTAINER_MIGRATIONS_NAME))
-
 build_container_ui_tests:
 	$(call build_image,ui-tests.dockerfile,$(CONTAINER_UI_TESTS_NAME),--pull)
 
 build_container_test_keystone:
 	$(call build_image,test-keystone.dockerfile,$(CONTAINER_TEST_KEYSTONE_NAME),--pull)
 
+
+# Deprecated
+build_container_migrations:
+	$(call build_image,migrations.dockerfile,$(CONTAINER_MIGRATIONS_NAME),--pull)
+
+build_container_cron: build_container_controller
+	$(call build_image,backend-cron.dockerfile,$(CONTAINER_CRON_NAME))
+
+build_container_plugins: build_container_base
+	$(call build_image,backend-plugins.dockerfile,$(CONTAINER_PLUGINS_NAME))
+
 # -----------------------------------------------------------------------------
 
 
 dump_images: dump_image_api dump_image_controller dump_image_frontend \
-	dump_image_db dump_image_db_data dump_image_cron dump_image_migrations
+	dump_image_db dump_image_db_data dump_image_admin
 
 dump_image_api: make_image_directory
 	$(call dump_image,$(CONTAINER_API_NAME),$(IMAGES_DIR))
@@ -346,11 +352,8 @@ dump_image_db: make_image_directory
 dump_image_db_data: make_image_directory
 	$(call dump_image,$(CONTAINER_DB_DATA_NAME),$(IMAGES_DIR))
 
-dump_image_cron: make_image_directory
-	$(call dump_image,$(CONTAINER_CRON_NAME),$(IMAGES_DIR))
-
-dump_image_migrations: make_image_directory
-	$(call dump_image,$(CONTAINER_MIGRATIONS_NAME),$(IMAGES_DIR))
+dump_image_admin: make_image_directory
+	$(call dump_image,$(CONTAINER_ADMIN_NAME),$(IMAGES_DIR))
 
 # -----------------------------------------------------------------------------
 

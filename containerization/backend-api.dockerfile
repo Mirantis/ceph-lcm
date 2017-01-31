@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-FROM decapod/base-plugins
+FROM decapod/base
 MAINTAINER Mirantis Inc.
 
 

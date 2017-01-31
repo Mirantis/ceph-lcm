@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright (c) 2016 Mirantis Inc.
 #
@@ -14,23 +13,20 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tool for syncronising of keystone with Decapod database."""
+"""Keystone related CLI commands."""
 
 
-import argparse
+import binascii
 import functools
 import os
-import sys
-import uuid
 
+import click
 import keystoneauth1.identity.v3 as identity
 import keystoneauth1.session as session
 import keystoneclient.v3.client as client
 
-# This import is required to set the list of known permissions
-# in role model.
-import decapod_api  # NOQA
-from decapod_common import cliutils
+from decapod_admin import main
+from decapod_admin import utils
 from decapod_common import config
 from decapod_common import log
 from decapod_common.models import kv
@@ -38,67 +34,11 @@ from decapod_common.models import role
 from decapod_common.models import user
 
 
-LOG = log.getLogger(__name__)
-"""Logger."""
-
 CONF = config.make_api_config()
 """Config."""
 
-
-@cliutils.configure
-def main():
-    options = get_options()
-
-    if CONF.auth_type != "keystone":
-        LOG.info("Keystone integration is not enabled.")
-        return os.EX_OK
-
-    db_users = filter_users(get_db_users(), options.user)
-    keystone_users = filter_users(get_keystone_users(), options.user)
-    initial_role = get_initial_role(options.role)
-
-    initial_was_done = kv.KV.find_one("keystone_sync", "initial")
-    if not options.role and not initial_was_done:
-        LOG.info("Initial migration was not performed.")
-        return os.EX_OK
-
-    for login, keystone_user in sorted(keystone_users.items()):
-        db_users = process_keystone_user(
-            login, keystone_user, initial_role, db_users)
-    for login, db_user in db_users.items():
-        process_db_user(login, db_user)
-
-    if options.role and not initial_was_done:
-        kv.KV.upsert("keystone_sync", "initial", True)
-
-    return os.EX_OK
-
-
-def get_options():
-    parser = argparse.ArgumentParser(
-        description="Synchronise Decapod with Keystone")
-
-    parser.add_argument(
-        "-r", "--role",
-        default=None,
-        help="Run initial synchronisation. All new users will get this role."
-    )
-    parser.add_argument(
-        "-u", "--user",
-        default=[],
-        nargs=argparse.ZERO_OR_MORE,
-        help="Operate only on these users. By default, all users will be "
-             "affected."
-    )
-    parser.add_argument(
-        "-f", "--force",
-        default=False,
-        action="store_true",
-        help="Force run. By default, script won't run if migration "
-             "with '--role' was never performed."
-    )
-
-    return parser.parse_args()
+LOG = log.getLogger(__name__)
+"""Logger."""
 
 
 def log_exception(func):
@@ -110,6 +50,78 @@ def log_exception(func):
             LOG.error("Cannot process user %s: %s", login, exc)
 
     return decorator
+
+
+def execute_if_enabled(func):
+    @functools.wraps(func)
+    @click.pass_context
+    def decorator(ctx, *args, **kwargs):
+        if CONF.auth_type != "keystone":
+            LOG.info("Keystone integration is not enabled.")
+            ctx.exit()
+
+        return func(*args, **kwargs)
+
+    return decorator
+
+
+@main.cli_group
+@click.pass_context
+def keystone(ctx):
+    """Keystone related commands.
+
+    This command is split into 2 parts: sync and initital. The only
+    difference is that sync can be run only after 'initial' was
+    successfully executed. sync should be run periodically (e.g using
+    cron). initial allows to apply default role, sync syncs without any
+    roles.
+    """
+
+
+@utils.command(keystone)
+@click.argument("role")
+@click.argument("user", nargs=-1)
+@click.pass_context
+@execute_if_enabled
+def initial(ctx, role, user):
+    """Initial Keystone sync.
+
+    On initial sync it is possible to setup role for a user (users). If
+    no usernames are given, then all users from Keystone would be synced
+    and role will be applied to them.
+    """
+
+    initial_role = get_initial_role(role)
+    main(initial_role, user)
+    kv.KV.upsert("keystone_sync", "initial", "True")
+
+
+@utils.command(keystone)
+@click.pass_context
+@execute_if_enabled
+def sync(ctx):
+    """Ordinary sync.
+
+    All new users will get no roles. This command can be done only after
+    initial subcommand was performed.
+    """
+
+    if not kv.KV.find_one("keystone_sync", "initial"):
+        ctx.fail("Initial migration was not done yet.")
+
+    main(None, [])
+
+
+def main(initial_role, filtered_users):
+    db_users = filter_users(get_db_users(), filtered_users)
+    keystone_users = filter_users(get_keystone_users(), filtered_users)
+
+    for login, keystone_user in sorted(keystone_users.items()):
+        db_users = process_keystone_user(
+            login, keystone_user, initial_role, db_users)
+
+    for login, db_user in sorted(db_users.items()):
+        process_db_user(login, db_user)
 
 
 @log_exception
@@ -170,7 +182,7 @@ def create_user(keystone_user, initial_role):
 
     return user.UserModel.make_user(
         login=keystone_user.name,
-        password=uuid.uuid4().hex,
+        password=make_password(),
         email="{0}@keystone".format(keystone_user.name),
         full_name=keystone_user.name,
         role=initial_role,
@@ -203,9 +215,6 @@ def get_keystone_users():
 
 
 def get_initial_role(role_name):
-    if not role_name:
-        return None
-
     document = role.RoleModel.collection().find_one({"name": role_name})
     if not document:
         raise ValueError("Cannot find role {0}".format(role_name))
@@ -230,5 +239,9 @@ def make_client(parameters):
     return client.Client(session=sess)
 
 
-if __name__ == "__main__":
-    sys.exit(main())
+def make_password():
+    password = os.urandom(32)
+    password = binascii.b2a_base64(password)
+    password = password.decode("utf-8")
+
+    return password

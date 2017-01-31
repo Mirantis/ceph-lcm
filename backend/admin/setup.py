@@ -20,14 +20,19 @@ import setuptools
 
 
 REQUIREMENTS = (
+    "decapod-api~=0.2.dev1",
     "decapod-common~=0.2.dev1",
-    "python-keystoneclient>=3.9,<4"
+    "decapod-controller~=0.2.dev1",
+    "decapodlib~=0.2.dev1",
+    "python-keystoneclient>=3.9,<4",
+    "click>=6,<7",
+    "cryptography>=1.4,<2"
 )
 
 
 setuptools.setup(
-    name="decapod-keystone-sync",
-    description="User synchronisator with Keystone",
+    name="decapod-admin",
+    description="Admin scripts for Decapod",
     long_description="",  # TODO
     version="0.2.0.dev1",
     author="Sergey Arkhipov",
@@ -40,9 +45,15 @@ setuptools.setup(
     python_requires=">=3.4",
     install_requires=REQUIREMENTS,
     zip_safe=False,
+    include_package_data=True,
+    package_data={
+        "decapod_admin": [
+            "migration_scripts/*"
+        ]
+    },
     entry_points={
         "console_scripts": [
-            "decapod-keystone-sync = decapod_keystone_sync.cli:main"
+            "decapod-admin = decapod_admin.main:cli"
         ]
     },
     classifiers=(

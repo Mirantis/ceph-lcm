@@ -46,7 +46,7 @@ def migrator(model):
 
             func(collection, requests)
             if not requests:
-                print("{0.__name__}: nothing to do")
+                print("{0.__name__}: nothing to do", model)
                 return
 
             result = collection.bulk_write(requests)

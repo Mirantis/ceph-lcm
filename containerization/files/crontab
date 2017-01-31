@@ -1,4 +1,6 @@
 PATH=/bin:/usr/bin:/usr/local/bin
+LC_ALL=C.UTF-8
+LANG=C.UTF-8
 
 */10 * * * * flock -xn /usr/local/bin/decapod-collect-data timeout --foreground -k 3m 2m /usr/local/bin/decapod-collect-data > /var/log/cron.log 2>&1
-*/10 * * * * flock -xn /usr/local/bin/decapod-keystone-sync /usr/local/bin/decapod-keystone-sync > /var/log/cron.log 2>&1
+*/10 * * * * flock -xn /usr/local/bin/decapod-admin /usr/local/bin/decapod-admin keystone sync > /var/log/cron.log 2>&1

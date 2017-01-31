@@ -1,4 +1,4 @@
-# vi: set ft=dockerfile :
+# -*- coding: utf-8 -*-
 # Copyright (c) 2016 Mirantis Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,12 +13,14 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Decapod Admin tools package."""
 
 
-FROM docker-prod-virtual.docker.mirantis.net/tianon/true
-MAINTAINER Mirantis Inc.
-
-
-LABEL version="0.2.0" description="Dummy image" vendor="Mirantis"
-ARG pip_index_url=
-ARG npm_registry_url=
+import decapod_api  # NOQA
+from decapod_admin import cloud_config  # NOQA
+from decapod_admin import db  # NOQA
+from decapod_admin import keystone  # NOQA
+from decapod_admin import locked_servers  # NOQA
+from decapod_admin import migration  # NOQA
+from decapod_admin import restore  # NOQA
+from decapod_admin import ssh  # NOQA

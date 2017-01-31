@@ -13,6 +13,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 version: "2"
 
 # This is example of overriding of Decapod files. All those overriding are
@@ -56,7 +57,7 @@ version: "2"
 #       # environment variable.
 #       - ./containerization/files/devconfigs/ansible_ssh_keyfile.pem:/root/.ssh/id_rsa:ro
 #
-#   cron:
+#   admin:
 #     volumes:
 #       # Decapod config
 #       - ./containerization/files/devconfigs/config.yaml:/etc/decapod/config.yaml:ro

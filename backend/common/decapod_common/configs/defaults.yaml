@@ -86,7 +86,7 @@ cron:
 
 
 db:
-  uri: "mongodb://127.0.0.1:27017/devel"
+  uri: "mongodb://127.0.0.1:27017/decapod"
   connect: false
   task_queue_length: 1000
   connect_timeout: 5000  # ms, 5 seconds

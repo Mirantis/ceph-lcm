@@ -82,45 +82,47 @@ So default config looks like that
 
 .. code-block:: yaml
 
-    networks: {}
-    services:
-      api:
-        image: decapod/api:latest
-        links:
-        - database
-        restart: on-failure:5
-      controller:
-        image: decapod/controller:latest
-        links:
-        - database
-        restart: on-failure:5
-        volumes:
-        - /vagrant/containerization/files/devconfigs/ansible_ssh_keyfile.pem:/root/.ssh/id_rsa:ro
-      cron:
-        image: decapod/cron:latest
-        links:
-        - database
-        restart: on-failure:3
-      database:
-        image: decapod/db:latest
-        restart: always
-        volumes_from:
-        - service:database_data:rw
-      database_data:
-        image: decapod/db-data:latest
-        volumes:
-        - /data/db:rw
-      frontend:
-        image: decapod/frontend:latest
-        links:
-        - api
-        - cron
-        ports:
-        - 10000:443
-        - 9999:80
-        restart: always
-    version: '2.0'
-    volumes: {}
+  networks: {}
+  services:
+    admin:
+      image: decapod/admin:latest
+      links:
+      - database
+      restart: on-failure:3
+      volumes:
+      - /vagrant/containerization/files/devconfigs/ansible_ssh_keyfile.pem:/root/.ssh/id_rsa:ro
+    api:
+      image: decapod/api:latest
+      links:
+      - database
+      restart: on-failure:5
+    controller:
+      image: decapod/controller:latest
+      links:
+      - database
+      restart: on-failure:5
+      volumes:
+      - /vagrant/containerization/files/devconfigs/ansible_ssh_keyfile.pem:/root/.ssh/id_rsa:ro
+    database:
+      image: decapod/db:latest
+      restart: always
+      volumes_from:
+      - service:database_data:rw
+    database_data:
+      image: decapod/db-data:latest
+      volumes:
+      - /data/db:rw
+    frontend:
+      image: decapod/frontend:latest
+      links:
+      - admin
+      - api
+      ports:
+      - 10000:443
+      - 9999:80
+      restart: always
+  version: '2.0'
+  volumes: {}
 
 
 If we want to set ``docker-prod-virtual.docker.mirantis.net`` as
@@ -129,46 +131,47 @@ we need to execute docker compose with following environment variables:
 
 .. code-block:: bash
 
-    $ DECAPOD_REGISTRY_URL=docker-prod-virtual.docker.mirantis.net/ DECAPOD_NAMESPACE=mirantis/ceph/ DECAPOD_VERSION=0.2 docker-compose config
-    networks: {}
-    services:
-      api:
-        image: docker-prod-virtual.docker.mirantis.net/mirantis/ceph/decapod/api:0.2
-        links:
-        - database
-        restart: on-failure:5
-      controller:
-        image: docker-prod-virtual.docker.mirantis.net/mirantis/ceph/decapod/controller:0.2
-        links:
-        - database
-        restart: on-failure:5
-        volumes:
-        - /vagrant/containerization/files/devconfigs/ansible_ssh_keyfile.pem:/root/.ssh/id_rsa:ro
-      cron:
-        image: docker-prod-virtual.docker.mirantis.net/mirantis/ceph/decapod/cron:0.2
-        links:
-        - database
-        restart: on-failure:3
-      database:
-        image: docker-prod-virtual.docker.mirantis.net/mirantis/ceph/decapod/db:0.2
-        restart: always
-        volumes_from:
-        - service:database_data:rw
-      database_data:
-        image: docker-prod-virtual.docker.mirantis.net/mirantis/ceph/decapod/db-data:0.2
-        volumes:
-        - /data/db:rw
-      frontend:
-        image: docker-prod-virtual.docker.mirantis.net/mirantis/ceph/decapod/frontend:0.2
-        links:
-        - api
-        - cron
-        ports:
-        - 10000:443
-        - 9999:80
-        restart: always
-    version: '2.0'
-    volumes: {}
+  networks: {}
+  services:
+    admin:
+      image: docker-prod-virtual.docker.mirantis.net/mirantis/ceph/decapod/admin:0.2
+      links:
+      - database
+      restart: on-failure:3
+      volumes:
+      - /vagrant/containerization/files/devconfigs/ansible_ssh_keyfile.pem:/root/.ssh/id_rsa:ro
+    api:
+      image: docker-prod-virtual.docker.mirantis.net/mirantis/ceph/decapod/api:0.2
+      links:
+      - database
+      restart: on-failure:5
+    controller:
+      image: docker-prod-virtual.docker.mirantis.net/mirantis/ceph/decapod/controller:0.2
+      links:
+      - database
+      restart: on-failure:5
+      volumes:
+      - /vagrant/containerization/files/devconfigs/ansible_ssh_keyfile.pem:/root/.ssh/id_rsa:ro
+    database:
+      image: docker-prod-virtual.docker.mirantis.net/mirantis/ceph/decapod/db:0.2
+      restart: always
+      volumes_from:
+      - service:database_data:rw
+    database_data:
+      image: docker-prod-virtual.docker.mirantis.net/mirantis/ceph/decapod/db-data:0.2
+      volumes:
+      - /data/db:rw
+    frontend:
+      image: docker-prod-virtual.docker.mirantis.net/mirantis/ceph/decapod/frontend:0.2
+      links:
+      - admin
+      - api
+      ports:
+      - 10000:443
+      - 9999:80
+      restart: always
+  version: '2.0'
+  volumes: {}
 
 .. important::
 
@@ -226,11 +229,12 @@ or use real environment variables:
       restart: on-failure:5
       volumes:
       - /keys/ansible_ssh_keyfile.pem:/root/.ssh/id_rsa:ro
-    cron:
-      image: docker-prod-virtual.docker.mirantis.net/mirantis/ceph/decapod/cron:latest
+    admin:
       links:
       - database
-      restart: on-failure:3
+      restart: on-failure:5
+      volumes:
+      - /keys/ansible_ssh_keyfile.pem:/root/.ssh/id_rsa:ro
     database:
       image: docker-prod-virtual.docker.mirantis.net/mirantis/ceph/decapod/db:latest
       restart: always
@@ -507,105 +511,81 @@ On the first boot migrations are required to get root user. Otherwise,
 Decapod will start with empty database and it won't be possible to
 perform any operations within.
 
-To run migrations, please find script in :file:`./scripts` directory,
-it is called :file:`migrate.sh`. This script require the name of your
-database container. To get it, please use ``docker ps`` command.
+To run migrations, please execute :program:`decapod-admin` CLI tool from
+admin service
 
 ::
 
-  $ docker ps
-  CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS              PORTS                                          NAMES
-  c1db50a0791e        decapod/frontend:latest     "dockerize -wait tcp:"   3 seconds ago       Up 1 seconds        0.0.0.0:9999->80/tcp, 0.0.0.0:10000->443/tcp   vagrant_frontend_1
-  e6c1a0f55b91        decapod/controller:latest   "/usr/bin/dumb-init -"   6 seconds ago       Up 2 seconds                                                       vagrant_controller_1
-  4b28ba7700e0        decapod/api:latest          "/usr/bin/dumb-init -"   6 seconds ago       Up 3 seconds        8000/tcp                                       vagrant_api_1
-  3773a206c796        decapod/cron:latest         "/usr/bin/dumb-init -"   6 seconds ago       Up 3 seconds        8000/tcp                                       vagrant_cron_1
-  adafe8f5eacb        decapod/db:latest           "/entrypoint.sh --con"   7 seconds ago       Up 6 seconds        27017/tcp                                      vagrant_database_1
-
-As you can see, I have database container running with the name
-*vagrant_database_1*, let's use it
-
-::
-
-  $ ./scripts/migrate.sh -c vagrant_database_1 apply
-  2017/01/12 10:27:35 Waiting for host: database:27017
-  2017/01/12 10:27:35 Connected to tcp://database:27017
-  2017-01-12 10:27:36 [DEBUG   ] (        lock.py:116  ): Lock applying_migrations was acquire by locker 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66
-  2017-01-12 10:27:36 [DEBUG   ] (        lock.py:181  ): Prolong thread for locker applying_migrations of lock 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66 has been started. Thread MongoLock prolonger 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66 for applying_migrations, ident 140202530297600
-  2017-01-12 10:27:36 [INFO    ] (         cli.py:87   ): Run migration 0000_index_models.py
-  2017-01-12 10:27:36 [INFO    ] (   migrators.py:69   ): Run /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0000_index_models.py. Pid 21
-  2017-01-12 10:27:41 [DEBUG   ] (        lock.py:162  ): Lock applying_migrations was proloned by locker 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66.
-  2017-01-12 10:27:42 [INFO    ] (   migrators.py:74   ): /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0000_index_models.py has been finished. Exit code 0
-  2017-01-12 10:27:42 [INFO    ] (         cli.py:175  ): Save result of 0000_index_models.py migration (result MigrationState.ok)
-  2017-01-12 10:27:42 [INFO    ] (         cli.py:87   ): Run migration 0001_insert_default_role.py
-  2017-01-12 10:27:42 [INFO    ] (   migrators.py:69   ): Run /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0001_insert_default_role.py. Pid 28
-  2017-01-12 10:27:43 [INFO    ] (   migrators.py:74   ): /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0001_insert_default_role.py has been finished. Exit code 0
-  2017-01-12 10:27:43 [INFO    ] (         cli.py:175  ): Save result of 0001_insert_default_role.py migration (result MigrationState.ok)
-  2017-01-12 10:27:43 [INFO    ] (         cli.py:87   ): Run migration 0002_insert_default_user.py
-  2017-01-12 10:27:43 [INFO    ] (   migrators.py:69   ): Run /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0002_insert_default_user.py. Pid 36
-  2017-01-12 10:27:44 [INFO    ] (   migrators.py:74   ): /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0002_insert_default_user.py has been finished. Exit code 0
-  2017-01-12 10:27:44 [INFO    ] (         cli.py:175  ): Save result of 0002_insert_default_user.py migration (result MigrationState.ok)
-  2017-01-12 10:27:44 [INFO    ] (         cli.py:87   ): Run migration 0003_native_ttl_index.py
-  2017-01-12 10:27:44 [INFO    ] (   migrators.py:69   ): Run /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0003_native_ttl_index.py. Pid 164
-  2017-01-12 10:27:45 [INFO    ] (   migrators.py:74   ): /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0003_native_ttl_index.py has been finished. Exit code 0
-  2017-01-12 10:27:45 [INFO    ] (         cli.py:175  ): Save result of 0003_native_ttl_index.py migration (result MigrationState.ok)
-  2017-01-12 10:27:45 [INFO    ] (         cli.py:87   ): Run migration 0004_migrate_to_native_ttls.py
-  2017-01-12 10:27:45 [INFO    ] (   migrators.py:69   ): Run /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0004_migrate_to_native_ttls.py. Pid 172
-  2017-01-12 10:27:46 [INFO    ] (   migrators.py:74   ): /usr/local/lib/python3.5/dist-packages/decapod_migration/scripts/0004_migrate_to_native_ttls.py has been finished. Exit code 0
-  2017-01-12 10:27:46 [INFO    ] (         cli.py:175  ): Save result of 0004_migrate_to_native_ttls.py migration (result MigrationState.ok)
-  2017-01-12 10:27:46 [DEBUG   ] (        lock.py:200  ): Prolong thread for locker applying_migrations of lock 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66 has been stopped. Thread MongoLock prolonger 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66 for applying_migrations, ident 140202530297600
-  2017-01-12 10:27:46 [DEBUG   ] (        lock.py:122  ): Try to release lock applying_migrations by locker 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66.
-  2017-01-12 10:27:46 [DEBUG   ] (        lock.py:138  ): Lock applying_migrations was released by locker 7a6d7daa-8f01-482b-9fa4-3b2e0539ec66.
-  2017/01/12 10:27:46 Command finished successfully.
+  $ docker-compose exec admin decapod-admin migration apply
+  2017-02-06 11:11:48 [DEBUG   ] (        lock.py:118 ): Lock applying_migrations was acquire by locker 76eef103-0878-42c2-9727-b9e83e52db47
+  2017-02-06 11:11:48 [DEBUG   ] (        lock.py:183 ): Prolong thread for locker applying_migrations of lock 76eef103-0878-42c2-9727-b9e83e52db47 has been started. Thread MongoLock prolonger 76eef103-0878-42c2-9727-b9e83e52db47 for applying_migrations, ident 140167584413440
+  2017-02-06 11:11:48 [INFO    ] (   migration.py:123 ): Run migration 0000_index_models.py
+  2017-02-06 11:11:48 [INFO    ] (   migration.py:198 ): Run /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0000_index_models.py. Pid 49
+  2017-02-06 11:11:53 [DEBUG   ] (        lock.py:164 ): Lock applying_migrations was proloned by locker 76eef103-0878-42c2-9727-b9e83e52db47.
+  2017-02-06 11:11:56 [INFO    ] (   migration.py:203 ): /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0000_index_models.py has been finished. Exit code 0
+  2017-02-06 11:11:56 [INFO    ] (   migration.py:277 ): Save result of 0000_index_models.py migration (result MigrationState.ok)
+  2017-02-06 11:11:56 [INFO    ] (   migration.py:123 ): Run migration 0001_insert_default_role.py
+  2017-02-06 11:11:56 [INFO    ] (   migration.py:198 ): Run /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0001_insert_default_role.py. Pid 56
+  2017-02-06 11:11:58 [INFO    ] (   migration.py:203 ): /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0001_insert_default_role.py has been finished. Exit code 0
+  2017-02-06 11:11:58 [INFO    ] (   migration.py:277 ): Save result of 0001_insert_default_role.py migration (result MigrationState.ok)
+  2017-02-06 11:11:58 [INFO    ] (   migration.py:123 ): Run migration 0002_insert_default_user.py
+  2017-02-06 11:11:58 [INFO    ] (   migration.py:198 ): Run /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0002_insert_default_user.py. Pid 64
+  2017-02-06 11:11:58 [DEBUG   ] (        lock.py:164 ): Lock applying_migrations was proloned by locker 76eef103-0878-42c2-9727-b9e83e52db47.
+  2017-02-06 11:11:59 [INFO    ] (   migration.py:203 ): /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0002_insert_default_user.py has been finished. Exit code 0
+  2017-02-06 11:11:59 [INFO    ] (   migration.py:277 ): Save result of 0002_insert_default_user.py migration (result MigrationState.ok)
+  2017-02-06 11:11:59 [INFO    ] (   migration.py:123 ): Run migration 0003_native_ttl_index.py
+  2017-02-06 11:11:59 [INFO    ] (   migration.py:198 ): Run /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0003_native_ttl_index.py. Pid 192
+  2017-02-06 11:12:00 [INFO    ] (   migration.py:203 ): /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0003_native_ttl_index.py has been finished. Exit code 0
+  2017-02-06 11:12:00 [INFO    ] (   migration.py:277 ): Save result of 0003_native_ttl_index.py migration (result MigrationState.ok)
+  2017-02-06 11:12:00 [INFO    ] (   migration.py:123 ): Run migration 0004_migrate_to_native_ttls.py
+  2017-02-06 11:12:00 [INFO    ] (   migration.py:198 ): Run /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0004_migrate_to_native_ttls.py. Pid 200
+  2017-02-06 11:12:02 [INFO    ] (   migration.py:203 ): /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0004_migrate_to_native_ttls.py has been finished. Exit code 0
+  2017-02-06 11:12:02 [INFO    ] (   migration.py:277 ): Save result of 0004_migrate_to_native_ttls.py migration (result MigrationState.ok)
+  2017-02-06 11:12:02 [INFO    ] (   migration.py:123 ): Run migration 0005_index_cluster_data.py
+  2017-02-06 11:12:02 [INFO    ] (   migration.py:198 ): Run /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0005_index_cluster_data.py. Pid 208
+  2017-02-06 11:12:03 [INFO    ] (   migration.py:203 ): /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0005_index_cluster_data.py has been finished. Exit code 0
+  2017-02-06 11:12:03 [INFO    ] (   migration.py:277 ): Save result of 0005_index_cluster_data.py migration (result MigrationState.ok)
+  2017-02-06 11:12:03 [INFO    ] (   migration.py:123 ): Run migration 0006_create_cluster_data.py
+  2017-02-06 11:12:03 [INFO    ] (   migration.py:198 ): Run /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0006_create_cluster_data.py. Pid 216
+  2017-02-06 11:12:03 [DEBUG   ] (        lock.py:164 ): Lock applying_migrations was proloned by locker 76eef103-0878-42c2-9727-b9e83e52db47.
+  2017-02-06 11:12:04 [INFO    ] (   migration.py:203 ): /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0006_create_cluster_data.py has been finished. Exit code 0
+  2017-02-06 11:12:04 [INFO    ] (   migration.py:277 ): Save result of 0006_create_cluster_data.py migration (result MigrationState.ok)
+  2017-02-06 11:12:04 [INFO    ] (   migration.py:123 ): Run migration 0007_add_external_id_to_user.py
+  2017-02-06 11:12:04 [INFO    ] (   migration.py:198 ): Run /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0007_add_external_id_to_user.py. Pid 224
+  2017-02-06 11:12:06 [INFO    ] (   migration.py:203 ): /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0007_add_external_id_to_user.py has been finished. Exit code 0
+  2017-02-06 11:12:06 [INFO    ] (   migration.py:277 ): Save result of 0007_add_external_id_to_user.py migration (result MigrationState.ok)
+  2017-02-06 11:12:06 [DEBUG   ] (        lock.py:202 ): Prolong thread for locker applying_migrations of lock 76eef103-0878-42c2-9727-b9e83e52db47 has been stopped. Thread MongoLock prolonger 76eef103-0878-42c2-9727-b9e83e52db47 for applying_migrations, ident 140167584413440
+  2017-02-06 11:12:06 [DEBUG   ] (        lock.py:124 ): Try to release lock applying_migrations by locker 76eef103-0878-42c2-9727-b9e83e52db47.
+  2017-02-06 11:12:06 [DEBUG   ] (        lock.py:140 ): Lock applying_migrations was released by locker 76eef103-0878-42c2-9727-b9e83e52db47.
 
 You can get a list of applied migrations with ``list all`` option.
 
 ::
 
-  $ ./scripts/migrate.sh -c vagrant_database_1 list all
-  2017/01/12 10:30:03 Waiting for host: database:27017
-  2017/01/12 10:30:03 Connected to tcp://database:27017
+  $ docker-compose exec admin decapod-admin migration list all
   [applied]     0000_index_models.py
   [applied]     0001_insert_default_role.py
   [applied]     0002_insert_default_user.py
   [applied]     0003_native_ttl_index.py
   [applied]     0004_migrate_to_native_ttls.py
-  2017/01/12 10:30:03 Command finished successfully.
+  [applied]     0005_index_cluster_data.py
+  [applied]     0006_create_cluster_data.py
+  [applied]     0007_add_external_id_to_user.py
 
 And the details of the certain migration with ``show`` option.
 
 ::
 
-  $ ./scripts/migrate.sh -c vagrant_database_1 show 0000_index_models.py
-  2017/01/12 10:30:58 Waiting for host: database:27017
-  2017/01/12 10:30:58 Connected to tcp://database:27017
-  Name:           0000_index_models.py
+  $ docker-compose exec admin decapod-admin migration show 0006_create_cluster_data.py
+  Name:           0006_create_cluster_data.py
   Result:         ok
-  Executed at:    Thu Jan 12 10:27:42 2017
-  SHA1 of script: 4aebfd8e375ef9cbf27d4f456583178bf6721688
+  Executed at:    Mon Feb  6 11:12:04 2017
+  SHA1 of script: 73eb7adeb1b4d82dd8f9bdb5aadddccbcef4a8b3
 
   -- Stdout:
+  Migrate 0 clusters.
 
   -- Stderr:
-
-  2017/01/12 10:30:59 Command finished successfully.
-
-To get a help, please run script without arguments.
-
-::
-
-  $ ./scripts/migrate.sh -c vagrant_database_1
-  2017/01/12 10:31:56 Waiting for host: database:27017
-  2017/01/12 10:31:56 Connected to tcp://database:27017
-  usage: decapod-migrations [-h] {list,apply,show} ...
-
-  Run migrations again Decapod database.
-
-  positional arguments:
-    {list,apply,show}
-
-    optional arguments:
-      -h, --help         show this help message and exit
-  2017/01/12 10:31:56 Command finished successfully.
 
 
 .. rubric:: Footnotes

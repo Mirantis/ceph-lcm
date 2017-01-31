@@ -13,13 +13,14 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 version: "2"
 services:
   frontend:
     image: "${DECAPOD_REGISTRY_URL}${DECAPOD_NAMESPACE}decapod/frontend:${DECAPOD_VERSION}"
     links:
       - api
-      - cron
+      - admin
     ports:
       - "${DECAPOD_HTTP_PORT}:80"
       - "${DECAPOD_HTTPS_PORT}:443"
@@ -45,8 +46,10 @@ services:
     image: "${DECAPOD_REGISTRY_URL}${DECAPOD_NAMESPACE}decapod/db-data:${DECAPOD_VERSION}"
     volumes:
       - /data/db
-  cron:
-    image: "${DECAPOD_REGISTRY_URL}${DECAPOD_NAMESPACE}decapod/cron:${DECAPOD_VERSION}"
+  admin:
+    image: "${DECAPOD_REGISTRY_URL}${DECAPOD_NAMESPACE}decapod/admin:${DECAPOD_VERSION}"
     links:
       - database
+    volumes:
+      - "${DECAPOD_SSH_PRIVATE_KEY}:/root/.ssh/id_rsa:ro"
     restart: "on-failure:3"

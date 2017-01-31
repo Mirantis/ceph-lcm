@@ -59,6 +59,7 @@ RUN set -x \
   && pip3 --no-cache-dir --disable-pip-version-check install 'setuptools==32.3.1' \
   && cd /project \
   && git reset --hard \
+  && git submodule update --init --recursive \
   && echo "base=$(git rev-parse HEAD)" > /etc/git-release \
   && mkdir -p /etc/decapod \
   && cp containerization/files/devconfigs/config.yaml /etc/decapod/config.yaml \
@@ -72,10 +73,10 @@ RUN set -x \
   && echo "base=$(scd -s git_pep440 -p)" > /etc/decapod-release \
   && scd -s git_pep440 -v \
   && pip3 --no-cache-dir --disable-pip-version-check install \
-    backend/common \
-    backend/docker \
-    plugins/alerts/emails \
-    plugins/playbook/server_discovery \
+    ./backend/common \
+    ./backend/docker \
+    ./plugins/alerts/emails \
+    $(find $(pwd)/plugins/playbook -mindepth 1 -maxdepth 1 -type d | grep -v __template__) \
   && apt-get clean \
   && apt-get purge -y git wget libffi-dev libssl-dev libyaml-dev gcc python3-dev python3-pip \
   && apt-get autoremove --purge -y \
