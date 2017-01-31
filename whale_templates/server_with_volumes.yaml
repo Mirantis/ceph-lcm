@@ -40,11 +40,11 @@ parameters:
 resources:
   floating_ip:
     type: OS::Nova::FloatingIP
-    parameters:
+    properties:
       pool: {get_param: public_ip_pool_name}
   floating_ip_association:
     type: OS::Nova::FloatingIPAssociation
-    parameters:
+    properties:
       floating_ip: {get_resource: floating_ip}
       server_id: {get_resource: ceph_host}
   ceph_host:
