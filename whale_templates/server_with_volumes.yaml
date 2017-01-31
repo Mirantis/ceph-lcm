@@ -42,6 +42,7 @@ resources:
       networks:
         - network: {get_param: network}
       user_data: {get_file: 'user-data.txt'}
+      user_data_format: RAW
   ceph_volumes:
     type: OS::Heat::ResourceGroup
     properties:
