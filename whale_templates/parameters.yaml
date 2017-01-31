@@ -5,4 +5,4 @@ parameters:
   volume_size: 5
   instance_count: 5
   network: jenkins_ci_internal
-  public_ip_pool_name: admin_floating_net
+  floating_network: admin_floating_net

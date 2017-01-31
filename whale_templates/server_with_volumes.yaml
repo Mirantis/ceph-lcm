@@ -32,21 +32,21 @@ parameters:
     type: string
     label: Network to use
     description: Network to use for instances
-  public_ip_pool_name:
+  floating_network:
     type: string
-    label: Floating IP pool
-    description: The name of the pool with floating IPs to assign
+    label: Floating IP network
+    description: The name of the network which will be used for pooling.
 
 resources:
   floating_ip:
-    type: OS::Nova::FloatingIP
+    type: OS::Neutron::FloatingIP
     properties:
-      pool: {get_param: public_ip_pool_name}
+      floating_network: {get_param: floating_network}
   floating_ip_association:
-    type: OS::Nova::FloatingIPAssociation
+    type: OS::Neutron::FloatingIPAssociation
     properties:
-      floating_ip: {get_resource: floating_ip}
-      server_id: {get_resource: ceph_host}
+      floatingip_id: {get_resource: floating_ip}
+      port_id: {get_attr: [ceph_host, addresses, {get_param: network}, 0, port]}
   ceph_host:
     type: OS::Nova::Server
     properties:
@@ -69,4 +69,4 @@ resources:
 outputs:
   host_ip:
     description: Floating IP of the host
-    value: {get_attr: [floating_ip, ip]}
+    value: {get_attr: [floating_ip, floating_ip_address]}
