@@ -37,10 +37,16 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     default="ansible",
     help="User to use with Ansible. Default is 'ansible'."
 )
+@click.option(
+    "--no-discovery",
+    is_flag=True,
+    help="Generate config only with user and Ansible packages, "
+         "but without server discovery data."
+)
 @click.argument("server_discovery_token", type=click.UUID)
 @click.argument("public_key_filename", type=click.File(lazy=False))
 @click.pass_context
-def cli(ctx, public_key_filename, server_discovery_token, user):
+def cli(ctx, public_key_filename, server_discovery_token, user, no_discovery):
     """Generates config for cloud-init.
 
     This command generates cloud-init user-data config to setup Decapod
@@ -59,7 +65,8 @@ def cli(ctx, public_key_filename, server_discovery_token, user):
         server_discovery_token=server_discovery_token,
         public_key=public_key_filename.read().strip(),
         username=user,
-        timeout=ctx.obj["timeout"]
+        timeout=ctx.obj["timeout"],
+        no_discovery=no_discovery
     )
 
     click.echo(config.rstrip())

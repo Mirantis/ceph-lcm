@@ -44,7 +44,7 @@ has to be placed."""
 DEFAULT_USER = "ansible"
 """Default user for Ansible."""
 
-REQUEST_TIMEOUT = 5  # seconds
+REQUEST_TIMEOUT = 20  # seconds
 """How long to wait for response from API."""
 
 SERVER_DISCOVERY_PROG = """\
@@ -74,6 +74,9 @@ main
 """ # NOQA
 """Script that should be run in /etc/rc.local"""
 
+METADATA_URL_PUBLIC_IP = "http://169.254.169.254/latest/meta-data/public-ipv4"
+"""URL to request public IP."""
+
 SERVER_DISCOVERY_LOGFILE = "/var/log/server_discovery.log"
 """Logfile where output of SERVER_DISCOVERY_PROG has to be stored."""
 
@@ -96,27 +99,35 @@ data = {{
     "host": sys.argv[1].lower().strip(),
     "id": sys.argv[2].lower().strip()
 }}
-data = json.dumps(data).encode("utf-8")
-
 headers = {{
     "Content-Type": "application/json",
     "Authorization": {token!r},
     "User-Agent": "cloud-init server discovery"
 }}
 
-request = urllib2.Request({url!r}, data=data, headers=headers)
-request_kwargs = {{"timeout": {timeout}}}
-if sys.version_info >= (2, 7, 9):
-    ctx = ssl.create_default_context()
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
-    request_kwargs["context"] = ctx
+def get_response(url, data=None):
+    if data is not None:
+        data = json.dumps(data).encode("utf-8")
+    request = urllib2.Request(url, data=data, headers=headers)
+    request_kwargs = {{"timeout": {timeout}}}
+    if sys.version_info >= (2, 7, 9):
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        request_kwargs["context"] = ctx
+    try:
+        return urllib2.urlopen(request, **request_kwargs).read()
+    except Exception as exc:
+        print("Cannot request {{0}}: {{1}}".format(url, exc))
 
-try:
-    urllib2.urlopen(request, **request_kwargs).read()
-except Exception as exc:
-    sys.exit(str(exc))
+metadata_ip = get_response({metadata_public_ip_url!r})
+if metadata_ip is not None:
+    data["host"] = metadata_ip
+    print("Use IP {{0}} discovered from metadata API".format(metadata_ip))
 
+response = get_response({url!r}, data)
+if response is None:
+    sys.exit("Server discovery failed.")
 print("Server discovery completed.")
 """
 """Python program to use instead of Curl."""
@@ -151,7 +162,7 @@ ExplicitDumper.add_representer(YAMLLiteral, literal_presenter)
 
 
 def generate_cloud_config(url, server_discovery_token, public_key, username,
-                          timeout=REQUEST_TIMEOUT):
+                          timeout=REQUEST_TIMEOUT, no_discovery=False):
     """This function generates user-data config (or cloud config)
     for cloud-init.
 
@@ -164,6 +175,9 @@ def generate_cloud_config(url, server_discovery_token, public_key, username,
     :param str username: Username of the user, which Ansible will use to
         access this host.
     :param int timeout: Timeout of connection to Decapod API.
+    :param bool no_discovery: Generate config with user and packages but no
+        discovery files. It can be used if user wants to add servers
+        manually.
 
     :return: Generated user-data in YAML format.
     :rtype: str
@@ -177,13 +191,15 @@ def generate_cloud_config(url, server_discovery_token, public_key, username,
 
     document = {
         "users": get_users(username, public_key),
-        "packages": PACKAGES,
-        "write_files": get_files(url, server_discovery_token, username,
-                                 timeout),
-        "runcmd": get_commands(url)
+        "packages": PACKAGES
     }
-    cloud_config = yaml.dump(document, Dumper=ExplicitDumper,
-                             indent=2, width=9999)
+    if not no_discovery:
+        document["write_files"] = get_files(
+            url, server_discovery_token, username, timeout)
+        document["runcmd"] = get_commands(url)
+
+    cloud_config = yaml.dump(
+        document, Dumper=ExplicitDumper, indent=2, width=9999)
     cloud_config = "#cloud-config\n{0}".format(cloud_config)
 
     return cloud_config
@@ -208,7 +224,8 @@ def get_files(url, server_discovery_token, username, timeout):
         username=username,
         url=url,
         token=server_discovery_token,
-        timeout=timeout
+        timeout=timeout,
+        metadata_public_ip_url=METADATA_URL_PUBLIC_IP
     )
     rc_local_program = SERVER_DISCOVERY_PROG.format(
         url_host=get_hostname(url),
