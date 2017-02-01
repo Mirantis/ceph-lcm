@@ -21,6 +21,10 @@ parameters:
     default: 5
     constraints:
       - range: {min: 1, max: 1024}
+  volume_type:
+    type: string
+    label: Type of volume
+    description: Type of volumes to create and attach to VMs.
   volume_size:
     type: number
     label: Volume Size
@@ -64,6 +68,7 @@ resources:
         type: volume_with_attachment.yaml
         properties:
           volume_size: {get_param: volume_size}
+          volume_type: {get_param: volume_type}
           instance_id: {get_resource: ceph_host}
 
 outputs:

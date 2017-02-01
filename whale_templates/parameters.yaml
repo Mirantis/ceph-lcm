@@ -6,3 +6,4 @@ parameters:
   instance_count: 5
   network: jenkins_ci_internal
   floating_network: admin_floating_net
+  volume_type: volumes_ceph
