@@ -49,10 +49,11 @@ def get_cluster_network(servers):
     public_network = get_public_network(servers)
 
     for srv in servers:
-        networks[srv.ip] = get_networks(srv)
-        networks[srv.ip].pop(srv.ip, None)
+        server_ip = get_default_ip_address(srv)
+        networks[server_ip] = get_networks(srv)
+        networks[server_ip].pop(server_ip, None)
 
-    first_network = networks.pop(servers[0].ip)
+    first_network = networks.pop(get_default_ip_address(servers[0]))
     if not first_network:
         return public_network
 
@@ -73,7 +74,8 @@ def get_cluster_network(servers):
 
 
 def get_public_network(servers):
-    networks = [get_networks(srv)[srv.ip] for srv in servers]
+    networks = [
+        get_networks(srv)[get_default_ip_address(srv)] for srv in servers]
 
     if not networks:
         raise ValueError(
@@ -115,3 +117,20 @@ def spanning_network(networks):
             return networks[0]
 
         networks[-1] = networks[-1].supernet()
+
+
+def get_default_ip_address(server):
+    if server.ip in server.facts["ansible_all_ipv4_addresses"]:
+        return server.ip
+
+    # If server IP is floating one, detected by metadata server, it is
+    # not placed here, in Ansbile facts. It is managed by external
+    # network server (e.g Neutron) and in most cases it is managed by NAT.
+    #
+    # If such situation (IP fetched from Metadata API) has happened, then
+    # only valid solution is to select default ipv4 address from facts.
+    #
+    # Hint: Ansible detect such IP address literally by parsing
+    # `ip route get 8.8.8.8` output. We follow the same logic on server
+    # discovery.
+    return server.facts["ansible_default_ipv4"]["address"]
