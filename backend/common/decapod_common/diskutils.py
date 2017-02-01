@@ -38,12 +38,14 @@ def get_server_storage_size(server):
     return sum(sorter(dev) for dev in get_devices(server, False))
 
 
-def get_data_journal_pairs(server, dev_prefix=True):
-    return list(get_data_journal_pairs_iter(server, dev_prefix))
+def get_data_journal_pairs(server, journal_size, dev_prefix=True):
+    return list(get_data_journal_pairs_iter(server, journal_size, dev_prefix))
 
 
-def get_data_journal_pairs_iter(server, dev_prefix=True):
+def get_data_journal_pairs_iter(server, journal_size, dev_prefix=True):
     devices = get_devices(server, False)
+    devices = get_devices_for_suitable_for_journals(
+        server, devices, journal_size)
     devices = set(devices)
     size_sorter = dev_size_sorter(server)
 
@@ -82,11 +84,23 @@ def get_dev_name(device, dev_prefix=True):
 
 
 def dev_size_sorter(server):
+    return (lambda dev: get_device_size_in_bytes(server, dev))
+
+
+def get_devices_for_suitable_for_journals(server, devices, journal_size):
+    suitable = set()
+    journal_size *= 1024 * 1024  # journal size is in MBs, convert to bytes
+
+    for dev in devices:
+        if get_device_size_in_bytes(server, dev) >= journal_size:
+            suitable.add(dev)
+
+    return suitable
+
+
+def get_device_size_in_bytes(server, device_name):
     facts = server.facts["ansible_devices"]
+    sectors = int(facts[device_name]["sectors"])
+    size = int(facts[device_name]["sectorsize"])
 
-    def sorter(device):
-        sectors = int(facts[device]["sectors"])
-        size = int(facts[device]["sectorsize"])
-        return sectors * size
-
-    return sorter
+    return sectors * size

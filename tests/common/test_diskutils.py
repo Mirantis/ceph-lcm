@@ -105,7 +105,8 @@ def test_get_server_storage_size(new_server_with_facts):
 
 @pytest.mark.parametrize("dev_prefix", (True, False))
 def test_get_data_journal_pairs(dev_prefix, new_server_with_facts):
-    pairs = diskutils.get_data_journal_pairs(new_server_with_facts, dev_prefix)
+    pairs = diskutils.get_data_journal_pairs(new_server_with_facts,
+                                             512, dev_prefix)
 
     assert len(pairs) == 2
     assert len({p["data"] for p in pairs}) == 2

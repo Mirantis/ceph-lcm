@@ -95,7 +95,8 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
 
         data = cluster_data.ClusterData.find_one(cluster.model_id)
         global_vars = self.make_global_vars(cluster, data, servers, hints)
-        inventory = self.make_inventory(cluster, data, servers, hints)
+        inventory = self.make_inventory(
+            cluster, data, servers, hints, global_vars)
 
         return global_vars, inventory
 
@@ -125,7 +126,7 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
 
         return result
 
-    def make_inventory(self, cluster, data, servers, hints):
+    def make_inventory(self, cluster, data, servers, hints, global_vars):
         groups = self.get_inventory_groups(cluster, servers, hints)
         inventory = {"_meta": {"hostvars": {}}}
         all_servers = server.ServerModel.cluster_servers(cluster.model_id)
@@ -149,7 +150,8 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
                 else:
                     hostvars["devices"] = []
                     hostvars["raw_journal_devices"] = []
-                    for pair in diskutils.get_data_journal_pairs_iter(srv):
+                    for pair in diskutils.get_data_journal_pairs_iter(
+                            srv, int(global_vars["journal_size"])):
                         hostvars["devices"].append(pair["data"])
                         hostvars["raw_journal_devices"].append(pair["journal"])
 

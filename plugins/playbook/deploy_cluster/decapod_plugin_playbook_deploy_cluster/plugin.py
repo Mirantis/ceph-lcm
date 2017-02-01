@@ -113,7 +113,7 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
             raise exceptions.NotEmptyServerList(cluster.model_id)
 
         global_vars = self.make_global_vars(cluster, servers, hints)
-        inventory = self.make_inventory(cluster, servers, hints)
+        inventory = self.make_inventory(cluster, servers, hints, global_vars)
 
         if not monitor_secret.MonitorSecret.find_one(cluster.model_id):
             monitor_secret.MonitorSecret.upsert(
@@ -176,7 +176,7 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
 
         return result
 
-    def make_inventory(self, cluster, servers, hints):
+    def make_inventory(self, cluster, servers, hints, global_vars):
         groups = self.get_inventory_groups(servers, hints)
         inventory = {"_meta": {"hostvars": {}}}
 
@@ -194,7 +194,8 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
             else:
                 hostvars["devices"] = []
                 hostvars["raw_journal_devices"] = []
-                for pair in diskutils.get_data_journal_pairs_iter(srv):
+                for pair in diskutils.get_data_journal_pairs_iter(
+                        srv, int(global_vars["journal_size"])):
                     hostvars["devices"].append(pair["data"])
                     hostvars["raw_journal_devices"].append(pair["journal"])
 
