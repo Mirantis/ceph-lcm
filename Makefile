@@ -375,7 +375,10 @@ run_container_ui_tests:
 			-e "UID=$(shell id -u $(USER))" \
 			-e "GID=$(shell id -g $(USER))" \
 		$(CONTAINER_UI_TESTS_NAME) \
-		bash -c 'trap "chown -R $${UID}:$${GID} --from root:root /ui" EXIT && rm -rf node_modules && npm install && npm run test-once'
+		bash -c 'mkdir -p /uitests && cp -a /ui/* /uitests && cd /uitests \
+                 && rm -rf node_modules && npm install && npm run test-once \
+                 && install -t /ui -o $${UID} -g $${GID} -m 0644 /uitests/test-coverage.txt \
+                 && install -t /ui -o $${UID} -g $${GID} -m 0644 /uitests/test-results.xml'
 
 # -----------------------------------------------------------------------------
 
