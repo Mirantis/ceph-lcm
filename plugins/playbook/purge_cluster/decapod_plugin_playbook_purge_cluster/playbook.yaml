@@ -35,7 +35,7 @@
   tasks:
     - set_fact: mon_host="{{ groups['mons'].0 }}"
     - set_fact: cluster_data="{{ ansible_local['ceph_%s'|format(cluster)] }}"
-    - set_fact: osd_partitions="{{ cluster_data.osd_partitions[cluster] }}"
+    - set_fact: osd_partitions="{{ cluster_data.osd_partitions[cluster]|default({}) }}"
 
     - name: drop all cache
       shell: "sync && sleep 1 && echo 3 > /proc/sys/vm/drop_caches"
