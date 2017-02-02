@@ -22,6 +22,7 @@ import functools
 import os
 import shutil
 import sys
+import traceback
 
 from decapod_common import config
 from decapod_common import exceptions
@@ -101,11 +102,13 @@ class Base(metaclass=abc.ABCMeta):
     def execute(self, task):
         try:
             LOG.info("Execute pre-run step for %s", self.entry_point)
-            self.on_pre_execute(task)
-            LOG.info("Finish execution of pre-run step for %s",
-                     self.entry_point)
+            try:
+                self.on_pre_execute(task)
+            finally:
+                self.compose_command(task)
+                LOG.info("Finish execution of pre-run step for %s",
+                         self.entry_point)
 
-            self.compose_command(task)
             LOG.info("Execute %s for %s",
                      self.proc.commandline, self.entry_point)
             LOG.debug("Commandline: \"%s\"", self.proc.printable_commandline)
@@ -203,8 +206,12 @@ class Playbook(Base, metaclass=abc.ABCMeta):
     def on_post_execute(self, task, *exc_info):
         from decapod_common.models import execution
 
-        self.write_header()
         try:
+            if exc_info[0] is None:
+                self.write_header()
+            else:
+                self.write_error(*exc_info)
+
             execution_model = execution.ExecutionModel.find_by_model_id(
                 task.execution_id)
             self.proc.stdout_file.seek(0)
@@ -226,6 +233,13 @@ class Playbook(Base, metaclass=abc.ABCMeta):
             header_top, header, "=" * header_length)
         header = header.encode("utf-8")
         self.proc.fileio.write(header)
+
+    def write_error(self, exc_type, exc_value, exc_tb):
+        data = traceback.format_exception(exc_type, exc_value, exc_tb)
+        data = "".join(data)
+        data = "\nInternal error\n\n{0}\n".format(data)
+        data = data.encode("utf-8")
+        self.proc.fileio.write(data)
 
     @abc.abstractmethod
     def make_playbook_configuration(self, servers, hints):
