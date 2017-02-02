@@ -190,8 +190,8 @@ def test_possible_to_process_playbook_fail_deleted(
         srv.save()
         srv.delete()
 
-    assert not mainloop.possible_to_process(new_task)
+    assert mainloop.possible_to_process(new_task)
 
     for srv in new_servers:
         dbsrv = server.ServerModel.find_by_id(srv._id)
-        assert dbsrv.lock == srv.lock
+        assert dbsrv.lock is srv.lock

@@ -167,7 +167,7 @@ class ServerModel(generic.Model):
     @classmethod
     def lock_servers(cls, servers):
         if not servers:
-            raise ValueError("Cannot lock empty list of servers.")
+            return
 
         server_ids = [srv._id for srv in servers]
         lock = str(uuid.uuid4())

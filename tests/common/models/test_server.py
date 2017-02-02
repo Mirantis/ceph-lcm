@@ -235,10 +235,7 @@ def test_server_lock_ok(configure_model, pymongo_connection):
 
 
 def test_server_lock_empty(configure_model):
-    with pytest.raises(ValueError):
-        server.ServerModel.lock_servers([])
-
-    server.ServerModel.unlock_servers([])
+    server.ServerModel.lock_servers([])
 
 
 def test_server_lock_failed(configure_model, pymongo_connection):
