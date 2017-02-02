@@ -150,7 +150,7 @@ def test_post_cannot_create_task(sudo_client, mock_task_class,
                                  clean_execution_collection):
     mock_task_class.side_effect = Exception
     response = sudo_client.post("/v1/execution/", data=valid_post_request)
-    assert response.status_code == 500
+    assert response.status_code == 400
 
     db_model = pymongo_connection.db.execution.find({})
     db_model = list(db_model)

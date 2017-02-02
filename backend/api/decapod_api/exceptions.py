@@ -104,6 +104,12 @@ class UnknownReturnValueError(InternalServerError):
     pass
 
 
+class PlainTextError(BadRequest):
+
+    def __init__(self, error):
+        super().__init__(str(error))
+
+
 class InvalidJSONError(BadRequest):
 
     def __init__(self, errors):

@@ -264,9 +264,13 @@ class ServerModel(generic.Model):
 
     def delete(self):
         if self.cluster_id:
-            raise exceptions.CannotDeleteServerInCluster()
+            raise exceptions.CannotDeleteServerInCluster(
+                "Server {0.model_id} still belongs to cluster "
+                "{0.cluster_id}".format(self))
         if self.lock:
-            raise exceptions.CannotDeleteLockedServer()
+            raise exceptions.CannotDeleteLockedServer(
+                "Server {0.model_id} still locked by ongoing operation".format(
+                    self))
 
         super().delete()
 

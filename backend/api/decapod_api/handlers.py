@@ -92,7 +92,7 @@ def error_to_json(error):
         json_error.error_name = str(error)
     else:
         LOG.exception("Unmanaged error: %s", error)
-        json_error = exceptions.InternalServerError()
+        json_error = exceptions.PlainTextError(error)
 
     exc_info = sys.exc_info()
     for plugin in plugins.get_alert_plugins():
