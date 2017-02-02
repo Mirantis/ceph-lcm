@@ -1,0 +1,18 @@
+<step [title]="'Role Permissions Groups'">
+  <h5>{{groupName}}</h5>
+  <div class="permissions long-content grid" *ngIf="allGroupPermissions">
+    <div class="col-xs-12 col-sm-6" *ngFor="let permission of allGroupPermissions.permissions">
+      <div class="checkbox">
+        <label>
+          <input
+            type="checkbox"
+            [name]="group"
+            [value]="permission"
+            [checked]="getGroupPermission(permission)"
+            (click)="toggleGroupPermission(permission)">
+            {{permission|deparametrize}}
+        </label>
+      </div>
+    </div>
+  </div>
+</step>

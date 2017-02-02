@@ -1,11 +1,11 @@
-<step [title]="'Cluster Name'">
+<step [title]="'Role Name'">
   <div class="form-group" [ngClass]="{'has-error': !model.data.name}">
-    <label class="control-label" for="cluster_name">Name</label>
+    <label class="control-label" for="role_name">Name</label>
     <input
       type="text"
       class="form-control"
-      name="cluster_name"
-      id="cluster_name"
+      name="role_name"
+      id="role_name"
       [(ngModel)]="model.data.name"
       required>
   </div>

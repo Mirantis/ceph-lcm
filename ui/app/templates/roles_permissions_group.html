@@ -3,8 +3,8 @@
 </div>
 
 <div class="grid-line" *ngFor="let grouppee of group.permissions">
-  <div class="col-xs-2 parameter">{{grouppee}}</div>
-  <div class="col-xs-2 icon text-center" *ngFor="let role of roles">
+  <div class="col-xs-2 parameter">{{grouppee|deparametrize}}</div>
+  <div class="col-xs-2 icon" *ngFor="let role of roles">
     <span
       *ngIf="getRolePermission(grouppee, role)"
       class="glyphicon glyphicon-ok"

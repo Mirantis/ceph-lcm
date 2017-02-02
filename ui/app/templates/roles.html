@@ -37,8 +37,12 @@
 
 <loader *ngIf="!roles"></loader>
 
-<modal [title]="newRole.id ? 'Edit Role' : 'New Role'">
-  <div class="modal-body">
+<modal [title]="newRole.id ? 'Edit Role ' + oldRoleName : 'New Role'">
+  <wizard
+    [steps]="roleSteps"
+    (saveHandler)="save($event)"
+  ></wizard>
+<!--   <div class="modal-body">
     <form #newRoleForm="ngForm">
       <div class="form-group">
         <label for="role_name">Name</label>
@@ -82,5 +86,5 @@
       [disabled]="!newRoleForm.form.valid">
       Save changes
     </button>
-  </div>
+  </div> -->
 </modal>

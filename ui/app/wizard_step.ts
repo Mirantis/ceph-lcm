@@ -28,11 +28,12 @@ import { BaseModel } from './models';
   template: `<div *ngIf="isSelected()" class="wizard-step"><h1>{{title}}</h1><ng-content></ng-content></div>`
 })
 export class WizardStepContainer {
-  @Input() title: string = '';  // Mandatory and unique for the single stepset
+  id = Math.random();
+  @Input() title: string = '';
   private activeStep: ComponentRef<any>;
 
   isSelected(): boolean {
-    return _.get(this.activeStep, 'instance.stepContainer.title', null) === this.title;
+    return _.get(this.activeStep, 'instance.stepContainer.id', null) === this.id;
   }
 
   constructor(wizard: WizardService) {
@@ -41,7 +42,6 @@ export class WizardStepContainer {
     });
   }
 }
-
 
 // Base wizard step class
 export class WizardStepBase {

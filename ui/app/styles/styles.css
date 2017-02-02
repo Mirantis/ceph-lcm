@@ -7625,6 +7625,7 @@ a.grid .grid-header button.btn-link:focus {
 }
 .grid .grid-line.group {
   background-color: #f5f5f5;
+  text-transform: uppercase;
 }
 .grid .grid-line,
 .grid .grid-header {
@@ -7726,8 +7727,12 @@ a.grid .grid-header .icon:focus {
   font-family: monospace;
   white-space: pre-wrap;
 }
-.roles.grid .grid-header .name {
+.roles.grid .grid-header .name,
+.roles.grid .icon {
   text-align: center;
+}
+.permissions.long-content {
+  padding-bottom: 10px;
 }
 .modal-content {
   border-radius: 0;
@@ -7777,9 +7782,10 @@ a.grid .grid-header .icon:focus {
 }
 .modal-errors form h5 {
   font-weight: 600;
+  text-transform: uppercase;
 }
 .modal-errors form div.checkbox {
-  height: 25px;
+  height: 10px;
 }
 .modal-errors form div.checkbox label {
   text-transform: none;
@@ -7804,9 +7810,10 @@ a.grid .grid-header .icon:focus {
 }
 .modal-body form h5 {
   font-weight: 600;
+  text-transform: uppercase;
 }
 .modal-body form div.checkbox {
-  height: 25px;
+  height: 10px;
 }
 .modal-body form div.checkbox label {
   text-transform: none;

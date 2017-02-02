@@ -489,6 +489,7 @@ label {
 
     &.group {
       background-color: @white - 10%;
+      text-transform: uppercase;
     }
   }
 
@@ -569,11 +570,13 @@ label {
 }
 
 .roles.grid {
-  .grid-header {
-    .name {
-      text-align: center;
-    }
+  .grid-header .name, .icon {
+    text-align: center;
   }
+}
+
+.permissions.long-content {
+  padding-bottom: 10px;
 }
 
 // MODAL WINDOW
@@ -620,10 +623,11 @@ label {
 
     h5 {
       font-weight: 600;
+      text-transform: uppercase;
     }
 
     div.checkbox {
-      height: 25px;
+      height: 10px;
       label {
         text-transform: none;
       }

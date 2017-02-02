@@ -19,17 +19,13 @@ import * as _ from 'lodash';
 import { inject, TestBed, ComponentFixture } from '@angular/core/testing';
 import { APP_BASE_HREF } from '@angular/common';
 
-import { ClusterStep } from './cluster';
+import { RoleNameStep } from './role_name';
 import { AppModule } from '../../app.module';
 import { BaseModel } from '../../models';
 
-import globals = require('../../services/globals');
-
-describe('Cluster wizard: name step', () => {
-  let fixture: ComponentFixture<ClusterStep>;
-  let component: ClusterStep;
-  let mockData: any;
-
+describe('Role wizard: name step', () => {
+  let fixture: ComponentFixture<RoleNameStep>;
+  let component: RoleNameStep;
 
   beforeEach(
     done => TestBed.configureTestingModule({
@@ -43,7 +39,7 @@ describe('Cluster wizard: name step', () => {
   );
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ClusterStep);
+    fixture = TestBed.createComponent(RoleNameStep);
     component = fixture.componentInstance;
     component.model = new BaseModel({});
     component.init();

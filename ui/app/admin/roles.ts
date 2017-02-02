@@ -15,11 +15,13 @@
 * limitations under the License.
 */
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { AuthService } from '../services/auth';
 import { DataService, pagedResult } from '../services/data';
 import { User, Role, PermissionGroup } from '../models';
 import { Modal } from '../directives';
+import { WizardComponent } from '../wizard';
+import { RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep } from './wizard_steps/index';
 import * as _ from 'lodash';
 
 type rolesPermissionGroupsType = {[key: string]: string[]};
@@ -50,9 +52,12 @@ export class PermissionsGroup {
   templateUrl: './app/templates/roles.html'
 })
 export class RolesComponent {
+  @ViewChild(WizardComponent) wizard: WizardComponent;
   roles: Role[] = null;
   permissions: PermissionGroup[] = [];
   newRole: Role = new Role({data: {permissions: []}});
+  roleSteps = [RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep];
+  oldRoleName = '';
 
   constructor(
     private data: DataService,
@@ -78,7 +83,9 @@ export class RolesComponent {
 
   editRole(role: Role = null) {
     this.newRole = _.isNull(role) ? new Role({data: {permissions: []}}) : role.clone();
+    this.wizard.init(this.newRole);
     this.modal.show();
+    this.oldRoleName = '"' + this.newRole.data.name + '"';
   }
 
   deleteRole(role: Role = null) {
@@ -87,40 +94,6 @@ export class RolesComponent {
         () => this.fetchData(),
         (error: any) => this.data.handleResponseError(error)
       );
-  }
-
-  getGroupPermission(group: PermissionGroup, permission: string): boolean {
-    let roleGroup = _.find(this.newRole.data.permissions, {name: group.name});
-    if (!roleGroup) {
-      return false;
-    }
-    return _.includes(roleGroup.permissions, permission);
-  }
-
-  toggleGroupPermission(group: PermissionGroup, permission: string) {
-    let groupIndex = _.findIndex(this.newRole.data.permissions, {name: group.name});
-    let groupPermissions = groupIndex >= 0 ?
-      this.newRole.data.permissions[groupIndex] :
-      new PermissionGroup({name: group.name, permissions: []});
-
-    if (_.includes(groupPermissions.permissions, permission)) {
-      _.pull(groupPermissions.permissions, permission);
-      if (_.isEmpty(groupPermissions.permissions)) {
-        _.remove(
-          this.newRole.data.permissions,
-          (roleGroup) => roleGroup.name === group.name
-        ) as [PermissionGroup];
-        return;
-      }
-    } else {
-      groupPermissions.permissions.push(permission);
-    }
-
-    if (groupIndex >= 0) {
-      this.newRole.data.permissions[groupIndex] = groupPermissions;
-    } else {
-      this.newRole.data.permissions.push(groupPermissions);
-    }
   }
 
   save() {
