@@ -7734,6 +7734,13 @@ a.grid .grid-header .icon:focus {
 .permissions.long-content {
   padding-bottom: 10px;
 }
+.configurations .delete {
+  text-align: right;
+}
+.configurations .delete button {
+  position: relative;
+  bottom: 6px;
+}
 .modal-content {
   border-radius: 0;
 }

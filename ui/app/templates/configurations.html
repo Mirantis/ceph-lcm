@@ -30,7 +30,7 @@
       *ngFor="let configuration of pager.getPageItems(configurations)"
     >
       <div class="col-xs-3 name">{{configuration.data.name}}</div>
-      <div class="col-xs-3 parameter">{{configuration.data.playbook_id}}</div>
+      <div class="col-xs-3 parameter">{{configuration.data.playbook_id|deparametrize}}</div>
       <div class="col-xs-5 parameter">{{configuration.time_updated|date_time}}</div>
       <div class="col-xs-1 action">
         <a (click)="showVersions(configuration)">
@@ -41,7 +41,14 @@
         </a>
       </div>
       <div class="bowels" *ngIf="isCurrent(configuration)">
-        <div class="col-xs-12"><h3>Versions</h3></div>
+        <div class="col-xs-10"><h3>Versions</h3></div>
+        <div class="col-xs-2 delete">
+          <button
+              type="button"
+              class="btn btn-danger btn-xs"
+              (click)="deleteConfiguration(configuration)"
+            >Delete</button>
+        </div>
         <div *ngFor="let version of getConfigurationVersions(configuration);let i = index">
 
           <div class="col-xs-12"><div class="line"></div></div>
@@ -57,7 +64,7 @@
               class="btn btn-primary btn-xs"
               (click)="editConfiguration(version, !!i)"
             >
-              {{i ? 'View' : 'Clone'}}
+              {{i ? 'View' : 'Edit'}}
             </button>
             <button
               type="button"

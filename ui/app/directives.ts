@@ -194,3 +194,12 @@ export class LongData {
     globals.tempStorage[this.key] = false;
   }
 }
+
+@Component({
+  selector: 'confirm',
+  template: `<ng-content></ng-content>`
+})
+export class Confirmation {
+  @Input() confirmation: string;
+
+}

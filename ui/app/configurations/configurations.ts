@@ -95,11 +95,9 @@ export class ConfigurationsComponent {
 
   save(model: BaseModel) {
     let savePromise: Promise<BaseModel>;
-    let shouldClose = false;
     if (model.id) {
       // Update configuration
       savePromise = this.data.configuration().postUpdate(model.id, model);
-      shouldClose = true;
     } else {
       // Create new configuration
       // Update and create calls expect different set of parameters
@@ -118,9 +116,7 @@ export class ConfigurationsComponent {
           this.model = pureConfig;
           this.wizard.init(this.model);
           this.refreshConfigurations();
-          if (shouldClose) {
-            this.modal.close();
-          }
+          this.modal.close();
         }
       )
       .catch(
@@ -159,11 +155,23 @@ export class ConfigurationsComponent {
   }
 
   executeConfiguration(version: PlaybookConfiguration) {
-    this.data.execution().postCreate(
+    return this.data.execution().postCreate(
       new Record({playbook_configuration: {id: version.id, version: version.version}})
     ). then(
       () => this.router.navigate(['/executions']),
       (error: any) => this.data.handleResponseError(error)
     );
+  }
+
+  deleteConfiguration(configuration: PlaybookConfiguration) {
+    if (!configuration.id) return;
+    return this.data.configuration().destroy(configuration.id)
+      .then(
+        () => {
+          this.shownConfiguration = null;
+          this.refreshConfigurations();
+        },
+        (error: any) => this.data.handleResponseError(error)
+      )
   }
 }

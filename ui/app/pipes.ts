@@ -79,7 +79,7 @@ export class Index implements PipeTransform {
 
 @Pipe({name: 'deparametrize'})
 export class Deparametrize implements PipeTransform {
-  transform(value: string): string {
+  transform(value: string = ''): string {
     return _.upperFirst(value.toLowerCase()).split('_').join(' ');
   }
 }

@@ -224,6 +224,8 @@ export class DataService {
     var errorCode = 'Error';
     var errorMessage = '';
 
+    console.log('Error', JSON.stringify(error));
+
     if (error) {
       if (error.response) {
         if (error.response.status === 401) {
