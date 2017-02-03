@@ -127,6 +127,29 @@ def test_create_server_again(parameter, configure_model):
     assert model.version == model2.version - 1
 
 
+def test_create_delete_recreate_again(configure_model):
+    params = {
+        "name": pytest.faux.gen_alphanumeric(),
+        "username": pytest.faux.gen_alphanumeric(),
+        "fqdn": pytest.faux.gen_alphanumeric(),
+        "ip": pytest.faux.gen_ipaddr(),
+        "server_id": pytest.faux.gen_uuid(),
+        "facts": {},
+        "initiator_id": pytest.faux.gen_uuid()
+    }
+
+    model1 = server.ServerModel.create(**params)
+    model1.delete()
+
+    model2 = server.ServerModel.create(**params)
+    assert model2.version == model1.version + 1
+    assert not model2.time_deleted
+
+    db_model = server.ServerModel.find_by_model_id(model1.model_id)
+    assert db_model.version == 3
+    assert not db_model.time_deleted
+
+
 @pytest.mark.parametrize("facts", ({}, {"a": 1}))
 @pytest.mark.parametrize("expand_facts", (True, False))
 def test_make_api_structure(facts, expand_facts, configure_model):

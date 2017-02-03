@@ -21,12 +21,18 @@ using API. It has to be created after Ansible playbook invocation.
 
 
 import enum
+import time
 import uuid
 
 from decapod_common import exceptions
+from decapod_common import log
 from decapod_common import retryutils
 from decapod_common.models import generic
 from decapod_common.models import properties
+
+
+LOG = log.getLogger(__name__)
+"""Logger."""
 
 
 @enum.unique
@@ -97,6 +103,13 @@ class ServerModel(generic.Model):
             changed = True
         if model.facts != facts:
             model.facts = facts
+            changed = True
+        if model.time_deleted:
+            LOG.info(
+                "Server %s was previously deleted at %s (UNIX %s). Undelete.",
+                model.model_id, time.ctime(model.time_deleted),
+                model.time_deleted)
+            model.time_deleted = 0
             changed = True
 
         if changed:
