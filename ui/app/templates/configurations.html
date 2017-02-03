@@ -60,11 +60,19 @@
           <div class="col-xs-3 parameter">{{version.time_updated|date_time}}</div>
           <div class="col-xs-3 buttons">
             <button
+              *ngIf="!i"
               type="button"
               class="btn btn-primary btn-xs"
-              (click)="editConfiguration(version, !!i)"
+              (click)="editConfiguration(version)"
             >
-              {{i ? 'View' : 'Edit'}}
+              Edit
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary btn-xs"
+              (click)="editConfiguration(version, true)"
+            >
+              View
             </button>
             <button
               type="button"

@@ -40,27 +40,9 @@ describe('Configuration wizard: json configuration step component', () => {
   });
 
   it('initializes its own and model\'s properties', () => {
-    let fetch = spyOn(component, 'fetchData');
     component.init();
-    expect(fetch).toHaveBeenCalled();
     expect(component.model.data.configuration).toEqual([]);
     expect(component.jsonConfiguration).toEqual('[]');
-  });
-
-  it('fetches configuration from the backend if model has id', () => {
-    let dataService = fixture.debugElement.injector.get(DataService);
-    let dummyId = 'dummy id';
-    let find = spyOn(dataService.configuration(), 'find')
-      .and.returnValue(Promise.resolve(
-        new PlaybookConfiguration({})
-      ));
-
-    expect(component.model.id).toBeUndefined();
-    component.fetchData();
-    expect(find).not.toHaveBeenCalled();
-    component.model.id = dummyId;
-    component.fetchData();
-    expect(find).toHaveBeenCalledWith(dummyId);
   });
 
   it('is shown in deck for existing configurations only (with ID)', () => {
@@ -86,20 +68,5 @@ describe('Configuration wizard: json configuration step component', () => {
     expect(component.isValid()).toBeFalsy();
     component.jsonConfiguration = '{"a": 3}';
     expect(component.isValid()).toBeTruthy();
-  });
-
-  it('is editable for the latest configuration only otherwize readonly', done => {
-    let dataService = fixture.debugElement.injector.get(DataService);
-    spyOn(dataService.configuration(), 'find')
-      .and.returnValue(Promise.resolve(new PlaybookConfiguration({version: 3})));
-    component.model.id = 'dummy id';
-    component.model.version = 1;
-    component.fetchData()
-      .then(() => {
-        expect(component.isReadOnly()).toBeTruthy();
-        component.model.version = 3;
-        expect(component.isReadOnly()).toBeFalsy();
-        done();
-      });
   });
 });

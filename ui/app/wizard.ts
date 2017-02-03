@@ -109,6 +109,7 @@ export class WizardComponent {
     this.stepComponents.forEach((component: any, index: number) => {
       component.instance.model = this.model;
       component.instance.index = index;
+      component.instance.isReadOnly = this.isReadOnly;
       component.instance.init();
     });
     let visibleSteps = this.getVisibleSteps();

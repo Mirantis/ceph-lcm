@@ -48,6 +48,7 @@ export class WizardStepBase {
   @ViewChild(WizardStepContainer) stepContainer: WizardStepContainer;
   model: BaseModel;
   index = -1;
+  isReadOnly = false;
 
   initModelProperty(key: string, defaultValue: any) {
     if (!_.get(this.model, key)) {
