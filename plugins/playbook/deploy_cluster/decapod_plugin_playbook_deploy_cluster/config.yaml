@@ -20,8 +20,10 @@ copy_admin_key: true
 install:
   source: "stable"
   release: "jewel"
-  repo: "http://eu.mirror.fuel-infra.org/decapod/ceph/apt"
+  repo: "http://mirror.fuel-infra.org/decapod/ceph/jewel-xenial"
   distro_source: "jewel-xenial"
+  keyserver: "hkp://keyserver.ubuntu.com:80"
+  repo_key: "AF94F6A6A254F5F0"
 
 journal:
   size: 512

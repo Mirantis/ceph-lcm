@@ -37,6 +37,7 @@ apt_packages:
   - ipython3
   - jq
   - language-pack-ru
+  - libapt-pkg-dev
   - libxml2-dev
   - libxslt-dev
   - libyaml-dev

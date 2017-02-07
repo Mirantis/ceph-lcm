@@ -284,6 +284,15 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
         if self.config["install"].get("distro_source"):
             result["ceph_stable_distro_source"] = \
                 self.config["install"]["distro_source"]
+            # This is required to prevent Ansible for installation
+            # from default repo
+            result["ceph_stable_release_uca"] = \
+                result["ceph_stable_distro_source"]
+        if self.config["install"].get("keyserver"):
+            result["ceph_stable_repo_keyserver"] = \
+                self.config["install"]["keyserver"]
+        if self.config["install"].get("repo_key"):
+            result["ceph_stable_repo_key"] = self.config["install"]["repo_key"]
 
         # FIXME(Sergey Arkhipov): For some reason, Ceph cannot converge
         # if I set another network.

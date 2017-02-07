@@ -244,4 +244,4 @@ class AnsiblePlaybook(ControllerProcess):
 
 
 def jsonify(data):
-    return json.dumps(data, separators=(",", ":"))
+    return json.dumps(data, separators=(",", ":"), sort_keys=True)

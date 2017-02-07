@@ -29,6 +29,12 @@ Telegraf.
 """Plugin description."""
 
 HINTS_SCHEMA = {
+    "install": {
+        "description": "Install Telegraf on the node",
+        "typename": "boolean",
+        "type": "boolean",
+        "default_value": True
+    }
 
 }
 """Schema for playbook hints."""
@@ -52,7 +58,7 @@ class TelegrafIntegration(playbook_plugin.CephAnsiblePlaybook):
     def make_global_vars(self, cluster, servers, hints):
         result = {
             "configpath": self.config["configpath"],
-            "install": self.config["need_to_install"],
+            "install": hints["install"],
         }
         result.update(self.config["settings"])
         result.update(self.config["role"])

@@ -36,6 +36,7 @@ RUN set -x \
     gcc \
     git \
     libffi-dev \
+    python3-apt \
     python3-dev \
     python3-pip \
   && cd /project \

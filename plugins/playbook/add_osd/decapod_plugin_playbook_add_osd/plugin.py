@@ -47,6 +47,12 @@ HINTS_SCHEMA = {
         "typename": "boolean",
         "type": "boolean",
         "default_value": False
+    },
+    "ceph_version_verify": {
+        "description": "Verify Ceph version consistency on install",
+        "typename": "boolean",
+        "type": "boolean",
+        "default_value": True
     }
 }
 """Schema for playbook hints."""
@@ -108,6 +114,9 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
         result["dmcrypt_journal_collocation"] = False
         result["dmcrypt_dedicated_journal"] = False
         result["raw_multi_journal"] = False
+        result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
+        result["ceph_version_verify_packagename"] = \
+            self.config["ceph_version_verify_packagename"]
         if hints["dmcrypt"]:
             if hints["collocation"]:
                 result["dmcrypt_journal_collocation"] = True
@@ -166,4 +175,8 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
             for item in cluster.configuration.state if item["role"] == "mons"
         ]
 
-        return {"mons": mons, "osds": servers}
+        return {
+            "mons": mons,
+            "osds": servers,
+            "already_deployed": list(cluster_servers.values())
+        }

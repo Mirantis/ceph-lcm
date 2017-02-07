@@ -20,6 +20,7 @@ from decapod_common import log
 from decapod_common import networkutils
 from decapod_common import pathutils
 from decapod_common import playbook_plugin
+from decapod_common import playbook_plugin_hints
 from decapod_common.models import cluster_data
 from decapod_common.models import kv
 from decapod_common.models import server
@@ -31,6 +32,16 @@ DESCRIPTION = """\
 Add monitor to the cluster
 """.strip()
 """Plugin description."""
+
+HINTS_SCHEMA = {
+    "ceph_version_verify": {
+        "description": "Verify Ceph version consistency on install",
+        "typename": "boolean",
+        "type": "boolean",
+        "default_value": True
+    }
+}
+"""Schema for playbook hints."""
 
 LOG = log.getLogger(__name__)
 """Logger."""
@@ -48,6 +59,8 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
     DESCRIPTION = DESCRIPTION
     PUBLIC = True
     REQUIRED_SERVER_LIST = True
+
+    HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
 
     def on_pre_execute(self, task):
         super().on_pre_execute(task)
@@ -84,6 +97,9 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
         result = super().make_global_vars(cluster, servers, hints)
         result.update(data.global_vars)
 
+        result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
+        result["ceph_version_verify_packagename"] = \
+            self.config["ceph_version_verify_packagename"]
         result["ceph_facts_template"] = pathutils.resource(
             "decapod_common", "facts", "ceph_facts_module.py.j2")
         result["ceph_facts_template"] = str(result["ceph_facts_template"])
@@ -144,4 +160,7 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
         mons = {srv.model_id: srv for srv in mons}
         mons.update((srv.model_id, srv) for srv in servers)
 
-        return {"mons": sorted(mons.values(), key=lambda srv: srv.ip)}
+        return {
+            "mons": sorted(mons.values(), key=lambda srv: srv.ip),
+            "already_deployed": list(cluster_servers.values())
+        }

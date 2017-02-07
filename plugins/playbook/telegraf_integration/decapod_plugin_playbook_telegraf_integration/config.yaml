@@ -51,7 +51,6 @@
 
 
 configpath: /etc/telegraf/telegraf.conf
-need_to_install: false
 
 settings:
   interval: 1m

@@ -37,6 +37,7 @@ RUN set -x \
     libssl-dev \
     openssh-client \
     python2.7 \
+    python3-apt \
     python3-dev \
     python3-pip \
     python-dev \
@@ -52,7 +53,7 @@ RUN set -x \
   && scd -s git_pep440 -v \
   && pip2 install --no-cache-dir --disable-pip-version-check --upgrade 'setuptools==32.3.1' \
   && pip2 install --no-cache-dir --disable-pip-version-check backend/ansible \
-  && pip3 install --no-cache-dir --disable-pip-version-check backend/controller \
+  && pip3 install --no-cache-dir --disable-pip-version-check --process-dependency-links backend/controller \
   && cp containerization/files/devconfigs/ansible_ssh_keyfile.pem /root/.ssh/id_rsa \
   && chmod 0600 /root/.ssh/id_rsa \
   && /usr/local/bin/decapod-ansible-deploy-config \

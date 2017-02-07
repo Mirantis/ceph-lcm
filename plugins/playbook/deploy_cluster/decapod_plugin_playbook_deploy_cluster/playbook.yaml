@@ -33,6 +33,33 @@
         group: "{{ ansible_user }}"
         mode: 0770
 
+    - block:
+      - name: Check if proxy is required to connect to internet
+        shell: grep -r /etc/apt/apt.conf.d -h -i -e 'Acquire::http::Proxy' | sed -rne 's/^[^"]+"([^"]+).*$/\1/p' | sort -u
+        register: apt_http_proxy
+        changed_when: false
+        failed_when: false
+
+      - name: Import Ceph repo key from keyserver without proxy
+        apt_key:
+          id: "{{ ceph_stable_repo_key }}"
+          keyserver: "{{ ceph_stable_repo_keyserver }}"
+          keyring: /etc/apt/trusted.gpg.d/ceph.gpg
+        when: apt_http_proxy.stdout == ""
+
+      - name: Import Ceph repo key from keyserver with proxy
+        apt_key:
+          id: "{{ ceph_stable_repo_key }}"
+          keyserver: "{{ ceph_stable_repo_keyserver }}"
+          keyring: /etc/apt/trusted.gpg.d/ceph.gpg
+        environment:
+          http_proxy: "{{ apt_http_proxy.stdout }}"
+        when: apt_http_proxy.stdout != ""
+      when:
+        - ceph_stable_repo_keyserver is defined
+        - ceph_stable_repo_key is defined
+
+
 - hosts: mons
   become: True
   roles:

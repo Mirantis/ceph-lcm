@@ -22,7 +22,7 @@ import signal
 import sys
 
 import daemon
-import lockfile
+import lockfile.pidlockfile
 
 from decapod_common import config
 from decapod_common import log
@@ -45,7 +45,7 @@ def main():
 
 
 def main_daemon(options):
-    pidfile = lockfile.FileLock(options.pid_file)
+    pidfile = lockfile.pidlockfile.PIDLockFile(options.pid_file)
 
     context = daemon.DaemonContext(pidfile=pidfile)
     context.signal_map = {
