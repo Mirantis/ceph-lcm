@@ -7839,6 +7839,9 @@ a.grid .grid-header .icon:focus {
 .wizard-step .has-error .form-control.ng-untouched {
   border-color: inherit;
 }
+#confirm.modal .modal-footer .btn-default {
+  float: left !important;
+}
 .login-background {
   position: absolute;
   top: 0;

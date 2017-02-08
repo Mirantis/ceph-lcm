@@ -46,4 +46,20 @@
     </div>
     <router-outlet></router-outlet>
   </div>
+
+  <div class="modal fade" id="confirm" tabindex="-1" role="dialog" aria-hidden="true"  aria-labelledby="modalLabel">
+    <div id="modal-dialog" class="modal-dialog modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-body"><h1>{{confirmationText}}</h1></div>
+        <div class="modal-footer">
+          <button id="discard" class="btn btn-default" (click)="hideConfirmation()">
+            Discard
+          </button>
+          <button class="btn btn-primary" (click)="proceed()">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

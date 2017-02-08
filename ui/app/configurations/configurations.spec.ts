@@ -153,11 +153,6 @@ describe('Playbook (Plugin) Configuration Component', () => {
       expect(dataService.execution().postCreate).toHaveBeenCalled();
     });
 
-    it('user can delete it', () => {
-      dom.select('.configurations button.btn-danger').click();
-      expect(dataService.configuration().destroy).toHaveBeenCalledWith(configuration.id);
-    });
-
     it('its deletion refreshes the view', done => {
       let refresh = spyOn(component, 'refreshConfigurations');
       dataService.configuration().destroy.and.returnValue(Promise.resolve());

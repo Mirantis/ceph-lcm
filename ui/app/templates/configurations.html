@@ -46,7 +46,8 @@
           <button
               type="button"
               class="btn btn-danger btn-xs"
-              (click)="deleteConfiguration(configuration)"
+              (confirmedClick)="deleteConfiguration(configuration)"
+              [confirmation]="'Delete configuration ' + configuration.data.name + '?'"
             >Delete</button>
         </div>
         <div *ngFor="let version of getConfigurationVersions(configuration);let i = index">

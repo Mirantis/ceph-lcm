@@ -15,7 +15,8 @@
 * limitations under the License.
 */
 
-import { Component, Input, Output, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Directive, Input, Output, EventEmitter, ViewChild,
+  AfterViewInit, HostListener } from '@angular/core';
 import { ErrorService } from './services/error';
 import * as jQuery from 'jquery';
 import * as _ from 'lodash';
@@ -195,11 +196,15 @@ export class LongData {
   }
 }
 
-@Component({
-  selector: 'confirm',
-  template: `<ng-content></ng-content>`
+@Directive({
+  selector: '[confirmedClick]'
 })
 export class Confirmation {
-  @Input() confirmation: string;
+  static bus = new EventEmitter();
 
+  @Input() confirmation = 'Are you sure?';
+  @Output() confirmedClick = new EventEmitter();
+  @HostListener('click', ['$event']) onClick(e: any) {
+    Confirmation.bus.emit({confirmation: this.confirmation, callback: this.confirmedClick});
+  }
 }

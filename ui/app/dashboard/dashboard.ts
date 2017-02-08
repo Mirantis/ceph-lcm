@@ -15,16 +15,20 @@
 * limitations under the License.
 */
 
-import { Component } from '@angular/core';
+import { Component, EventEmitter } from '@angular/core';
 import { AuthService } from '../services/auth';
 import { ErrorService } from '../services/error';
-import { Modal } from '../directives';
+import { Modal, Confirmation } from '../directives';
+
+type confirmationData = {confirmation: string, callback: EventEmitter<any>};
 
 @Component({
   templateUrl: './app/templates/dashboard.html'
 })
 export class DashboardComponent {
   errors: string[] = [];
+  confirmationText: string;
+  confirmationCallback: EventEmitter<any> = new EventEmitter();
 
   constructor(
     private auth: AuthService,
@@ -33,6 +37,22 @@ export class DashboardComponent {
   ) {
     error.errorHappened.subscribe((error: any) => this.addError(error));
     auth.getLoggedUser();
+    Confirmation.bus.subscribe((data: confirmationData) => this.showConfirmation(data));
+  }
+
+  hideConfirmation() {
+    this.modal.close('confirm');
+  }
+
+  showConfirmation(data: confirmationData) {
+    this.confirmationText = data.confirmation;
+    this.confirmationCallback = data.callback;
+    this.modal.show('confirm');
+  }
+
+  proceed() {
+    this.hideConfirmation();
+    this.confirmationCallback.next();
   }
 
   getLoggedUserName(): string {
@@ -51,7 +71,6 @@ export class DashboardComponent {
   }
 
   logout() {
-    this.auth.logout()
-      .catch(() => true);
+    this.auth.logout().catch(() => true);
   }
 }

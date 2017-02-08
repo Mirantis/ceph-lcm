@@ -23,7 +23,11 @@
       <button class="btn btn-link" (click)="editRole(role)">
         <span class="glyphicon glyphicon-pencil"></span>
       </button>
-      <button class="btn btn-link" (click)="deleteRole(role)">
+      <button
+        class="btn btn-link"
+        (confirmedClick)="deleteRole(role)"
+        [confirmation]="'Delete role ' + role.data.name + '?'"
+      >
         <span class="glyphicon glyphicon-trash"></span>
       </button>
     </div>

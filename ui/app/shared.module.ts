@@ -22,7 +22,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { WizardComponent } from './wizard';
 import { WizardStepContainer, TestWizardStep } from './wizard_step';
 
-import { Modal, Loader, Filter, Criterion, Pager, LongData } from './directives';
+import { Modal, Loader, Filter, Criterion, Pager, LongData, Confirmation } from './directives';
 import { Key, Keys, TrimBy, DateTime, JSONString, Index, Deparametrize, Deprefix } from './pipes';
 
 @NgModule({
@@ -32,18 +32,20 @@ import { Key, Keys, TrimBy, DateTime, JSONString, Index, Deparametrize, Deprefix
   declarations: [
     Modal, Loader, Filter, Criterion, Pager, LongData,
     Keys, Key, TrimBy, DateTime, JSONString, Index, Deparametrize, Deprefix,
-    WizardComponent, WizardStepContainer, TestWizardStep
+    WizardComponent, WizardStepContainer, TestWizardStep,
+    Confirmation
   ],
   exports: [
     Modal, Loader, Filter, Criterion, Pager, LongData,
     Keys, Key, TrimBy, DateTime, JSONString, Index, Deparametrize, Deprefix,
-    WizardComponent, WizardStepContainer, TestWizardStep
+    WizardComponent, WizardStepContainer, TestWizardStep,
+    Confirmation
   ],
   entryComponents: [
     TestWizardStep
   ],
   providers: [
-    Modal, Loader, Filter, Criterion, Pager, LongData
+    Modal, Loader, Filter, Criterion, Pager, LongData, Confirmation
   ]
 })
 export class SharedModule { }

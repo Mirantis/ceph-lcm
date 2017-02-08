@@ -105,7 +105,11 @@
             </div>
             <div class="form-group">
               <div class="col-xs-3 col-xs-offset-2">
-                <button class="btn btn-danger" (click)="deleteUser(user)">
+                <button
+                  class="btn btn-danger"
+                  (confirmedClick)="deleteUser(user)"
+                  [confirmation]="'Delete user ' + user.data.login + '?'"
+                >
                   Delete User
                 </button>
               </div>
