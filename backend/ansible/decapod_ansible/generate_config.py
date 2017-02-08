@@ -54,7 +54,6 @@ class PathList(list):
 
 
 CONFIG_OPTIONS = {
-    "host_key_checking": False,
     "callback_plugins": PathList(
         [
             posixpath.join(ANSIBLE_DEFAULT_PLUGIN_PATH, "callback"),
@@ -81,17 +80,21 @@ CONFIG_OPTIONS = {
                                             "ceph-ansible/roles")
         ]
     ),
-    "library": PathList(["/usr/share/ansible"]),
     "ask_pass": False,
     "ask_sudo_pass": False,
     "bin_ansible_callbacks": False,
     "gather_subset": "!facter,!ohai",
-    "nocows": 1,
+    "host_key_checking": False,
+    "internal_poll_interval": "0.2",
+    "library": PathList(["/usr/share/ansible"]),
     "nocolor": 1,
+    "nocows": 1,
+    "private_key_file": "/root/.ssh/id_rsa",
+    "record_host_keys": False,
+    "record_host_keys": False,
     "retry_files_enabled": False,
-    "transport": "smart",
     "timeout": 10,
-    "record_host_keys": False
+    "transport": "smart"
 }
 
 

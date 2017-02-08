@@ -97,6 +97,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         s.privileged = false
         s.inline     = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
       end
+      client.vm.provision "set-utc-timezone", type: "shell" do |s|
+        s.privileged = true
+        s.inline     = "ln -fs /usr/share/zoneinfo/UTC /etc/localtime && dpkg-reconfigure -f noninteractive tzdata"
+      end
 
       cloud_config_file = ""
       if Vagrant.has_plugin?("vagrant-host-shell")
