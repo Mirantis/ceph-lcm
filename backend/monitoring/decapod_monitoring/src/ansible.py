@@ -47,21 +47,14 @@ else:
 
 ANSIBLE_PLAYBOOK = pkg_resources.resource_filename(
     "decapod_monitoring", "ansible_playbook.yaml")
-
 PATH_HOMEDIR = os.path.expanduser("~")
-
 PATH_CURRENT = os.path.dirname(os.path.abspath(__file__))
-
 PATH_COLLECTOR = os.path.join(PATH_CURRENT, "collect_info.py")
-
 PATH_VISUALIZATOR = os.path.join(PATH_CURRENT, "visualize_cluster.py")
-
 PATH_ANSIBLE = which("ansible-playbook")
-
 PATH_SSH_PRIVATE_KEY = os.path.join(PATH_HOMEDIR, ".ssh", "id_rsa")
-
 PATH_STATIC = "/www"
-
+ANSIBLE_CONFIG_PATH = "/etc/ansible/ansible.cfg"
 LOG = logging.getLogger(__name__)
 
 
@@ -72,6 +65,9 @@ def main():
     logging.basicConfig(
         format="%(asctime)s [%(levelname)-5s] %(message)s",
         level=logging.DEBUG)
+
+    if not os.path.isfile(ANSIBLE_CONFIG_PATH):
+        LOG.warning("Cannot find Ansible config at %r", ANSIBLE_CONFIG_PATH)
 
     for cluster in get_clusters():
         if not cluster["configuration"]:
@@ -154,9 +150,13 @@ def get_extravar(key, value):
 
 
 def execute(commandline):
+    env = os.environ.copy()
+    env["ANSIBLE_CONFIG"] = ANSIBLE_CONFIG_PATH
+
     with open(os.devnull, "rb") as devnullfp:
         process = subprocess.Popen(
             commandline,
+            env=env,
             stdin=devnullfp,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT

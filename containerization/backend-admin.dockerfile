@@ -68,10 +68,11 @@ RUN set -x \
     ./backend/api \
     ./backend/controller \
     ./backend/admin \
+  && decapod-ansible-deploy-config \
   && _DECAPOD_ADMIN_COMPLETE=source decapod-admin >> /root/.bashrc || true \
   && _DECAPOD_COMPLETE=source decapod >> /root/.bashrc || true \
-  && ln -s /usr/local/bin/decapod /usr/bin/cli \
-  && ln -s /usr/local/bin/decapod-admin /usr/bin/admin \
+  && ln -s /usr/local/bin/decapod /usr/local/bin/cli \
+  && ln -s /usr/local/bin/decapod-admin /usr/local/bin/admin \
   && curl --silent --show-error --fail --location \
     --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
     "https://caddyserver.com/download/build?os=linux&arch=amd64&features=" | \
