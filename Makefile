@@ -35,14 +35,6 @@ CONTAINER_UI_TESTS_NAME      := decapod/ui-tests
 CONTAINER_TEST_KEYSTONE_NAME := decapod/keystone
 CONTAINER_ADMIN_NAME         := decapod/admin
 
-# Deprecated, will be removed soon.
-#
-# Base plugins are merged into base container, cron and migrations - to
-# admin.
-CONTAINER_CRON_NAME       := decapod/cron
-CONTAINER_MIGRATIONS_NAME := decapod/migrations
-CONTAINER_PLUGINS_NAME    := decapod/base-plugins
-
 INTERNAL_CI_DOCKER_REGISTRY := docker-prod-virtual.docker.mirantis.net
 
 # -----------------------------------------------------------------------------
@@ -138,7 +130,6 @@ build_debs: build_deb_decapodlib build_deb_decapodcli build_deb_ansible \
     build_deb_deploy_cluster build_deb_helloworld build_deb_purge_cluster \
     build_deb_remove_osd build_deb_server_discovery build_debs_external \
     build_debs_telegraf
-
 build_debs_external: build_deb_external_argon2 build_deb_external_csv
 
 build_deb_decapodlib: clean_debs make_deb_directory
@@ -289,8 +280,7 @@ clean_ui:
 
 build_containers: build_container_api build_container_controller \
 	build_container_frontend build_container_db build_container_db_data \
-	build_container_admin build_container_migrations build_container_cron \
-	build_container_plugins
+	build_container_admin
 build_containers_dev: copy_example_keys build_containers
 
 build_container_api: build_container_base
@@ -319,17 +309,6 @@ build_container_ui_tests:
 
 build_container_test_keystone:
 	$(call build_image,test-keystone.dockerfile,$(CONTAINER_TEST_KEYSTONE_NAME),--pull)
-
-
-# Deprecated
-build_container_migrations:
-	$(call build_image,migrations.dockerfile,$(CONTAINER_MIGRATIONS_NAME),--pull)
-
-build_container_cron: build_container_controller
-	$(call build_image,backend-cron.dockerfile,$(CONTAINER_CRON_NAME))
-
-build_container_plugins: build_container_base
-	$(call build_image,backend-plugins.dockerfile,$(CONTAINER_PLUGINS_NAME))
 
 # -----------------------------------------------------------------------------
 
