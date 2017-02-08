@@ -76,8 +76,6 @@ def command(command_class):
 def spawn(command, *,
           stdin=subprocess.DEVNULL, stdout=None, stderr=subprocess.DEVNULL,
           shell=False, timeout=None):
-    LOG.debug("Spawn command %s", command)
-
     return subprocess.run(
         command,
         stdin=stdin, stdout=stdout, stderr=stderr, shell=shell, timeout=timeout

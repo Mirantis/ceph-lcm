@@ -15,6 +15,7 @@
 # limitations under the License.
 set -eu -o pipefail
 
+echo "THIS SCRIPT IS DEPRECATED. Use backup_working_db_native.sh instead." 1>&2
 
 while getopts ":h" opt; do
   case $opt in

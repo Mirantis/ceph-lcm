@@ -15,6 +15,8 @@
 # limitations under the License.
 set -eu -o pipefail
 
+echo "THIS SCRIPT IS DEPRECATED. Use 'docker-compose exec admin decapod-admin migration apply' instead." 1>&2
+
 
 db_container="cephlcm_database_1"
 
