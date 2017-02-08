@@ -43,13 +43,15 @@ COPY ubuntu_apt.list /etc/apt/sources.list
 RUN set -x \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
+    curl \
     firefox \
-    nodejs \
-    nodejs-legacy \
-    npm \
     xvfb \
+    xz-utils \
+  && curl -sfL -o - https://nodejs.org/dist/v6.9.5/node-v6.9.5-linux-x64.tar.xz \
+     | tar --no-same-owner --strip-components 1 -C /usr/local -xJ \
   && npm install -g karma \
   && npm cache clean \
+  && apt-get purge -y curl xz-utils \
   && apt-get clean \
   && apt-get autoremove -y --purge \
   && rm -r /var/lib/apt/lists/* \
