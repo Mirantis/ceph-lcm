@@ -21,8 +21,8 @@ import setuptools
 
 REQUIREMENTS = (
     "decapod-ansible~=0.2.dev1",
-    "PyMongo[tls]>=3.3,<3.4",
-    "PyYAML>=3.11,<5",
+    "PyMongo[tls]>=3.4,<3.5",
+    "PyYAML>=3.10,<4",
     "ipaddr>=2.1,<2.2"
 )
 

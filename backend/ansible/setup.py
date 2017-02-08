@@ -21,7 +21,7 @@ import setuptools
 
 REQUIREMENTS = (
     "ansible>=2.2,<2.3",
-    "pymongo[tls]>=3.3,<3.4"
+    "pymongo[tls]>=3.4,<3.5"
 )
 
 

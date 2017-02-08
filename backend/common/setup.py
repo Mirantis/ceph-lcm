@@ -20,10 +20,10 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "pymongo[tls]>=3.3,<3.4",
+    "pymongo[tls]>=3.4,<3.5",
     "PyYAML>=3.10,<4",
     "argon2_cffi>=16.2,<17",
-    "jsonschema>=2.5,<2.6"
+    "jsonschema>=2.6,<2.7"
 )
 
 
