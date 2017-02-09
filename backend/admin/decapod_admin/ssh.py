@@ -53,7 +53,7 @@ class ShlexParamType(click.ParamType):
 @click.option(
     "-i", "--identity-file",
     type=click.File(lazy=False),
-    default=utils.get_private_key_path(),
+    default=str(utils.get_private_key_path()),
     help="Path to the private key file. Default is {0}".format(
         utils.get_private_key_path())
 )

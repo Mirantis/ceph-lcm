@@ -47,6 +47,9 @@ setuptools.setup(
     install_requires=REQUIREMENTS,
     zip_safe=False,
     include_package_data=True,
+    extras_require={
+        "uvloop": ["uvloop>=0.7"]
+    },
     package_data={
         "decapod_admin": [
             "migration_scripts/*"

@@ -16,6 +16,16 @@
 """Decapod Admin tools package."""
 
 
+import asyncio
+
+try:
+    import uvloop
+except ImportError:
+    uvloop = None
+else:
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
+
 import decapod_api  # NOQA
 from decapod_admin import ceph_version  # NOQA
 from decapod_admin import cloud_config  # NOQA
