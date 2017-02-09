@@ -17,10 +17,12 @@
 
 
 import decapod_api  # NOQA
+from decapod_admin import ceph_version  # NOQA
 from decapod_admin import cloud_config  # NOQA
 from decapod_admin import db  # NOQA
 from decapod_admin import keystone  # NOQA
 from decapod_admin import locked_servers  # NOQA
 from decapod_admin import migration  # NOQA
+from decapod_admin import pdsh  # NOQA
 from decapod_admin import restore  # NOQA
 from decapod_admin import ssh  # NOQA

@@ -26,7 +26,8 @@ REQUIREMENTS = (
     "decapodlib~=0.2.dev1",
     "python-keystoneclient>=3.9,<4",
     "click>=6,<7",
-    "cryptography>=1.4,<2"
+    "cryptography>=1.4,<2",
+    "asyncssh[libnacl,bcrypt]>=1.8"
 )
 
 

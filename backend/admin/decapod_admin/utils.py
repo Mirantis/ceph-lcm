@@ -16,9 +16,12 @@
 """Various utils for Decapod Admin CLI."""
 
 
+import configparser
+import functools
 import http.client
 import json
 import logging
+import pathlib
 import random
 import subprocess
 import time
@@ -80,3 +83,17 @@ def spawn(command, *,
         command,
         stdin=stdin, stdout=stdout, stderr=stderr, shell=shell, timeout=timeout
     )
+
+
+@functools.lru_cache()
+def get_private_key_path():
+    default_path = pathlib.Path("/etc/ansible/ansible.cfg")
+    parser = configparser.RawConfigParser()
+    parser.read(str(default_path))
+
+    path = parser.get(
+        "defaults", "private_key_file",
+        fallback=str(pathlib.Path.home().joinpath(".ssh", "id_rsa")))
+    path = pathlib.Path(str(path))
+
+    return path

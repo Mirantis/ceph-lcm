@@ -16,7 +16,6 @@
 """SSH to the remote server."""
 
 
-import pathlib
 import pty
 import shlex
 import shutil
@@ -27,11 +26,6 @@ from decapod_admin import main
 from decapod_admin import utils
 from decapod_common import log
 from decapod_common.models import server
-
-
-SSH_KEYFILE_PATH = pathlib.Path.home()
-SSH_KEYFILE_PATH = SSH_KEYFILE_PATH.joinpath(".ssh", "id_rsa")
-"""Path to SSH private key."""
 
 LOG = log.getLogger(__name__)
 """Logger."""
@@ -56,11 +50,20 @@ class ShlexParamType(click.ParamType):
     help="SSH arguments to pass to OpenSSH client (in a form of "
          "'-o Compression=yes -o CompressionLevel=9', single option)"
 )
+@click.option(
+    "-i", "--identity-file",
+    type=click.File(lazy=False),
+    default=utils.get_private_key_path(),
+    help="Path to the private key file. Default is {0}".format(
+        utils.get_private_key_path())
+)
 @click.pass_context
-def ssh(ctx, ssh_args):
+def ssh(ctx, identity_file, ssh_args):
     """Connect to remote machine by SSH."""
 
     ctx.obj["ssh_args"] = ssh_args
+    ctx.obj["identity_file"] = identity_file.name
+    identity_file.close()
 
 
 @utils.command(ssh)
@@ -73,7 +76,7 @@ def server_ip(ctx, ip_address):
     if not srv:
         ctx.fail("Unknown server with IP {0}".format(ip_address))
 
-    return connect(srv[0], ctx.obj["ssh_args"])
+    return connect(srv[0], ctx)
 
 
 @utils.command(ssh)
@@ -86,10 +89,10 @@ def server_id(ctx, server_id):
     if not srv:
         ctx.fail("Unknown server with ID {0}".format(server_id))
 
-    return connect(srv, ctx.obj["ssh_args"])
+    return connect(srv, ctx)
 
 
-def connect(srv_model, params):
+def connect(srv_model, ctx):
     ssh_command = shutil.which("ssh")
     if not ssh_command:
         raise ValueError("Cannot find ssh command")
@@ -101,8 +104,8 @@ def connect(srv_model, params):
     ssh_command.extend(("-o", "UserKnownHostsFile=/dev/null"))
     ssh_command.extend(("-o", "StrictHostKeyChecking=no"))
     ssh_command.extend(("-l", srv_model.username))
-    ssh_command.extend(("-i", str(SSH_KEYFILE_PATH)))
-    ssh_command.extend(params)
+    ssh_command.extend(("-i", ctx.obj["identity_file"]))
+    ssh_command.extend(ctx.obj["ssh_args"])
     ssh_command.append(srv_model.ip)
 
     LOG.debug("Execute %s", ssh_command)
