@@ -18,7 +18,7 @@
 import { Record } from 'js-data';
 import { pagedResult } from '../app/services/data';
 import { Cluster, Playbook, PlaybookConfiguration, Server, Execution,
-  PermissionGroup, ExecutionStep } from '../app/models';
+  PermissionGroup, ExecutionStep, Role } from '../app/models';
 import * as _ from 'lodash';
 
 function createFakeModelData(index: number): Object {
@@ -125,6 +125,10 @@ export class MockDataService {
 
   server() {
     return this.mapperFactory(Server, 'server');
+  }
+
+  role() {
+    return this.mapperFactory(Role, 'role');
   }
 
   execution() {

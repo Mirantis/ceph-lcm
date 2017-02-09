@@ -24,7 +24,7 @@ import { SharedModule } from '../shared.module';
 
 import { AdminComponent, UsersComponent,
   RolesComponent, PermissionsGroup } from './index';
-import { RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep } from './wizard_steps/index';
+import { RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep, UserStep } from './wizard_steps/index';
 
 @NgModule({
   declarations: [
@@ -32,7 +32,7 @@ import { RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep } fro
     UsersComponent,
     RolesComponent,
     PermissionsGroup,
-    RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep
+    RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep, UserStep
   ],
   imports: [
     BrowserModule,
@@ -41,14 +41,14 @@ import { RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep } fro
     SharedModule
   ],
   entryComponents: [
-    RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep
+    RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep, UserStep
   ],
   exports: [
     AdminComponent,
     UsersComponent,
     RolesComponent,
     PermissionsGroup,
-    RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep
+    RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep, UserStep
   ]
 })
 export class AdminModule { }

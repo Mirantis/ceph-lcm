@@ -63,8 +63,7 @@ describe('Configuration wizard: servers step component', () => {
 
   it('fetches servers list from the backend', () => {
     let dataService = fixture.debugElement.injector.get(DataService);
-    component.fetchData();
-    expect(dataService.server().findAll).toHaveBeenCalledWith({});
+    expect(dataService.server().findAll).toHaveBeenCalledTimes(1);
   });
 
   it('is only shown in deck for new configurations where servers are required', () => {

@@ -15,12 +15,14 @@
 * limitations under the License.
 */
 
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Modal } from '../directives';
 import { AuthService } from '../services/auth';
 import { ErrorService } from '../services/error';
 import { DataService, pagedResult } from '../services/data';
 import { User, Role } from '../models';
+import { WizardComponent } from '../wizard';
+import { UserStep } from './wizard_steps/user';
 
 import * as _ from 'lodash';
 
@@ -31,6 +33,8 @@ type userVersionsType = {[key: string]: User[]};
   templateUrl: './app/templates/users.html'
 })
 export class UsersComponent {
+  @ViewChild(WizardComponent) wizard: WizardComponent;
+  userSteps = [UserStep];
   users: User[] = null;
   userVersions: userVersionsType = {};
   roles: Role[] = [];
@@ -82,6 +86,7 @@ export class UsersComponent {
   editUser(user: User = null) {
     this.newUser = _.isNull(user) ? new User({}) : user.clone();
     this.shownUserId = null;
+    this.wizard.init(this.newUser);
     this.modal.show();
   }
 
@@ -90,12 +95,15 @@ export class UsersComponent {
     if (this.newUser.id) {
       // Update existing user' data
       savePromise = this.data.user().postUpdate(this.newUser.id, this.newUser)
-        .then((user: User) => {
-          if (this.newUser.id === this.auth.loggedUser.id) {
-            this.auth.invalidateUser();
-          }
-          this.newUser = user;
-        });
+        .then(
+          (user: User) => {
+            if (this.newUser.id === this.auth.loggedUser.id) {
+              this.auth.invalidateUser();
+            }
+            this.newUser = user;
+          },
+          (error: any) => this.data.handleResponseError(error)
+        );
     } else {
       // Create new user
       savePromise = this.data.user().postCreate(this.newUser);
@@ -108,9 +116,7 @@ export class UsersComponent {
           if (this.newUser.id) {
             this.getUserVersions(this.newUser, true);
           }
-        }
-      )
-      .catch(
+        },
         (error: any) => this.data.handleResponseError(error)
       );
 }

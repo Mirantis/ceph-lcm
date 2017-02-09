@@ -46,13 +46,17 @@ export class AuthService {
 
           this.loggedUser = token.data.user;
           this.data.role().find(this.loggedUser.data.role_id)
-            .then((role: Role) => globals.loggedUserRole = role);
+            .then(
+              (role: Role) => globals.loggedUserRole = role,
+              (error: any) => this.data.handleResponseError(error)
+            );
 
           var url = this.redirectUrl || '/';
           this.redirectUrl = null;
           this.router.navigate([url]);
           return token;
-        }
+        },
+        (error: any) => this.data.handleResponseError(error)
       )
       .catch((error: any) => this.data.handleResponseError(error));
   }

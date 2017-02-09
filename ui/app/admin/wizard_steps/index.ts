@@ -17,3 +17,4 @@
 
 export * from './role_name';
 export * from './role_permissions_group';
+export * from './user';

@@ -1,0 +1,50 @@
+<step>
+  <div class="form-group" [ngClass]="{'has-error': !model.data.login}">
+    <label for="user_login">Login</label>
+    <input
+      type="text"
+      class="form-control"
+      name="user_login"
+      id="user_login"
+      placeholder="Login"
+      [(ngModel)]="model.data.login"
+      required>
+  </div>
+  <div class="form-group" [ngClass]="{'has-error': !model.data.full_name}">
+    <label for="user_name">Full Name</label>
+    <input
+      type="text"
+      class="form-control"
+      name="user_name"
+      id="user_name"
+      placeholder="Full Name"
+      [(ngModel)]="model.data.full_name"
+      required>
+  </div>
+  <div class="form-group" [ngClass]="{'has-error': !model.data.email || !isEmailValid()}">
+    <label for="user_email">Email</label>
+    <input
+      type="email"
+      class="form-control"
+      name="user_email"
+      id="user_email"
+      placeholder="Email"
+      [(ngModel)]="model.data.email"
+      required>
+  </div>
+  <div class="form-group" [ngClass]="{'has-error': !model.data.role_id}">
+    <label for="user_role">Role</label>
+    <select
+      class="form-control"
+      name="user_role"
+      id="user_role"
+      [(ngModel)]="model.data.role_id"
+      required
+    >
+      <option value=""></option>
+      <option *ngFor="let role of roles" [value]="role.id">
+        {{role.data.name}}
+      </option>
+    </select>
+  </div>
+</step>
