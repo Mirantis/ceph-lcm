@@ -281,13 +281,15 @@ def model_edit(item_id, fetch_method_name, parse_json=True):
     return outer_decorator
 
 
-def command(command_class, paginate=False):
+def command(command_class, paginate=False, filtered=False):
     """Decorator to group generic parameters used everywhere."""
 
     def decorator(func):
         func = with_client(func)
         if paginate:
             func = with_pagination(func)
+        if filtered:
+            func = filtered_output(func)
         func = format_output(func)
         func = catch_errors(func)
 
@@ -295,5 +297,34 @@ def command(command_class, paginate=False):
         func = command_class.command(name=name)(func)
 
         return func
+
+    return decorator
+
+
+def filtered_output(func):
+    """Decorator to support filtered output."""
+
+    if not utils.JSON_FILTERS:
+        return func
+
+    func = click.option(
+        "--filtered",
+        type=param_types.FILTERED_OUTPUT,
+        default="",
+        help=(
+            "Filter output using expression engines. Valid options are {0}."
+            "To setup, you first need to put engine type upfront semicolon "
+            "and expression after. Example: 'jq:.[]|.id'. Please use "
+            "correspond documentation on engines."
+        ).format(sorted(utils.JSON_FILTERS)))(func)
+
+    @six.wraps(func)
+    def decorator(filtered, *args, **kwargs):
+        response = func(*args, **kwargs)
+        if not filtered:
+            return response
+        expression, converter = filtered
+
+        return converter(expression, response)
 
     return decorator

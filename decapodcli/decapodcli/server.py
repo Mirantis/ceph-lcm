@@ -42,9 +42,10 @@ def compact_view(func):
         is_flag=True,
         help="Show server list in compact CSV view"
     )
-    def decorator(compact, *args, **kwargs):
+    @click.pass_context
+    def decorator(ctx, compact, *args, **kwargs):
         response = func(*args, **kwargs)
-        if not compact:
+        if not compact or "filtered_set" in ctx.obj:
             return response
         return build_compact_server_response(response)
 
@@ -105,7 +106,7 @@ def server():
     """Server subcommands."""
 
 
-@decorators.command(server, True)
+@decorators.command(server, True, True)
 @compact_view
 def get_all(client, query_params):
     """Requests the list of servers."""
@@ -114,7 +115,7 @@ def get_all(client, query_params):
 
 
 @click.argument("server-id")
-@decorators.command(server)
+@decorators.command(server, filtered=True)
 @compact_view
 def get(server_id, client):
     """Request a server with certain ID."""
@@ -123,7 +124,7 @@ def get(server_id, client):
 
 
 @click.argument("server-id")
-@decorators.command(server, True)
+@decorators.command(server, True, True)
 @compact_view
 def get_version_all(server_id, client, query_params):
     """Requests a list of versions for the servers with certain ID."""
@@ -133,7 +134,7 @@ def get_version_all(server_id, client, query_params):
 
 @click.argument("version", type=int)
 @click.argument("server-id")
-@decorators.command(server)
+@decorators.command(server, filtered=True)
 @compact_view
 def get_version(server_id, version, client):
     """Requests a list of certain version of server with ID."""

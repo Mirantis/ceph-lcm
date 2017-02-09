@@ -39,6 +39,34 @@ try:
 except ImportError:
     pygments = None
 
+JSON_FILTERS = {}
+JSON_EXPRESSION_FILTER_BUILDERS = {}
+
+try:
+    import jq
+except ImportError:
+    jq = None
+else:
+    JSON_FILTERS["jq"] = lambda exp, data: exp.transform(data)
+    JSON_EXPRESSION_FILTER_BUILDERS["jq"] = jq.jq
+
+try:
+    import jmespath
+except ImportError:
+    jmespath = None
+else:
+    JSON_FILTERS["jmespath"] = lambda exp, data: exp.search(data)
+    JSON_EXPRESSION_FILTER_BUILDERS["jmespath"] = jmespath.compile
+
+try:
+    import yaql
+except ImportError:
+    yaql = None
+else:
+    yaql = yaql.factory.YaqlFactory().create()
+    JSON_FILTERS["yaql"] = lambda exp, data: exp.evaluate(data=data)
+    JSON_EXPRESSION_FILTER_BUILDERS["yaql"] = yaql
+
 
 def json_loads(data):
     if isinstance(data, bytes):

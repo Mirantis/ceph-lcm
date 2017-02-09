@@ -31,7 +31,7 @@ def playbook_configuration():
     """Playbook configuration subcommands."""
 
 
-@decorators.command(playbook_configuration, True)
+@decorators.command(playbook_configuration, True, True)
 def get_all(client, query_params):
     """Requests the list of playbook configurations."""
 
@@ -39,7 +39,7 @@ def get_all(client, query_params):
 
 
 @click.argument("playbook-configuration-id", type=click.UUID)
-@decorators.command(playbook_configuration)
+@decorators.command(playbook_configuration, filtered=True)
 def get(playbook_configuration_id, client):
     """Request a playbook configuration with certain ID."""
 
@@ -47,7 +47,7 @@ def get(playbook_configuration_id, client):
 
 
 @click.argument("playbook-configuration-id", type=click.UUID)
-@decorators.command(playbook_configuration, True)
+@decorators.command(playbook_configuration, True, True)
 def get_version_all(playbook_configuration_id, client, query_params):
     """Requests a list of versions for the playbook configurations with
     certain ID."""
@@ -58,7 +58,7 @@ def get_version_all(playbook_configuration_id, client, query_params):
 
 @click.argument("version", type=int)
 @click.argument("playbook-configuration-id", type=click.UUID)
-@decorators.command(playbook_configuration)
+@decorators.command(playbook_configuration, filtered=True)
 def get_version(playbook_configuration_id, version, client):
     """Requests a list of certain version of playbook configuration with ID."""
 

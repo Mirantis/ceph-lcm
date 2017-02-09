@@ -33,7 +33,7 @@ def execution():
     """Execution subcommands."""
 
 
-@decorators.command(execution, True)
+@decorators.command(execution, True, True)
 def get_all(client, query_params):
     """Requests the list of executions."""
 
@@ -41,7 +41,7 @@ def get_all(client, query_params):
 
 
 @click.argument("execution-id", type=click.UUID)
-@decorators.command(execution)
+@decorators.command(execution, filtered=True)
 def get(execution_id, client):
     """Request a execution with certain ID."""
 
@@ -49,7 +49,7 @@ def get(execution_id, client):
 
 
 @click.argument("execution-id", type=click.UUID)
-@decorators.command(execution, True)
+@decorators.command(execution, True, True)
 def get_version_all(execution_id, client, query_params):
     """Requests a list of versions for the execution with certain ID."""
 
@@ -58,7 +58,7 @@ def get_version_all(execution_id, client, query_params):
 
 @click.argument("version", type=int)
 @click.argument("execution-id", type=click.UUID)
-@decorators.command(execution)
+@decorators.command(execution, filtered=True)
 def get_version(execution_id, version, client):
     """Requests a list of certain version of execution with ID."""
 
@@ -136,7 +136,7 @@ def cancel(execution_id, wait, client):
 
 
 @click.argument("execution-id", type=click.UUID)
-@decorators.command(execution, True)
+@decorators.command(execution, True, True)
 def steps(execution_id, query_params, client):
     """Get execution steps for a certain execution."""
 

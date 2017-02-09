@@ -28,7 +28,7 @@ def playbook():
     """Playbook subcommands."""
 
 
-@decorators.command(playbook)
+@decorators.command(playbook, filtered=True)
 def get_all(client):
     """Request a list of permissions avaialable in API."""
 

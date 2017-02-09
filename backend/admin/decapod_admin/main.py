@@ -33,6 +33,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     is_flag=True,
     help="Run in debug mode."
 )
+@click.version_option(message="%(version)s")
 @click.pass_context
 @cliutils.configure
 def cli(ctx, debug):

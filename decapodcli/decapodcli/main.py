@@ -96,6 +96,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     help="How to format output. Currently only JSON is supported."
 )
 @decorators.with_color
+@click.version_option(message="%(version)s")
 @click.pass_context
 def cli(ctx, url, login, password, no_verify, ssl_certificate, debug,
         timeout, no_pager, pager, color, output_format):

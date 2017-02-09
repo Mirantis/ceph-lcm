@@ -49,7 +49,10 @@ setuptools.setup(
     },
     extras_require={
         "simplejson": ["simplejson"],
-        "color": ["pygments"]
+        "color": ["pygments"],
+        "yaql": ["yaql>=1.0.0"],
+        "jq": ["jq>=0.1"],
+        "jmespath": ["jmespath>=0.9"]
     },
     classifiers=(
         "Intended Audience :: Information Technology",

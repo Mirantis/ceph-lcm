@@ -33,14 +33,20 @@ RUN set -x \
   && echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" > /etc/apt/sources.list.d/mongodb.list \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
+    autoconf \
+    automake \
     cron \
     curl \
     gcc \
     git \
+    jq \
+    jshon \
     less \
     libffi-dev \
     libpython2.7 \
     libssl-dev \
+    libtool \
+    make \
     mongodb-org-tools \
     nano \
     openssh-client \
@@ -64,10 +70,11 @@ RUN set -x \
     ./backend/monitoring \
   && pip3 install --no-cache-dir --disable-pip-version-check \
     ./decapodlib \
-    ./decapodcli \
-    ./backend/api \
+    ./decapodcli[color,jq,yaql,jmespath] \
+    ./backend/api[keystone] \
     ./backend/controller \
     ./backend/admin \
+    jmespath-terminal \
   && decapod-ansible-deploy-config \
   && _DECAPOD_ADMIN_COMPLETE=source decapod-admin >> /root/.bashrc || true \
   && _DECAPOD_COMPLETE=source decapod >> /root/.bashrc || true \
@@ -77,6 +84,8 @@ RUN set -x \
     --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
     "https://caddyserver.com/download/build?os=linux&arch=amd64&features=" | \
     tar --no-same-owner -C /usr/bin/ -xz caddy \
+  && curl --silent --show-error --fail --location -o /usr/local/bin/jp https://github.com/jmespath/jp/releases/download/0.1.2/jp-linux-amd64 \
+  && chmod +x /usr/local/bin/jp \
   && chmod 0755 /usr/bin/caddy \
   && mkdir -p /www \
   && cat containerization/files/crontab | crontab - \
@@ -89,10 +98,14 @@ RUN set -x \
   && rm /etc/apt/sources.list.d/mongodb.list \
   && apt-get clean \
   && apt-get purge -y \
+    autoconf \
+    automake \
     gcc \
     git \
     libffi-dev \
     libssl-dev \
+    libtool \
+    make \
     python3-dev \
     python3-pip \
     python-dev \

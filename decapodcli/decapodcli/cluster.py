@@ -34,7 +34,7 @@ def cluster():
     """Cluster subcommands."""
 
 
-@decorators.command(cluster, True)
+@decorators.command(cluster, True, True)
 def get_all(client, query_params):
     """Requests the list of clusters."""
 
@@ -42,7 +42,7 @@ def get_all(client, query_params):
 
 
 @click.argument("cluster-id", type=click.UUID)
-@decorators.command(cluster)
+@decorators.command(cluster, filtered=True)
 def get(cluster_id, client):
     """Requests information on certain cluster."""
 
@@ -50,7 +50,7 @@ def get(cluster_id, client):
 
 
 @click.argument("cluster-id", type=click.UUID)
-@decorators.command(cluster, True)
+@decorators.command(cluster, True, True)
 def get_version_all(cluster_id, client, query_params):
     """Requests a list of versions on cluster with certain ID."""
 
@@ -59,7 +59,7 @@ def get_version_all(cluster_id, client, query_params):
 
 @click.argument("version", type=int)
 @click.argument("cluster-id", type=click.UUID)
-@decorators.command(cluster)
+@decorators.command(cluster, filtered=True)
 def get_version(cluster_id, version, client):
     """Requests a certain version of certain cluster."""
 
@@ -108,7 +108,7 @@ def delete(cluster_id, client):
 
 
 @click.argument("cluster-id", type=click.UUID)
-@decorators.command(cluster)
+@decorators.command(cluster, filtered=True)
 @click.option(
     "--root",
     default="/etc/ceph",

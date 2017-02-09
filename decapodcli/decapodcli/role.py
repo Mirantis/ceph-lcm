@@ -43,7 +43,7 @@ def role():
     """Role subcommands."""
 
 
-@decorators.command(role, True)
+@decorators.command(role, True, True)
 def get_all(client, query_params):
     """Requests the list of roles."""
 
@@ -51,7 +51,7 @@ def get_all(client, query_params):
 
 
 @click.argument("role-id", type=click.UUID)
-@decorators.command(role)
+@decorators.command(role, filtered=True)
 def get(role_id, client):
     """Request a role with certain ID."""
 
@@ -59,7 +59,7 @@ def get(role_id, client):
 
 
 @click.argument("role-id", type=click.UUID)
-@decorators.command(role, True)
+@decorators.command(role, True, True)
 def get_version_all(role_id, client, query_params):
     """Requests a list of versions for the role with certain ID."""
 
@@ -68,7 +68,7 @@ def get_version_all(role_id, client, query_params):
 
 @click.argument("version", type=int)
 @click.argument("role-id", type=click.UUID)
-@decorators.command(role)
+@decorators.command(role, filtered=True)
 def get_version(role_id, version, client):
     """Requests a list of certain version of role with ID."""
 

@@ -31,7 +31,7 @@ def user():
     """User subcommands."""
 
 
-@decorators.command(user, True)
+@decorators.command(user, True, True)
 def get_all(client, query_params):
     """Requests the list of users."""
 
@@ -39,7 +39,7 @@ def get_all(client, query_params):
 
 
 @click.argument("user-id", type=click.UUID)
-@decorators.command(user)
+@decorators.command(user, filtered=True)
 def get(user_id, client):
     """Requests information on certain user."""
 
@@ -47,7 +47,7 @@ def get(user_id, client):
 
 
 @click.argument("user-id", type=click.UUID)
-@decorators.command(user, True)
+@decorators.command(user, True, True)
 def get_version_all(user_id, client, query_params):
     """Requests a list of versions on user with certain ID."""
 
@@ -56,7 +56,7 @@ def get_version_all(user_id, client, query_params):
 
 @click.argument("version", type=int)
 @click.argument("user-id", type=click.UUID)
-@decorators.command(user)
+@decorators.command(user, filtered=True)
 def get_version(user_id, version, client):
     """Requests a certain version of certain user."""
 

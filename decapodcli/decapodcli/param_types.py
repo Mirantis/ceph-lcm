@@ -87,6 +87,30 @@ class JSONParamType(click.types.StringParamType):
             self.fail("{0} is not valid JSON string.".format(value))
 
 
+class FilteredOutputType(click.types.StringParamType):
+
+    name = "type:expression"
+
+    def convert(self, value, param, ctx):
+        value = super(FilteredOutputType, self).convert(value, param, ctx)
+        if not value:
+            return None
+
+        ctx.obj["filtered_set"] = True
+        try:
+            exp_type, exp = value.split(":", 1)
+        except ValueError:
+            self.fail("{0} has to be in form [{1}]:EXPRESSION".format(
+                value,
+                "/".join(sorted(utils.JSON_FILTERS))))
+        try:
+            exp = utils.JSON_EXPRESSION_FILTER_BUILDERS[exp_type](exp)
+        except Exception as exc:
+            self.fail("Expression {0} is not valid {1!s}".format(exp, exc))
+
+        return exp, utils.JSON_FILTERS[exp_type]
+
+
 CSV = CSVParamType()
 """CSV parameter type for CLI."""
 
@@ -98,3 +122,6 @@ SORT_BY = SortByParamType()
 
 JSON = JSONParamType()
 """JSON parameter for CLI."""
+
+FILTERED_OUTPUT = FilteredOutputType()
+"""JSON parsing parameter."""
