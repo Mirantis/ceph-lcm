@@ -112,6 +112,7 @@ def delete(cluster_id, client):
 @click.option(
     "--root",
     default="/etc/ceph",
+    show_default=True,
     help="Root of files on filesystem."
 )
 @click.option(

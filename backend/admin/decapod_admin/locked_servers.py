@@ -38,6 +38,7 @@ def locked_servers():
     "--output-format", "-f",
     type=click.Choice(["json", "csv"]),
     default="json",
+    show_default=True,
     help="Format of the output"
 )
 def get_all(output_format):

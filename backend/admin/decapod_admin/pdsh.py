@@ -17,8 +17,11 @@
 
 
 import asyncio
+import functools
+import glob
+import os
+import pathlib
 import shlex
-import sys
 
 import asyncssh
 import click
@@ -34,71 +37,40 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class SSHClientSession(asyncssh.SSHClientSession):
+def ssh_file_operations(func):
+    func = click.option(
+        "--no-preserve",
+        is_flag=True,
+        help="The access and modification times and permissions of the "
+             "original file are not set on the processed file."
+    )(func)
+    func = click.option(
+        "--no-recursive",
+        is_flag=True,
+        help="The remote path points at a directory, the entire subtree "
+             "under that directory is not processed"
+    )(func)
+    func = click.option(
+        "--no-follow-symlinks",
+        is_flag=True,
+        help="Do not process symbolic links"
+    )(func)
 
-    PREFIX_LENGTH = 10
+    @functools.wraps(func)
+    @click.pass_context
+    def decorator(ctx, no_preserve, no_recursive, no_follow_symlinks, *args,
+                  **kwargs):
+        ctx.obj["preserve"] = not no_preserve
+        ctx.obj["recursive"] = not no_recursive
+        ctx.obj["follow_symlinks"] = not no_follow_symlinks
 
-    def __init__(self, hostname):
-        super().__init__()
+        return func(*args, **kwargs)
 
-        self.obuffer = ""
-        self.ebuffer = ""
-        self.prefix = hostname.ljust(self.PREFIX_LENGTH) + ": "
-
-    def data_received(self, data, datatype):
-        if datatype == asyncssh.EXTENDED_DATA_STDERR:
-            self.ebuffer += data
-            self.ebuffer = self.doprint(self.ebuffer, stderr=True)
-        else:
-            self.obuffer += data
-            self.obuffer = self.doprint(self.obuffer, stderr=False)
-
-        return super().data_received(data, datatype)
-
-    def doprint(self, buf, *, flush=False, stderr=False):
-        if not buf:
-            return buf
-
-        stream = sys.stderr if stderr else sys.stdout
-
-        if flush:
-            print(self.data(buf), file=stream)
-            return ""
-
-        buf = buf.split("\n")
-        for chunk in buf[:-1]:
-            print(self.data(chunk), file=stream)
-
-        return buf[-1] if buf else ""
-
-    def data(self, text):
-        return self.prefix + text
-
-    def connection_lost(self, exc):
-        self.doprint(self.obuffer, stderr=False, flush=True)
-        self.doprint(self.ebuffer, stderr=True, flush=True)
-
-        if exc:
-            LOG.error("SSH connection %s has been dropped: %s", self, exc)
-
-        super().connection_lost(exc)
+    return decorator
 
 
-@main.cli.command()
-@click.option(
-    "-i", "--identity-file",
-    type=click.File(lazy=False),
-    default=str(utils.get_private_key_path()),
-    help="Path to the private key file. Default is {0}".format(
-        utils.get_private_key_path())
-)
-@click.option(
-    "-b", "--batch-size",
-    type=int,
-    default=20,
-    help="By default, command won't connect to all servers simultaneously, "
-         "it is trying to process servers in batches. Default batchsize is 20."
-)
+@main.cli_group
+@utils.ssh_command
 @click.option(
     "-w", "--server-id",
     multiple=True,
@@ -118,14 +90,8 @@ class SSHClientSession(asyncssh.SSHClientSession):
     default=[],
     help="Cluster ID to process. You can set this option multiple times."
 )
-@click.option(
-    "-s", "--sudo",
-    is_flag=True,
-    help="Run command as sudo user."
-)
-@click.argument("command", nargs=-1, required=True)
-def pdsh(identity_file, batch_size, server_id, role_name, cluster_id, sudo,
-         command):
+@click.pass_context
+def pdsh(ctx, server_id, role_name, cluster_id):
     """PDSH for decapod-admin.
 
     pdsh allows user to execute commands on host batches in parallel
@@ -138,16 +104,105 @@ def pdsh(identity_file, batch_size, server_id, role_name, cluster_id, sudo,
     be processed (if no role is set, then all roles will be processed etc.)
     """
 
+    ctx.obj["servers"] = get_servers(server_id, role_name, cluster_id)
+
+
+@utils.command(pdsh, name="exec")
+@click.option(
+    "-s", "--sudo",
+    is_flag=True,
+    help="Run command as sudo user."
+)
+@click.argument("command", nargs=-1, required=True)
+@click.pass_context
+def execute(ctx, sudo, command):
+    """Execute command on remote machines."""
+
     if sudo:
         command = ["sudo", "-H", "-E", "-n", "--"] + list(command)
     command = " ".join(shlex.quote(cmd) for cmd in command)
 
-    private_key = asyncssh.import_private_key(identity_file.read())
-    identity_file.close()
+    ctx.obj["event_loop"].run_until_complete(execute_command(ctx, command))
 
-    servers = get_servers(server_id, role_name, cluster_id)
-    asyncio.get_event_loop().run_until_complete(
-        execute_command(batch_size, private_key, servers, command)
+
+@utils.command(pdsh)
+@ssh_file_operations
+@click.option(
+    "--yes", "-y",
+    is_flag=True,
+    help="Do not ask about confirmation."
+)
+@click.argument("local-path", nargs=-1, required=True)
+@click.argument("remote-path")
+@click.pass_context
+def upload(ctx, yes, local_path, remote_path):
+    """Upload files to remote host.
+
+    When uploading a single file or directory, the remote path can be
+    either the full path to upload data into or the path to an existing
+    directory where the data should be placed. In the latter case, the
+    base file name from the local path will be used as the remote name.
+
+    When uploading multiple files, the remote path must refer to an
+    existing directory.
+
+    Local path could be glob.
+    """
+
+    ask_confirm, to_upload = get_files_to_upload(ctx, local_path)
+    if not yes and ask_confirm:
+        if not click.confirm("Some files cannot be uploaded. Proceed?"):
+            ctx.exit(0)
+
+    ctx.obj["event_loop"].run_until_complete(
+        upload_files(ctx, remote_path, sorted(to_upload)))
+
+
+@utils.command(pdsh)
+@ssh_file_operations
+@click.option(
+    "--flat",
+    is_flag=True,
+    help="Do not create directory with server ID and IP on download"
+)
+@click.option(
+    "--glob-pattern",
+    is_flag=True,
+    help="Consider remote paths as globs."
+)
+@click.argument("remote-path", nargs=-1, required=True)
+@click.argument("local-path")
+@click.pass_context
+def download(ctx, flat, glob_pattern, local_path, remote_path):
+    """Download files from remote host.
+
+    When downloading a single file or directory, the local path can
+    be either the full path to download data into or the path to an
+    existing directory where the data should be placed. In the latter
+    case, the base file name from the remote path will be used as the
+    local name.
+
+    Local path must refer to an existing directory.
+
+    If --flat is not set, then directories with server ID and server IP
+    will be created (server ID directory will be symlink to server IP).
+    """
+
+    ctx.obj["flat"] = flat
+    ctx.obj["glob"] = glob_pattern
+
+    local_path = pathlib.Path(local_path)
+    if not local_path.is_dir():
+        LOG.error("Local path %s is not correct directory")
+
+    if not flat:
+        for srv in ctx.obj["servers"]:
+            local_path.joinpath(srv.model_id).mkdir()
+            local_path.joinpath(srv.ip).symlink_to(srv.model_id,
+                                                   target_is_directory=True)
+
+    ctx.obj["event_loop"].run_until_complete(
+        download_files(ctx, local_path, sorted(set(remote_path)))
     )
 
 
@@ -184,31 +239,138 @@ def get_servers(server_id, role_name, cluster_id):
     return servers
 
 
-async def execute_command(batch_size, private_key, servers, command):
-    while servers:
-        current_server_batch = servers[:batch_size]
-        servers = servers[batch_size:]
-        if not current_server_batch:
-            continue
+@utils.async_batch_executor
+@utils.asyncssh_connector
+async def execute_command(ctx, srv, connection, command):
+    channel, _ = await connection.create_session(
+        lambda: utils.SSHClientSession(srv), command
+    )
+    await channel.wait_closed()
 
+
+@utils.async_batch_executor
+@utils.asyncssh_connector
+async def upload_files(ctx, srv, connection, remote_path, files):
+    prefix = utils.make_ssh_output_prefix(srv)
+
+    async with connection.start_sftp_client() as sftp:
         tasks = [
-            execute_command_on_server(srv, private_key, command)
-            for srv in current_server_batch
+            upload_single_file(ctx, srv, prefix, sftp, remote_path, fileobj)
+            for fileobj in files
         ]
         await asyncio.wait(tasks)
 
 
-async def execute_command_on_server(srv, private_key, command):
-    connection = asyncssh.connect(
-        srv.ip,
-        known_hosts=None,
-        username=srv.username,
-        client_keys=[private_key]
-    )
+async def upload_single_file(ctx, srv, prefix, sftp, remote_path, fileobj):
+    click.echo("{0}Start to upload {1} to {2}".format(
+        prefix, fileobj, remote_path))
 
-    async with connection as open_connection:
-        channel, _ = await open_connection.create_session(
-            lambda: SSHClientSession(srv.ip),
-            command
+    try:
+        await sftp.put(
+            str(fileobj),
+            remote_path,
+            preserve=ctx.obj["preserve"],
+            recurse=ctx.obj["recursive"],
+            follow_symlinks=ctx.obj["follow_symlinks"]
         )
-        await channel.wait_closed()
+    except (OSError, asyncssh.SFTPError) as exc:
+        LOG.error("Cannot upload %s to %s: %s", fileobj, srv.ip, exc)
+    else:
+        click.echo("{0}Finished uploading of {1} to {2}".format(
+            prefix, fileobj, remote_path))
+
+
+@utils.async_batch_executor
+@utils.asyncssh_connector
+async def download_files(ctx, srv, connection, local_path, files):
+    prefix = utils.make_ssh_output_prefix(srv)
+    if not ctx.obj["flat"]:
+        local_path = local_path.joinpath(srv.model_id)
+
+    async with connection.start_sftp_client() as sftp:
+        tasks = [
+            download_single_file(ctx, srv, prefix, sftp, local_path, fileobj)
+            for fileobj in files
+        ]
+        await asyncio.wait(tasks)
+
+
+async def download_single_file(ctx, srv, prefix, sftp, local_path, fileobj):
+    click.echo("{0}Start to download {1} to {2}".format(
+        prefix, fileobj, local_path))
+
+    method = sftp.mget if ctx.obj["glob"] else sftp.get
+    try:
+        await method(
+            fileobj,
+            local_path,
+            preserve=ctx.obj["preserve"],
+            recurse=ctx.obj["recursive"],
+            follow_symlinks=ctx.obj["follow_symlinks"]
+        )
+    except (OSError, asyncssh.SFTPError) as exc:
+        LOG.error("Cannot download %s to %s: %s", fileobj, srv.ip, exc)
+    else:
+        click.echo("{0}Finished downloading of {1} to {2}".format(
+            prefix, fileobj, local_path))
+
+
+def get_files_to_upload(ctx, paths):
+    to_upload = set()
+    ask_confirm = False
+
+    for path in paths:
+        expanded_paths = glob.glob(path, recursive=True)
+        expanded_paths = [pathlib.Path(pth) for pth in expanded_paths]
+        expanded_paths = [pth.resolve() for pth in expanded_paths]
+
+        if not expanded_paths:
+            LOG.error("Nothing can be found at {0}".format(path))
+            ctx.exit(1)
+
+        for epath in expanded_paths:
+            if epath not in to_upload:
+                if not path_uploadable(ctx, epath):
+                    ask_confirm = True
+                to_upload.add(epath)
+
+    return ask_confirm, sorted(to_upload)
+
+
+def path_uploadable(ctx, path):
+    if not path.exists():
+        LOG.warning("Path %s does not exist", path)
+        return False
+    if path.is_symlink() and not ctx.obj["follow_symlinks"]:
+        LOG.warning("Path %s is symlink, but no follow to symlinks is set.",
+                    path)
+        return False
+    if not (path.is_file() or path.is_dir()):
+        LOG.warning("Path %s is not supported", path)
+        return False
+
+    if path.is_dir():
+        return dir_uploadable(ctx, path)
+
+    return file_uploadable(ctx, path)
+
+
+def dir_uploadable(ctx, path):
+    if not ctx.obj["recursive"]:
+        LOG.warning("Path %s is directory, but recursive upload is disabled.",
+                    path)
+        return False
+
+    if not os.access(str(path), os.R_OK | os.X_OK):
+        LOG.warning("Directory %s is not listable.", path)
+        return False
+
+    return True
+
+
+def file_uploadable(ctx, path):
+    if not os.access(str(path), os.R_OK):
+        LOG.warning("File %s is not readable", path)
+        return False
+
+    return True

@@ -191,6 +191,7 @@ def delete(server_id, client):
     "-t", "--timeout",
     type=int,
     default=-1,
+    show_default=True,
     help="Timeout of waiting. Negative number means to wait infinitely"
          " (default value)."
 )

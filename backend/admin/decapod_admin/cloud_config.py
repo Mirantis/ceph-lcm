@@ -34,6 +34,7 @@ SSH_KEYFILE_PATH = pathutils.HOME.joinpath(".ssh", "id_rsa")
 @click.option(
     "-u", "--username",
     default="ansible",
+    show_default=True,
     help="Username which should be used by Ansible"
 )
 @click.option(
@@ -45,6 +46,7 @@ SSH_KEYFILE_PATH = pathutils.HOME.joinpath(".ssh", "id_rsa")
     "-t", "--timeout",
     type=int,
     default=20,
+    show_default=True,
     help="Timeout for remote requests."
 )
 @click.pass_context

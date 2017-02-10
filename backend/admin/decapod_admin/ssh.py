@@ -54,8 +54,8 @@ class ShlexParamType(click.ParamType):
     "-i", "--identity-file",
     type=click.File(lazy=False),
     default=str(utils.get_private_key_path()),
-    help="Path to the private key file. Default is {0}".format(
-        utils.get_private_key_path())
+    show_default=True,
+    help="Path to the private key file."
 )
 @click.pass_context
 def ssh(ctx, identity_file, ssh_args):

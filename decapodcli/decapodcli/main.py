@@ -92,6 +92,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 @click.option(
     "--output-format", "-f",
     default="json",
+    show_default=True,
     type=click.Choice(["json"]),
     help="How to format output. Currently only JSON is supported."
 )

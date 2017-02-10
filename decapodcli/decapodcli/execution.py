@@ -72,6 +72,7 @@ def get_version(execution_id, version, client):
     "--wait",
     type=int,
     default=0,
+    show_default=True,
     help="Wait until operation will be finished. Negative number means "
          "wait without timeout."
 )
@@ -107,6 +108,7 @@ def create(
     "--wait",
     type=int,
     default=0,
+    show_default=True,
     help="Wait until operation will be finished. Negative number means "
          "wait without timeout."
 )

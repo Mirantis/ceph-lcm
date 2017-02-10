@@ -35,7 +35,8 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 @click.option(
     "--user", "-u",
     default="ansible",
-    help="User to use with Ansible. Default is 'ansible'."
+    show_default=True,
+    help="User to use with Ansible."
 )
 @click.option(
     "--no-discovery",

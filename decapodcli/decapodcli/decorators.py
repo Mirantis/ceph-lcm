@@ -133,6 +133,7 @@ def with_pagination(func):
     @click.option(
         "--list", "-l",
         type=click.Choice(["active", "archived", "all"]),
+        show_default=True,
         default="active",
         help="List only certain class of elements. 'active' is default."
     )
