@@ -7370,6 +7370,9 @@ textarea {
   text-align: right;
   margin: 2px 0;
 }
+.page-title .main-button .btn + .btn {
+  margin-left: 5px;
+}
 label {
   font-size: 12px;
   font-weight: 400;
@@ -7838,9 +7841,6 @@ a.grid .grid-header .icon:focus {
 }
 .wizard-step .has-error .form-control.ng-untouched {
   border-color: inherit;
-}
-#confirm.modal .modal-footer .btn-default {
-  float: left !important;
 }
 .login-background {
   position: absolute;
