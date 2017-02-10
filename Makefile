@@ -289,7 +289,7 @@ build_container_api: build_container_base
 build_container_controller: build_container_base
 	$(call build_image,backend-controller.dockerfile,$(CONTAINER_CONTROLLER_NAME))
 
-build_container_admin: build_container_base
+build_container_admin:
 	$(call build_image,backend-admin.dockerfile,$(CONTAINER_ADMIN_NAME))
 
 build_container_base:

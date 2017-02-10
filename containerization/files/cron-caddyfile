@@ -1,5 +1,12 @@
-:8000
-browse
-errors
-root /www
-basicauth / root r00tme
+:8000 {
+    browse
+    errors
+    root /www
+    basicauth / root r00tme
+}
+
+:8001 {
+    errors
+    root /docs
+    gzip
+}

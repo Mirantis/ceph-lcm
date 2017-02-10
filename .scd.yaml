@@ -26,6 +26,12 @@ defaults:
   replacement: pep440
 
 files:
+  docs/source/conf.py:
+    - search_raw: '^version\s=.*$'
+      replace_raw: "version = '{{ major }}.{{ minor }}'"
+    - search_raw: '^release\s=.*$'
+      replace_raw: "release = '{{ full }}'"
+
   containerization/backend-api.dockerfile:
     - search: docker
       replace: docker

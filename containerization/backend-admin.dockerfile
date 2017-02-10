@@ -37,11 +37,13 @@ RUN set -x \
     automake \
     cron \
     curl \
+    g++ \
     gcc \
     git \
     jq \
     jshon \
     less \
+    libapt-pkg-dev \
     libffi-dev \
     libpython2.7 \
     libssl-dev \
@@ -57,6 +59,7 @@ RUN set -x \
     python-dev \
     python-pip \
     python-setuptools \
+    tox \
     vim \
   && cd /project \
   && git reset --hard \
@@ -88,6 +91,10 @@ RUN set -x \
   && chmod +x /usr/local/bin/jp \
   && chmod 0755 /usr/bin/caddy \
   && mkdir -p /www \
+  && locale-gen "en_US.UTF-8" \
+  && cd /project \
+  && tox -v -e docs \
+  && mv docs/build/html/ /docs \
   && cat containerization/files/crontab | crontab - \
   && mkdir -p /etc/caddy \
   && mv containerization/files/cron-caddyfile /etc/caddy/config \
@@ -100,8 +107,10 @@ RUN set -x \
   && apt-get purge -y \
     autoconf \
     automake \
+    g++ \
     gcc \
     git \
+    libapt-pkg-dev \
     libffi-dev \
     libssl-dev \
     libtool \
@@ -110,11 +119,12 @@ RUN set -x \
     python3-pip \
     python-dev \
     python-pip \
+    tox \
   && apt-get autoremove --purge -y \
   && rm -r /var/lib/apt/lists/*
 
 
-EXPOSE 8000
+EXPOSE 8000 8001
 
 
 ENTRYPOINT ["/usr/bin/dumb-init", "-c", "--"]

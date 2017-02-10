@@ -53,3 +53,5 @@ services:
     volumes:
       - "${DECAPOD_SSH_PRIVATE_KEY}:/root/.ssh/id_rsa:ro"
     restart: "on-failure:3"
+    ports:
+      - "${DECAPOD_DOCS_PORT}:8001"
