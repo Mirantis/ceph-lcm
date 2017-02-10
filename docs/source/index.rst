@@ -1,47 +1,14 @@
-Welcome to Decapod's documentation!
-===================================
+.. index:: Decapod CookBook
 
-Decapod is intendend to simplify deployment and lifecycle management of
-`Ceph <http://ceph.com>`_.
+.. _decapod-guide:
 
-Using this tool, it is possible to deploy clusters with best known
-practices, add new nodes to cluster, remove them and purge cluster
-if not needed anymore. It provides simple API to manage cluster
-configurations. Also, it is possible to use it web UI to manage your
-clusters in several clicks.
+.. meta::
+   :description: Decapod CookBook
+   :keywords: Decapod CookBook, decapod-guide
+   :group: solution-guides
 
-Decapod uses `Ansible <http://ansible.com>`_ with `ceph-ansible
-<https://github.com/ceph/ceph-ansible>`_ community project to deliver
-the best user experience. Every action is supported by plugins, which
-encapsulate best practices and settings. If user do not like proviided
-settings, it is always possible to customize configuration before
-execution.
+================
+Decapod CookBook
+================
 
-
-
-Contents
---------
-
-.. toctree::
-   :maxdepth: 1
-
-   installation/index.rst
-   deploy/index.rst
-   data_model
-   workflows
-   cli
-   ui/index.rst
-   ceph_node
-   repository
-   playbook_plugins/index.rst
-   api/index.rst
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+.. include:: contents.rst

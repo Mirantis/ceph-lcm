@@ -75,7 +75,6 @@ ansible_ssh_keyfile.pem*
 ssl.key
 ssl.crt
 ssl-dhparam.pem
-config.yaml
 mongodb-ca.crt
 mongodb.pem
 ubuntu_apt.list
