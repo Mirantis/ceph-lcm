@@ -88,6 +88,7 @@ def construct_common_tools_parameters(parsed):
     if parsed["options"].get("ssl"):
         params.append("--ssl")
         params.append("--sslAllowInvalidHostnames")
+        params.append("--sslAllowInvalidCertificates")
 
     hosts_uri = ",".join(
         "{0}:{1}".format(*node) for node in parsed["nodelist"])

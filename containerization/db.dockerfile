@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-FROM docker-prod-virtual.docker.mirantis.net/mongo:3.2
+FROM docker-prod-virtual.docker.mirantis.net/mongo:3.4
 MAINTAINER Mirantis Inc.
 
 
