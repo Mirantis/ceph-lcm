@@ -8,5 +8,5 @@
    userdocs/deploy-cluster.rst
    userdocs/cli.rst
    deploy-ceph-node-os/deploy-ceph-node-os.rst
-   mirantis-ceph-repository.rst
+   supported-ceph-packages.rst
    playbook-plugins.rst
