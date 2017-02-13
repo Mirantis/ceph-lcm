@@ -10,3 +10,4 @@
    deploy-ceph-node-os/deploy-ceph-node-os.rst
    supported-ceph-packages.rst
    playbook-plugins.rst
+   api/index.rst
