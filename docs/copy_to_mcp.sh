@@ -1,0 +1,50 @@
+#!/bin/bash
+# Copyright (c) 2016 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+set -eu -o pipefail
+
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd)"
+OWN_DIR="$SCRIPT_DIR/source"
+
+
+while getopts "hp:f:" opt; do
+  case $opt in
+    h)
+      echo "This script synchronizes Decapod docs to MCP."
+      echo ""
+      echo "${0} /path/to/mcp-docs" >&2
+      exit 0
+      ;;
+    \?)
+      exit 1
+      ;;
+  esac
+done
+
+shift $(($OPTIND - 1))
+if [ $# -eq 0 ]; then
+    echo "You need to supply path to the MCP docs."
+    exit 1
+fi
+
+MCP_DOCS_DIR="$(readlink -f "$1")"
+
+rsync -rLP -n --delete-delay \
+    --exclude conf.py \
+    --exclude common \
+    --exclude pdf_common.rst \
+    --exclude pdf_decapod-guide.rst \
+    "$OWN_DIR/" "$MCP_DOCS_DIR/"
