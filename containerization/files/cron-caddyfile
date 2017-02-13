@@ -1,12 +1,12 @@
 :8000 {
+    basicauth / root r00tme
     browse
     errors
-    root /www
-    basicauth / root r00tme
+    root /www/monitoring
 }
 
 :8001 {
     errors
-    root /docs
     gzip
+    root /www/docs
 }

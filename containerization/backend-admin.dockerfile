@@ -90,11 +90,11 @@ RUN set -x \
   && curl --silent --show-error --fail --location -o /usr/local/bin/jp https://github.com/jmespath/jp/releases/download/0.1.2/jp-linux-amd64 \
   && chmod +x /usr/local/bin/jp \
   && chmod 0755 /usr/bin/caddy \
-  && mkdir -p /www \
+  && mkdir -p /www/monitoring /www/docs \
   && locale-gen "en_US.UTF-8" \
   && cd /project \
   && tox -v -e docs \
-  && mv docs/build/html/ /docs \
+  && mv docs/build/html/* /www/docs \
   && cat containerization/files/crontab | crontab - \
   && mkdir -p /etc/caddy \
   && mv containerization/files/cron-caddyfile /etc/caddy/config \

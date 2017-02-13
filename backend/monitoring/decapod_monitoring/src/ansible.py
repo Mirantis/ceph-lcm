@@ -53,7 +53,7 @@ PATH_COLLECTOR = os.path.join(PATH_CURRENT, "collect_info.py")
 PATH_VISUALIZATOR = os.path.join(PATH_CURRENT, "visualize_cluster.py")
 PATH_ANSIBLE = which("ansible-playbook")
 PATH_SSH_PRIVATE_KEY = os.path.join(PATH_HOMEDIR, ".ssh", "id_rsa")
-PATH_STATIC = "/www"
+PATH_STATIC = "/www/monitoring"
 ANSIBLE_CONFIG_PATH = "/etc/ansible/ansible.cfg"
 LOG = logging.getLogger(__name__)
 
