@@ -22,8 +22,7 @@ import setuptools
 REQUIREMENTS = (
     "decapod-common~=0.2.dev1",
     "python-daemon>=2.1,<2.2",
-    "lockfile>=0.12,<0.13",
-    "python-apt"
+    "lockfile>=0.12,<0.13"
 )
 
 
