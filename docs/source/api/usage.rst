@@ -243,11 +243,7 @@ process as a combination of archivation and sealing.
 Deploy Ceph cluster
 +++++++++++++++++++
 
-Now it is a time to deploy actual Ceph cluster. Please consider
-mentioned assumptions and the chapter on product workflow:
-:doc:`../workflows`.
-
-So, we need to do following:
+Now it is a time to deploy actual Ceph cluster. So, we need to do following:
 
 1. Create new cluster model
 2. Create new playbook configuration to deploy that cluster

@@ -1,0 +1,375 @@
+.. _decapod_upgrade_guide_0102:
+
+
+Upgrade from 0.1.x to 0.2
+=========================
+
+This chapter describes upgrade procedure from versions **0.1.x** to
+**0.2.x**.
+
+The major issues with upgrading from 0.1.x to 0.2 are:
+
+#. During development of 0.2 Decapod changed its name from Shrimp.
+   It means that naming of some defaults was changed from *shrimp* to
+   *decapod*. For example, name of the database in default config was
+   changed.
+#. Configuration files are not stored in containers anymore, but
+   injected using volumes. It means that Decapod images are same
+   in testing and production.
+#. Usage of shell scripts from :file:`./scripts` directory is
+   deprecated, because Decapod got admin service.
+#. MongoDB was updated from *3.2.x* to *3.4.x*.
+
+Changes in existing Ceph deployments are not required.
+
+This guide tries to cover all these obstacles. It is split into 2 parts:
+action, required to perform on version 0.1 and actions for version 0.2.
+
+.. note::
+
+    Documentation below will use ``myprojectname`` as the name of the
+    stack you are running with :program:`docker-compose`. If you don't
+    set and use default project name, please postpone :option:`-p` flag
+    with its parameter from all :program:`docker-compose` commands.
+
+    If you do not want to pass :option:`-p` all the time, please use
+    :envvar:`COMPOSE_PROJECT_NAME` `environment variable
+    <https://docs.docker.com/compose/reference/envvars/#/composeprojectname>`_.
+
+
+Clone latest version of 0.1.x releases
+--------------------------------------
+
+Please clone latest version of the repository to the host where decapod
+is running. This is required in order to obtain backup/migrate scripts
+placed in SCM.
+
+.. code-block:: console
+
+    $ git clone -b stable-0.1 --single-branch https://github.com/Mirantis/ceph-lcm.git ~/shrimp
+    $ cd ~/shrimp
+
+Scripts, we are interesting in, are placed in :file:`./scripts`
+directory of the repository.
+
+
+Backup database
+---------------
+
+Backup procedure is trivial. The only difference is that you execute
+:file:`./scripts/backup_working_db.sh` script last time, version 0.2.x
+and newer have other backup procedure.
+
+To perform database backup, you need to have container ID (or name) of the database. You can get it using ``docker ps`` command:
+
+.. code-block:: console
+
+    $ docker ps | grep database | awk '{print $NF}'
+    shrimp_database_1
+
+Another way to get the same result is using :program:`docker-compose`:
+
+.. code-block:: console
+
+    $ docker-compose -p myprojectname ps -q database
+    108940b8201a7728f093f7c03f63d03fe1fb3cc9dea99410273a243ef7c4b131
+
+*myprojectname* is the name of the project you're running with. If you
+didn't set any before, do not set it now.
+
+After that, create backup with following command:
+
+.. code-block:: console
+
+    $ ./scripts/backup_working_db.sh ~/pre_upgrade.tar.gz shrimp_database_1
+    2017-02-13T15:19:26.585+0000    writing shrimp.migration_script to
+    2017-02-13T15:19:26.586+0000    writing shrimp.token to
+    2017-02-13T15:19:26.586+0000    writing shrimp.lock to
+    2017-02-13T15:19:26.587+0000    writing shrimp.user to
+    2017-02-13T15:19:26.602+0000    done dumping shrimp.token (1 document)
+    2017-02-13T15:19:26.603+0000    done dumping shrimp.migration_script (3 documents)
+    2017-02-13T15:19:26.606+0000    writing shrimp.cluster to
+    2017-02-13T15:19:26.606+0000    writing shrimp.role to
+    2017-02-13T15:19:26.608+0000    done dumping shrimp.role (1 document)
+    2017-02-13T15:19:26.609+0000    writing shrimp.server to
+    2017-02-13T15:19:26.609+0000    done dumping shrimp.cluster (1 document)
+    2017-02-13T15:19:26.609+0000    writing shrimp.execution_step to
+    2017-02-13T15:19:26.609+0000    done dumping shrimp.server (0 documents)
+    2017-02-13T15:19:26.610+0000    done dumping shrimp.execution_step (0 documents)
+    2017-02-13T15:19:26.612+0000    writing shrimp.kv to
+    2017-02-13T15:19:26.612+0000    writing shrimp.task to
+    2017-02-13T15:19:26.613+0000    done dumping shrimp.task (0 documents)
+    2017-02-13T15:19:26.613+0000    writing shrimp.playbook_configuration to
+    2017-02-13T15:19:26.613+0000    done dumping shrimp.user (1 document)
+    2017-02-13T15:19:26.613+0000    writing shrimp.execution to
+    2017-02-13T15:19:26.613+0000    done dumping shrimp.kv (0 documents)
+    2017-02-13T15:19:26.614+0000    done dumping shrimp.lock (1 document)
+    2017-02-13T15:19:26.614+0000    done dumping shrimp.playbook_configuration (0 documents)
+    2017-02-13T15:19:26.620+0000    done dumping shrimp.execution (0 documents)
+    /backup/
+    /backup/dump/
+    /backup/dump/shrimp/
+    /backup/dump/shrimp/execution_step.metadata.json.gz
+    /backup/dump/shrimp/lock.metadata.json.gz
+    /backup/dump/shrimp/execution_step.bson.gz
+    /backup/dump/shrimp/kv.bson.gz
+    /backup/dump/shrimp/role.bson.gz
+    /backup/dump/shrimp/migration_script.bson.gz
+    /backup/dump/shrimp/task.bson.gz
+    /backup/dump/shrimp/user.metadata.json.gz
+    /backup/dump/shrimp/lock.bson.gz
+    /backup/dump/shrimp/user.bson.gz
+    /backup/dump/shrimp/token.metadata.json.gz
+    /backup/dump/shrimp/role.metadata.json.gz
+    /backup/dump/shrimp/cluster.bson.gz
+    /backup/dump/shrimp/server.metadata.json.gz
+    /backup/dump/shrimp/task.metadata.json.gz
+    /backup/dump/shrimp/playbook_configuration.bson.gz
+    /backup/dump/shrimp/migration_script.metadata.json.gz
+    /backup/dump/shrimp/cluster.metadata.json.gz
+    /backup/dump/shrimp/execution.bson.gz
+    /backup/dump/shrimp/server.bson.gz
+    /backup/dump/shrimp/kv.metadata.json.gz
+    /backup/dump/shrimp/execution.metadata.json.gz
+    /backup/dump/shrimp/token.bson.gz
+    /backup/dump/shrimp/playbook_configuration.metadata.json.gz
+    tar: Removing leading `/' from member names
+
+Backup is created in :file:`~/pre_upgrade.tar.gz`.
+
+
+Extract config files
+--------------------
+
+If you already have a configuration files from old version, please
+collect them in some directory (e.g :file:`~/decapod_runtime`). Decapod
+version 0.2.x and newer will have default files stored in containers but
+you need to mount your own if you've changed some defaults.
+
+If you already have all files, mentioned
+in `documentation on version 0.1
+<http://decapod.readthedocs.io/en/stable-0.1/install-and-configure/build-images.html#ssh-private-keys>`_ in :file:`~/decapod_runtime`, you can
+skip this section and proceed to `Stop Decapod 0.1`_.
+
+Otherwise, execute commands mentioned below to collect required files:
+
+.. code-block:: console
+
+    $ mkdir ~/decapod_runtime
+    $ docker cp "$(docker-compose -p myprojectname ps -q api):/etc/shrimp/config.yaml" ~/decapod_runtime
+    $ docker cp "$(docker-compose -p myprojectname ps -q controller):/root/.ssh/id_rsa" ~/decapod_runtime
+    $ docker cp "$(docker-compose -p myprojectname ps -q frontend):/ssl/dhparam.pem" ~/decapod_runtime
+    $ docker cp "$(docker-compose -p myprojectname ps -q frontend):/ssl/ssl.crt" ~/decapod_runtime
+    $ docker cp "$(docker-compose -p myprojectname ps -q frontend):/ssl/ssl.key" ~/decapod_runtime
+    $ docker cp "$(docker-compose -p myprojectname ps -q database):/certs/mongodb.pem" ~/decapod_runtime
+    $ docker cp "$(docker-compose -p myprojectname ps -q database):/certs/mongodb-ca.crt" ~/decapod_runtime
+
+If you do not have generated any files mentioned above by yourself and
+used defaults, there is not need to copy them: all of them will be
+stored in correct places in 0.2.x images. If you've modified any of
+:file:`config.yaml` or :file:`id_rsa` (SSH private key for Ansible),
+please copy them.
+
+
+.. important::
+
+    Since project was renamed from Shrimp to Decapod during development
+    of release 0.2, default database name was also changed from *shrimp*
+    to *decapod*. If you want to use new name and keep running with
+    default config, then please rename it in Mongo DB doing following:
+
+    .. code-block:: console
+
+        $ docker-compose -p myprojectname exec database moshell
+        MongoDB shell version: 3.2.10
+        connecting to: false
+        2017-02-14T06:38:15.400+0000 W NETWORK  [thread1] The server certificate does not match the host name 127.0.0.1
+        Welcome to the MongoDB shell.
+        For interactive help, type "help".
+        For more comprehensive documentation, see
+                http://docs.mongodb.org/
+        Questions? Try the support group
+                http://groups.google.com/group/mongodb-user
+        Server has startup warnings:
+        2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten]
+        2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/enabled is 'always'.
+        2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten] **        We suggest setting it to 'never'
+        2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten]
+        2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.
+        2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten] **        We suggest setting it to 'never'
+        2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten]
+        > db.copyDatabase("shrimp", "decapod", "localhost")
+        { "ok" : 1 }
+        > use shrimp
+        switched to db shrimp
+        > db.dropDatabase()
+        { "dropped" : "shrimp", "ok" : 1 }
+
+    This will do rename. After that, you can do another backup as described
+    in `Backup database`_, but in :file:`~/pre_upgrade_renamed.tar.gz`.
+
+
+Stop Decapod 0.1
+----------------
+
+.. note::
+
+    All operations on stopping Decapod 0.1 should be done with *the
+    same* :file:`docker-compose.yml` as you've used before. Newer
+    file is required *only* when you run version 0.2.
+
+Since you've made a backup, it is a time to stop Decapod. You can do
+that with following command:
+
+.. code-block:: console
+
+    $ docker-compose -p myprojectname stop
+
+.. important::
+
+    Please do not use :option:`-v` or :option:`--rmi` flags of **down**
+    command. But if you've removed volumes for some reason, you can
+    restore backup after running version 0.2.
+
+    .. code-block:: console
+
+        $ ./scripts/restore_working_db.sh ~/pre_upgrade.tar.gz decapod_database_1
+
+To obtain version 0.2 please check :ref:`decapod_install_index` chapter.
+You also need :file:`docker-compose.yml` file from newer version so
+please check this chapter for getting details.
+
+After that, please remove **cron** service, it is not required anymore
+and would be replaced by newer **admin** service in version 0.2. This
+container has no persistent state and can be killed.
+
+.. code-block:: console
+
+    $ docker-compose -p myprojectname rm -v cron
+    Going to remove myprojectname_cron_1
+    Are you sure? [yN] y
+    Removing myprojectname_cron_1 ... done
+
+
+Clone latest 0.2.x branch
+-------------------------
+
+Build or move images for version 0.2 as described in
+:ref:`decapod_install` chapter. Please pay attention to
+:ref:`decapod-configure-docker-compose` chapter which describes file
+layout for configfiles you've collected in :file:`~/decapod_runtime` and
+how to map them to containers. If you've created only SSH private key
+for Ansible to use, didn't touch :file:`config.yaml` and therefore did
+DB renaming as described in `Extract config files` section, all you need
+is just to pass the path to SSH private key in :file:`~/decapod_runtime`
+to :envvar:`DECAPOD_SSH_PRIVATE_KEY` environment variable.
+
+To clone latest 0.2.x branch, please do following:
+
+.. code-block:: console
+
+    $ git clone -b stable-0.2 --single-branch https://github.com/Mirantis/ceph-lcm.git ~/decapod
+    $ cd ~/decapod
+
+.. todo::
+
+    At the time of writing, branch ``stable-0.2`` was not created yet.
+    If it is true for you, please do following instead:
+
+    .. code-block:: console
+
+        $ git clone -b master --single-branch https://github.com/Mirantis/ceph-lcm.git ~/decapod
+        $ cd ~/decapod
+
+Now let's copy required files in your :file:`~/decapod_runtime` directory.
+
+.. code-block:: console
+
+    $ cp .env docker-compose.yml docker-compose.override.yml ~/decapod_runtime
+
+And let's set the path to SSH private key in :file:`.env` file.
+
+.. code-block:: console
+
+    $ sed -i "s?^DECAPOD_SSH_PRIVATE_KEY=.*?DECAPOD_SSH_PRIVATE_KEY=$HOME/decapod_runtime/id_rsa?" ~/decapod_runtime/.env
+
+
+Run 0.2.x version
+-----------------
+
+.. note::
+
+    The rest of operations would be performed from
+    :file:`~/decapod_runtime` directory so please :program:`cd` into.
+
+.. code-block:: console
+
+    $ docker-compose -p myprojectname up
+
+Now we need to apply migrations:
+
+.. code-block:: console
+
+    $ docker-compose -p myprojectname exec admin decapod-admin migration apply
+    2017-02-14 07:04:12 [DEBUG   ] (        lock.py:118  ): Lock applying_migrations was acquire by locker 5ebb8d44-2919-4913-85f8-47e160d02207
+    2017-02-14 07:04:12 [DEBUG   ] (        lock.py:183  ): Prolong thread for locker applying_migrations of lock 5ebb8d44-2919-4913-85f8-47e160d02207 has been started. Thread MongoLock prolonger 5ebb8d44-2919-4913-85f8-47e160d02207 for applying_migrations, ident 140234729555712
+    2017-02-14 07:04:12 [INFO    ] (   migration.py:123  ): Run migration 0003_native_ttl_index.py
+    2017-02-14 07:04:12 [INFO    ] (   migration.py:198  ): Run /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0003_native_ttl_index.py. Pid 40
+    2017-02-14 07:04:13 [INFO    ] (   migration.py:203  ): /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0003_native_ttl_index.py has been finished. Exit code 0
+    2017-02-14 07:04:13 [INFO    ] (   migration.py:277  ): Save result of 0003_native_ttl_index.py migration (result MigrationState.ok)
+    2017-02-14 07:04:13 [INFO    ] (   migration.py:123  ): Run migration 0004_migrate_to_native_ttls.py
+    2017-02-14 07:04:13 [INFO    ] (   migration.py:198  ): Run /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0004_migrate_to_native_ttls.py. Pid 48
+    2017-02-14 07:04:14 [INFO    ] (   migration.py:203  ): /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0004_migrate_to_native_ttls.py has been finished. Exit code 0
+    2017-02-14 07:04:14 [INFO    ] (   migration.py:277  ): Save result of 0004_migrate_to_native_ttls.py migration (result MigrationState.ok)
+    2017-02-14 07:04:14 [INFO    ] (   migration.py:123  ): Run migration 0005_index_cluster_data.py
+    2017-02-14 07:04:14 [INFO    ] (   migration.py:198  ): Run /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0005_index_cluster_data.py. Pid 56
+    2017-02-14 07:04:16 [INFO    ] (   migration.py:203  ): /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0005_index_cluster_data.py has been finished. Exit code 0
+    2017-02-14 07:04:16 [INFO    ] (   migration.py:277  ): Save result of 0005_index_cluster_data.py migration (result MigrationState.ok)
+    2017-02-14 07:04:16 [INFO    ] (   migration.py:123  ): Run migration 0006_create_cluster_data.py
+    2017-02-14 07:04:16 [INFO    ] (   migration.py:198  ): Run /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0006_create_cluster_data.py. Pid 64
+    2017-02-14 07:04:17 [DEBUG   ] (        lock.py:164  ): Lock applying_migrations was proloned by locker 5ebb8d44-2919-4913-85f8-47e160d02207.
+    2017-02-14 07:04:17 [INFO    ] (   migration.py:203  ): /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0006_create_cluster_data.py has been finished. Exit code 0
+    2017-02-14 07:04:17 [INFO    ] (   migration.py:277  ): Save result of 0006_create_cluster_data.py migration (result MigrationState.ok)
+    2017-02-14 07:04:17 [INFO    ] (   migration.py:123  ): Run migration 0007_add_external_id_to_user.py
+    2017-02-14 07:04:17 [INFO    ] (   migration.py:198  ): Run /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0007_add_external_id_to_user.py. Pid 72
+    2017-02-14 07:04:18 [INFO    ] (   migration.py:203  ): /usr/local/lib/python3.5/dist-packages/decapod_admin/migration_scripts/0007_add_external_id_to_user.py has been finished. Exit code 0
+    2017-02-14 07:04:18 [INFO    ] (   migration.py:277  ): Save result of 0007_add_external_id_to_user.py migration (result MigrationState.ok)
+    2017-02-14 07:04:18 [DEBUG   ] (        lock.py:202  ): Prolong thread for locker applying_migrations of lock 5ebb8d44-2919-4913-85f8-47e160d02207 has been stopped. Thread MongoLock prolonger 5ebb8d44-2919-4913-85f8-47e160d02207 for applying_migrations, ident 140234729555712
+    2017-02-14 07:04:18 [DEBUG   ] (        lock.py:124  ): Try to release lock applying_migrations by locker 5ebb8d44-2919-4913-85f8-47e160d02207.
+    2017-02-14 07:04:18 [DEBUG   ] (        lock.py:140  ): Lock applying_migrations was released by locker 5ebb8d44-2919-4913-85f8-47e160d02207.
+
+
+Set MongoDB backward incompatibility (optional)
+-----------------------------------------------
+
+This is optional part but if you want, you can set MongoDB to be
+non-backward compatible to previous release. To do that, please execute
+following:
+
+.. code-block:: console
+
+    $ docker-compose -p myprojectname exec database moshell
+    MongoDB server version: 3.4.2
+    Welcome to the MongoDB shell.
+    For interactive help, type "help".
+    For more comprehensive documentation, see
+            http://docs.mongodb.org/
+    Questions? Try the support group
+            http://groups.google.com/group/mongodb-user
+    Server has startup warnings:
+    2017-02-14T07:00:13.729+0000 I STORAGE  [initandlisten]
+    2017-02-14T07:00:13.730+0000 I STORAGE  [initandlisten] ** WARNING: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine
+    2017-02-14T07:00:13.730+0000 I STORAGE  [initandlisten] **          See http://dochub.mongodb.org/core/prodnotes-filesystem
+    2017-02-14T07:00:15.199+0000 I CONTROL  [initandlisten]
+    2017-02-14T07:00:15.199+0000 I CONTROL  [initandlisten] ** WARNING: Access control is not enabled for the database.
+    2017-02-14T07:00:15.199+0000 I CONTROL  [initandlisten] **          Read and write access to data and configuration is unrestricted.
+    2017-02-14T07:00:15.199+0000 I CONTROL  [initandlisten]
+    2017-02-14T07:00:15.199+0000 I CONTROL  [initandlisten]
+    2017-02-14T07:00:15.199+0000 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/enabled is 'always'.
+    2017-02-14T07:00:15.199+0000 I CONTROL  [initandlisten] **        We suggest setting it to 'never'
+    2017-02-14T07:00:15.199+0000 I CONTROL  [initandlisten]
+    2017-02-14T07:00:15.199+0000 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.
+    2017-02-14T07:00:15.199+0000 I CONTROL  [initandlisten] **        We suggest setting it to 'never'
+    2017-02-14T07:00:15.199+0000 I CONTROL  [initandlisten]
+    > db.adminCommand({setFeatureCompatibilityVersion: "3.4"})
+    { "ok" : 1  }
