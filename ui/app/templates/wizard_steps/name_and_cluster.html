@@ -7,7 +7,9 @@
       name="configuration_name"
       id="configuration_name"
       [(ngModel)]="model.data.name"
-      required>
+      focused
+      required
+  >
   </div>
   <div class="form-group" [ngClass]="{'has-error': !model.data.cluster_id}">
     <label class="control-label" for="configuration_cluster">Cluster</label>

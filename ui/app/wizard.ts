@@ -16,6 +16,8 @@
 */
 
 import * as _ from 'lodash';
+import * as $ from 'jquery';
+
 import {
   Component, Input, Output, EventEmitter, ComponentRef, Injector,
   ViewChild, ViewChildren, ViewContainerRef, ComponentFactoryResolver, ComponentFactory
@@ -144,6 +146,7 @@ export class WizardComponent {
     if (!_.isNull(nextIndex)) {
       this.step = nextIndex;
       this.renderStep();
+      setTimeout(() => $('[focused]').focus(), 500);
     }
   }
 

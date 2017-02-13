@@ -8,7 +8,9 @@
       id="user_login"
       placeholder="Login"
       [(ngModel)]="model.data.login"
-      required>
+      focused
+      required
+    >
   </div>
   <div class="form-group" [ngClass]="{'has-error': !model.data.full_name}">
     <label for="user_name">Full Name</label>
@@ -19,7 +21,8 @@
       id="user_name"
       placeholder="Full Name"
       [(ngModel)]="model.data.full_name"
-      required>
+      required
+    >
   </div>
   <div class="form-group" [ngClass]="{'has-error': !model.data.email || !isEmailValid()}">
     <label for="user_email">Email</label>
@@ -30,7 +33,8 @@
       id="user_email"
       placeholder="Email"
       [(ngModel)]="model.data.email"
-      required>
+      required
+    >
   </div>
   <div class="form-group" [ngClass]="{'has-error': !model.data.role_id}">
     <label for="user_role">Role</label>
