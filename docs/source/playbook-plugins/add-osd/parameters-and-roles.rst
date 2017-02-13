@@ -13,3 +13,21 @@ plugin. However, the plugin has the following roles:
 
 ``osds``
  Defines the nodes to deploy OSDs.
+
+Also, there is a limitation on deployment: for consistency and problem
+avoidance, Decapod checks version it is going to install. If cluster has
+inconsistent versions, deployment is stopped: user has to fix versions
+within a cluster. If version user is going to deploy is newer than
+installed ones, process is also failing: user has to update cluster
+packages first.
+
+There are 2 parameters responsible for that:
+
+``ceph_version_verify``
+This is a boolean setting which checks that strict mode is enabled.
+Otherwise (it is set to ``false``) no verification described above is
+done.
+
+``ceph_version_verify_packagename``
+The name of the package to check. Usually, you do not need to touch this
+setting at all.
