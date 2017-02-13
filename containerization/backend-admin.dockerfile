@@ -75,7 +75,7 @@ RUN set -x \
     ./decapodlib \
     ./decapodcli[color,jq,yaql,jmespath] \
     ./backend/api[keystone] \
-    ./backend/controller \
+    ./backend/controller[libapt] \
     ./backend/admin[uvloop] \
     jmespath-terminal \
   && decapod-ansible-deploy-config \

@@ -9,7 +9,7 @@
 -e decapodlib
 -e decapodcli
 -e backend/common
--e backend/api
+-e backend/api[keystone]
 -e backend/controller
 -e backend/admin
 -e backend/docker

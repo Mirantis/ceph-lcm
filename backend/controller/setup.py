@@ -49,6 +49,9 @@ setuptools.setup(
             "decapod-ceph-version-verifier = decapod_controller.ceph_verify:main"  # NOQA
         ]
     },
+    extras_require={
+        "libapt": ["python-apt"]
+    },
     dependency_links=[
         "git+https://anonscm.debian.org/cgit/apt/python-apt.git@1.1.0_beta2#egg=python-apt-1.1.0"  # NOQA
     ],

@@ -17,13 +17,25 @@
 
 
 import contextlib
+import functools
+import warnings
 
-import apt
-import aptsources.sourceslist
 import lockfile.linklockfile
 
 from decapod_common import log
 from decapod_common import pathutils
+
+try:
+    import apt
+    import aptsources.sourceslist
+except ImportError:
+    apt = aptsources = None
+    HAS_LIBAPT = False
+    warnings.warn(
+        "python-apt was not found, therefore all apt-related functions "
+        "will be disabled.", RuntimeWarning)
+else:
+    HAS_LIBAPT = True
 
 
 SOURCES_LIST_PATH = pathutils.ROOT.joinpath("etc", "apt", "sources.list")
@@ -36,12 +48,26 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
+def only_with_libapt(func):
+    @functools.wraps(func)
+    def decorator(*args, **kwargs):
+        if not HAS_LIBAPT:
+            raise RuntimeError(
+                "python-apt was not installed therefore {0} won't "
+                "run".format(func.__name__))
+
+        return func(*args, **kwargs)
+
+    return decorator
+
+
 @contextlib.contextmanager
 def locked_sources_list(path=SOURCES_LIST_LOCK_PATH):
     with lockfile.linklockfile.LinkLockFile(str(path)):
         yield path
 
 
+@only_with_libapt
 @contextlib.contextmanager
 def sources_list(backup_ext):
     if not backup_ext.startswith("."):
@@ -61,6 +87,7 @@ def sources_list(backup_ext):
                 LOG.warning("Cannot remove file %s: %s", path, exc)
 
 
+@only_with_libapt
 @contextlib.contextmanager
 def sources_list_only(backup_ext, sources):
     with sources_list(backup_ext) as slist:
@@ -77,6 +104,7 @@ def sources_list_only(backup_ext, sources):
         yield slist
 
 
+@only_with_libapt
 @contextlib.contextmanager
 def updated_cache(backup_ext, sources):
     with locked_sources_list():

@@ -21,6 +21,8 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+import sys
+
 import sphinx_rtd_theme
 
 # -- General configuration ------------------------------------------------
@@ -435,3 +437,23 @@ epub_exclude_files = ['search.html']
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+
+# Workaround for
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=845330
+# https://docs.readthedocs.io/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
+
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import MagicMock
+
+
+class Mock(MagicMock):
+
+    @classmethod
+    def __getattr__(cls, name):
+        return MagicMock()
+
+
+sys.modules.update((mod_name, Mock()) for mod_name in ["apt", "aptsources"])
