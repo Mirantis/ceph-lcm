@@ -8,6 +8,7 @@
    userdocs/deploy-cluster.rst
    userdocs/monitoring.rst
    userdocs/cli.rst
+   userdocs/backup_restore.rst
    deploy-ceph-node-os/deploy-ceph-node-os.rst
    supported-ceph-packages.rst
    playbook-plugins.rst
