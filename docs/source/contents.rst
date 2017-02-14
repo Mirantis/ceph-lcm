@@ -6,6 +6,7 @@
    data-models.rst
    userdocs/manage-users-and-roles.rst
    userdocs/deploy-cluster.rst
+   userdocs/monitoring.rst
    userdocs/cli.rst
    deploy-ceph-node-os/deploy-ceph-node-os.rst
    supported-ceph-packages.rst
