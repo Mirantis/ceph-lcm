@@ -39,7 +39,7 @@ while getopts "hp:f:" opt; do
   esac
 done
 
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 if [ $# -eq 0 ]; then
     echo "You need to supply path to the database."
     exit 1

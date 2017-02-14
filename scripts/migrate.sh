@@ -44,7 +44,7 @@ while getopts "c:h" opt; do
 done
 
 
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 command="$@"
 
 

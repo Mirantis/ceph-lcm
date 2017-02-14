@@ -38,7 +38,7 @@ done
 
 backup_filename="${1:-backup.tar.gz}"
 db_data_container="${2:-cephlcm_database_data_1}"
-backup_dir="$(dirname "$(readlink -f ${backup_filename})")"
+backup_dir="$(dirname "$(readlink -f "${backup_filename}")")"
 
 mkdir -p "${backup_dir}" || true
 docker run \
@@ -46,4 +46,4 @@ docker run \
     --volumes-from "${db_data_container}" \
     -v "${backup_dir}":/backup \
     ubuntu \
-    bash -c "cd /backup && GZIP=-9 tar cvfz $(basename ${backup_filename}) /data"
+    bash -c "cd /backup && GZIP=-9 tar cvfz $(basename "${backup_filename}") /data"

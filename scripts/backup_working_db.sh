@@ -38,7 +38,7 @@ done
 
 backup_filename="${1:-backup.tar.gz}"
 db_container="${2:-cephlcm_database_1}"
-backup_dir="$(dirname "$(readlink -f ${backup_filename})")"
+backup_dir="$(dirname "$(readlink -f "${backup_filename}")")"
 
 mkdir -p "${backup_dir}" || true
 docker exec "${db_container}" bash -c "(mkdir -p /backup || true) && cd /backup && mongodump --gzip --ssl && cd / && GZIP=-9 tar cvfz /backup.tar.gz /backup && rm -rf /backup" \
