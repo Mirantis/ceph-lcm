@@ -77,7 +77,11 @@ do
     $COMPOSE_CMD exec -T "$service_name" date +%s 2>/dev/null > "$service_dir/unix_timestamp" || true
     $COMPOSE_CMD exec -T "$service_name" date 2>/dev/null > "$service_dir/date" || true
     $COMPOSE_CMD exec -T "$service_name" dpkg -l 2>/dev/null > "$service_dir/packages-os" || true
+    docker inspect --type container "$service_id" 2>/dev/null > "$service_dir/docker-inspect" || true
 done
+
+echo "Collect information about docker"
+docker info 2>/dev/null > "$backup_dir/docker-info"
 
 echo "Collect docker-compose.yml"
 $COMPOSE_CMD config > "$backup_dir/docker-compose.yml"

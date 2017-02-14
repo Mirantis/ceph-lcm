@@ -25,6 +25,7 @@ Information, stored in the snapshot:
 * Data from :ref:`ceph-monitoring <decapod_user_guide_monitoring>`
 * Version of installed packages
 * Git commit SHAs of Decapod itself
+* Information about docker and containers
 
 No ansible private keys or user passwords (they are hashed by `Argon2
 <https://github.com/p-h-c/phc-winner-argon2>`_) are stored in debug
