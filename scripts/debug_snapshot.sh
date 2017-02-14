@@ -70,9 +70,13 @@ do
     docker cp "$service_id:/etc/decapod/config.yaml" "$service_dir" >/dev/null 2>&1 || true
     docker cp "$service_id:/etc/git-release" "$service_dir" >/dev/null 2>&1 || true
     docker cp "$service_id:/etc/decapod-release" "$service_dir" >/dev/null 2>&1 || true
+    docker cp "$service_id:/packages-npm" "$service_dir" >/dev/null 2>&1 || true
+    docker cp "$service_id:/packages-python2" "$service_dir" >/dev/null 2>&1 || true
+    docker cp "$service_id:/packages-python3" "$service_dir" >/dev/null 2>&1 || true
     $COMPOSE_CMD logs --no-color -t "$service_name" > "$service_dir/log"
     $COMPOSE_CMD exec -T "$service_name" date +%s 2>/dev/null > "$service_dir/unix_timestamp" || true
     $COMPOSE_CMD exec -T "$service_name" date 2>/dev/null > "$service_dir/date" || true
+    $COMPOSE_CMD exec -T "$service_name" dpkg -l 2>/dev/null > "$service_dir/packages-os" || true
 done
 
 echo "Collect docker-compose.yml"

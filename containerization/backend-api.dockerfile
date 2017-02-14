@@ -47,6 +47,7 @@ RUN set -x \
   && pip3 install --no-cache-dir --disable-pip-version-check backend/api[keystone] \
   && cd / \
   && rm -r /project \
+  && pip3 freeze > packages-python3 \
   && apt-get clean \
   && apt-get purge -y git libffi-dev libpcre3-dev python3-dev python3-pip gcc \
   && apt-get autoremove --purge -y \

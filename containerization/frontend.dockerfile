@@ -58,6 +58,7 @@ RUN set -x \
   && cp containerization/files/nginx.conf /etc/nginx/nginx.conf \
   && cd /project/ui \
   && PATH=/node-v6.9.4-linux-x64/bin:$PATH sh -c 'npm install && npm run build && npm cache clean' \
+  && PATH=/node-v6.9.4-linux-x64/bin:$PATH npm ls --json=true > /packages-npm \
   && mv build/* /static \
   && cd / \
   && apt-get purge -y wget xz-utils git \

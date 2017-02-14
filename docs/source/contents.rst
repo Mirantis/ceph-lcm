@@ -12,4 +12,5 @@
    supported-ceph-packages.rst
    playbook-plugins.rst
    upgrade-guide/index.rst
+   userdocs/debug_snapshot.rst
    api/index.rst

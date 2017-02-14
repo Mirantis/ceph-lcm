@@ -59,6 +59,8 @@ RUN set -x \
   && /usr/local/bin/decapod-ansible-deploy-config \
   && cd / \
   && rm -r /project \
+  && pip3 freeze > packages-python3 \
+  && pip2 freeze > packages-python2 \
   && apt-get clean \
   && apt-get purge -y git libssl-dev libffi-dev python-pip python-dev gcc python3-dev python3-pip \
   && apt-get autoremove --purge -y \

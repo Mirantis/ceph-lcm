@@ -103,6 +103,8 @@ RUN set -x \
   && rm -r /project \
   && apt-key del EA312927 \
   && rm /etc/apt/sources.list.d/mongodb.list \
+  && pip3 freeze > packages-python3 \
+  && pip2 freeze > packages-python2 \
   && apt-get clean \
   && apt-get purge -y \
     autoconf \

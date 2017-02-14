@@ -77,6 +77,7 @@ RUN set -x \
     ./backend/docker \
     ./plugins/alerts/emails \
     $(find $(pwd)/plugins/playbook -mindepth 1 -maxdepth 1 -type d | grep -v __template__) \
+  && pip3 freeze > packages-python3 \
   && apt-get clean \
   && apt-get purge -y git wget libffi-dev libssl-dev libyaml-dev gcc python3-dev python3-pip \
   && apt-get autoremove --purge -y \
