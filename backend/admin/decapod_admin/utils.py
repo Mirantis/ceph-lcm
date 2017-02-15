@@ -94,6 +94,17 @@ class SSHClientSession(asyncssh.SSHClientSession):
         super().connection_lost(exc)
 
 
+class ModelJSONEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if hasattr(obj, "make_api_structure"):
+            return obj.make_api_structure()
+        if hasattr(obj, "__json__"):
+            return obj.__json__()
+
+        return super().default(obj)
+
+
 def configure_logging(debug):
     requests_log = logging.getLogger("requests.packages.urllib3")
     requests_log.propagate = True
@@ -111,7 +122,7 @@ def json_loads(data):
 
 
 def json_dumps(data):
-    return json.dumps(data, indent=4, sort_keys=True)
+    return json.dumps(data, indent=4, cls=ModelJSONEncoder, sort_keys=True)
 
 
 def sleep_with_jitter(work_for=None, max_jitter=20):
