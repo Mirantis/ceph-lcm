@@ -14,4 +14,5 @@
    playbook-plugins.rst
    upgrade-guide/index.rst
    userdocs/debug_snapshot.rst
+   admin-service/index.rst
    api/index.rst

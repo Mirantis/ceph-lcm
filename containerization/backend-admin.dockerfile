@@ -64,8 +64,8 @@ RUN set -x \
   && cd /project \
   && git reset --hard \
   && git submodule update --init --recursive \
-  && echo "cron=$(git rev-parse HEAD)" >> /etc/git-release \
-  && echo "cron=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
+  && echo "admin=$(git rev-parse HEAD)" >> /etc/git-release \
+  && echo "admin=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
   && scd -s git_pep440 -v \
   && pip2 install --no-cache-dir --disable-pip-version-check --upgrade 'setuptools==32.3.1' \
   && pip2 install --no-cache-dir --disable-pip-version-check \
