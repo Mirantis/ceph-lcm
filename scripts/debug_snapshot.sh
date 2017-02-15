@@ -50,7 +50,6 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-COMPOSE_FILE="$(readlink -f "$COMPOSE_FILE")"
 PROJECT_NAME="${PROJECT_NAME:-${COMPOSE_PROJECT_NAME:-$(basename "$(dirname "$COMPOSE_FILE")")}}"
 COMPOSE_CMD="docker-compose -f $COMPOSE_FILE -p $PROJECT_NAME"
 

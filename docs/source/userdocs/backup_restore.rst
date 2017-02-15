@@ -37,18 +37,17 @@ And to restore:
     docker-compose: https://github.com/docker/compose/issues/3352
 
 
-There are 2 scripts in :file:`./scripts`
-directory, :file:`backup_working_db_native.sh` and
-:file:`restore_working_db_native.sh` which does backup/restore for you.
+There are 2 scripts in :file:`./scripts` directory, :file:`backup_db.py`
+and :file:`restore_db.py` which does backup/restore for you.
 
 .. code-block:: console
 
-    $ ./scripts/backup_working_db_native.sh /var/backup/decapod_db
-    $ ./scripts/restore_working_db_native.sh /var/backup/decapod_db
+    $ ./scripts/backup_db.py /var/backup/decapod_db
+    $ ./scripts/restore_db.py /var/backup/decapod_db
 
 
 You can add backup to cron like this:
 
 ::
 
-    0 */6 * * * /home/user/decapod_scripts/backup_working_db_native.sh -p decapod -f /home/user/decapod_runtime/docker-compose.yml /var/backups/decapod/decapod_$(date --iso-8601) > /var/log/cron.log 2>&1
+    0 */6 * * * /home/user/decapod_scripts/backup_db.py -p decapod -f /home/user/decapod_runtime/docker-compose.yml /var/backups/decapod/decapod_$(date --iso-8601) > /var/log/cron.log 2>&1
