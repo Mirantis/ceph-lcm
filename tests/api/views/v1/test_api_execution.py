@@ -116,6 +116,8 @@ def test_post_result(sudo_client, new_pcmodel, freeze_time,
         == new_pcmodel.model_id
     assert response.json["data"]["playbook_configuration"]["version"] \
         == new_pcmodel.version
+    assert response.json["data"]["playbook_configuration"]["playbook_name"] \
+        == new_pcmodel.playbook_id
     assert response.json["data"]["state"] \
         == execution.ExecutionState.created.name
 

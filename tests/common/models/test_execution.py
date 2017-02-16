@@ -76,7 +76,8 @@ def test_api_response(state, new_pcmodel, new_execution):
         "data": {
             "playbook_configuration": {
                 "id": new_pcmodel.model_id,
-                "version": new_pcmodel.version
+                "version": new_pcmodel.version,
+                "playbook_name": new_pcmodel.playbook_id
             },
             "state": state.name
         }

@@ -143,7 +143,7 @@ def sudo_user(sudo_role):
     )
 
 
-@pytest.yield_fixture
+@pytest.yield_fixture(scope="module")
 def public_playbook_name():
     name = pytest.faux.gen_alphanumeric()
     mocked_plugin = mock.MagicMock()

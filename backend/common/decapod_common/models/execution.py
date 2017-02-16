@@ -133,7 +133,8 @@ class ExecutionModel(generic.Model):
         return {
             "playbook_configuration": {
                 "id": self.playbook_configuration_model_id,
-                "version": self.playbook_configuration_version
+                "version": self.playbook_configuration_version,
+                "playbook_name": self.playbook_configuration.playbook_id
             },
             "state": self.state.name
         }
