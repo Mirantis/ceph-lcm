@@ -83,6 +83,7 @@ RUN set -x \
   && _DECAPOD_COMPLETE=source decapod >> /root/.bashrc || true \
   && ln -s /usr/local/bin/decapod /usr/local/bin/cli \
   && ln -s /usr/local/bin/decapod-admin /usr/local/bin/admin \
+  && cp ./scripts/debug_snapshot.py /debug-snapshot \
   && curl --silent --show-error --fail --location \
     --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
     "https://caddyserver.com/download/build?os=linux&arch=amd64&features=" | \

@@ -13,7 +13,44 @@ To generate snapshot, just execute following:
 
 .. code-block:: console
 
-    $ ./scripts/debug_snapshot.sh snapshot.tar.xz
+    $ ./scripts/debug_snapshot.py snapshot
+
+or, if you have only containers:
+
+.. code-block:: console
+
+    $ docker-compose exec admin -T cat /debug-snapshot | python - snapshot
+
+If you use last way, please check docs and set correct settings if required:
+
+.. code-block:: console
+
+    $ docker-compose -p myproject exec admin -T cat /debug-snapshot | python - --help
+    usage: - [-h] [-f COMPOSE_FILE] [-p PROJECT_NAME] snapshot_path
+
+    Create debug snapshot for Decapod.
+
+    positional arguments:
+      snapshot_path         Path where to store snapshot (do not append extension,
+                            we will do it for you).
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -f COMPOSE_FILE, --compose-file COMPOSE_FILE
+                            path to docker-compose.yml file. (default:
+                            /vagrant/docker-compose.yml)
+      -p PROJECT_NAME, --project-name PROJECT_NAME
+                            the name of the project. (default: vagrant)
+
+    Please find all logs in syslog by ident 'decapod-debug-snapshot'.
+
+    $ docker-compose -p myproject exec admin -T cat /debug-snapshot | python - -p myproject snapshot
+
+After execution, you will get snapshot as :file:`snapshot_path.*`
+(snapshot tool will calculate best compression algorithm
+available on your platform and use its extension. So you may get
+:file:`snapshot_path.tar.bz2` or :file:`snapshot_path.tar.xz` depepnding
+on how your Python was built).
 
 Information, stored in the snapshot:
 
