@@ -155,7 +155,10 @@ class Configuration:
             srv = servers[item["server_id"]]
             api_item = {
                 "server_id": srv["model_id"],
-                "version": srv["version"]
+                "version": srv["version"],
+                "fqdn": srv["fqdn"],
+                "ip": srv["ip"],
+                "server_name": srv["name"]
             }
             api_response.setdefault(item["role"], []).append(api_item)
 

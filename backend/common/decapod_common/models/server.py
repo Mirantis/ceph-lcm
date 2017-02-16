@@ -140,7 +140,7 @@ class ServerModel(generic.Model):
     def get_model_id_version(cls, server_ids):
         cursor = cls.collection().find(
             {"_id": {"$in": list(server_ids)}},
-            ["_id", "model_id", "version"]
+            ["_id", "fqdn", "ip", "name", "model_id", "version"]
         )
         return {item["_id"]: item for item in cursor}
 

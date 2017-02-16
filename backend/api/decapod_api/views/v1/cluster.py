@@ -33,10 +33,14 @@ DATA_SCHEMA = {
             "type": "array",
             "items": {
                 "type": "object",
-                "required": ["server_id", "version"],
+                "required": ["server_id", "version", "server_name",
+                             "version", "fqdn", "ip"],
                 "properties": {
                     "server_id": {"$ref": "#/definitions/dmidecode_uuid"},
-                    "version": {"$ref": "#/definitions/positive_integer"}
+                    "server_name": {"$ref": "#/definitions/non_empty_string"},
+                    "version": {"$ref": "#/definitions/positive_integer"},
+                    "fqdn": {"$ref": "#/definitions/non_empty_string"},
+                    "ip": {"$ref": "#/definitions/non_empty_string"}
                 }
             }
         }

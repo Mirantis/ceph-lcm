@@ -186,6 +186,9 @@ def test_update_server(sudo_client_v1, new_cluster, new_server):
         for conf_srv in server_set:
             if conf_srv["server_id"] == new_server.model_id:
                 assert conf_srv["version"] == new_server.version + 1
+                assert conf_srv["server_name"] == srv_model["data"]["name"]
+                assert conf_srv["fqdn"] == srv_model["data"]["fqdn"]
+                assert conf_srv["ip"] == srv_model["data"]["ip"]
                 break
         else:
             pytest.fail("Cannot find proper server version in config")
