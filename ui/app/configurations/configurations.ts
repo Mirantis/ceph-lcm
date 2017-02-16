@@ -17,8 +17,8 @@
 
 import * as _ from 'lodash';
 import { Record } from 'js-data';
-import { Component, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, ViewChild, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Modal, Filter, Pager } from '../directives';
 import { DataService, pagedResult } from '../services/data';
 import { BaseModel, Cluster, Server, Playbook, PlaybookConfiguration, Execution } from '../models';
@@ -28,14 +28,14 @@ import { NameAndClusterStep, PlaybookStep, HintsStep, ServersStep, JsonConfigura
 @Component({
   templateUrl: './app/templates/configurations.html'
 })
-export class ConfigurationsComponent {
+export class ConfigurationsComponent implements OnInit {
   model: PlaybookConfiguration = this.cleanModel();
 
   configurations: PlaybookConfiguration[] = null;
   clusters: Cluster[] = [];
   playbooks: Playbook[] = [];
   servers: Server[] = [];
-  shownConfiguration: PlaybookConfiguration = null;
+  shownConfigurationId: string = null;
   configurationVersions: {[key: string]: PlaybookConfiguration[]} = {};
   @ViewChild(WizardComponent) wizard: WizardComponent;
   @ViewChild(Filter) filter: Filter;
@@ -50,17 +50,25 @@ export class ConfigurationsComponent {
     JsonConfigurationStep
   ];
 
-
   constructor(
     private data: DataService,
     private modal: Modal,
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute
   ) {
     this.fetchData();
     this.data.playbook().findAll({})
       .then((playbooks: pagedResult) => {
         this.playbooks = playbooks.items;
       })
+  }
+
+  ngOnInit() {
+    this.activatedRoute
+      .fragment
+      .subscribe((id: string) => {
+        this.shownConfigurationId = id;
+      });
   }
 
   getPlaybooksForFilter(): Object[] {
@@ -125,33 +133,37 @@ export class ConfigurationsComponent {
   }
 
   refreshConfigurations() {
-    if (this.shownConfiguration) {
-      this.getConfigurationVersions(this.shownConfiguration, true);
+    if (this.shownConfigurationId) {
+      this.getConfigurationVersions(this.shownConfigurationId, true);
     } else {
       this.fetchData();
     }
   }
 
-  isCurrent(configuration: PlaybookConfiguration): boolean {
-    return this.shownConfiguration && this.shownConfiguration.id === configuration.id;
+  isCurrent(configuration: PlaybookConfiguration) {
+    return this.shownConfigurationId === configuration.id;
   }
 
-  showVersions(configuration: PlaybookConfiguration) {
-    this.shownConfiguration = this.isCurrent(configuration) ? null : configuration;
+  getConfigurations() {
+    return this.shownConfigurationId
+    ?
+      this.configurations
+    :
+      this.pager.getPageItems(this.configurations);
   }
 
-  getConfigurationVersions(configuration: PlaybookConfiguration, reread: boolean = false) {
-    if (!this.configurationVersions[configuration.id] || reread) {
-      this.configurationVersions[configuration.id] = [];
-      this.data.configuration().getVersions(configuration.id)
+  getConfigurationVersions(configurationId: string, reread: boolean = false) {
+    if (!this.configurationVersions[configurationId] || reread) {
+      this.configurationVersions[configurationId] = [];
+      this.data.configuration().getVersions(configurationId)
         .then(
           (versions: pagedResult) => {
-            this.configurationVersions[configuration.id] = versions.items;
+            this.configurationVersions[configurationId] = versions.items;
           },
           (error: any) => this.data.handleResponseError(error)
         );
     }
-    return this.configurationVersions[configuration.id];
+    return this.configurationVersions[configurationId];
   }
 
   executeConfiguration(version: PlaybookConfiguration) {
@@ -168,7 +180,7 @@ export class ConfigurationsComponent {
     return this.data.configuration().destroy(configuration.id)
       .then(
         () => {
-          this.shownConfiguration = null;
+          this.shownConfigurationId = null;
           this.refreshConfigurations();
         },
         (error: any) => this.data.handleResponseError(error)

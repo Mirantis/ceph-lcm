@@ -1,13 +1,18 @@
 <div class="page-title">
   <div class="row">
-    <div class="col-xs-9"><h1>Clusters</h1></div>
+    <div class="col-xs-9">
+      <h1>Clusters<span *ngIf="shownClusterId"> / {{ shownClusterId }}</span></h1>
+    </div>
     <div class="col-xs-3 main-button">
       <button type="button" class="btn btn-primary" (click)="editCluster()">Create New Cluster</button>
     </div>
   </div>
 </div>
 
-<filter (onChange)="fetchData()"></filter>
+<filter
+  *ngIf="!shownClusterId"
+  (onChange)="fetchData()"
+></filter>
 
 <pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
 
@@ -21,8 +26,8 @@
 
     <div
       class="box"
-      *ngFor="let cluster of pager.getPageItems(clusters)"
-      [ngClass]="{open: cluster.id === shownClusterId}"
+      *ngFor="let cluster of getClusters()|id:shownClusterId"
+      [ngClass]="{open: isCurrent(cluster)}"
     >
       <div class="col-xs-10 name">
         {{cluster.data.name}}
@@ -32,15 +37,15 @@
       </div>
       <div class="col-xs-1 name">{{getSize(cluster)}}</div>
       <div class="col-xs-1 action">
-        <a (click)="showConfig(cluster)">
+        <a [routerLink]="['/clusters']" [fragment]="isCurrent(cluster) ? '' : cluster.id">
           <span
             class="glyphicon"
-            [ngClass]="'glyphicon-triangle-' + (cluster.id === shownClusterId ? 'bottom' : 'right')"
+            [ngClass]="'glyphicon-triangle-' + (isCurrent(cluster) ? 'bottom' : 'right')"
           ></span>
         </a>
       </div>
 
-      <div class="bowels">
+      <div class="bowels" *ngIf="isCurrent(cluster)">
         <div class="col-xs-12">
           <h3>Cluster Configuration Details</h3>
         </div>
@@ -52,8 +57,18 @@
             class="server-details-item row scrollable"
             *ngFor="let detail of details"
           >
-            <div class="col-xs-4 name" [title]="detail">{{detail}}</div>
-            <div class="col-xs-8 json parameter"><longdata [key]="cluster.id + '_' + detail" [data]="cluster.data.configuration[detail]">{{cluster.data.configuration[detail]|json}}</longdata></div>
+            <div class="col-xs-4 name" [title]="detail">{{detail|deparametrize}}</div>
+            <div class="col-xs-8 parameter">
+              <longdata [key]="cluster.id + '_' + detail" [data]="cluster.data.configuration[detail]">
+                <ul>
+                  <li *ngFor="let server of cluster.data.configuration[detail]">
+                    <a [routerLink]="['/servers']" [fragment]="server.server_id">
+                      {{ server.server_id }}
+                    </a>
+                  </li>
+                </ul>
+              </longdata>
+            </div>
           </div>
 
         </div>

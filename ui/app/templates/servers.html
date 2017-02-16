@@ -1,10 +1,13 @@
 <div class="page-title">
   <div class="row">
-    <div class="col-xs-12"><h1>Servers</h1></div>
+    <div class="col-xs-12">
+      <h1>Servers<span *ngIf="shownServerId"> / {{ shownServerId }}</span></h1>
+    </div>
   </div>
 </div>
 
 <filter
+  *ngIf="!shownServerId"
   [criteria]="{state: ['error', 'operational', 'down']}"
   (onChange)="fetchData($event)"
 ></filter>
@@ -15,24 +18,28 @@
   <div class="col-xs-12">
 
     <div class="table-help">
-      <div class="col-xs-4">Server Name</div>
-      <div class="col-xs-2">IP</div>
-      <div class="col-xs-3">FQDN</div>
-      <div class="col-xs-3">Status</div>
+      <div class="col-xs-3">Name</div>
+      <div class="col-xs-4">ID</div>
+      <div class="col-xs-1">IP</div>
+      <div class="col-xs-2">FQDN</div>
+      <div class="col-xs-2">Status</div>
     </div>
 
     <div
       class="box"
       [ngClass]="{open: server.id === shownServerId}"
-      *ngFor="let server of servers">
-      <div class="col-xs-4 name">{{server.data.name}}</div>
-      <div class="col-xs-2 name">{{server.data.ip}}</div>
-      <div class="col-xs-3 name">{{server.data.fqdn}}</div>
-      <div class="col-xs-2 state" [ngClass]="server.data.state">
+      *ngFor="let server of servers|id:shownServerId">
+      <div class="col-xs-3 name">{{server.data.name}}</div>
+      <div class="col-xs-4 parameter uc">
+        {{server.id}}
+      </div>
+      <div class="col-xs-1 parameter">{{server.data.ip}}</div>
+      <div class="col-xs-2 parameter">{{server.data.fqdn}}</div>
+      <div class="col-xs-1 state" [ngClass]="server.data.state">
         {{server.data.state}}
       </div>
       <div class="col-xs-1 action">
-        <a (click)="showConfiguration(server)">
+        <a [routerLink]="['/servers']" [fragment]="shownServerId === server.id ? '' : server.id">
           <span
             class="glyphicon"
             [ngClass]="'glyphicon-triangle-' + (server.id === shownServerId ? 'bottom' : 'right')"

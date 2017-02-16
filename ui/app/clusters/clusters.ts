@@ -15,7 +15,8 @@
 * limitations under the License.
 */
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Modal, Filter, Pager } from '../directives';
 import { DataService, pagedResult } from '../services/data';
 import { Cluster } from '../models';
@@ -28,7 +29,7 @@ import * as $ from 'jquery';
 @Component({
   templateUrl: './app/templates/clusters.html'
 })
-export class ClustersComponent {
+export class ClustersComponent implements OnInit {
   clusters: Cluster[] = null;
   model: Cluster = new Cluster({});
   @ViewChild(WizardComponent) wizard: WizardComponent;
@@ -42,8 +43,24 @@ export class ClustersComponent {
   ];
 
 
-  constructor(private data: DataService, private modal: Modal) {
+  constructor(
+    private data: DataService,
+    private modal: Modal,
+    private activatedRoute: ActivatedRoute
+  ) {
     this.fetchData();
+  }
+
+  ngOnInit() {
+    this.activatedRoute
+      .fragment
+      .subscribe((id: string) => {
+        this.shownClusterId = id;
+      });
+  }
+
+  isCurrent(cluster: Cluster) {
+    return cluster.id === this.shownClusterId;
   }
 
   fetchData() {
@@ -65,14 +82,13 @@ export class ClustersComponent {
     return _.uniq(_.map(allRoles, 'server_id')).length;
   }
 
+  getClusters() {
+    return this.shownClusterId ? this.clusters : this.pager.getPageItems(this.clusters);
+  }
+
   getKeyHalfsets(cluster: Cluster) {
     let keys = _.keys(cluster.data.configuration).sort();
     return _.chunk(keys, Math.ceil(keys.length / 2));
-  }
-
-  showConfig(cluster: Cluster) {
-    this.shownClusterId = this.shownClusterId === cluster.id ?
-      null : cluster.id;
   }
 
   editCluster(cluster: Cluster = null) {

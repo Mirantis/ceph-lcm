@@ -18,3 +18,9 @@
 export class MockRouter {
   navigate(path: string[]) {}
 }
+
+export class MockActivatedRoute {
+  fragment = {
+    subscribe: () => {}
+  }
+}

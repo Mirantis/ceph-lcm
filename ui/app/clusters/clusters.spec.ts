@@ -20,11 +20,13 @@ import { APP_BASE_HREF } from '@angular/common';
 
 import { ClustersComponent } from './clusters';
 import { AppModule } from '../app.module';
+import { ActivatedRoute } from '@angular/router';
 import { DataService, pagedResult } from '../services/data';
 import { Cluster } from '../models';
 import * as _ from 'lodash';
 
 import { MockDataService, amount } from '../../testing/mock.data';
+import { MockActivatedRoute } from '../../testing/mock.router';
 import { DOMHelper } from '../../testing/dom';
 
 describe('Clusters Component', () => {
@@ -42,7 +44,8 @@ describe('Clusters Component', () => {
         imports: [AppModule],
         providers: [
           {provide: APP_BASE_HREF, useValue: '/'},
-          {provide: DataService, useClass: MockDataService}
+          {provide: DataService, useClass: MockDataService},
+          {provide: ActivatedRoute, useClass: MockActivatedRoute}
         ]
       })
       .compileComponents()
@@ -117,22 +120,6 @@ describe('Clusters Component', () => {
       dom.click('.modal-footer .btn-primary');
       expect(dataService.cluster().postUpdate).toHaveBeenCalled();
       done();
-    });
-
-    it('lets expand single cluster\'s configuration', () => {
-      let expandCluster = (number?: number) => {
-        if (number) {
-          dom.select('.clusters .box:nth-child(' + number + ') a .glyphicon-triangle-right').parent();
-        }
-        dom.click();
-      };
-      expect(component.shownClusterId).toBeNull();
-      expandCluster(3);
-      expect(component.shownClusterId).toEqual('id1');
-      expandCluster(6);
-      expect(component.shownClusterId).toEqual('id4');
-      expandCluster();
-      expect(component.shownClusterId).toBeNull();
     });
   });
 

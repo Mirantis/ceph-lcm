@@ -17,6 +17,7 @@
 
 import * as _ from 'lodash';
 import { Pipe, PipeTransform } from '@angular/core';
+import { BaseModel } from './models';
 
 var formatJSON = require('format-json');
 
@@ -88,5 +89,12 @@ export class Deparametrize implements PipeTransform {
 export class Deprefix implements PipeTransform {
   transform(value: string, prefix: string): string {
     return _.compact(value.replace(prefix, '').split('_')).join(' ');
+  }
+}
+@Pipe({name: 'id'})
+export class FilterById implements PipeTransform {
+  transform(value: BaseModel[], id: string): BaseModel[] {
+    if (!id) return value;
+    return [_.find(value, {id})];
   }
 }

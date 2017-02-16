@@ -54,6 +54,10 @@ textarea {
 .text-warning {color: @orange;}
 .text-danger  {color: @shrimp;}
 
+.uc {
+  text-transform: uppercase;
+}
+
 .mono {
   font-family: monospace;
 }
@@ -189,6 +193,10 @@ textarea {
     margin: 7px 0px;
   }
 
+  h1 span {
+    color: @text + 50%;
+  }
+
   h2 {
     font-weight: 400;
     font-size: 14px;
@@ -309,6 +317,9 @@ label {
         width: 300px;
         height: 30px;
         margin-left: -8px;
+      }
+      .glyphicon {
+        margin-left: 0;
       }
     }
 
@@ -592,6 +603,12 @@ label {
   }
 }
 
+longdata {
+  ul li {
+    text-align: left;
+  }
+}
+
 // MODAL WINDOW
 .modal-content {
   border-radius: 0;
@@ -814,7 +831,7 @@ nav {
     margin-top: 4px;
 
     li {
-      a, a:hover, span {
+      a, a:hover, span, span:hover {
         background-color: transparent;
         color: @base;
         border-width: 0;

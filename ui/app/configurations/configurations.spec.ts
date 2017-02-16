@@ -17,7 +17,7 @@
 
 import { async, inject, TestBed, ComponentFixture } from '@angular/core/testing';
 import { APP_BASE_HREF } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { ConfigurationsComponent } from './configurations';
 import { AppModule } from '../app.module';
@@ -28,7 +28,7 @@ import * as _ from 'lodash';
 
 import { MockDataService, createFakeData, amount, itemsPerPage } from '../../testing/mock.data';
 import { MockAuthService } from '../../testing/mock.auth';
-import { MockRouter } from '../../testing/mock.router';
+import { MockRouter, MockActivatedRoute } from '../../testing/mock.router';
 import { DOMHelper } from '../../testing/dom';
 
 describe('Playbook (Plugin) Configuration Component', () => {
@@ -45,7 +45,7 @@ describe('Playbook (Plugin) Configuration Component', () => {
         providers: [
           {provide: APP_BASE_HREF, useValue: '/'},
           {provide: DataService, useClass: MockDataService},
-          {provide: Router, useClass: MockRouter}
+          {provide: ActivatedRoute, useClass: MockActivatedRoute}
         ]
       })
       .compileComponents()
@@ -97,47 +97,47 @@ describe('Playbook (Plugin) Configuration Component', () => {
     let getVersions: jasmine.Spy;
     let configuration: PlaybookConfiguration;
     let areVersionsVisible = () => {
-      return dom.select('.configurations .box:nth-child(2) .bowels').isVisible;
+      return dom.select('.configurations .box .bowels').isVisible;
     }
 
     beforeEach(done => {
-      spyOn(component, 'showVersions').and.callThrough();
       getVersions = spyOn(component, 'getConfigurationVersions').and.callThrough();
       component.fetchData()
         .then(() => {
+          configuration = component.configurations[0];
+          component.shownConfigurationId = configuration.id;
           fixture.detectChanges();
-          dom.select('.configurations .box:nth-child(2) a span.glyphicon-triangle-right')
-            .parent().click();
-          configuration = getVersions.calls.mostRecent().args[0];
-          done();
+          fixture.whenStable().then(done);
         });
     });
 
     it('its versions are shown', () => {
-      expect(component.showVersions).toHaveBeenCalledWith(jasmine.objectContaining({id: 'id0'}));
       expect(areVersionsVisible()).toBeTruthy();
     });
 
-    it('second click makes it collapsed', () => {
+    it('second click makes it collapsed', done => {
       expect(component.isCurrent(configuration)).toBeTruthy();
       expect(areVersionsVisible()).toBeTruthy();
 
-      dom.select('.configurations .box:nth-child(2) a span.glyphicon-triangle-bottom')
-        .parent().click();
-      expect(component.isCurrent(configuration)).toBeFalsy();
-      expect(areVersionsVisible()).toBeFalsy();
+      component.shownConfigurationId = null;
+      fixture.detectChanges();
+
+      fixture.whenStable()
+        .then(() => {
+          expect(component.isCurrent(configuration)).toBeFalsy();
+          expect(areVersionsVisible()).toBeFalsy();
+          done();
+        });
     });
 
     it('versions are fetched', () => {
-      expect(component.getConfigurationVersions).toHaveBeenCalledWith(
-        jasmine.objectContaining({id: 'id0'})
-      );
+      expect(component.getConfigurationVersions).toHaveBeenCalledWith('id0');
       expect(dataService.configuration().getVersions).toHaveBeenCalled();
     });
 
     it('versions fetched are cached', () => {
       expect(dataService.configuration().getVersions).toHaveBeenCalledTimes(1);
-      component.getConfigurationVersions(configuration);
+      component.getConfigurationVersions(configuration.id);
       expect(dataService.configuration().getVersions).toHaveBeenCalledTimes(1);
     });
 
@@ -159,7 +159,7 @@ describe('Playbook (Plugin) Configuration Component', () => {
 
       component.deleteConfiguration(configuration)
         .then(() => {
-          expect(component.shownConfiguration).toBeNull();
+          expect(component.shownConfigurationId).toBeNull();
           expect(refresh).toHaveBeenCalledTimes(1);
           done();
         });

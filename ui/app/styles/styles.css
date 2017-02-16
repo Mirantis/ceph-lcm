@@ -7216,6 +7216,9 @@ textarea {
 .text-danger {
   color: #FF634C;
 }
+.uc {
+  text-transform: uppercase;
+}
 .mono {
   font-family: monospace;
 }
@@ -7361,6 +7364,9 @@ textarea {
   text-transform: uppercase;
   margin: 7px 0px;
 }
+.page-title h1 span {
+  color: #888e95;
+}
 .page-title h2 {
   font-weight: 400;
   font-size: 14px;
@@ -7462,6 +7468,9 @@ label {
   width: 300px;
   height: 30px;
   margin-left: -8px;
+}
+.box > div.name .glyphicon {
+  margin-left: 0;
 }
 .box > div.parameter {
   height: 48px;
@@ -7744,6 +7753,9 @@ a.grid .grid-header .icon:focus {
   position: relative;
   bottom: 6px;
 }
+longdata ul li {
+  text-align: left;
+}
 .modal-content {
   border-radius: 0;
 }
@@ -7974,7 +7986,8 @@ nav ul.pagination {
 }
 nav ul.pagination li a,
 nav ul.pagination li a:hover,
-nav ul.pagination li span {
+nav ul.pagination li span,
+nav ul.pagination li span:hover {
   background-color: transparent;
   color: #5A7983;
   border-width: 0;

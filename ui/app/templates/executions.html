@@ -24,10 +24,11 @@
     </div>
 
     <div class="box" *ngFor="let execution of executions">
-      <div class="col-xs-3 name">{{execution.id}}</div>
-      <div class="col-xs-3 parameter">
-        {{execution.data.playbook_configuration.id}}
-        ({{execution.data.playbook_configuration.version}})
+      <div class="col-xs-3 name uc">{{execution.id}}</div>
+      <div class="col-xs-3 parameter uc">
+        <a [routerLink]="['/configurations']" [fragment]="execution.data.playbook_configuration.id">
+          {{execution.data.playbook_configuration.id}} ({{execution.data.playbook_configuration.version}})
+        </a>
       </div>
       <div class="col-xs-1 parameter">
         &mdash;

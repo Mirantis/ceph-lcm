@@ -29,6 +29,8 @@
 
 <filter (onChange)="fetchData()"></filter>
 
+<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+
 <div class="logs grid row" *ngIf="steps && steps.length">
   <div class="col-xs-12">
     <div class="grid-header">
@@ -38,6 +40,7 @@
       <div class="col-xs-1 name">Result</div>
       <div class="col-xs-3 name">Details</div>
     </div>
+  </div>
 
     <div
       class="grid-line"
@@ -48,13 +51,16 @@
       <div class="col-xs-3" [title]="step.data.name">
         {{step.data.name}}
       </div>
-      <div class="col-xs-3">{{step.data.server_id}}</div>
+      <div class="col-xs-3 uc">
+        <a [routerLink]="['/servers']" [fragment]="step.data.server_id">
+          {{step.data.server_id}}
+        </a>
+      </div>
       <div class="col-xs-1 state">{{step.data.result}}</div>
       <div class="col-xs-3" [title]="step.data.error.msg">
         {{step.data.error.msg}}
       </div>
     </div>
-  </div>
 </div>
 
 <div *ngIf="!steps || !steps.length">No execution logs found</div>

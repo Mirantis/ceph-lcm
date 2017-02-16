@@ -1,6 +1,8 @@
 <div class="page-title">
   <div class="row">
-    <div class="col-xs-9"><h1>Configurations</h1></div>
+    <div class="col-xs-9">
+      <h1>Configurations<span *ngIf="shownConfigurationId"> / {{ shownConfigurationId }}</span></h1>
+    </div>
     <div class="col-xs-3 main-button">
       <button type="button" class="btn btn-primary" (click)="editConfiguration()">Create New Configuration
       </button>
@@ -9,6 +11,7 @@
 </div>
 
 <filter
+  *ngIf="!shownConfigurationId"
   [criteria]="{playbook_id: getPlaybooksForFilter()}"
   (onChange)="fetchData()"
 >
@@ -27,13 +30,13 @@
     <div
       class="box"
       [ngClass]="{open: isCurrent(configuration)}"
-      *ngFor="let configuration of pager.getPageItems(configurations)"
+      *ngFor="let configuration of getConfigurations()|id:shownConfigurationId"
     >
       <div class="col-xs-3 name">{{configuration.data.name}}</div>
       <div class="col-xs-3 parameter">{{configuration.data.playbook_id|deparametrize}}</div>
       <div class="col-xs-5 parameter">{{configuration.time_updated|date_time}}</div>
       <div class="col-xs-1 action">
-        <a (click)="showVersions(configuration)">
+        <a [routerLink]="['/configurations']" [fragment]="isCurrent(configuration) ? '' : configuration.id">
           <span
             class="glyphicon"
             [ngClass]="'glyphicon-triangle-' + (isCurrent(configuration) ? 'bottom' : 'right')"
@@ -50,7 +53,7 @@
               [confirmation]="'Delete configuration ' + configuration.data.name + '?'"
             >Delete</button>
         </div>
-        <div *ngFor="let version of getConfigurationVersions(configuration);let i = index">
+        <div *ngFor="let version of getConfigurationVersions(configuration.id);let i = index">
 
           <div class="col-xs-12"><div class="line"></div></div>
 
