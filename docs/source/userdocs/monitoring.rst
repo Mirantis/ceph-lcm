@@ -17,12 +17,10 @@ supported plugins <../playbook-plugins>`.
 cluster state and monitors performance from time to time, you may
 consider it as executed by Cron.
 
-To access collected data, please proceed to URL **/clusterdata/{name
-of the cluster}**. For example, if you access UI with URL like
-**http://10.0.0.10:9999**, then correct URL for results will be
-**http://10.0.0.10:9999/clusterdata/**. If you open it without a cluster
-name, it will show the list of collected results for cluster and you
-need to select one you are interested in.
+*admin* service serves collected data. To access it,
+check :envvar:`DECAPOD_MONITORING_PORT` environment variable (default is
+**10001**). So, if you access Decapod like **http://10.0.0.10:9999**,
+docs will be served on **http://10.0.0.10:10001**.
 
 If you do not have information on cluster which was just deployed,
 please wait ~15 minutes and try again. If data is still not accessible,

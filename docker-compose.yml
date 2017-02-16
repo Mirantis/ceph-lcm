@@ -20,7 +20,6 @@ services:
     image: "${DECAPOD_REGISTRY_URL}${DECAPOD_NAMESPACE}decapod/frontend:${DECAPOD_VERSION}"
     links:
       - api
-      - admin
     ports:
       - "${DECAPOD_HTTP_PORT}:80"
       - "${DECAPOD_HTTPS_PORT}:443"
@@ -54,4 +53,5 @@ services:
       - "${DECAPOD_SSH_PRIVATE_KEY}:/root/.ssh/id_rsa:ro"
     restart: "on-failure:3"
     ports:
+      - "${DECAPOD_MONITORING_PORT}:8000"
       - "${DECAPOD_DOCS_PORT}:8001"
