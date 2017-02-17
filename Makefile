@@ -174,6 +174,9 @@ build_deb_helloworld: clean_debs make_deb_directory
 build_deb_telegraf: clean_debs make_deb_directory
 	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/telegraf_integration","$(DEB_DIR)")
 
+build_deb_remove_telegraf: clean_debs make_deb_directory
+	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/purge_telegraf","$(DEB_DIR)")
+
 build_deb_purge_cluster: clean_debs make_deb_directory
 	$(call build_deb_py3,"$(ROOT_DIR)/plugins/playbook/purge_cluster","$(DEB_DIR)")
 
@@ -205,7 +208,7 @@ build_alerts_eggs: build_email_eggs
 build_playbook_eggs: build_deploy_cluster_eggs build_helloworld_eggs \
 	build_server_discovery_eggs build_add_osd_eggs build_add_mon_eggs \
 	build_remove_osd_eggs build_purge_cluster_eggs \
-	build_telegraf_integration_eggs
+	build_telegraf_integration_eggs build_purge_telegraf_eggs
 
 build_api_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/backend/api","$(EGGS_DIR)")
@@ -260,6 +263,9 @@ build_purge_cluster_eggs: clean_eggs make_egg_directory
 
 build_telegraf_integration_eggs: clean_eggs make_egg_directory
 	$(call build_egg,"$(ROOT_DIR)/plugins/playbook/telegraf_integration","$(EGGS_DIR)")
+
+build_purge_telegraf_eggs: clean_eggs make_egg_directory
+	$(call build_egg,"$(ROOT_DIR)/plugins/playbook/purge_telegraf","$(EGGS_DIR)")
 
 clean_eggs:
 	rm -rf "$(OUTPUT_DIR)"

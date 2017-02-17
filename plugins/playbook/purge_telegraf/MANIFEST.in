@@ -1,0 +1,2 @@
+include decapod_plugin_playbook_purge_telegraf/config.yaml
+include decapod_plugin_playbook_purge_telegraf/plugin.yaml

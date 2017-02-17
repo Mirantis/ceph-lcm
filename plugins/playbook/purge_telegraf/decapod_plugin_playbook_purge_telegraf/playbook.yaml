@@ -1,0 +1,81 @@
+---
+# Copyright (c) 2016 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Remove Telegraf section
+  hosts: telegraf
+  become: true
+  gather_facts: false
+  tasks:
+    - block:
+      - name: Get state of configfile
+        stat:
+          path: "{{ configpath }}"
+        register: configstat
+
+      - name: Fail if config file in not manageable
+        fail:
+          msg: "Config file {{ configpath }} is not readable and writable"
+        when: configstat.stat.readable is not defined  or
+              not configstat.stat.readable             or
+              configstat.stat.writeable is not defined or
+              not configstat.stat.writeable            or
+              configstat.stat.isdir is not defined     or
+              configstat.stat.isdir
+
+      - name: Remove config section
+        blockinfile:
+          backup: yes
+          dest: "{{ configpath }}"
+          marker: "## {mark} DECAPOD TELEGRAF INTEGRATION PLUGIN"
+          state: absent
+      when: remove_config_section_only
+
+
+- name: Uninstall Telegraf
+  hosts: telegraf
+  become: true
+  tasks:
+    - block:
+      - name: Remove InfluxDB repository (using LSB).
+        apt_repository:
+          repo: "deb https://repos.influxdata.com/{{ ansible_distribution|lower }} {{ ansible_lsb.codename }} stable"
+          filename: "influxdb"
+          state: absent
+        when: ansible_lsb is defined
+
+      - name: Remove InfluxDB repository (not using LSB).
+        apt_repository:
+          repo: "deb https://repos.influxdata.com/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable"
+          filename: "influxdb"
+          state: absent
+        when: ansible_lsb is not defined
+
+      - name: Uninstall Telegraf
+        apt:
+          name: telegraf
+          state: absent
+          purge: yes
+
+      - name: Remove config file
+        file:
+          path: "{{ configpath }}"
+          state: absent
+
+      - name: Remove /etc/telegraf
+        file:
+          path: /etc/telegraf
+          state: absent
+      when: not remove_config_section_only

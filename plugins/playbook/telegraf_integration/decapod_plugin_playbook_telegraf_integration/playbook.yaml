@@ -38,7 +38,8 @@
         path: "{{ configpath }}"
       register: configstat
 
-    - fail:
+    - name: Fail if config file in not manageable
+      fail:
         msg: "Config file {{ configpath }} is not readable and writable"
       when: configstat.stat.readable is not defined  or
             not configstat.stat.readable             or

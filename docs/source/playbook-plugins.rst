@@ -21,3 +21,4 @@ The section contains the following topics:
    playbook-plugins/plugin-add-monitor.rst
    playbook-plugins/plugin-purge-cluster.rst
    playbook-plugins/plugin-telegraf-integration.rst
+   playbook-plugins/plugin-purge-telegraf.rst
