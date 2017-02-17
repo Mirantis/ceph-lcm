@@ -14,3 +14,4 @@ following topics:
    install-and-configure/install-decapod.rst
    install-and-configure/configure-docker-compose.rst
    install-and-configure/decapod-configuration-files.rst
+   install-and-configure/config-yaml.rst

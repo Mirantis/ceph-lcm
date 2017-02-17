@@ -54,7 +54,6 @@ api:
 controller:
   pidfile: "/tmp/decapod-controller.pid"
   daemon: false
-  timeout: 60
   ansible_config: "/etc/ansible/ansible.cfg"
   # 0 worker_threads means that we will have 2 * CPU count threads
   worker_threads: 0
@@ -73,7 +72,6 @@ cron:
 db:
   uri: "mongodb://database:27017/decapod?ssl=true"
   connect: false
-  task_queue_length: 1000
   connect_timeout: 5000  # ms, 5 seconds
   socket_timeout: 5000  # ms, 5 seconds
   pool_size: 50

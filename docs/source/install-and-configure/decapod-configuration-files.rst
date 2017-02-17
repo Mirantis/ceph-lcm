@@ -43,8 +43,8 @@ SSL certificates
     installation.
 
 config.yaml
- Configuration file for Decapod. For an example, see the
- ``containerization/files/devconfigs/config.yaml`` file.
+ Configuration file for Decapod. Please check
+ :ref:`decapod_install_and_configure_config_yaml` for details.
 
 mongodb.pem
  SSL/TLS pair of certificate and key, concatenated in one file. Required to
