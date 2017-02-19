@@ -75,6 +75,7 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
     DESCRIPTION = DESCRIPTION
     PUBLIC = True
     REQUIRED_SERVER_LIST = True
+    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.not_in_any_cluster
 
     HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
 

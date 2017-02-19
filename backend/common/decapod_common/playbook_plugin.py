@@ -18,6 +18,7 @@
 
 import abc
 import contextlib
+import enum
 import functools
 import os
 import shutil
@@ -33,8 +34,133 @@ from decapod_common import playbook_plugin_hints
 from decapod_common import process
 from decapod_common.models import task
 
+
 LOG = log.getLogger(__name__)
 """Logger."""
+
+
+@enum.unique
+class ServerListPolicy(enum.IntEnum):
+    any_server = 0
+    in_this_cluster = 1
+    not_in_this_cluster = 2
+    in_other_cluster = 3
+    not_in_other_cluster = 4
+    in_any_cluster = 5
+    not_in_any_cluster = 6
+
+    @staticmethod
+    def server_list_as_string(servers):
+        return ", ".join(sorted(srv.model_id for srv in servers))
+
+    def check(self, cluster_model, servers):
+        cls = self.__class__
+
+        if not servers:
+            raise ValueError("Servers should not be empty.")
+
+        if self == cls.any_server:
+            return
+        elif self == cls.in_this_cluster:
+            return cls.check_in_this_cluster(cluster_model, servers)
+        elif self == cls.not_in_this_cluster:
+            return cls.check_not_in_this_cluster(cluster_model, servers)
+        elif self == cls.in_other_cluster:
+            return cls.check_in_other_cluster(cluster_model, servers)
+        elif self == cls.not_in_other_cluster:
+            return cls.check_not_in_other_cluster(cluster_model, servers)
+        elif self == cls.in_any_cluster:
+            return cls.check_in_any_cluster(cluster_model, servers)
+
+        return cls.check_not_in_any_cluster(cluster_model, servers)
+
+    @classmethod
+    def check_in_this_cluster(cls, cluster_model, servers):
+        negative_cond = [
+            srv for srv in servers
+            if srv.cluster_id != cluster_model.model_id
+        ]
+        if not negative_cond:
+            return
+
+        message = "Servers {0} do not belong to cluster {1}".format(
+            cls.server_list_as_string(negative_cond),
+            cluster_model.model_id
+        )
+        LOG.warning(message)
+        raise ValueError(message)
+
+    @classmethod
+    def check_not_in_this_cluster(cls, cluster_model, servers):
+        negative_cond = [
+            srv for srv in servers
+            if srv.cluster_id == cluster_model.model_id
+        ]
+        if not negative_cond:
+            return
+
+        message = "Servers {0} belong to cluster {1}".format(
+            cls.server_list_as_string(negative_cond),
+            cluster_model.model_id
+        )
+        LOG.warning(message)
+        raise ValueError(message)
+
+    @classmethod
+    def check_in_other_cluster(cls, cluster_model, servers):
+        negative_cond = [
+            srv for srv in servers
+            if srv.cluster_id in (cluster_model.model_id, None)
+        ]
+        if not negative_cond:
+            return
+
+        message = "Servers {0} not in other cluster than {1}".format(
+            cls.server_list_as_string(negative_cond),
+            cluster_model.model_id
+        )
+        LOG.warning(message)
+        raise ValueError(message)
+
+    @classmethod
+    def check_not_in_other_cluster(cls, cluster_model, servers):
+        negative_cond = [
+            srv for srv in servers
+            if srv.cluster_id not in (cluster_model.model_id, None)
+        ]
+        if not negative_cond:
+            return
+
+        message = "Servers {0} in other cluster than {1}".format(
+            cls.server_list_as_string(negative_cond),
+            cluster_model.model_id
+        )
+        LOG.warning(message)
+        raise ValueError(message)
+
+    @classmethod
+    def check_in_any_cluster(cls, cluster_model, servers):
+        negative_cond = [srv for srv in servers if not srv.cluster_id]
+        if not negative_cond:
+            return
+
+        message = "Servers {0} are not in any cluster".format(
+            cls.server_list_as_string(negative_cond)
+        )
+        LOG.warning(message)
+        raise ValueError(message)
+
+    @classmethod
+    def check_not_in_any_cluster(cls, cluster_model, servers):
+        negative_cond = [srv for srv in servers if srv.cluster_id]
+        if not negative_cond:
+            return
+
+        message = "Servers {0} are in clusters".format(
+            cls.server_list_as_string(negative_cond)
+        )
+        LOG.warning(message)
+        raise ValueError(message)
 
 
 class Base(metaclass=abc.ABCMeta):
@@ -45,6 +171,7 @@ class Base(metaclass=abc.ABCMeta):
     DESCRIPTION = ""
     PUBLIC = True
     REQUIRED_SERVER_LIST = True
+    SERVER_LIST_POLICY = ServerListPolicy.any_server
 
     @property
     def env_task_id(self):

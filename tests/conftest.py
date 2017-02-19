@@ -26,6 +26,7 @@ import pytest
 import decapod_api
 from decapod_common import emailutils
 from decapod_common import log
+from decapod_common import playbook_plugin
 from decapod_common.models import cluster
 from decapod_common.models import execution
 from decapod_common.models import generic
@@ -147,7 +148,9 @@ def sudo_user(sudo_role):
 def public_playbook_name():
     name = pytest.faux.gen_alphanumeric()
     mocked_plugin = mock.MagicMock()
-    mocked_plugin.PUBLIC = True
+    mocked_plugin.return_value.PUBLIC = True
+    mocked_plugin.return_value.SERVER_LIST_POLICY = \
+        playbook_plugin.ServerListPolicy.any_server
 
     patch = mock.patch(
         "decapod_common.plugins.get_playbook_plugins",

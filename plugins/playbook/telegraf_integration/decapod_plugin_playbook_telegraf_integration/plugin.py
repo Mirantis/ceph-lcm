@@ -46,6 +46,7 @@ class TelegrafIntegration(playbook_plugin.CephAnsiblePlaybook):
     DESCRIPTION = DESCRIPTION
     PUBLIC = True
     REQUIRED_SERVER_LIST = True
+    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.any_server
 
     HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
 

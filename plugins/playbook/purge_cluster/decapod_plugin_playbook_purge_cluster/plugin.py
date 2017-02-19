@@ -39,6 +39,7 @@ class PurgeCluster(playbook_plugin.CephAnsiblePlaybook):
     DESCRIPTION = DESCRIPTION
     PUBLIC = True
     REQUIRED_SERVER_LIST = False
+    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.in_this_cluster
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
         super().on_post_execute(task, exc_value, exc_type, exc_tb)

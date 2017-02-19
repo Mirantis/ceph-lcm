@@ -152,11 +152,27 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
     @validators.require_schema(POST_SCHEMA)
     def post(self):
         cluster_model = self.get_cluster_model(self.request_json["cluster_id"])
+
+        plugs = plugins.get_public_playbook_plugins()
+        if self.request_json["playbook_id"] not in plugs:
+            raise http_exceptions.UnknownPlaybookError(
+                self.request_json["playbook_id"])
+        plug = plugs[self.request_json["playbook_id"]]()
+
         servers_for_playbook = self.get_servers_for_playbook(
+            plug,
             self.request_json["playbook_id"],
             self.request_json["server_ids"],
             cluster_model
         )
+        try:
+            plug.SERVER_LIST_POLICY.check(cluster_model, servers_for_playbook)
+        except ValueError as exc:
+            raise http_exceptions.ServerListPolicyViolation(
+                self.request_json["playbook_id"],
+                plug.SERVER_LIST_POLICY,
+                exc
+            )
 
         try:
             pcmodel = playbook_configuration.PlaybookConfigurationModel.create(
@@ -195,35 +211,30 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
 
         return item
 
-    def get_servers_for_playbook(self, playbook_id, suggested_servers,
+    def get_servers_for_playbook(self, plug, playbook_id, suggested_servers,
                                  cluster_model):
-        plugs = plugins.get_public_playbook_plugins()
-        if playbook_id not in plugs:
-            raise http_exceptions.UnknownPlaybookError(playbook_id)
+        if not plug.REQUIRED_SERVER_LIST:
+            return cluster_model.server_list
 
-        plug = plugs[playbook_id]()
-        if plug.REQUIRED_SERVER_LIST:
-            if not suggested_servers:
-                raise http_exceptions.ServerListIsRequiredForPlaybookError(
-                    playbook_id
-                )
+        if not suggested_servers:
+            raise http_exceptions.ServerListIsRequiredForPlaybookError(
+                playbook_id
+            )
 
-            servers = server.ServerModel.find_by_model_id(*suggested_servers)
-            if not isinstance(servers, list):
-                servers = [servers]
-            if len(servers) != len(set(suggested_servers)):
-                raise ValueError(
-                    "All suggested servers were not found. "
-                    "Suggested servers were {0}".format(suggested_servers))
+        servers = server.ServerModel.find_by_model_id(*suggested_servers)
+        if not isinstance(servers, list):
+            servers = [servers]
+        if len(servers) != len(set(suggested_servers)):
+            raise ValueError(
+                "All suggested servers were not found. "
+                "Suggested servers were {0}".format(suggested_servers))
 
-            deleted_servers = [srv for srv in servers if srv.time_deleted]
-            if deleted_servers:
-                raise ValueError(
-                    "Some servers were deleted: {0}".format(
-                        ", ".join(srv.model_id for srv in deleted_servers)))
-            return servers
-
-        return cluster_model.server_list
+        deleted_servers = [srv for srv in servers if srv.time_deleted]
+        if deleted_servers:
+            raise ValueError(
+                "Some servers were deleted: {0}".format(
+                    ", ".join(srv.model_id for srv in deleted_servers)))
+        return servers
 
     def get_cluster_model(self, cluster_id):
         cluster_model = cluster.ClusterModel.find_by_model_id(cluster_id)

@@ -179,3 +179,12 @@ class UnknownPlaybookConfiguration(BadRequest):
 
     def __init__(self, item_id, version):
         super().__init__(self.description.format(item_id, version))
+
+
+class ServerListPolicyViolation(BadRequest):
+    description = "Violation of playbook server list policy {0} ({1}): {2}"
+
+    def __init__(self, playbook_name, policy, exception):
+        super().__init__(
+            self.description.format(
+                policy.name, playbook_name, str(exception)))

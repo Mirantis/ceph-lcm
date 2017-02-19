@@ -101,7 +101,7 @@ RUN set -x \
   && mv containerization/files/cron-caddyfile /etc/caddy/config \
   && mkfifo /var/log/cron.log \
   && cd / \
-  && rm -r /project \
+  && rm -r /project /root/.cache/pip \
   && apt-key del EA312927 \
   && rm /etc/apt/sources.list.d/mongodb.list \
   && pip3 freeze > packages-python3 \

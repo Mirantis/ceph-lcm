@@ -30,6 +30,7 @@ class PlaybookView(generic.ModelView):
                     "name": "example",
                     "description": "Example playbook",
                     "required_server_list": true
+                    "server_list_policy": "in_this_cluster",
                     "id": "example",
                     "hints": []
                 }
@@ -59,6 +60,7 @@ class PlaybookView(generic.ModelView):
                 "id": plug.entry_point,
                 "description": plug.DESCRIPTION,
                 "required_server_list": bool(plug.REQUIRED_SERVER_LIST),
+                "server_list_policy": plug.SERVER_LIST_POLICY.name,
                 "hints": hints
             }
             data.append(plugin_data)

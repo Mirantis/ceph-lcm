@@ -18,6 +18,7 @@
 
 import pytest
 
+from decapod_common import playbook_plugin
 from decapod_common import plugins
 from decapod_common.models import playbook_configuration
 from decapod_common.models import server
@@ -243,6 +244,18 @@ def test_create_new_playbook_configuration_deleted_cluster(
                                    data=valid_post_request)
     assert response.status_code == 400
     assert response.json["error"] == "UnknownClusterError"
+
+
+def test_create_new_playbook_configuration_failed_policy_check(
+    sudo_client_v1, normal_user, client_v1, valid_post_request,
+        new_cluster, new_servers, public_playbook_name
+):
+    plug = get_playbook_plug(public_playbook_name)
+    plug.return_value.SERVER_LIST_POLICY = \
+        playbook_plugin.ServerListPolicy.not_in_any_cluster
+    response = sudo_client_v1.post("/v1/playbook_configuration/",
+                                   data=valid_post_request)
+    assert response.status_code == 400
 
 
 def test_update_playbook_configuration_access(

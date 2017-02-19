@@ -61,6 +61,7 @@ class CinderIntegration(playbook_plugin.CephAnsiblePlaybook):
     DESCRIPTION = DESCRIPTION
     PUBLIC = True
     REQUIRED_SERVER_LIST = False
+    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.in_this_cluster
 
     HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
 
