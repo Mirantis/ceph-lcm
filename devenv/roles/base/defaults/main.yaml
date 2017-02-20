@@ -19,8 +19,6 @@ default_locale: en_US.UTF-8
 docker_keyserver: hkp://p80.pool.sks-keyservers.net:80
 docker_key: 58118E89F3A912897C070ADBF76221572C52609D
 docker_repo: deb https://apt.dockerproject.org/repo ubuntu-xenial main
-docker_version: 1.12.5-0~ubuntu-xenial
 docker_bip: 10.201.0.2/24
 docker_storage_driver: overlay2
-docker_compose_version: 1.8.1
 node_install_script: "https://deb.nodesource.com/setup_7.x"

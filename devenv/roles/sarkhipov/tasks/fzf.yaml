@@ -19,8 +19,7 @@
   git: repo=https://github.com/junegunn/fzf.git
        dest=.fzf
        clone=yes
-       depth=1
-       version={{ fzf_version }}
+       version=master
 
 - name: Install fzf
   command: bash -ic "{{ ansible_env.HOME }}/.fzf/install --all --64"

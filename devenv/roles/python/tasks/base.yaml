@@ -25,6 +25,4 @@
 - name: Install tox
   become: true
   pip: name=tox
-       state=present
        executable=pip3
-       version={{ tox_version }}

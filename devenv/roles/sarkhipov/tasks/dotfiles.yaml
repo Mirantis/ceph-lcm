@@ -23,7 +23,6 @@
   git: repo=https://github.com/9seconds/dotfiles.git
        dest=.dotfiles
        clone=yes
-       depth=1
        version=master
   register: dotfiles
 

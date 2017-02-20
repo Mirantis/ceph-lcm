@@ -46,16 +46,22 @@
            chdir=/vagrant
   with_items:
     - backend/common
-    - backend/migration
     - 'backend/api[keystone]'
     - backend/controller
-    - plugins/alerts/emails
     - decapodlib
-    - decapodcli
+    - 'backend/admin[uvloop]'
+    - plugins/alerts/emails
     - plugins/playbook/server_discovery
     - plugins/playbook/playbook_helloworld
-    - decapodlib
-    - 'decapodcli[color]'
+    - plugins/playbook/add_mon
+    - plugins/playbook/add_osd
+    - plugins/playbook/cinder_integration
+    - plugins/playbook/deploy_cluster
+    - plugins/playbook/purge_cluster
+    - plugins/playbook/purge_telegraf
+    - plugins/playbook/remove_osd
+    - plugins/playbook/telegraf_integration
+    - 'decapodcli[color,yaql,jq,jmespath]'
   tags:
     # This is to update requirements
     - skip_ansible_lint

@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-repo_key: EA312927
-mongodb_version: 3.2.11
+repo_key: 0C49F3730359A14518585931BC711F9BA15703C6
 in_memory: false
 db_path: /var/lib/mongodb

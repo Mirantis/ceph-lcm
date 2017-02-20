@@ -60,12 +60,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       devbox.cache.enable :apt
       devbox.cache.enable :apt_lists
-      devbox.cache.enable :bower
       devbox.cache.enable :npm
-      devbox.cache.enable :generic, {
-        "pip"    => { :cache_dir => ".cache/pip" },
-        "ccache" => { :cache_dir => ".ccache"  }
-      }
+
       devbox.cache.synced_folder_opts = {
         type: :nfs, mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
       }

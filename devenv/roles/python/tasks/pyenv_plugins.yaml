@@ -18,7 +18,6 @@
 - name: Install PyEnv plugins
   git: repo="{{ item.repo }}"
        dest="{{ pyenv_root }}/plugins/{{ item.name }}"
-       depth=1
        clone=yes
        version=master
   with_items: "{{ pyenv_plugins }}"

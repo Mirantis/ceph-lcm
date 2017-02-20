@@ -23,7 +23,6 @@
 - name: Clone PyEnv repository
   git: repo=https://github.com/yyuu/pyenv.git
        dest="{{ pyenv_root }}"
-       depth=1
        clone=yes
        version=master
 

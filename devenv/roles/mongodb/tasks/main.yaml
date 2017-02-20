@@ -21,7 +21,7 @@
 
 - name: Add repository
   become: true
-  apt_repository: repo="deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse"
+  apt_repository: repo="deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse"
                   state=present
 
 - name: Put db files on tmpfs
@@ -35,15 +35,9 @@
 
 - name: Install mongodb
   become: true
-  apt: name="{{ item }}={{ mongodb_version }}" update_cache=yes
+  apt: name="{{ item }}" update_cache=yes
   with_items: "{{ mongodb_components }}"
   register: mongo_installed
-
-- name: Pin mongodb versions
-  become: true
-  command: apt-mark hold "{{ item }}"
-  with_items: "{{ mongodb_components }}"
-  when: mongo_installed.changed
 
 - name: Install SystemD script
   become: true

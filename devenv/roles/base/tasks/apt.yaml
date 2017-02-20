@@ -33,36 +33,10 @@
     # This is to activate apt module :(
     - skip_ansible_lint
 
-- name: Update host packages to the latest versions
-  become: true
-  apt: update_cache=yes upgrade=safe
-
 - name: Ensure mandatory APT packages are installed
   become: true
   apt: name="{{ item }}" state=present
   with_items: "{{ apt_packages }}"
-
-- name: Update pip
-  become: true
-  pip: name=pip
-       state=latest
-       executable={{ item }}
-  with_items:
-    - /usr/bin/pip2
-    - /usr/bin/pip3
-  tags:
-    - skip_ansible_lint
-
-- name: Update setuptools
-  become: true
-  pip: name=setuptools
-       state=latest
-       executable={{ item }}
-  with_items:
-    - /usr/bin/pip2
-    - /usr/bin/pip3
-  tags:
-    - skip_ansible_lint
 
 - name: Remove unwanted provisioners
   become: true
@@ -75,7 +49,3 @@
   tags:
     # It is ok to run it a lot
     - skip_ansible_lint
-
-- name: Install ansible
-  become: true
-  apt: name=ansible state=present

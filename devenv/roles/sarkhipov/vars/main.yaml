@@ -54,5 +54,9 @@ env_vars:
     value: nvim
   - name: PYTHONSTARTUP
     value: $HOME/.pythonrc
-
-fzf_version: 0.15.0
+  - name: DECAPOD_URL
+    value: 'http://127.0.0.1:9999'
+  - name: DECAPOD_LOGIN
+    value: root
+  - name: DECAPOD_PASSWORD
+    value: root
