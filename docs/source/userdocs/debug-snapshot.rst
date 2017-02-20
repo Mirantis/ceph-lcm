@@ -15,17 +15,17 @@ To generate snapshot, just execute following:
 
     $ ./scripts/debug_snapshot.py snapshot
 
-or, if you have only containers:
+or, if you have containers only:
 
 .. code-block:: console
 
-    $ docker-compose exec admin -T cat /debug-snapshot | python - snapshot
+    $ docker-compose exec -T admin cat /debug-snapshot | python - snapshot
 
 If you use last way, please check docs and set correct settings if required:
 
 .. code-block:: console
 
-    $ docker-compose -p myproject exec admin -T cat /debug-snapshot | python - --help
+    $ docker-compose -p myproject exec -T admin cat /debug-snapshot | python - --help
     usage: - [-h] [-f COMPOSE_FILE] [-p PROJECT_NAME] snapshot_path
 
     Create debug snapshot for Decapod.
@@ -44,7 +44,7 @@ If you use last way, please check docs and set correct settings if required:
 
     Please find all logs in syslog by ident 'decapod-debug-snapshot'.
 
-    $ docker-compose -p myproject exec admin -T cat /debug-snapshot | python - -p myproject snapshot
+    $ docker-compose -p myproject exec -T admin cat /debug-snapshot | python - -p myproject snapshot
 
 After execution, you will get snapshot as :file:`snapshot_path.*`
 (snapshot tool will calculate best compression algorithm
