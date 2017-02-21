@@ -181,3 +181,9 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
             "osds": servers,
             "already_deployed": list(cluster_servers.values())
         }
+
+    def prepare_plugin(self):
+        resource_path = pathutils.resource(
+            "decapod_plugin_playbook_add_osd", "roles")
+        resource_path.symlink_to(
+            str(playbook_plugin.PATH_CEPH_ANSIBLE.joinpath("roles")))

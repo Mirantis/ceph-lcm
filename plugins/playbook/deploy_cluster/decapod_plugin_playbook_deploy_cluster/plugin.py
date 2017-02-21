@@ -222,3 +222,9 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
             result["restapis"] = result["mons"]
 
         return result
+
+    def prepare_plugin(self):
+        resource_path = pathutils.resource(
+            "decapod_plugin_playbook_deploy_cluster", "roles")
+        resource_path.symlink_to(
+            str(playbook_plugin.PATH_CEPH_ANSIBLE.joinpath("roles")))

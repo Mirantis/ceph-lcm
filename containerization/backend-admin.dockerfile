@@ -78,7 +78,7 @@ RUN set -x \
     ./backend/controller[libapt] \
     ./backend/admin[uvloop] \
     jmespath-terminal \
-  && decapod-ansible-deploy-config \
+  && /usr/local/bin/decapod-ansible-deploy-config \
   && _DECAPOD_ADMIN_COMPLETE=source decapod-admin >> /root/.bashrc || true \
   && _DECAPOD_COMPLETE=source decapod >> /root/.bashrc || true \
   && ln -s /usr/local/bin/decapod /usr/local/bin/cli \
@@ -104,8 +104,8 @@ RUN set -x \
   && rm -r /project /root/.cache/pip \
   && apt-key del EA312927 \
   && rm /etc/apt/sources.list.d/mongodb.list \
-  && pip3 freeze > packages-python3 \
-  && pip2 freeze > packages-python2 \
+  && pip3 --no-cache-dir --disable-pip-version-check freeze > packages-python3 \
+  && pip2 --no-cache-dir --disable-pip-version-check freeze > packages-python2 \
   && apt-get clean \
   && apt-get purge -y \
     autoconf \

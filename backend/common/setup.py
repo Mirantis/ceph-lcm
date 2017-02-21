@@ -51,7 +51,8 @@ setuptools.setup(
     },
     entry_points={
         "console_scripts": [
-            "decapod-lock = decapod_common.cliutils:mongolock_cli"
+            "decapod-lock = decapod_common.cliutils:mongolock_cli",
+            "decapod-playbook-plugin-prepare = decapod_common.cliutils:prepare_playbook_plugin"  # NOQA
         ]
     },
     classifiers=(

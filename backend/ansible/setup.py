@@ -52,7 +52,7 @@ setuptools.setup(
     },
     entry_points={
         "console_scripts": [
-            "decapod-ansible-deploy-config = decapod_ansible.generate_config:write_config"  # NOQA
+            "decapod-ansible-deploy-config = decapod_ansible.generate_config:main"  # NOQA
         ]
     },
     classifiers=(

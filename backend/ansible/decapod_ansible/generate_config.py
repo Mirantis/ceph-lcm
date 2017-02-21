@@ -129,3 +129,13 @@ def write_config(**kwargs):
     with open(ANSIBLE_CONFIG_PATH, "wt") as configfp:
         configfp.write(generate_config(**kwargs))
         configfp.write("\n")
+
+
+def make_opt_symlink():
+    path = pkg_resources.resource_filename("decapod_ansible", "ceph-ansible")
+    os.symlink(path, "/opt/ceph-ansible")
+
+
+def main(**kwargs):
+    write_config(**kwargs)
+    make_opt_symlink()

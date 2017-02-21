@@ -165,3 +165,9 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
             "mons": sorted(mons.values(), key=lambda srv: srv.ip),
             "already_deployed": list(cluster_servers.values())
         }
+
+    def prepare_plugin(self):
+        resource_path = pathutils.resource(
+            "decapod_plugin_playbook_add_mon", "roles")
+        resource_path.symlink_to(
+            str(playbook_plugin.PATH_CEPH_ANSIBLE.joinpath("roles")))

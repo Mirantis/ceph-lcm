@@ -38,6 +38,8 @@ from decapod_common.models import task
 LOG = log.getLogger(__name__)
 """Logger."""
 
+PATH_CEPH_ANSIBLE = pathutils.ROOT.joinpath("opt", "ceph-ansible")
+
 
 @enum.unique
 class ServerListPolicy(enum.IntEnum):
@@ -248,6 +250,9 @@ class Base(metaclass=abc.ABCMeta):
 
         LOG.info("Finish execute %s for %s",
                  self.proc.commandline, self.entry_point)
+
+    def prepare_plugin(self):
+        pass
 
 
 class Ansible(Base, metaclass=abc.ABCMeta):

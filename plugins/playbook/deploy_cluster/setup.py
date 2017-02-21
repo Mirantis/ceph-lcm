@@ -41,6 +41,7 @@ setuptools.setup(
             "playbook.yaml",
             "ceph-rest-api.service",
             "templates/*"
+            "roles"
         ]
     },
     install_requires=[

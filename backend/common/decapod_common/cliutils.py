@@ -22,6 +22,7 @@ import pty
 
 from decapod_common import config
 from decapod_common import log
+from decapod_common import plugins
 from decapod_common.models import db
 from decapod_common.models import generic
 from decapod_common.models import lock
@@ -29,6 +30,9 @@ from decapod_common.models import lock
 
 CONF = config.make_config()
 """Config."""
+
+LOG = log.getLogger(__name__)
+"""Logger."""
 
 
 def configure(func):
@@ -78,5 +82,31 @@ def mongolock_cli():
 
         with locked:
             pty.spawn(options.command)
+
+    return main()
+
+
+def prepare_playbook_plugin():
+    @configure
+    def main():
+        parser = argparse.ArgumentParser(
+            description="Prepare playbook plugins"
+        )
+        parser.add_argument(
+            "plugin_name",
+            nargs=argparse.ZERO_OR_MORE,
+            default=[],
+            help="Namespace of plugin to prepare. Empty means all plugins"
+        )
+        args = parser.parse_args()
+
+        plugs = plugins.get_playbook_plugins()
+        if args.plugin_name:
+            plugs = {k: v for k, v in plugs.items() if k in args.plugin_name}
+        plugs = {k: v() for k, v in plugs.items()}
+
+        for name, plug in sorted(plugs.items()):
+            LOG.info("Prepare plugin %s", name)
+            plug.prepare_plugin()
 
     return main()
