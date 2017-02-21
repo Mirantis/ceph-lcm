@@ -63,8 +63,9 @@
                 <ul>
                   <li *ngFor="let server of cluster.data.configuration[detail]">
                     <a [routerLink]="['/servers']" [fragment]="server.server_id">
-                      {{ server.server_id }}
+                      {{ server.server_name }}
                     </a>
+                    (fqdn: {{ server.fqdn }}, ip: {{ server.ip }})
                   </li>
                 </ul>
               </longdata>

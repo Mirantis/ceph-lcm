@@ -34,7 +34,7 @@ describe('Configuration wizard: servers step component', () => {
   let mockData: any;
   let dataService: MockDataService;
   let dom: DOMHelper;
-
+  let getServersIds = () => _.map(component.getPolicyServers(), 'id');
 
   beforeEach(
     done => TestBed.configureTestingModule({
@@ -91,7 +91,6 @@ describe('Configuration wizard: servers step component', () => {
 
     beforeEach(() => {
       component.servers = servers;
-      component.allServerIds = _.map(servers, 'id') as string[];
     });
 
     it('toggle server selection', () => {
@@ -111,7 +110,7 @@ describe('Configuration wizard: servers step component', () => {
     it('all servers selection', () => {
       expect(component.model.data.server_ids).toEqual([]);
       component.toggleSelectAll();
-      expect(component.model.data.server_ids).toEqual(component.allServerIds);
+      expect(component.model.data.server_ids).toEqual(getServersIds());
       component.toggleSelectAll();
       expect(component.model.data.server_ids).toEqual([]);
     });
@@ -123,5 +122,67 @@ describe('Configuration wizard: servers step component', () => {
       component.toggleServer(secondServer);
       expect(component.areAllServersSelected()).toBeTruthy();
     })
+  });
+
+  describe('filters servers accordig to playbook\'s policy', () => {
+    let imitatePolicy = (policy: string) => {
+      return spyOn(component, 'getSharedData').and.returnValue(new Playbook({
+        required_server_list: true,
+        server_list_policy: policy
+      }));
+    };
+
+    beforeEach(() => {
+      component.model.data.cluster_id = 'dummy_cluster_id1';
+      component.servers = _.map(_.range(0, 10), (index) => new Server({
+        id: index,
+        data: {
+          name: 'name' + index,
+          fqdn: 'name' + index,
+          ip: '10.10.0.' + index,
+          cluster_id: index < 3 ? null : (index < 7 ? component.model.data.cluster_id : 'some_cluster_id')
+        }
+      }));
+    });
+
+    it('all servers are returned if no policy is provided', () => {
+      imitatePolicy(null);
+      expect(component.getPolicyServers().length).toBe(10);
+    });
+
+    it('returns all servers for "any_server" policy', () => {
+      imitatePolicy('any_server');
+      expect(component.getPolicyServers().length).toBe(10);
+    });
+
+    it('returns servers that belong to the selected cluster for "in_this_cluster" policy', () => {
+      imitatePolicy('in_this_cluster');
+      expect(getServersIds()).toEqual([3, 4, 5, 6]);
+    });
+
+    it('returns servers that do not belong to the selected cluster for "not_in_this_cluster" policy', () => {
+      imitatePolicy('not_in_this_cluster');
+      expect(getServersIds()).toEqual([0, 1, 2, 7, 8, 9]);
+    });
+
+    it('returns servers that are not in selected cluster for "in_other_cluster" policy', () => {
+      imitatePolicy('in_other_cluster');
+      expect(getServersIds()).toEqual([7, 8, 9]);
+    });
+
+    it('returns unassigned servers or ones that belong to selected cluster for "not_in_other_cluster" policy', () => {
+      imitatePolicy('not_in_other_cluster');
+      expect(getServersIds()).toEqual([0, 1, 2, 3, 4, 5, 6]);
+    });
+
+    it('returns assigned to clusters servers for "in_any_cluster" policy', () => {
+      imitatePolicy('in_any_cluster');
+      expect(getServersIds()).toEqual([3, 4, 5, 6, 7, 8, 9]);
+    });
+
+    it('returns unassigned to clusters servers for "not_in_any_cluster" policy', () => {
+      imitatePolicy('not_in_any_cluster');
+      expect(getServersIds()).toEqual([0, 1, 2]);
+    });
   });
 });

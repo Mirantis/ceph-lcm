@@ -66,12 +66,23 @@ declare module './models' {
     }
   }
 
+  export type PlaybookServersPolicies =
+    'any_server' |
+    'in_this_cluster' |
+    'not_in_this_cluster' |
+    'in_other_cluster' |
+    'not_in_other_cluster' |
+    'in_any_cluster' |
+    'not_in_any_cluster'
+  ;
+
   interface Playbook extends Record {
     name: string,
     id: string,
     required_server_list: boolean,
     description: string,
-    hints: [Hint]
+    hints: [Hint],
+    server_list_policy?: PlaybookServersPolicies
   }
 
   interface PlaybookConfiguration extends BaseModel {

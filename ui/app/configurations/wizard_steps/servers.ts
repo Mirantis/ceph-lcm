@@ -20,7 +20,7 @@ import { Component } from '@angular/core';
 import { WizardStepBase } from '../../wizard_step';
 import { DataService, pagedResult } from '../../services/data';
 import { WizardService } from '../../services/wizard';
-import { Server, Playbook } from '../../models';
+import { Server, Playbook, PlaybookConfiguration, PlaybookServersPolicies } from '../../models';
 
 // Servers selection
 @Component({
@@ -28,7 +28,6 @@ import { Server, Playbook } from '../../models';
 })
 export class ServersStep extends WizardStepBase {
   servers: Server[] = [];
-  allServerIds: string[] = [];
 
   init() {
     this.initModelProperty('data.server_ids', []);
@@ -39,11 +38,37 @@ export class ServersStep extends WizardStepBase {
     this.fetchData();
   }
 
+  getPolicyServers(): Server[] {
+    let selectedPlaybook: Playbook = this.getSharedData('selectedPlaybook');
+    if (!selectedPlaybook) {
+      return this.servers;
+    }
+
+    let selectedClusterId = this.model.data.cluster_id;
+    let differentiator = {
+      'any_server':
+        (server: Server) => true,
+      'in_this_cluster':
+        (server: Server) => server.data.cluster_id === selectedClusterId,
+      'not_in_this_cluster':
+        (server: Server) => server.data.cluster_id !== selectedClusterId,
+      'in_other_cluster':
+        (server: Server) => !!server.data.cluster_id && server.data.cluster_id !== selectedClusterId,
+      'not_in_other_cluster':
+        (server: Server) => !server.data.cluster_id || server.data.cluster_id === selectedClusterId,
+      'in_any_cluster':
+        (server: Server) => !!server.data.cluster_id,
+      'not_in_any_cluster':
+        (server: Server) => !server.data.cluster_id
+    }[selectedPlaybook.server_list_policy];
+
+    return _.filter(this.servers, differentiator);
+  }
+
   fetchData() {
     return this.data.server().findAll({})
       .then((servers: pagedResult) => {
         this.servers = servers.items;
-        this.allServerIds = _.map(this.servers, 'id') as string[];
       });
   }
 
@@ -63,7 +88,11 @@ export class ServersStep extends WizardStepBase {
   }
 
   toggleSelectAll() {
-    this.model.data.server_ids = this.areAllServersSelected() ? [] : this.allServerIds;
+    this.model.data.server_ids = this.areAllServersSelected()
+    ?
+      []
+    :
+      _.map(this.getPolicyServers(), 'id');
   }
 
   isServerSelected(server: Server) {
@@ -71,6 +100,6 @@ export class ServersStep extends WizardStepBase {
   }
 
   areAllServersSelected() {
-    return this.model.data.server_ids.length === this.servers.length;
+    return this.model.data.server_ids.length === this.getPolicyServers().length;
   }
 }

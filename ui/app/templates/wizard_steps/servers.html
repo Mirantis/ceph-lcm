@@ -1,6 +1,6 @@
 <step [title]="'Servers'">
   <div>
-    <div class="col-xs-12 grid">
+    <div class="col-xs-12 grid long-content">
       <div class="grid-line table-help">
         <div class="col-xs-11 name">
           <label>
@@ -17,7 +17,7 @@
         <div class="col-xs-1 text-right">Info</div>
       </div>
 
-      <div class="grid-line" *ngFor="let server of servers">
+      <div class="grid-line" *ngFor="let server of getPolicyServers()">
         <div class="col-xs-11 name">
           <label>
             <input
