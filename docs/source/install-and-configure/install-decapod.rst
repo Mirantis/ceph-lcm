@@ -43,6 +43,21 @@ in :ref:`decapod_prerequisites`.
 
 #. Build Decapod depending on your needs:
 
+   .. important::
+
+       In case if you do not have an access to private repository to
+       fetch base images, then you need to set upstreams for base images:
+
+       .. code-block:: console
+
+           $ make docker_registry_use_dockerhub
+
+       If you decide to switch back, do following:
+
+       .. code-block:: console
+
+           $ make docker_registry_use_internal_ci
+
    * Development version. To build the development images, run:
 
      .. code-block:: console
