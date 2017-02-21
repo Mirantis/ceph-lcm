@@ -2,7 +2,7 @@
   <div class="form-group" [ngClass]="{'has-error': !isValid()}">
     <textarea
       class="form-control mono"
-      rows="15"
+      rows="24"
       name="configuration"
       [(ngModel)]="jsonConfiguration"
       (ngModelChange)="applyChanges($event)"

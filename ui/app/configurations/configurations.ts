@@ -116,15 +116,14 @@ export class ConfigurationsComponent implements OnInit {
     return savePromise
       .then(
         (configuration: Object) => {
+          this.modal.close();
           // Seems jsdata returns the payload as a part of create response.
           // Unneeded values should be removed.
           let pureConfig = new BaseModel(
             _.omit(configuration, ['playbook_id', 'cluster_id', 'name', 'server_ids', 'hints'])
           );
           this.model = pureConfig;
-          this.wizard.init(this.model);
           this.refreshConfigurations();
-          this.modal.close();
         }
       )
       .catch(
