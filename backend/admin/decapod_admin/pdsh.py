@@ -23,7 +23,6 @@ import os
 import pathlib
 import shlex
 
-import asyncssh
 import click
 
 from decapod_admin import main
@@ -273,8 +272,9 @@ async def upload_single_file(ctx, srv, prefix, sftp, remote_path, fileobj):
             recurse=ctx.obj["recursive"],
             follow_symlinks=ctx.obj["follow_symlinks"]
         )
-    except (OSError, asyncssh.SFTPError) as exc:
+    except Exception as exc:
         LOG.error("Cannot upload %s to %s: %s", fileobj, srv.ip, exc)
+        raise
     else:
         click.echo("{0}Finished uploading of {1} to {2}".format(
             prefix, fileobj, remote_path))
@@ -303,13 +303,14 @@ async def download_single_file(ctx, srv, prefix, sftp, local_path, fileobj):
     try:
         await method(
             fileobj,
-            local_path,
+            str(local_path),
             preserve=ctx.obj["preserve"],
             recurse=ctx.obj["recursive"],
             follow_symlinks=ctx.obj["follow_symlinks"]
         )
-    except (OSError, asyncssh.SFTPError) as exc:
+    except Exception as exc:
         LOG.error("Cannot download %s to %s: %s", fileobj, srv.ip, exc)
+        raise
     else:
         click.echo("{0}Finished downloading of {1} to {2}".format(
             prefix, fileobj, local_path))
