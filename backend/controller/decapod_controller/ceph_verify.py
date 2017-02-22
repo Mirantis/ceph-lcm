@@ -75,6 +75,11 @@ def main():
     else:
         verify_consistent_version(parsed)
 
+    if options.no_verify_packages or options.no_verify_installed_versions:
+        LOG.info("Skip verification of package-version.")
+    else:
+        verify_consistent_package_version(parsed)
+
     if options.no_verify_repo_candidate:
         LOG.info("Skip verification of APT repo candidate.")
     else:
@@ -244,6 +249,29 @@ def verify_consistent_version(parsed_fs):
                   version, ", ".join(sorted(hostnames)))
 
     raise ValueError("Installed version is not consistent.")
+
+
+def verify_consistent_package_version(parsed_fs):
+    local_package = {item["package"] for item in parsed_fs.values()}
+    if not local_package:
+        LOG.info("No packages are installed.")
+        return
+    else:
+        local_package = local_package.pop()
+
+    local_version = {item["version"]["parsed"]["version"]
+                     for item in parsed_fs.values()}
+    if not local_package:
+        LOG.info("No versions are installed.")
+        return
+    else:
+        local_version = local_version.pop()
+
+    if local_package.strip() != local_version.strip():
+        LOG.error("Inconsistency. ceph version is %s, package is %s",
+                  local_package, local_version)
+
+        raise ValueError("ceph version / package inconsistency.")
 
 
 def verify_apt_repo_candidate(options, parsed_fs):
