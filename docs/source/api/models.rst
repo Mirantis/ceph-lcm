@@ -997,7 +997,7 @@ Real-world Example
                         "10.10.0.3",
                         "10.10.0.4"
                     ],
-                    "rbd_mirrors": [],
+                    "rbdmirrors": [],
                     "restapis": [
                         "10.10.0.2"
                     ],

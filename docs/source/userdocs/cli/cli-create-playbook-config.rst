@@ -211,7 +211,7 @@ Create a playbook configuration
                           "10.10.0.11",
                           "10.10.0.8"
                       ],
-                      "rbd_mirrors": [],
+                      "rbdmirrors": [],
                       "restapis": [
                           "10.10.0.9"
                       ],

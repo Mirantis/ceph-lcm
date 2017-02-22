@@ -213,7 +213,7 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
             "rgws": [],
             "mdss": [],
             "nfss": [],
-            "rbd_mirrors": [],
+            "rbdmirrors": [],
             "clients": [],
             "iscsi_gw": [],
             "restapis": []

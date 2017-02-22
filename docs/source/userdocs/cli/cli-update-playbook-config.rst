@@ -137,7 +137,7 @@ To do so, update the playbook model using one of the following ways:
                            "10.10.0.11",
                            "10.10.0.9"
                        ],
-                       "rbd_mirrors": [],
+                       "rbdmirrors": [],
                        "restapis": [
                            "10.10.0.8"
                        ],

@@ -117,7 +117,7 @@ The following is an example of the *Deploy Ceph cluster* plugin configuration:
           "10.10.0.11",
           "10.10.0.8"
         ],
-        "rbd_mirrors": [],
+        "rbdmirrors": [],
         "restapis": [
           "10.10.0.9"
         ],
