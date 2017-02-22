@@ -64,7 +64,27 @@ export class DataService {
     this.store.registerAdapter(
       'http',
       new HttpAdapter({
-        basePath: this.basePath
+        basePath: this.basePath,
+        session: this.session,
+        beforeHTTP: function(config: any) {
+          config.headers || (config.headers = {});
+          config.headers.Authorization = this.session.getToken();
+          return HttpAdapter.prototype.beforeHTTP.apply(this, arguments);
+        },
+        afterHTTP: function(config: any, opts: any, response: any) {
+          let expiration = _.get(response.headers, 'x-token-expires');
+          if (expiration) {
+            let token = new Token({
+              id: this.session.getToken(),
+              data: {
+                user: {id: this.session.getLoggedUserId()},
+                expires_at: expiration
+              }
+            });
+            this.session.saveToken(token);
+          }
+          return HttpAdapter.prototype.afterHTTP.apply(this, arguments);
+        }
       }),
       {default: true}
     );
@@ -199,14 +219,6 @@ export class DataService {
         }
       );
       this.mappers[name] = mapper;
-    }
-
-    if (name != 'auth') {
-      // set authorization header
-      // FIXME: Shift to be called in one of Mapper' pre-send hooks
-      mapper['headers'] = {
-        Authorization: this.session.getToken()
-      };
     }
     return mapper;
   }
