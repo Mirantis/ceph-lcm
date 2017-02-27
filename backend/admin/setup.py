@@ -27,7 +27,7 @@ REQUIREMENTS = (
     "python-keystoneclient>=3.9,<4",
     "click>=6,<7",
     "cryptography>=1.4,<2",
-    "asyncssh[libnacl,bcrypt]>=1.8"
+    "asyncssh[libnacl,bcrypt]>=1.8,<2"
 )
 
 

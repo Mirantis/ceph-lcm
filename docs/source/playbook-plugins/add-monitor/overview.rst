@@ -22,5 +22,5 @@ the corresponding version of ``ceph-ansible``.
 ==============    ============================================================
 Plugin version    ``ceph-ansible`` version
 ==============    ============================================================
->=0.2,<0.3        `v2.1.1 <https://github.com/ceph/ceph-ansible/tree/v2.1.1>`_
+>=0.2,<0.3        `v2.1.9 <https://github.com/ceph/ceph-ansible/tree/v2.1.9>`_
 ==============    ============================================================
