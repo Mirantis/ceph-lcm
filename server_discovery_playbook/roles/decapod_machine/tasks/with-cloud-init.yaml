@@ -1,0 +1,63 @@
+---
+# Copyright (c) 2017 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- name: Install cloud-init
+  become: true
+  apt:
+    name: cloud-init
+    state: present
+
+- name: Clean /var/lib/cloud
+  become: true
+  file:
+    path: /var/lib/cloud
+    state: absent
+
+- name: Create nonet directory
+  become: true
+  file:
+    path: /var/lib/cloud/seed/nocloud-net
+    state: directory
+
+- name: Create nonet meta-data
+  become: true
+  lineinfile:
+    state: present
+    create: yes
+    dest: /var/lib/cloud/seed/nocloud-net/meta-data
+    line: "local-hostname: {{ ansible_hostname }}"
+
+- name: Upload user-data
+  become: true
+  copy:
+    src: "{{ user_data }}"
+    dest: /var/lib/cloud/seed/nocloud-net/user-data
+
+- name: Run local cloud-init
+  become: true
+  command: cloud-init init --local
+
+- name: Run cloud-init
+  become: true
+  command: cloud-init init
+
+- name: Run cloud-init modules
+  become: true
+  command: cloud-init modules --mode "{{ item }}"
+  with_items:
+    - config
+    - final

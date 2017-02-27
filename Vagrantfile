@@ -18,10 +18,20 @@
 
 VAGRANTFILE_API_VERSION = "2"
 
+CURRENT_DIR = File.expand_path(File.dirname(__FILE__))
 CLOUD_CONFIG_USERNAME = "ansible"
 CLOUD_CONFIG_URL = "10.0.0.10:9999"
-CLOUD_CONFIG_KEY = "containerization/files/devconfigs/ansible_ssh_keyfile.pub"
+CLOUD_CONFIG_KEY = File.join(
+  CURRENT_DIR,
+  "containerization", "files", "devconfigs", "ansible_ssh_keyfile.pub")
+CLOUD_CONFIG_GEN = File.join(CURRENT_DIR, "devenv", "vagrant-cloud-config.py")
 CLOUD_CONFIG_TOKEN = "26758c32-3421-4f3d-9603-e4b5337e7ecc"
+
+cloud_config_file = ""
+cloud_config_file = `#{CLOUD_CONFIG_GEN} #{CLOUD_CONFIG_USERNAME} #{CLOUD_CONFIG_URL} #{CLOUD_CONFIG_KEY} #{CLOUD_CONFIG_TOKEN}`
+at_exit do
+  File.delete cloud_config_file
+end
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -70,14 +80,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       print "You can install it by `vagrant plugin install vagrant-cachier`"
     end
 
-    if Vagrant.has_plugin?("vagrant-host-shell")
-      devbox.vm.provision :host_shell do |host_shell|
-        host_shell.inline = "ansible-galaxy install -r devenv/requirements.yaml -p devenv/galaxy"
-      end
-    else
-      abort "You have to install vagrant-host-shell plugin to continue"
-    end
-
     devbox.vm.provision "ansible" do |ansible|
       ansible.playbook = "devenv/devbox.yaml"
     end
@@ -87,40 +89,28 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.define "#{host}", autostart: false do |client|
       client.vm.hostname = "ceph-#{host}"
       client.vm.network "private_network", ip: "10.0.0.2#{idx}"
+      config.vm.synced_folder ".", "/vagrant", disabled: true
 
       # http://foo-o-rama.com/vagrant--stdin-is-not-a-tty--fix.html
       client.vm.provision "fix-no-tty", type: "shell" do |s|
         s.privileged = false
         s.inline     = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
       end
+
       client.vm.provision "set-utc-timezone", type: "shell" do |s|
         s.privileged = true
         s.inline     = "ln -fs /usr/share/zoneinfo/UTC /etc/localtime && dpkg-reconfigure -f noninteractive tzdata"
       end
 
-      cloud_config_file = ""
-      if Vagrant.has_plugin?("vagrant-host-shell")
-        cloud_config_file = `./devenv/vagrant-cloud-config.py #{CLOUD_CONFIG_USERNAME} #{CLOUD_CONFIG_URL} #{CLOUD_CONFIG_KEY} #{CLOUD_CONFIG_TOKEN}`
-        at_exit do
-          File.delete cloud_config_file
-        end
-
-        client.vm.provision :host_shell do |host_shell|
-          host_shell.inline = "ansible-galaxy install -r devenv/requirements.yaml -p devenv/galaxy"
-        end
-      else
-        abort "You have to install vagrant-host-shell plugin to continue"
-      end
-
-      client.vm.provision "copy-cloud-config",
-        type:        "file",
-        source:      cloud_config_file,
-        destination: "/tmp/user-data"
-      client.vm.provision "cloud-init", type: "shell" do |s|
-        # http://www.whiteboardcoder.com/2016/04/install-cloud-init-on-ubuntu-and-use.html
-        # https://raymii.org/s/tutorials/Automating_Openstack_with_Cloud_init_run_a_script_on_VMs_first_boot.html
-        s.privileged = true
-        s.inline     = "apt-get install -y cloud-init && rm -rf /var/lib/cloud/* && mkdir -p /var/lib/cloud/seed/nocloud-net/ && cd /var/lib/cloud/seed/nocloud-net && echo 'local-hostname: ceph-#{host}' > meta-data && mv /tmp/user-data user-data && cloud-init init --local && cloud-init init && cloud-init modules"
+      # http://www.whiteboardcoder.com/2016/04/install-cloud-init-on-ubuntu-and-use.html
+      # https://raymii.org/s/tutorials/Automating_Openstack_with_Cloud_init_run_a_script_on_VMs_first_boot.html
+      client.vm.provision :ansible do |ansible|
+        ansible.playbook = File.join(
+          CURRENT_DIR, "server_discovery_playbook", "playbook.yaml"
+        )
+        ansible.extra_vars = {
+          user_data: cloud_config_file
+        }
       end
 
       client.vm.provider "virtualbox" do |vb, override|

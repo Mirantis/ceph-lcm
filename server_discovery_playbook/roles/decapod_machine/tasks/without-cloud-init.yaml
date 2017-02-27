@@ -1,0 +1,93 @@
+---
+# Copyright (c) 2017 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- name: Slurp user-data
+  include_vars: "{{ user_data }}"
+
+- name: Install packages
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ packages | default([]) }}"
+
+- name: Create users
+  become: true
+  user:
+    name: "{{ item.name }}"
+    shell: "{{ item.shell | default('/bin/bash') }}"
+    groups: "{{ item.groups | default([]) | join(', ') }}"
+  with_items: "{{ users | default([]) }}"
+
+- name: Add SSH authorized keys
+  become: true
+  authorized_key:
+    user: "{{ item.0.name }}"
+    key: "{{ item.1 }}"
+    exclusive: yes
+  with_subelements:
+    - "{{ users | default([]) }}"
+    - ssh-authorized-keys
+
+- name: Add users to sudoers (sudo is string)
+  become: true
+  lineinfile:
+    dest: "/etc/sudoers"
+    state: present
+    line: "{{ item.name }} {{ item.sudo }}"
+    validate: "visudo -cf %s"
+  with_items:
+    - "{{ users | default([]) }}"
+  when: item.sudo is string
+
+- name: Add users to sudoers (sudo is not string)
+  become: true
+  lineinfile:
+    dest: "/etc/sudoers"
+    state: present
+    line: "{{ item.0.name }} {{ item.1 }}"
+    validate: "visudo -cf %s"
+  with_subelements:
+    - "{{ users | default([]) }}"
+    - sudo
+  when: item.0.sudo is not string
+
+- name: Write server discovery files
+  become: true
+  copy:
+    content: "{{ item.content }}"
+    dest: "{{ item.path }}"
+    mode: "{{ item.permissions }}"
+  with_items: "{{ write_files | default([]) }}"
+
+- name: Update /etc/rc.local
+  become: true
+  lineinfile:
+    line: "/usr/share/server_discovery.sh >> /var/log/server_discovery.log 2>&1"
+    insertbefore: '^exit 0'
+    dest: /etc/rc.local
+
+- name: Ensure /etc/rc.local is enabled
+  become: true
+  service:
+    name: rc-local.service
+    enabled: yes
+  when: ansible_service_mgr == "systemd"
+
+- name: Run rc.local
+  become: true
+  command: /etc/rc.local

@@ -22,6 +22,7 @@ import cryptography.hazmat.primitives.serialization
 
 from decapod_admin import main
 from decapod_common import pathutils
+from decapodlib import client
 from decapodlib import cloud_config as conf
 
 
@@ -63,8 +64,10 @@ def cloud_config(ctx, username, no_discovery, timeout, public_url):
         cryptography.hazmat.primitives.serialization.PublicFormat.OpenSSH)
     openssh_public_key = openssh_public_key.decode("utf-8")
 
+    decapod_client = client.V1Client(public_url, "", "")
+
     config = conf.generate_cloud_config(
-        public_url,
+        decapod_client._make_url("/v1/server"),
         ctx.obj["config"]["api"]["server_discovery_token"],
         openssh_public_key,
         username,

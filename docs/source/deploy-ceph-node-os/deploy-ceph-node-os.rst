@@ -25,3 +25,11 @@ The section contains the following topics:
 
    generate-user-data-for-cloud-init.rst
    maas.rst
+
+.. note::
+
+    If you do not want (or cannot) use server discovery for some reason,
+    please check Ansible playbooks which will prepare machine based on
+    generated user-data.
+
+    https://github.com/Mirantis/ceph-lcm/tree/master/server_discovery_playbook
