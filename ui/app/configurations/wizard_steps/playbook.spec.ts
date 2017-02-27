@@ -35,13 +35,12 @@ describe('Configuration wizard: playbook step component', () => {
   let dataService: MockDataService;
   let dom: DOMHelper;
 
-
   beforeEach(
     done => TestBed.configureTestingModule({
         imports: [AppModule],
         providers: [
           {provide: APP_BASE_HREF, useValue: '/'},
-          {provide: DataService, useClass: MockDataService},
+          {provide: DataService, useClass: MockDataService}
         ]
       })
       .compileComponents()
@@ -78,28 +77,6 @@ describe('Configuration wizard: playbook step component', () => {
     let dataService = fixture.debugElement.injector.get(DataService);
     component.fetchData();
     expect(dataService.playbook().findAll).toHaveBeenCalledWith({});
-  });
-
-  it('shows only playbooks permitted by user\'s role', () => {
-    let playbook2 = new Playbook({id: 'id2', name: 'name2'});
-    component.playbooks = [
-      new Playbook({id: 'id1', name: 'name1'}),
-      playbook2,
-      new Playbook({id: 'id3', name: 'name3'})
-    ];
-    globals.loggedUserRole = null;
-    expect(component.getAllowedPlaybooks()).toEqual([]);
-    globals.loggedUserRole = new Role({data: {
-      permissions: [
-        new PermissionGroup({
-          name: 'playbook',
-          permissions: [
-            playbook2.id
-          ]
-        })
-      ]
-    }});
-    expect(component.getAllowedPlaybooks()).toEqual([playbook2]);
   });
 
   describe('upon playbook selection', () => {

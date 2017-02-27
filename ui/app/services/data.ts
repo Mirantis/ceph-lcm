@@ -51,23 +51,24 @@ declare module 'js-data' {
 
 @Injectable()
 export class DataService {
+  store = new DataStore();
+  basePath = 'http://127.0.0.1:9999/v1';
+  mappers: {[key: string]: Mapper} = {};
+
   constructor(
     private session: SessionService,
     private error: ErrorService,
     private router: Router,
     private modal: Modal
   ) {
-    this.store.registerAdapter('http', this.adapter, {default: true});
+    this.store.registerAdapter(
+      'http',
+      new HttpAdapter({
+        basePath: this.basePath
+      }),
+      {default: true}
+    );
   }
-
-  store = new DataStore();
-
-  // FIXME: to be moved to configuration
-  //basePath = 'http://private-3509f-cephlcmswaggerapi.apiary-mock.com/v1';
-  basePath = 'http://localhost:9999/v1';
-
-  adapter = new HttpAdapter({basePath: this.basePath});
-  mappers: {[key: string]: Mapper} = {};
 
   token(): Mapper {return this.getMapper('auth', Token)}
   user(): Mapper {return this.getMapper('user', User)}
