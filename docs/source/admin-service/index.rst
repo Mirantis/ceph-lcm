@@ -92,6 +92,7 @@ allows to perform a various maintenence and admin routines.
    pdsh.rst
    restore-entities.rst
    locked-servers.rst
+   password-reset.rst
 
 Also, *admin* service serves documentation you are reading so Decapod
 has bundled documentation within container. To access documentation,
