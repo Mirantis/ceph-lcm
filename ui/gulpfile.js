@@ -150,7 +150,7 @@ gulp.task('modify:index', function () {
 // Modifies endpoint to be host-independent
 gulp.task('modify:endpoint', function () {
   return gulp.src('build/js/**/*.js')
-  .pipe(replace('http://localhost:9999/v', '/v'))
+  .pipe(replace('http://127.0.0.1:9999/v', '/v'))
   .pipe(gulp.dest('build/js'));
 });
 
