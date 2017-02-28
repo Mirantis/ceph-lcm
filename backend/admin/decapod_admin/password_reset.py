@@ -20,6 +20,7 @@ import click
 
 from decapod_admin import main
 from decapod_common import passwords
+from decapod_common.models import token
 from decapod_common.models import user
 
 
@@ -52,6 +53,8 @@ def password_reset(ctx, user_id, password):
 
     user_model.password_hash = passwords.hash_password(password)
     user_model.save()
+
+    token.revoke_for_user(user_model.model_id)
 
     if need_to_show_password:
         click.echo(password)

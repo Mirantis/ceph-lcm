@@ -198,3 +198,28 @@ in :ref:`decapod_prerequisites`.
        Migrate 0 clusters.
 
        -- Stderr:
+
+#. Reset password of user **root**. Please check
+   :ref:`decapod_admin_service_password_reset` for
+   details.
+
+   **Example**::
+
+       $ docker-compose exec -T admin decapod user get-all
+       [
+          {
+              "data": {
+                  "email": "noreply@example.com",
+                  "full_name": "Root User",
+                  "login": "root",
+                  "role_id": "4ca555d3-24fd-4554-9b4b-ca44bac45062"
+              },
+              "id": "e6f28a01-ee7f-4ac8-b1ee-a1a21c3eb182",
+              "initiator_id": null,
+              "model": "user",
+              "time_deleted": 0,
+              "time_updated": 1488279856,
+              "version": 1
+          }
+       ]
+       $ docker-compose exec -T admin decapod-admin password-reset -p MYNEWPASSWORD e6f28a01-ee7f-4ac8-b1ee-a1a21c3eb182
