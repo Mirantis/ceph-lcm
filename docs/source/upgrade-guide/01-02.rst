@@ -25,120 +25,249 @@ Changes in existing Ceph deployments are not required.
 This guide tries to cover all these obstacles. It is split into 2 parts:
 action, required to perform on version 0.1 and actions for version 0.2.
 
+
+Initial Preparations
+--------------------
+
+To start, we need to have latest versions of 0.2 release series. To
+obtain them, please clone repositories on machine which is used to run
+Decapod.
+
+.. code-block:: console
+
+    $ git clone -b stable-0.2 --recurse-submodules https://github.com/Mirantis/ceph-lcm.git ~/decapod
+
+.. important::
+
+    At the time of writing this guide, branch *stable-0.2* was not
+    created yet. If you cannot clone such branch, please use *master*
+    branch instead.
+
+    .. code-block:: console
+
+        $ git clone -b master --recurse-submodules https://github.com/Mirantis/ceph-lcm.git ~/decapod
+
+After that, please create directory where config files and private keys
+for decapod should be stored. You may choose any directory you like.
+
+.. code-block:: console
+
+    $ mkdir -p ~/decapod_runtime
+
+The last step is to identify the name of the project. If you run Shrimp
+with explicit project name using docker-compose (e.g ``docker-compose -p
+shrimp up``), then ``shrimp`` has to be your projectname. If you didn't
+set any, then you need to fetch it.
+
+Execute next command from the directory where you run
+:program:`docker-compose` to start Shrimp.
+
+.. code-block:: console
+
+    $ docker-compose ps | grep api | cut -f 1 -d '_' | sort -u
+    shrimp
+
+For simplicity, please assume that the name of the project is ``PROJ``.
+
 .. note::
 
-    Documentation below will use ``myprojectname`` as the name of the
-    stack you are running with :program:`docker-compose`. If you don't
-    set and use default project name, please postpone :option:`-p` flag
-    with its parameter from all :program:`docker-compose` commands.
-
-    If you do not want to pass :option:`-p` all the time, please use
+    If you do not want to pass :option:`-p` all the
+    time you use :program:`docker-compose`, please use
     :envvar:`COMPOSE_PROJECT_NAME` `environment variable
     <https://docs.docker.com/compose/reference/envvars/#/composeprojectname>`_.
 
-
-Clone latest version of 0.1.x releases
---------------------------------------
-
-Please clone latest version of the repository to the host where decapod
-is running. This is required in order to obtain backup/migrate scripts
-placed in SCM.
+Now let's copy required files in your :file:`~/decapod_runtime` directory.
 
 .. code-block:: console
 
-    $ git clone -b stable-0.1 --single-branch https://github.com/Mirantis/ceph-lcm.git ~/shrimp
-    $ cd ~/shrimp
+    $ cp ~/decapod/{.env,docker-compose.yml,docker-compose.override.yml} ~/decapod_runtime
 
-Scripts, we are interesting in, are placed in :file:`./scripts`
-directory of the repository.
+And let's set the path to SSH private key in :file:`.env` file.
+
+.. code-block:: console
+
+    $ sed -i "s?^DECAPOD_SSH_PRIVATE_KEY=.*?DECAPOD_SSH_PRIVATE_KEY=$HOME/decapod_runtime/id_rsa?" ~/decapod_runtime/.env
+
+If you are using the name other than :file:`id_rsa` for private key, use
+it.
 
 
-Backup database
+Backup Database
 ---------------
 
-Backup procedure is trivial. The only difference is that you execute
-:file:`./scripts/backup_working_db.sh` script last time, version 0.2.x
-and newer have other backup procedure.
+We will create 2 backups:
 
-To perform database backup, you need to have container ID (or name) of the database. You can get it using ``docker ps`` command:
+:file:`pre_upgrade`
+  This will have a backup of data before any other action.
 
-.. code-block:: console
+:file:`pre_upgrade_renamed`
+  This will have a backup in case if you want to use default config
+  from 0.2 and do not port existing one.
 
-    $ docker ps | grep database | awk '{print $NF}'
-    shrimp_database_1
 
-Another way to get the same result is using :program:`docker-compose`:
+Create :file:`pre_upgrade` Backup
+*********************************
 
-.. code-block:: console
-
-    $ docker-compose -p myprojectname ps -q database
-    108940b8201a7728f093f7c03f63d03fe1fb3cc9dea99410273a243ef7c4b131
-
-*myprojectname* is the name of the project you're running with. If you
-didn't set any before, do not set it now.
-
-After that, create backup with following command:
+From the directory where you run Shrimp, please execute following
+command. Please, pay attention to the fact that **PROJ** is listed
+as lowercase **proj** here (this is how :program:`docker-compose` is
+converting project name to container name).
 
 .. code-block:: console
 
-    $ ./scripts/backup_working_db.sh ~/pre_upgrade.tar.gz shrimp_database_1
-    2017-02-13T15:19:26.585+0000    writing shrimp.migration_script to
-    2017-02-13T15:19:26.586+0000    writing shrimp.token to
-    2017-02-13T15:19:26.586+0000    writing shrimp.lock to
-    2017-02-13T15:19:26.587+0000    writing shrimp.user to
-    2017-02-13T15:19:26.602+0000    done dumping shrimp.token (1 document)
-    2017-02-13T15:19:26.603+0000    done dumping shrimp.migration_script (3 documents)
-    2017-02-13T15:19:26.606+0000    writing shrimp.cluster to
-    2017-02-13T15:19:26.606+0000    writing shrimp.role to
-    2017-02-13T15:19:26.608+0000    done dumping shrimp.role (1 document)
-    2017-02-13T15:19:26.609+0000    writing shrimp.server to
-    2017-02-13T15:19:26.609+0000    done dumping shrimp.cluster (1 document)
-    2017-02-13T15:19:26.609+0000    writing shrimp.execution_step to
-    2017-02-13T15:19:26.609+0000    done dumping shrimp.server (0 documents)
-    2017-02-13T15:19:26.610+0000    done dumping shrimp.execution_step (0 documents)
-    2017-02-13T15:19:26.612+0000    writing shrimp.kv to
-    2017-02-13T15:19:26.612+0000    writing shrimp.task to
-    2017-02-13T15:19:26.613+0000    done dumping shrimp.task (0 documents)
-    2017-02-13T15:19:26.613+0000    writing shrimp.playbook_configuration to
-    2017-02-13T15:19:26.613+0000    done dumping shrimp.user (1 document)
-    2017-02-13T15:19:26.613+0000    writing shrimp.execution to
-    2017-02-13T15:19:26.613+0000    done dumping shrimp.kv (0 documents)
-    2017-02-13T15:19:26.614+0000    done dumping shrimp.lock (1 document)
-    2017-02-13T15:19:26.614+0000    done dumping shrimp.playbook_configuration (0 documents)
-    2017-02-13T15:19:26.620+0000    done dumping shrimp.execution (0 documents)
-    /backup/
-    /backup/dump/
-    /backup/dump/shrimp/
-    /backup/dump/shrimp/execution_step.metadata.json.gz
-    /backup/dump/shrimp/lock.metadata.json.gz
-    /backup/dump/shrimp/execution_step.bson.gz
-    /backup/dump/shrimp/kv.bson.gz
-    /backup/dump/shrimp/role.bson.gz
-    /backup/dump/shrimp/migration_script.bson.gz
-    /backup/dump/shrimp/task.bson.gz
-    /backup/dump/shrimp/user.metadata.json.gz
-    /backup/dump/shrimp/lock.bson.gz
-    /backup/dump/shrimp/user.bson.gz
-    /backup/dump/shrimp/token.metadata.json.gz
-    /backup/dump/shrimp/role.metadata.json.gz
-    /backup/dump/shrimp/cluster.bson.gz
-    /backup/dump/shrimp/server.metadata.json.gz
-    /backup/dump/shrimp/task.metadata.json.gz
-    /backup/dump/shrimp/playbook_configuration.bson.gz
-    /backup/dump/shrimp/migration_script.metadata.json.gz
-    /backup/dump/shrimp/cluster.metadata.json.gz
-    /backup/dump/shrimp/execution.bson.gz
-    /backup/dump/shrimp/server.bson.gz
-    /backup/dump/shrimp/kv.metadata.json.gz
-    /backup/dump/shrimp/execution.metadata.json.gz
-    /backup/dump/shrimp/token.bson.gz
-    /backup/dump/shrimp/playbook_configuration.metadata.json.gz
-    tar: Removing leading `/' from member names
+    $ docker exec -i proj_database_1 mongodump --gzip --archive --ssl --sslAllowInvalidCertificates > ~/pre_upgrade
+    2017-03-01T14:21:52.856+0000    writing shrimp.migration_script to archive on stdout
+    2017-03-01T14:21:52.857+0000    writing shrimp.role to archive on stdout
+    2017-03-01T14:21:52.857+0000    writing shrimp.lock to archive on stdout
+    2017-03-01T14:21:52.857+0000    writing shrimp.user to archive on stdout
+    2017-03-01T14:21:52.857+0000    done dumping shrimp.migration_script (3 documents)
+    2017-03-01T14:21:52.860+0000    writing shrimp.cluster to archive on stdout
+    2017-03-01T14:21:52.862+0000    done dumping shrimp.cluster (1 document)
+    2017-03-01T14:21:52.866+0000    writing shrimp.server to archive on stdout
+    2017-03-01T14:21:52.867+0000    done dumping shrimp.server (0 documents)
+    2017-03-01T14:21:52.869+0000    done dumping shrimp.user (1 document)
+    2017-03-01T14:21:52.875+0000    writing shrimp.kv to archive on stdout
+    2017-03-01T14:21:52.876+0000    writing shrimp.execution_step to archive on stdout
+    2017-03-01T14:21:52.876+0000    done dumping shrimp.execution_step (0 documents)
+    2017-03-01T14:21:52.881+0000    writing shrimp.task to archive on stdout
+    2017-03-01T14:21:52.882+0000    done dumping shrimp.lock (1 document)
+    2017-03-01T14:21:52.882+0000    done dumping shrimp.kv (0 documents)
+    2017-03-01T14:21:52.882+0000    done dumping shrimp.task (0 documents)
+    2017-03-01T14:21:52.887+0000    writing shrimp.execution to archive on stdout
+    2017-03-01T14:21:52.888+0000    done dumping shrimp.role (1 document)
+    2017-03-01T14:21:52.889+0000    done dumping shrimp.execution (0 documents)
+    2017-03-01T14:21:52.891+0000    writing shrimp.token to archive on stdout
+    2017-03-01T14:21:52.892+0000    writing shrimp.playbook_configuration to archive on stdout
+    2017-03-01T14:21:52.894+0000    done dumping shrimp.token (0 documents)
+    2017-03-01T14:21:52.894+0000    done dumping shrimp.playbook_configuration (0 documents)
 
-Backup is created in :file:`~/pre_upgrade.tar.gz`.
+.. important::
+
+    If you want to restore database for any reason, please execute following:
+
+    .. code-block:: console
+
+        $ docker exec -i proj_database_1 mongorestore --drop --gzip --archive --ssl --sslAllowInvalidCertificates < ~/pre_upgrade
+        2017-03-01T14:26:19.268+0000    creating intents for archive
+        2017-03-01T14:26:19.309+0000    reading metadata for shrimp.migration_script from archive on stdin
+        2017-03-01T14:26:19.465+0000    restoring shrimp.migration_script from archive on stdin
+        2017-03-01T14:26:19.469+0000    restoring indexes for collection shrimp.migration_script from metadata
+        2017-03-01T14:26:19.469+0000    finished restoring shrimp.migration_script (3 documents)
+        2017-03-01T14:26:19.539+0000    reading metadata for shrimp.cluster from archive on stdin
+        2017-03-01T14:26:19.728+0000    restoring shrimp.cluster from archive on stdin
+        2017-03-01T14:26:19.735+0000    restoring indexes for collection shrimp.cluster from metadata
+        2017-03-01T14:26:20.010+0000    finished restoring shrimp.cluster (1 document)
+        2017-03-01T14:26:20.206+0000    reading metadata for shrimp.server from archive on stdin
+        2017-03-01T14:26:20.306+0000    reading metadata for shrimp.user from archive on stdin
+        2017-03-01T14:26:20.507+0000    restoring shrimp.server from archive on stdin
+        2017-03-01T14:26:20.509+0000    restoring indexes for collection shrimp.server from metadata
+        2017-03-01T14:26:20.731+0000    restoring shrimp.user from archive on stdin
+        2017-03-01T14:26:21.580+0000    restoring indexes for collection shrimp.user from metadata
+        2017-03-01T14:26:21.580+0000    finished restoring shrimp.server (0 documents)
+        2017-03-01T14:26:21.707+0000    reading metadata for shrimp.execution_step from archive on stdin
+        2017-03-01T14:26:21.732+0000    reading metadata for shrimp.lock from archive on stdin
+        2017-03-01T14:26:22.119+0000    finished restoring shrimp.user (1 document)
+        2017-03-01T14:26:22.374+0000    restoring shrimp.execution_step from archive on stdin
+        2017-03-01T14:26:22.376+0000    restoring indexes for collection shrimp.execution_step from metadata
+        2017-03-01T14:26:22.579+0000    restoring shrimp.lock from archive on stdin
+        2017-03-01T14:26:22.666+0000    finished restoring shrimp.execution_step (0 documents)
+        2017-03-01T14:26:22.724+0000    reading metadata for shrimp.kv from archive on stdin
+        2017-03-01T14:26:22.724+0000    restoring indexes for collection shrimp.lock from metadata
+        2017-03-01T14:26:22.790+0000    reading metadata for shrimp.task from archive on stdin
+        2017-03-01T14:26:22.824+0000    reading metadata for shrimp.role from archive on stdin
+        2017-03-01T14:26:23.016+0000    restoring shrimp.kv from archive on stdin
+        2017-03-01T14:26:23.018+0000    restoring indexes for collection shrimp.kv from metadata
+        2017-03-01T14:26:23.208+0000    finished restoring shrimp.lock (1 document)
+        2017-03-01T14:26:23.440+0000    restoring shrimp.task from archive on stdin
+        2017-03-01T14:26:23.443+0000    restoring indexes for collection shrimp.task from metadata
+        2017-03-01T14:26:23.616+0000    restoring shrimp.role from archive on stdin
+        2017-03-01T14:26:23.745+0000    finished restoring shrimp.kv (0 documents)
+        2017-03-01T14:26:23.938+0000    finished restoring shrimp.task (0 documents)
+        2017-03-01T14:26:24.024+0000    reading metadata for shrimp.execution from archive on stdin
+        2017-03-01T14:26:24.024+0000    restoring indexes for collection shrimp.role from metadata
+        2017-03-01T14:26:24.090+0000    reading metadata for shrimp.token from archive on stdin
+        2017-03-01T14:26:24.146+0000    reading metadata for shrimp.playbook_configuration from archive on stdin
+        2017-03-01T14:26:24.407+0000    restoring shrimp.execution from archive on stdin
+        2017-03-01T14:26:24.410+0000    restoring indexes for collection shrimp.execution from metadata
+        2017-03-01T14:26:24.782+0000    finished restoring shrimp.role (1 document)
+        2017-03-01T14:26:24.991+0000    restoring shrimp.token from archive on stdin
+        2017-03-01T14:26:24.993+0000    restoring indexes for collection shrimp.token from metadata
+        2017-03-01T14:26:25.275+0000    restoring shrimp.playbook_configuration from archive on stdin
+        2017-03-01T14:26:25.277+0000    restoring indexes for collection shrimp.playbook_configuration from metadata
+        2017-03-01T14:26:25.473+0000    finished restoring shrimp.execution (0 documents)
+        2017-03-01T14:26:25.584+0000    finished restoring shrimp.token (0 documents)
+        2017-03-01T14:26:25.852+0000    finished restoring shrimp.playbook_configuration (0 documents)
+        2017-03-01T14:26:25.852+0000    done
 
 
-Extract config files
+Create :file:`pre_upgrade_renamed` Backup
+*****************************************
+
+Since project was renamed from Shrimp to Decapod during development
+of release 0.2, default database name was also changed from *shrimp*
+to *decapod*. If you want to use new name and keep running with
+default config, then please rename it in Mongo DB doing following:
+
+.. code-block:: console
+
+    $ docker-compose -p PROJ exec database moshell
+    MongoDB shell version: 3.2.10
+    connecting to: false
+    2017-02-14T06:38:15.400+0000 W NETWORK  [thread1] The server certificate does not match the host name 127.0.0.1
+    Welcome to the MongoDB shell.
+    For interactive help, type "help".
+    For more comprehensive documentation, see
+            http://docs.mongodb.org/
+    Questions? Try the support group
+            http://groups.google.com/group/mongodb-user
+    Server has startup warnings:
+    2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten]
+    2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/enabled is 'always'.
+    2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten] **        We suggest setting it to 'never'
+    2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten]
+    2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.
+    2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten] **        We suggest setting it to 'never'
+    2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten]
+    > db.copyDatabase("shrimp", "decapod", "localhost")
+    { "ok" : 1 }
+    > use shrimp
+    switched to db shrimp
+    > db.dropDatabase()
+    { "dropped" : "shrimp", "ok" : 1 }
+
+The command above will rename database *shrimp* to *decapod* keeping all
+the data. After that, do new backup as described above:
+
+.. code-block:: console
+
+    $ docker exec -i proj_database_1 mongodump --gzip --archive --ssl --sslAllowInvalidCertificates > ~/pre_upgrade_renamed
+    2017-03-01T14:28:36.830+0000    writing decapod.user to archive on stdout
+    2017-03-01T14:28:36.831+0000    writing decapod.lock to archive on stdout
+    2017-03-01T14:28:36.831+0000    writing decapod.role to archive on stdout
+    2017-03-01T14:28:36.832+0000    writing decapod.migration_script to archive on stdout
+    2017-03-01T14:28:36.833+0000    done dumping decapod.user (1 document)
+    2017-03-01T14:28:36.845+0000    writing decapod.cluster to archive on stdout
+    2017-03-01T14:28:36.845+0000    done dumping decapod.cluster (1 document)
+    2017-03-01T14:28:36.846+0000    done dumping decapod.lock (1 document)
+    2017-03-01T14:28:36.852+0000    done dumping decapod.role (1 document)
+    2017-03-01T14:28:36.852+0000    writing decapod.kv to archive on stdout
+    2017-03-01T14:28:36.853+0000    done dumping decapod.migration_script (3 documents)
+    2017-03-01T14:28:36.854+0000    writing decapod.execution_step to archive on stdout
+    2017-03-01T14:28:36.855+0000    done dumping decapod.kv (0 documents)
+    2017-03-01T14:28:36.859+0000    writing decapod.server to archive on stdout
+    2017-03-01T14:28:36.862+0000    writing decapod.task to archive on stdout
+    2017-03-01T14:28:36.862+0000    writing decapod.playbook_configuration to archive on stdout
+    2017-03-01T14:28:36.862+0000    done dumping decapod.execution_step (0 documents)
+    2017-03-01T14:28:36.862+0000    done dumping decapod.playbook_configuration (0 documents)
+    2017-03-01T14:28:36.862+0000    done dumping decapod.server (0 documents)
+    2017-03-01T14:28:36.869+0000    writing decapod.token to archive on stdout
+    2017-03-01T14:28:36.869+0000    done dumping decapod.task (0 documents)
+    2017-03-01T14:28:36.870+0000    done dumping decapod.token (0 documents)
+    2017-03-01T14:28:36.872+0000    writing decapod.execution to archive on stdout
+    2017-03-01T14:28:36.873+0000    done dumping decapod.execution (0 documents)
+
+
+Extract Config Files
 --------------------
 
 If you already have a configuration files from old version, please
@@ -148,21 +277,24 @@ you need to mount your own if you've changed some defaults.
 
 If you already have all files, mentioned
 in `documentation on version 0.1
-<http://decapod.readthedocs.io/en/stable-0.1/install-and-configure/build-images.html#ssh-private-keys>`_ in :file:`~/decapod_runtime`, you can
-skip this section and proceed to `Stop Decapod 0.1`_.
+<http://decapod.readthedocs.io/en/stable-0.1/install-and-configure/build-images.html#ssh-private-keys>`_
+in :file:`~/decapod_runtime`, you can skip this section and proceed
+to `Stop and Remove Containers for Version 0.1.x`.
 
-Otherwise, execute commands mentioned below to collect required files:
+Otherwise, execute commands mentioned below to collect required files.
+These commands should be executed from the same directory which you are
+using to run Shrimp 0.1:
 
 .. code-block:: console
 
     $ mkdir ~/decapod_runtime
-    $ docker cp "$(docker-compose -p myprojectname ps -q api):/etc/shrimp/config.yaml" ~/decapod_runtime
-    $ docker cp "$(docker-compose -p myprojectname ps -q controller):/root/.ssh/id_rsa" ~/decapod_runtime
-    $ docker cp "$(docker-compose -p myprojectname ps -q frontend):/ssl/dhparam.pem" ~/decapod_runtime
-    $ docker cp "$(docker-compose -p myprojectname ps -q frontend):/ssl/ssl.crt" ~/decapod_runtime
-    $ docker cp "$(docker-compose -p myprojectname ps -q frontend):/ssl/ssl.key" ~/decapod_runtime
-    $ docker cp "$(docker-compose -p myprojectname ps -q database):/certs/mongodb.pem" ~/decapod_runtime
-    $ docker cp "$(docker-compose -p myprojectname ps -q database):/certs/mongodb-ca.crt" ~/decapod_runtime
+    $ docker cp "$(docker-compose -p PROJ ps -q api):/etc/shrimp/config.yaml" ~/decapod_runtime
+    $ docker cp "$(docker-compose -p PROJ ps -q controller):/root/.ssh/id_rsa" ~/decapod_runtime
+    $ docker cp "$(docker-compose -p PROJ ps -q frontend):/ssl/dhparam.pem" ~/decapod_runtime
+    $ docker cp "$(docker-compose -p PROJ ps -q frontend):/ssl/ssl.crt" ~/decapod_runtime
+    $ docker cp "$(docker-compose -p PROJ ps -q frontend):/ssl/ssl.key" ~/decapod_runtime
+    $ docker cp "$(docker-compose -p PROJ ps -q database):/certs/mongodb.pem" ~/decapod_runtime
+    $ docker cp "$(docker-compose -p PROJ ps -q database):/certs/mongodb-ca.crt" ~/decapod_runtime
 
 If you do not have generated any files mentioned above by yourself and
 used defaults, there is not need to copy them: all of them will be
@@ -171,130 +303,30 @@ stored in correct places in 0.2.x images. If you've modified any of
 please copy them.
 
 
-.. important::
+Get Images for Version 0.2
+--------------------------
 
-    Since project was renamed from Shrimp to Decapod during development
-    of release 0.2, default database name was also changed from *shrimp*
-    to *decapod*. If you want to use new name and keep running with
-    default config, then please rename it in Mongo DB doing following:
-
-    .. code-block:: console
-
-        $ docker-compose -p myprojectname exec database moshell
-        MongoDB shell version: 3.2.10
-        connecting to: false
-        2017-02-14T06:38:15.400+0000 W NETWORK  [thread1] The server certificate does not match the host name 127.0.0.1
-        Welcome to the MongoDB shell.
-        For interactive help, type "help".
-        For more comprehensive documentation, see
-                http://docs.mongodb.org/
-        Questions? Try the support group
-                http://groups.google.com/group/mongodb-user
-        Server has startup warnings:
-        2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten]
-        2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/enabled is 'always'.
-        2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten] **        We suggest setting it to 'never'
-        2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten]
-        2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.
-        2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten] **        We suggest setting it to 'never'
-        2017-02-14T06:20:54.806+0000 I CONTROL  [initandlisten]
-        > db.copyDatabase("shrimp", "decapod", "localhost")
-        { "ok" : 1 }
-        > use shrimp
-        switched to db shrimp
-        > db.dropDatabase()
-        { "dropped" : "shrimp", "ok" : 1 }
-
-    This will do rename. After that, you can do another backup as described
-    in `Backup database`_, but in :file:`~/pre_upgrade_renamed.tar.gz`.
+Please follow :ref:`decapod_install_index` chapter to get new images.
+And remember that we have required files in :file:`~/decapod_runtime`.
+Repository for version 0.2 is cloned in :file:`~/decapod` as mentioned
+in `Initial Preparations`_.
 
 
-Stop Decapod 0.1
-----------------
+Stop and Remove Containers for Version 0.1.x
+--------------------------------------------
 
-.. note::
+Since Docker containers are stateless and we have a backup of the state
+(DB backup), the most easiest and safe method of updating is to drop
+existing containers and start new ones.
 
-    All operations on stopping Decapod 0.1 should be done with *the
-    same* :file:`docker-compose.yml` as you've used before. Newer
-    file is required *only* when you run version 0.2.
-
-Since you've made a backup, it is a time to stop Decapod. You can do
-that with following command:
+From the directory where you run Shrimp do the following:
 
 .. code-block:: console
 
-    $ docker-compose -p myprojectname stop
-
-.. important::
-
-    Please do not use :option:`-v` or :option:`--rmi` flags of **down**
-    command. But if you've removed volumes for some reason, you can
-    restore backup after running version 0.2.
-
-    .. code-block:: console
-
-        $ ./scripts/restore_working_db.sh ~/pre_upgrade.tar.gz decapod_database_1
-
-To obtain version 0.2 please check :ref:`decapod_install_index` chapter.
-You also need :file:`docker-compose.yml` file from newer version so
-please check this chapter for getting details.
-
-After that, please remove **cron** service, it is not required anymore
-and would be replaced by newer **admin** service in version 0.2. This
-container has no persistent state and can be killed.
-
-.. code-block:: console
-
-    $ docker-compose -p myprojectname rm -v cron
-    Going to remove myprojectname_cron_1
-    Are you sure? [yN] y
-    Removing myprojectname_cron_1 ... done
+    $ docker-compose -p PROJ down -v
 
 
-Clone latest 0.2.x branch
--------------------------
-
-Build or move images for version 0.2 as described in
-:ref:`decapod_install` chapter. Please pay attention to
-:ref:`decapod-configure-docker-compose` chapter which describes file
-layout for configfiles you've collected in :file:`~/decapod_runtime` and
-how to map them to containers. If you've created only SSH private key
-for Ansible to use, didn't touch :file:`config.yaml` and therefore did
-DB renaming as described in `Extract config files` section, all you need
-is just to pass the path to SSH private key in :file:`~/decapod_runtime`
-to :envvar:`DECAPOD_SSH_PRIVATE_KEY` environment variable.
-
-To clone latest 0.2.x branch, please do following:
-
-.. code-block:: console
-
-    $ git clone -b stable-0.2 --single-branch https://github.com/Mirantis/ceph-lcm.git ~/decapod
-    $ cd ~/decapod
-
-.. todo::
-
-    At the time of writing, branch ``stable-0.2`` was not created yet.
-    If it is true for you, please do following instead:
-
-    .. code-block:: console
-
-        $ git clone -b master --single-branch https://github.com/Mirantis/ceph-lcm.git ~/decapod
-        $ cd ~/decapod
-
-Now let's copy required files in your :file:`~/decapod_runtime` directory.
-
-.. code-block:: console
-
-    $ cp .env docker-compose.yml docker-compose.override.yml ~/decapod_runtime
-
-And let's set the path to SSH private key in :file:`.env` file.
-
-.. code-block:: console
-
-    $ sed -i "s?^DECAPOD_SSH_PRIVATE_KEY=.*?DECAPOD_SSH_PRIVATE_KEY=$HOME/decapod_runtime/id_rsa?" ~/decapod_runtime/.env
-
-
-Run 0.2.x version
+Run 0.2.x Version
 -----------------
 
 .. note::
@@ -304,13 +336,76 @@ Run 0.2.x version
 
 .. code-block:: console
 
-    $ docker-compose -p myprojectname up
+    $ docker-compose -p PROJ up --remove-orphans -d
+
+The next step is to restore DB:
+
+.. code-block:: console
+
+    $ docker exec -i $(docker-compose -p PROJ ps -q admin) decapod-admin db restore < ~/pre_upgrade_renamed
+    2017-03-01T14:32:16.139+0000    preparing collections to restore from
+    2017-03-01T14:32:16.179+0000    reading metadata for decapod.user from archive on stdin
+    2017-03-01T14:32:16.322+0000    restoring decapod.user from archive on stdin
+    2017-03-01T14:32:16.325+0000    restoring indexes for collection decapod.user from metadata
+    2017-03-01T14:32:16.781+0000    finished restoring decapod.user (1 document)
+    2017-03-01T14:32:16.781+0000    reading metadata for decapod.cluster from archive on stdin
+    2017-03-01T14:32:16.931+0000    restoring decapod.cluster from archive on stdin
+    2017-03-01T14:32:16.934+0000    restoring indexes for collection decapod.cluster from metadata
+    2017-03-01T14:32:16.936+0000    reading metadata for decapod.lock from archive on stdin
+    2017-03-01T14:32:17.217+0000    finished restoring decapod.cluster (1 document)
+    2017-03-01T14:32:17.406+0000    restoring decapod.lock from archive on stdin
+    2017-03-01T14:32:17.415+0000    restoring indexes for collection decapod.lock from metadata
+    2017-03-01T14:32:17.417+0000    reading metadata for decapod.role from archive on stdin
+    2017-03-01T14:32:17.629+0000    finished restoring decapod.lock (1 document)
+    2017-03-01T14:32:17.788+0000    restoring decapod.role from archive on stdin
+    2017-03-01T14:32:17.790+0000    reading metadata for decapod.migration_script from archive on stdin
+    2017-03-01T14:32:17.922+0000    restoring decapod.migration_script from archive on stdin
+    2017-03-01T14:32:17.923+0000    restoring indexes for collection decapod.role from metadata
+    2017-03-01T14:32:17.925+0000    reading metadata for decapod.kv from archive on stdin
+    2017-03-01T14:32:18.133+0000    no indexes to restore
+    2017-03-01T14:32:18.133+0000    finished restoring decapod.migration_script (3 documents)
+    2017-03-01T14:32:18.133+0000    finished restoring decapod.role (1 document)
+    2017-03-01T14:32:18.265+0000    restoring decapod.kv from archive on stdin
+    2017-03-01T14:32:18.267+0000    restoring indexes for collection decapod.kv from metadata
+    2017-03-01T14:32:18.267+0000    reading metadata for decapod.execution_step from archive on stdin
+    2017-03-01T14:32:18.473+0000    restoring decapod.execution_step from archive on stdin
+    2017-03-01T14:32:18.476+0000    restoring indexes for collection decapod.execution_step from metadata
+    2017-03-01T14:32:18.476+0000    reading metadata for decapod.playbook_configuration from archive on stdin
+    2017-03-01T14:32:18.599+0000    finished restoring decapod.kv (0 documents)
+    2017-03-01T14:32:18.908+0000    restoring decapod.playbook_configuration from archive on stdin
+    2017-03-01T14:32:18.910+0000    restoring indexes for collection decapod.playbook_configuration from metadata
+    2017-03-01T14:32:18.910+0000    reading metadata for decapod.server from archive on stdin
+    2017-03-01T14:32:18.981+0000    finished restoring decapod.execution_step (0 documents)
+    2017-03-01T14:32:19.135+0000    finished restoring decapod.playbook_configuration (0 documents)
+    2017-03-01T14:32:19.342+0000    restoring decapod.server from archive on stdin
+    2017-03-01T14:32:19.344+0000    restoring indexes for collection decapod.server from metadata
+    2017-03-01T14:32:19.344+0000    reading metadata for decapod.task from archive on stdin
+    2017-03-01T14:32:19.511+0000    restoring decapod.task from archive on stdin
+    2017-03-01T14:32:19.513+0000    restoring indexes for collection decapod.task from metadata
+    2017-03-01T14:32:19.513+0000    reading metadata for decapod.token from archive on stdin
+    2017-03-01T14:32:20.123+0000    finished restoring decapod.server (0 documents)
+    2017-03-01T14:32:20.327+0000    finished restoring decapod.task (0 documents)
+    2017-03-01T14:32:20.494+0000    restoring decapod.token from archive on stdin
+    2017-03-01T14:32:20.497+0000    restoring indexes for collection decapod.token from metadata
+    2017-03-01T14:32:20.497+0000    reading metadata for decapod.execution from archive on stdin
+    2017-03-01T14:32:20.585+0000    finished restoring decapod.token (0 documents)
+    2017-03-01T14:32:20.820+0000    restoring decapod.execution from archive on stdin
+    2017-03-01T14:32:20.823+0000    restoring indexes for collection decapod.execution from metadata
+    2017-03-01T14:32:21.008+0000    finished restoring decapod.execution (0 documents)
+    2017-03-01T14:32:21.008+0000    done
+
+
+or, if you skip renaming of database:
+
+.. code-block:: console
+
+    $ docker exec -i (docker-compose -p PROJ ps admin) decapod-admin db restore < ~/pre_upgrade
 
 Now we need to apply migrations:
 
 .. code-block:: console
 
-    $ docker-compose -p myprojectname exec admin decapod-admin migration apply
+    $ docker-compose -p PROJ exec admin decapod-admin migration apply
     2017-02-14 07:04:12 [DEBUG   ] (        lock.py:118  ): Lock applying_migrations was acquire by locker 5ebb8d44-2919-4913-85f8-47e160d02207
     2017-02-14 07:04:12 [DEBUG   ] (        lock.py:183  ): Prolong thread for locker applying_migrations of lock 5ebb8d44-2919-4913-85f8-47e160d02207 has been started. Thread MongoLock prolonger 5ebb8d44-2919-4913-85f8-47e160d02207 for applying_migrations, ident 140234729555712
     2017-02-14 07:04:12 [INFO    ] (   migration.py:123  ): Run migration 0003_native_ttl_index.py
@@ -339,7 +434,7 @@ Now we need to apply migrations:
     2017-02-14 07:04:18 [DEBUG   ] (        lock.py:140  ): Lock applying_migrations was released by locker 5ebb8d44-2919-4913-85f8-47e160d02207.
 
 
-Set MongoDB backward incompatibility (optional)
+Set MongoDB Backward Incompatibility (optional)
 -----------------------------------------------
 
 This is optional part but if you want, you can set MongoDB to be
@@ -348,7 +443,7 @@ following:
 
 .. code-block:: console
 
-    $ docker-compose -p myprojectname exec database moshell
+    $ docker-compose -p PROJ exec database moshell
     MongoDB server version: 3.4.2
     Welcome to the MongoDB shell.
     For interactive help, type "help".
@@ -373,3 +468,11 @@ following:
     2017-02-14T07:00:15.199+0000 I CONTROL  [initandlisten]
     > db.adminCommand({setFeatureCompatibilityVersion: "3.4"})
     { "ok" : 1  }
+
+
+Change ``root`` Password (optional)
+-----------------------------------
+
+Regular reminder: if you haven't changed password for ``root`` user,
+you have to do it. Starting from version 0.2 you can do it using admin
+service. Please check :ref:`decapod_admin_service_password_reset`.
