@@ -19,8 +19,8 @@ The plugin uses a standalone Ansible role from Ansible Galaxy. The following
 table shows the versions mapping:
 
 ==============    ============================================================
-Plugin version    ``ceph-ansible`` version
+Plugin version    Ansible Galaxy version
 ==============    ============================================================
->=0.2,<0.3        `dj-wasabi.telegraf 0.6.0 \
+>=0.2,<0.3        `dj-wasabi.telegraf 0.7.0 \
                   <https://galaxy.ansible.com/dj-wasabi/telegraf/>`_
 ==============    ============================================================
