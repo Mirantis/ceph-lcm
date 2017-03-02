@@ -30,4 +30,4 @@
         state: absent
 
     - name: Remove monitor from quorum
-      command: "ceph --cluster {{ cluster }} mon remove {{ ansible_hostname }}"
+      command: ceph --cluster "{{ cluster }}" mon remove "{{ ansible_hostname }}"

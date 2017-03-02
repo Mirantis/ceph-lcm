@@ -29,83 +29,86 @@
 - hosts: osds
   become: true
   tasks:
-    - set_fact: mon_host="{{ groups['mons'].0 }}"
     - set_fact: cluster_data="{{ ansible_local['ceph_%s'|format(cluster)] }}"
     - set_fact: osd_partitions="{{ cluster_data.osd_partitions[cluster]|default({}) }}"
 
-    - name: Get OSD numbers from monitor
-      command: ceph --cluster "{{ cluster }}" node ls osd
-      register: node_ls_osd
-      delegate_to: "{{ mon_host }}"
-
-    - set_fact: osd_numbers="{{ (node_ls_osd.stdout|trim|from_json)[ansible_nodename]|default([]) }}"
-
-    - name: Decrease weight of removing OSDs
-      command: ceph --cluster "{{ cluster }}" osd crush reweight "osd.{{ item }}" 0.0
-      with_items:
-        - "{{ osd_numbers }}"
-      delegate_to: "{{ mon_host }}"
-
-    - name: Set OSDs out of cluster
-      command: ceph --cluster "{{ cluster }}" osd out "{{ item }}"
-      with_items:
-        - "{{ osd_numbers }}"
-      delegate_to: "{{ mon_host }}"
-
-    # At this step we have to wait till cluster will rebalance
-    # TODO(Sergey Arkhipov): Probably it has to be implemented as ansible module
-
-    # For some reason, jewel ceph-disk does not stop daemon on
-    # ceph-disk deactivate. It also does not umount /var/lib/ceph/osd-*
-    # mount point, therefore we have to make sunset manually.
-
-    - name: Stop OSDs on Ubuntu before Xenial
-      command: initctl stop ceph-osd cluster={{ cluster }} id={{ item }}
-      with_items:
-        - "{{ osd_numbers }}"
-      when:
-        ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
-
-    - name: Stop OSDs on Ubuntu after Xenial
-      command: systemctl stop "ceph-osd@{{ item }}"
-      with_items:
-        - "{{ osd_numbers }}"
-      when:
-        ansible_distribution == "Ubuntu" and ansible_distribution_major_version != "14"
-
-    - name: Get OSD mount points
-      shell: "(grep /var/lib/ceph/osd /proc/mounts || echo -n) | awk '{ print $2 }'"
-      register: mounted_osd
+    - name: test if ceph command exist
+      shell: command -v ceph
       changed_when: false
+      failed_when: false
+      register: ceph_command
 
-    - name: Unmount OSD mount points
-      command: umount "{{ item }}"
-      with_items:
-        - "{{ mounted_osd.stdout_lines }}"
+    - name: drop all cache
+      shell: "sync && sleep 1 && echo 3 > /proc/sys/vm/drop_caches"
 
-    - name: Set OSDs down
-      command: ceph --cluster "{{ cluster }}" osd down "{{ item }}"
-      with_items:
-        - "{{ osd_numbers }}"
-      delegate_to: "{{ mon_host }}"
+    - block:
+      - set_fact: mon_host="{{ groups['mons'].0 }}"
 
-    - name: Remove OSDs from crush map
-      command: ceph --cluster "{{ cluster }}" osd crush remove "osd.{{ item }}"
-      with_items:
-        - "{{ osd_numbers }}"
-      delegate_to: "{{ mon_host }}"
+      - name: Get OSD numbers from monitor
+        command: ceph --cluster "{{ cluster }}" node ls osd
+        register: node_ls_osd
+        delegate_to: "{{ mon_host }}"
 
-    - name: Delete auth data for OSDs
-      command: ceph --cluster "{{ cluster }}" auth del "osd.{{ item }}"
-      with_items:
-        - "{{ osd_numbers }}"
-      delegate_to: "{{ mon_host }}"
+      - set_fact: osd_numbers="{{ (node_ls_osd.stdout|trim|from_json)[ansible_nodename]|default([]) }}"
 
-    - name: Remove OSDs
-      command: ceph --cluster "{{ cluster }}" osd rm "osd.{{ item }}"
-      with_items:
-        - "{{ osd_numbers }}"
-      delegate_to: "{{ mon_host }}"
+      - name: Decrease weight of removing OSDs
+        command: ceph --cluster "{{ cluster }}" osd crush reweight "osd.{{ item }}" 0.0
+        with_items: "{{ osd_numbers }}"
+        delegate_to: "{{ mon_host }}"
+
+      - name: Set OSDs out of cluster
+        command: ceph --cluster "{{ cluster }}" osd out "{{ item }}"
+        with_items: "{{ osd_numbers }}"
+        delegate_to: "{{ mon_host }}"
+
+      # At this step we have to wait till cluster will rebalance
+      # TODO(Sergey Arkhipov): Probably it has to be implemented as ansible module
+
+      # For some reason, jewel ceph-disk does not stop daemon on
+      # ceph-disk deactivate. It also does not umount /var/lib/ceph/osd-*
+      # mount point, therefore we have to make sunset manually.
+
+      - name: Stop OSDs on Ubuntu before Xenial
+        command: initctl stop ceph-osd cluster={{ cluster }} id={{ item }}
+        with_items:
+          - "{{ osd_numbers }}"
+        when:
+          ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
+
+      - name: Stop OSDs on Ubuntu after Xenial
+        command: systemctl stop "ceph-osd@{{ item }}"
+        with_items: "{{ osd_numbers }}"
+        when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version != "14"
+
+      - name: Get OSD mount points
+        shell: "(grep /var/lib/ceph/osd /proc/mounts || echo -n) | awk '{ print $2 }'"
+        register: mounted_osd
+        changed_when: false
+
+      - name: Unmount OSD mount points
+        command: umount "{{ item }}"
+        with_items: "{{ mounted_osd.stdout_lines }}"
+
+      - name: Set OSDs down
+        command: ceph --cluster "{{ cluster }}" osd down "{{ item }}"
+        with_items: "{{ osd_numbers }}"
+        delegate_to: "{{ mon_host }}"
+
+      - name: Remove OSDs from crush map
+        command: ceph --cluster "{{ cluster }}" osd crush remove "osd.{{ item }}"
+        with_items: "{{ osd_numbers }}"
+        delegate_to: "{{ mon_host }}"
+
+      - name: Delete auth data for OSDs
+        command: ceph --cluster "{{ cluster }}" auth del "osd.{{ item }}"
+        with_items: "{{ osd_numbers }}"
+        delegate_to: "{{ mon_host }}"
+
+      - name: Remove OSDs
+        command: ceph --cluster "{{ cluster }}" osd rm "osd.{{ item }}"
+        with_items: "{{ osd_numbers }}"
+        delegate_to: "{{ mon_host }}"
+      when: groups['mons'] is defined and groups["mons"] and ceph_command.rc == 0
 
     # Another caveat you may meet. It looks great to use ceph-disk destroy
     # but there is a lot of cases when it fails. For example, if dmcrypt
@@ -113,6 +116,7 @@
     # right?). Or it may hangs for unknown reason.
     #
     # So again, sunset manually.
+
     - name: Destroy OSD data partitions
       shell: |
         raw_device=$(echo "{{ item.value.data }}" | egrep -o '/dev/([hsv]d[a-z]{1,2}|cciss/c[0-9]d[0-9]p|nvme[0-9]n[0-9]p){1,2}')
