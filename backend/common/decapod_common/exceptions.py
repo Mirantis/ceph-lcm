@@ -103,3 +103,7 @@ class MongoLockCannotProlong(DecapodError):
 
 class MongoLockCannotRelease(DecapodError):
     """Exception raised if it is not possible to release mongo lock."""
+
+
+class ClusterMustBeDeployedError(DecapodError):
+    """Exception raised if cluster has to be deployed."""

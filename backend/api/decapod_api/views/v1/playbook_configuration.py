@@ -190,6 +190,12 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
                 self.request_json["name"]
             )
             raise http_exceptions.ImpossibleToCreateSuchModel() from exc
+        except base_exceptions.ClusterMustBeDeployedError as exc:
+            mid = cluster_model.model_id
+            LOG.warning(
+                "Attempt to create playbook configuration for not "
+                "deployed cluster %s", mid)
+            raise http_exceptions.ClusterMustBeDeployedError(mid) from exc
 
         LOG.info("Playbook configuration %s (%s) created by %s",
                  self.request_json["name"], pcmodel.model_id,

@@ -188,3 +188,12 @@ class ServerListPolicyViolation(BadRequest):
         super().__init__(
             self.description.format(
                 policy.name, playbook_name, str(exception)))
+
+
+class ClusterMustBeDeployedError(BadRequest):
+    description = (
+        "Cluster {0} must be deployed before "
+        "creating such configuration")
+
+    def __init__(self, model_id):
+        super().__init__(self.description.format(model_id))

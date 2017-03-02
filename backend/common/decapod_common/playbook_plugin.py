@@ -280,6 +280,7 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
     BECOME = False
     HINTS = None
+    CLUSTER_MUST_BE_DEPLOYED = True
 
     @property
     def playbook_config(self):
@@ -326,6 +327,9 @@ class Playbook(Base, metaclass=abc.ABCMeta):
             hints = self.HINTS.consume(hints)
         else:
             hints = {}
+
+        if self.CLUSTER_MUST_BE_DEPLOYED and not cluster.configuration.state:
+            raise exceptions.ClusterMustBeDeployedError()
 
         extra, inventory = self.make_playbook_configuration(
             cluster, servers, hints)
