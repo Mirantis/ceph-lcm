@@ -30,6 +30,11 @@ JSONSCHEMA_DEFINITIONS = {
         "minLength": 1,
         "maxLength": 1024
     },
+    "cluster_name_string": {
+        "type": "string",
+        "maxLength": 1024,
+        "pattern": "^[a-zA-Z0-9]+$"
+    },
     "email": {
         "allOf": [
             {"type": "string", "format": "email"},  # implementation is... bad

@@ -94,7 +94,7 @@ def test_get_cluster(sudo_client_v1, clean_cluster_collection, config,
 
 
 def test_create_new_cluster(sudo_client_v1, normal_user, client_v1):
-    request = {"name": pytest.faux.gen_uuid()}
+    request = {"name": pytest.faux.gen_alphanumeric()}
 
     response = client_v1.post("/v1/cluster/", data=request)
     assert response.status_code == 401
@@ -109,6 +109,18 @@ def test_create_new_cluster(sudo_client_v1, normal_user, client_v1):
         "name": request["name"],
         "configuration": {}
     }
+
+
+@pytest.mark.parametrize("name", (
+    "hello-",
+    "_hello",
+    "hello world",
+    "приветмир",
+    "ёceph"
+))
+def test_incorrect_name_for_cluster(name, sudo_client_v1):
+    response = sudo_client_v1.post("/v1/cluster/", data={"name": name})
+    assert response.status_code == 400
 
 
 def test_create_cluster_same_name(sudo_client_v1):

@@ -26,7 +26,7 @@ from decapod_common.models import cluster
 
 
 DATA_SCHEMA = {
-    "name": {"$ref": "#/definitions/non_empty_string"},
+    "name": {"$ref": "#/definitions/cluster_name_string"},
     "configuration": {
         "type": "object",
         "additionalProperties": {
@@ -54,7 +54,7 @@ MODEL_SCHEMA = validators.create_model_schema(
 """Schema for the model with optional data fields."""
 
 POST_SCHEMA = validators.create_data_schema(
-    {"name": {"$ref": "#/definitions/non_empty_string"}}, True)
+    {"name": {"$ref": "#/definitions/cluster_name_string"}}, True)
 
 LOG = log.getLogger(__name__)
 """Logger."""
