@@ -44,8 +44,8 @@ class PurgeTelegraf(playbook_plugin.CephAnsiblePlaybook):
     DESCRIPTION = DESCRIPTION
     PUBLIC = True
     REQUIRED_SERVER_LIST = True
-    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.any_server
-    CLUSTER_MUST_BE_DEPLOYED = False
+    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.in_this_cluster
+    CLUSTER_MUST_BE_DEPLOYED = True
 
     HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
 
