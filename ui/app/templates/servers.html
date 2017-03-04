@@ -12,7 +12,7 @@
   (onChange)="fetchData($event)"
 ></filter>
 
-<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+<pager [pagingData]="pagedData" (onChange)="fetchData($event)"></pager>
 
 <div class="row" *ngIf="servers && servers.length">
   <div class="col-xs-12">
@@ -30,7 +30,7 @@
       [ngClass]="{open: server.id === shownServerId}"
       *ngFor="let server of servers|id:shownServerId">
       <div class="col-xs-3 name">{{server.data.name}}</div>
-      <div class="col-xs-4 parameter uc">
+      <div class="col-xs-4 parameter">
         {{server.id}}
       </div>
       <div class="col-xs-1 parameter">{{server.data.ip}}</div>
@@ -74,5 +74,5 @@
   You don't have any servers.
 </div>
 
-<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+<pager [pagingData]="pagedData" (onChange)="fetchData($event)"></pager>
 

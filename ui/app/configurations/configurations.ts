@@ -77,10 +77,10 @@ export class ConfigurationsComponent implements OnInit {
     });
   }
 
-  fetchData(): Promise<any> {
+  fetchData(page: number = 1): Promise<any> {
     return this.data.configuration().findAll({
       filter: _.get(this.filter, 'query', {}),
-      page: _.get(this.pager, 'page', 1)
+      page
     })
       .then(
         (configurations: pagedResult) => {
@@ -123,7 +123,7 @@ export class ConfigurationsComponent implements OnInit {
             _.omit(configuration, ['playbook_id', 'cluster_id', 'name', 'server_ids', 'hints'])
           );
           this.model = pureConfig;
-          this.refreshConfigurations();
+          this.refreshConfigurations(this.pagedData.page);
         }
       )
       .catch(
@@ -131,11 +131,11 @@ export class ConfigurationsComponent implements OnInit {
       );
   }
 
-  refreshConfigurations() {
+  refreshConfigurations(page: number = 1) {
     if (this.shownConfigurationId) {
       this.getConfigurationVersions(this.shownConfigurationId, true);
     } else {
-      this.fetchData();
+      this.fetchData(page);
     }
   }
 
@@ -180,7 +180,7 @@ export class ConfigurationsComponent implements OnInit {
       .then(
         () => {
           this.shownConfigurationId = null;
-          this.refreshConfigurations();
+          this.refreshConfigurations(this.pagedData.page);
         },
         (error: any) => this.data.handleResponseError(error)
       )

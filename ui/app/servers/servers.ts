@@ -49,10 +49,10 @@ export class ServersComponent implements OnInit {
       });
   }
 
-  fetchData() {
+  fetchData(page: number = 1) {
     this.data.server().findAll({
       filter: _.get(this.filter, 'query', {}),
-      page: _.get(this.pager, 'page', 1)
+      page
     })
       .then((servers: pagedResult) => {
         this.servers = servers.items;

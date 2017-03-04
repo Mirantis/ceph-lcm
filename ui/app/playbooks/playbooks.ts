@@ -36,9 +36,9 @@ export class PlaybooksComponent {
     this.fetchData();
   }
 
-  fetchData() {
+  fetchData(page: number = 1) {
     this.data.playbook().findAll({
-      page: _.get(this.pager, 'page', 1)
+      page
     })
       .then(
         (playbooks: pagedResult) => {

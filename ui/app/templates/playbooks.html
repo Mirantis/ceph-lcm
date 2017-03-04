@@ -10,7 +10,7 @@
   You don't have any playbooks.
 </div>
 
-<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+<pager [pagingData]="pagedData" (onChange)="fetchData($event)"></pager>
 
 <div class="playbooks row" *ngIf="playbooks && playbooks.length">
   <div class="col-xs-12">
@@ -35,4 +35,4 @@
   </div>
 </div>
 
-<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+<pager [pagingData]="pagedData" (onChange)="fetchData($event)"></pager>

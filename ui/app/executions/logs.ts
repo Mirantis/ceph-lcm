@@ -67,18 +67,21 @@ export class LogsComponent {
     }
   }
 
-  fetchData() {
+  fetchData(page: number = 1) {
     if (this.execution) {
+      this.data.execution().find(this.execution.id)
+        .then((execution: Execution) => this.execution = execution);
+
       this.data.execution().getLogs(
         this.execution.id, {
           filter: _.get(this.filter, 'query', {}),
-          page: _.get(this.pager, 'page', 1)
+          page
         }
       )
         .then((steps: pagedResult) => {
           this.steps = steps.items;
           this.pagedData = steps;
-          if (!this.stopPolling) {
+          if (!this.stopPolling && this.execution.data.state === 'Started') {
             this.poller = setTimeout(() => this.fetchData(), 5000);
           }
         })

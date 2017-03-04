@@ -3,8 +3,8 @@
     <div class="col-xs-9">
       <h1>Configuration Execution Log</h1>
       <h2 *ngIf="execution">
-        ID: {{execution.data.playbook_configuration.id}},
-        version: {{execution.data.playbook_configuration.version}}
+        Execution {{execution.data.playbook_configuration.id}},
+        state: {{execution.data.state}}
       </h2>
     </div>
     <div class="col-xs-3 main-button">
@@ -29,7 +29,7 @@
 
 <filter (onChange)="fetchData()"></filter>
 
-<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+<pager [pagingData]="pagedData" (onChange)="fetchData($event)"></pager>
 
 <div class="logs grid row" *ngIf="steps && steps.length">
   <div class="col-xs-12">
@@ -51,7 +51,7 @@
       <div class="col-xs-3" [title]="step.data.name">
         {{step.data.name}}
       </div>
-      <div class="col-xs-3 uc">
+      <div class="col-xs-3">
         <a [routerLink]="['/servers']" [fragment]="step.data.server_id">
           {{step.data.server_id}}
         </a>
@@ -65,4 +65,4 @@
 
 <div *ngIf="!steps || !steps.length">No execution logs found</div>
 
-<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+<pager [pagingData]="pagedData" (onChange)="fetchData($event)"></pager>

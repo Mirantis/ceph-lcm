@@ -63,10 +63,10 @@ export class ClustersComponent implements OnInit {
     return cluster.id === this.shownClusterId;
   }
 
-  fetchData() {
+  fetchData(page: number = 1) {
     return this.data.cluster().findAll({
       filter: _.get(this.filter, 'query', {}),
-      page: _.get(this.pager, 'page', 1)
+      page
     })
       .then(
         (clusters: pagedResult) => {

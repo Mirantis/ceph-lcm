@@ -7366,6 +7366,7 @@ textarea {
 }
 .page-title h1 span {
   color: #888e95;
+  text-transform: none;
 }
 .page-title h2 {
   font-weight: 400;
@@ -7472,16 +7473,25 @@ label {
 .box > div.name .glyphicon {
   margin-left: 0;
 }
-.box > div.parameter {
+.box > div.parameter,
+.box > div.button {
   height: 48px;
   font-weight: 400;
   color: #747a81;
 }
-.box > div.parameter button {
+.box > div.parameter button,
+.box > div.button button {
   line-height: 16px;
   margin: 3px 0px 0px 0px;
   display: inline-block;
   width: 70px;
+}
+.box > div.button {
+  padding-right: 15px;
+}
+.box > div.button button {
+  float: right;
+  margin-left: 10px;
 }
 .box > div.action {
   height: 48px;

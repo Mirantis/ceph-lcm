@@ -195,6 +195,7 @@ textarea {
 
   h1 span {
     color: @text + 50%;
+    text-transform: none;
   }
 
   h2 {
@@ -323,7 +324,7 @@ label {
       }
     }
 
-    &.parameter {
+    &.parameter, &.button {
       height: 48px;
       font-weight: 400;
       color: @text + 30%;
@@ -332,6 +333,14 @@ label {
         margin: 3px 0px 0px 0px;
         display: inline-block;
         width: 70px;
+      }
+    }
+
+    &.button {
+      padding-right: 15px;
+      button {
+        float: right;
+        margin-left: 10px;
       }
     }
 

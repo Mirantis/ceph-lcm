@@ -10,53 +10,55 @@
   You don't have any executions.
 </div>
 
-<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+<pager [pagingData]="pagedData" (onChange)="fetchData($event)"></pager>
 
 <div class="executions row" *ngIf="executions && executions.length">
   <div class="col-xs-12">
 
     <div class="table-help">
-      <div class="col-xs-3">ID</div>
+      <!-- <div class="col-xs-3">ID</div> -->
       <div class="col-xs-3">Configuration</div>
-      <div class="col-xs-1">Playbook</div>
+      <div class="col-xs-3">Playbook</div>
       <div class="col-xs-2">Last Updated</div>
-      <div class="col-xs-3">Status</div>
+      <div class="col-xs-2">Status</div>
     </div>
 
-    <div class="box" *ngFor="let execution of executions">
-      <div class="col-xs-3 name uc">{{execution.id}}</div>
-      <div class="col-xs-3 parameter uc">
+    <div class="box" *ngFor="let execution of getExecutions()">
+      <!-- <div class="col-xs-3 name">{{execution.id}}</div> -->
+      <div class="col-xs-3 name">
         <a [routerLink]="['/configurations']" [fragment]="execution.data.playbook_configuration.id">
           {{execution.data.playbook_configuration.id}} ({{execution.data.playbook_configuration.version}})
         </a>
       </div>
-      <div class="col-xs-1 parameter">
-        &mdash;
+      <div class="col-xs-3 parameter">
+        {{execution.data.playbook_configuration.playbook_name}}
       </div>
       <div class="col-xs-2 parameter">
         {{execution.time_updated|date_time}}
       </div>
-      <div class="col-xs-1 state" [ngClass]="execution.data.state">
+      <div class="col-xs-2 state" [ngClass]="execution.data.state">
         {{execution.data.state}}
       </div>
-      <div class="col-xs-1 parameter">
-        <button
-          *ngIf="execution.data.state === 'Running'"
-          class="btn btn-danger btn-xs"
-          type="button">
-          Stop
-        </button>
-      </div>
-      <div class="col-xs-1 parameter">
+      <div class="col-xs-2 button">
         <button
           class="btn btn-primary btn-xs"
           type="button"
           (click)="showExecutionLog(execution)"
-        >Logs</button>
+        >
+          Logs
+        </button>
+        <button
+          *ngIf="execution.data.state === 'Started'"
+          (click)="cancelExecution(execution)"
+          class="btn btn-danger btn-xs"
+          type="button"
+        >
+          Stop
+        </button>
       </div>
 
     </div>
   </div>
 </div>
 
-<pager [pagingData]="pagedData" (onChange)="fetchData()"></pager>
+<pager [pagingData]="pagedData" (onChange)="fetchData($event)"></pager>

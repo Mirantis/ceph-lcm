@@ -35,14 +35,28 @@ export class ExecutionsComponent {
     this.fetchData();
   }
 
-  fetchData() {
+  fetchData(page: number = 1) {
     this.data.execution().findAll({
-      page: _.get(this.pager, 'page', 1)
+      page
     })
       .then(
         (executions: pagedResult) => {
           this.executions = executions.items;
           this.pagedData = executions;
+        },
+        (error: any) => this.data.handleResponseError(error)
+      );
+  }
+
+  getExecutions() {
+    return this.pager.getPageItems(this.executions);
+  }
+
+  cancelExecution(execution: Execution) {
+    this.data.execution().destroy(execution.id)
+      .then(
+        (updatedExecution: Execution) => {
+          execution.data = updatedExecution.data;
         },
         (error: any) => this.data.handleResponseError(error)
       );

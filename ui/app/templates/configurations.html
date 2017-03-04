@@ -17,7 +17,7 @@
 >
 </filter>
 
-<pager [pagingData]="pagedData" (onChange)="refreshConfigurations()"></pager>
+<pager [pagingData]="pagedData" (onChange)="refreshConfigurations($event)"></pager>
 
 <div class="configurations row" *ngIf="configurations && configurations.length">
   <div class="col-xs-12">
@@ -92,7 +92,7 @@
   </div>
 </div>
 
-<pager [pagingData]="pagedData" (onChange)="refreshConfigurations()"></pager>
+<pager [pagingData]="pagedData" (onChange)="refreshConfigurations($event)"></pager>
 
 <loader *ngIf="!configurations"></loader>
 

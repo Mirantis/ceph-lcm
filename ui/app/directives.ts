@@ -141,9 +141,16 @@ export class Criterion {
 })
 export class Pager {
   visiblePages = 5;
-  page: number = 1;
   @Input() pagingData: {total: number, per_page: number, page: number} = null;
   @Output() onChange  = new EventEmitter();
+
+  public get page(): number {
+    return +this.pagingData.page || 1;
+  }
+
+  public get perPage(): number {
+    return +this.pagingData.per_page || 25;
+  }
 
   getVisiblePages(): number[] {
     let totalPages = Math.ceil(this.pagingData.total / this.pagingData.per_page);
@@ -162,13 +169,11 @@ export class Pager {
   }
 
   switchPage(page: number) {
-    this.page = page;
-    this.onChange.emit();
+    this.onChange.emit(page);
   }
 
   getPageItems(allItems: BaseModel[]): BaseModel[] {
-    let perPage = this.pagingData.per_page;
-    return _.slice(allItems, (this.page - 1) * perPage, perPage);
+    return _.slice(allItems, (this.page - 1) * this.perPage, this.perPage);
   }
 }
 
