@@ -97,6 +97,10 @@ CONFIG_OPTIONS = {
     "transport": "smart"
 }
 
+SSH_CONFIG_OPTIONS = {
+    "control_path": r"/dev/shm/ansible-ssh-%%h-%%p-%%r"
+}
+
 
 def generate_config(**kwargs):
     config = copy.deepcopy(CONFIG_OPTIONS)
@@ -112,6 +116,10 @@ def generate_config(**kwargs):
 
     for key, value in sorted(config.items()):
         parser.set("defaults", key, unicode(value))
+
+    parser.add_section("ssh_connection")
+    for key, value in sorted(SSH_CONFIG_OPTIONS.items()):
+        parser.set("ssh_connection", key, unicode(value))
 
     output = StringIO.StringIO()
     parser.write(output)
