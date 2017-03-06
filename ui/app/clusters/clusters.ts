@@ -17,7 +17,7 @@
 
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Modal, Filter, Pager } from '../directives';
+import { Modal, Filter } from '../directives';
 import { DataService, pagedResult } from '../services/data';
 import { Cluster } from '../models';
 import { WizardComponent } from '../wizard';
@@ -34,9 +34,9 @@ export class ClustersComponent implements OnInit {
   model: Cluster = new Cluster({});
   @ViewChild(WizardComponent) wizard: WizardComponent;
   @ViewChild(Filter) filter: Filter;
-  @ViewChild(Pager) pager: Pager;
   pagedData: pagedResult = {} as pagedResult;
   shownClusterId: string = null;
+  shownCluster: Cluster = null;
 
   clusterSteps = [
     ClusterStep
@@ -56,11 +56,27 @@ export class ClustersComponent implements OnInit {
       .fragment
       .subscribe((id: string) => {
         this.shownClusterId = id;
+        if (id) {
+          this.shownCluster = _.find(this.clusters, {id});
+          if (!this.shownCluster) {
+            this.data.cluster().find(id)
+              .then(
+                (cluster: Cluster) => {
+                  this.shownCluster = cluster;
+                },
+                (error: any) => {
+                  this.shownClusterId = null;
+                  this.shownCluster = null;
+                  return this.data.handleResponseError(error);
+                }
+              );
+          }
+        }
       });
   }
 
   isCurrent(cluster: Cluster) {
-    return cluster.id === this.shownClusterId;
+    return cluster && cluster.id === this.shownClusterId;
   }
 
   fetchData(page: number = 1) {
@@ -83,7 +99,11 @@ export class ClustersComponent implements OnInit {
   }
 
   getClusters() {
-    return this.shownClusterId ? this.clusters : this.pager.getPageItems(this.clusters);
+    return !this.shownClusterId
+    ?
+      (this.clusters ? this.clusters : [])
+    :
+      (!this.shownCluster ? [] : [this.shownCluster]);
   }
 
   getKeyHalfsets(cluster: Cluster) {

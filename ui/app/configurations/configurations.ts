@@ -19,7 +19,7 @@ import * as _ from 'lodash';
 import { Record } from 'js-data';
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Modal, Filter, Pager } from '../directives';
+import { Modal, Filter } from '../directives';
 import { DataService, pagedResult } from '../services/data';
 import { BaseModel, Cluster, Server, Playbook, PlaybookConfiguration, Execution } from '../models';
 import { WizardComponent } from '../wizard';
@@ -32,14 +32,13 @@ export class ConfigurationsComponent implements OnInit {
   model: PlaybookConfiguration = this.cleanModel();
 
   configurations: PlaybookConfiguration[] = null;
-  clusters: Cluster[] = [];
   playbooks: Playbook[] = [];
   servers: Server[] = [];
   shownConfigurationId: string = null;
+  shownConfiguration: PlaybookConfiguration = null;
   configurationVersions: {[key: string]: PlaybookConfiguration[]} = {};
   @ViewChild(WizardComponent) wizard: WizardComponent;
   @ViewChild(Filter) filter: Filter;
-  @ViewChild(Pager) pager: Pager;
   pagedData: pagedResult = {} as pagedResult;
 
   configurationSteps = [
@@ -57,7 +56,7 @@ export class ConfigurationsComponent implements OnInit {
     private activatedRoute: ActivatedRoute
   ) {
     this.fetchData();
-    this.data.playbook().findAll({})
+    this.data.playbook().getAll()
       .then((playbooks: pagedResult) => {
         this.playbooks = playbooks.items;
       })
@@ -68,6 +67,22 @@ export class ConfigurationsComponent implements OnInit {
       .fragment
       .subscribe((id: string) => {
         this.shownConfigurationId = id;
+        if (id) {
+          this.shownConfiguration = _.find(this.configurations, {id});
+          if (!this.shownConfiguration) {
+            this.data.configuration().find(id)
+              .then(
+                (configuration: PlaybookConfiguration) => {
+                  this.shownConfiguration = configuration;
+                },
+                (error: any) => {
+                  this.shownConfigurationId = null;
+                  this.shownConfiguration = null;
+                  return this.data.handleResponseError(error);
+                }
+              );
+          }
+        }
       });
   }
 
@@ -144,11 +159,11 @@ export class ConfigurationsComponent implements OnInit {
   }
 
   getConfigurations() {
-    return this.shownConfigurationId
+    return !this.shownConfigurationId
     ?
-      this.configurations
+      (this.configurations ? this.configurations : [])
     :
-      this.pager.getPageItems(this.configurations);
+      (!this.shownConfiguration ? [] : [this.shownConfiguration]);
   }
 
   getConfigurationVersions(configurationId: string, reread: boolean = false) {

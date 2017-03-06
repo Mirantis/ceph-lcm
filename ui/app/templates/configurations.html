@@ -17,9 +17,13 @@
 >
 </filter>
 
-<pager [pagingData]="pagedData" (onChange)="refreshConfigurations($event)"></pager>
+<pager
+  [pagingData]="pagedData"
+  [isHidden]="!!shownConfigurationId"
+  (onChange)="refreshConfigurations($event)"
+></pager>
 
-<div class="configurations row" *ngIf="configurations && configurations.length">
+<div class="configurations row" *ngIf="getConfigurations().length">
   <div class="col-xs-12">
     <div class="table-help">
       <div class="col-xs-3">Configuration Name</div>
@@ -92,11 +96,15 @@
   </div>
 </div>
 
-<pager [pagingData]="pagedData" (onChange)="refreshConfigurations($event)"></pager>
+<pager
+  [pagingData]="pagedData"
+  [isHidden]="!!shownConfigurationId"
+  (onChange)="refreshConfigurations($event)"
+></pager>
 
 <loader *ngIf="!configurations"></loader>
 
-<div *ngIf="configurations && !configurations.length" class="no-configurations">
+<div *ngIf="!getConfigurations().length" class="no-configurations">
   You don't have any configurations yet. Please create.
 </div>
 

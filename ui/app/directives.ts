@@ -142,6 +142,7 @@ export class Criterion {
 export class Pager {
   visiblePages = 5;
   @Input() pagingData: {total: number, per_page: number, page: number} = null;
+  @Input() isHidden: boolean = false;
   @Output() onChange  = new EventEmitter();
 
   public get page(): number {

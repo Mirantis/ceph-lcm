@@ -7672,6 +7672,23 @@ a.grid .grid-line.unreachable:focus,
 a.grid .grid-header.unreachable:focus {
   color: #843534;
 }
+.grid .grid-line.error a,
+.grid .grid-header.error a,
+.grid .grid-line.unreachable a,
+.grid .grid-header.unreachable a {
+  color: #a94442;
+  color: #FF634C;
+}
+a.grid .grid-line.error a:hover,
+a.grid .grid-header.error a:hover,
+a.grid .grid-line.unreachable a:hover,
+a.grid .grid-header.unreachable a:hover,
+a.grid .grid-line.error a:focus,
+a.grid .grid-header.error a:focus,
+a.grid .grid-line.unreachable a:focus,
+a.grid .grid-header.unreachable a:focus {
+  color: #843534;
+}
 .grid .grid-line.table-help,
 .grid .grid-header.table-help {
   border-width: 0;

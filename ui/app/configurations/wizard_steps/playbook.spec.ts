@@ -76,7 +76,7 @@ describe('Configuration wizard: playbook step component', () => {
   it('fetches clusters to bind the DDL', () => {
     let dataService = fixture.debugElement.injector.get(DataService);
     component.fetchData();
-    expect(dataService.playbook().findAll).toHaveBeenCalledWith({});
+    expect(dataService.playbook().getAll).toHaveBeenCalledTimes(2);
   });
 
   describe('upon playbook selection', () => {

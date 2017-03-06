@@ -48,7 +48,7 @@ export class PlaybookStep extends WizardStepBase {
   }
 
   fetchData() {
-    return this.data.playbook().findAll({})
+    return this.data.playbook().getAll()
       .then((playbooks: pagedResult) => this.playbooks = playbooks.items);
   }
 

@@ -40,7 +40,7 @@ export class UserStep extends WizardStepBase {
   }
 
   fetchData() {
-    return this.data.role().findAll({})
+    return this.data.role().getAll()
       .then(
         (roles: pagedResult) => this.roles = roles.items,
         (error: any) => this.data.handleResponseError(error)

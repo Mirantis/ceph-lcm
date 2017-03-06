@@ -16,15 +16,13 @@
   <div class="col-xs-12">
 
     <div class="table-help">
-      <!-- <div class="col-xs-3">ID</div> -->
       <div class="col-xs-3">Configuration</div>
       <div class="col-xs-3">Playbook</div>
       <div class="col-xs-2">Last Updated</div>
       <div class="col-xs-2">Status</div>
     </div>
 
-    <div class="box" *ngFor="let execution of getExecutions()">
-      <!-- <div class="col-xs-3 name">{{execution.id}}</div> -->
+    <div class="box" *ngFor="let execution of executions">
       <div class="col-xs-3 name">
         <a [routerLink]="['/configurations']" [fragment]="execution.data.playbook_configuration.id">
           {{execution.data.playbook_configuration.id}} ({{execution.data.playbook_configuration.version}})

@@ -1,6 +1,6 @@
 <nav
   aria-label="Page navigation"
-  *ngIf="pagingData && pagingData.total > pagingData.per_page"
+  *ngIf="pagingData && pagingData.total > pagingData.per_page && !isHidden"
 >
   <ul class="pagination">
     <li

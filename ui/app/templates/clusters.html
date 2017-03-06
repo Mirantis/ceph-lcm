@@ -14,9 +14,13 @@
   (onChange)="fetchData()"
 ></filter>
 
-<pager [pagingData]="pagedData" (onChange)="fetchData($event)"></pager>
+<pager
+  [pagingData]="pagedData"
+  [isHidden]="!!shownClusterId"
+  (onChange)="fetchData($event)"
+></pager>
 
-<div class="clusters row" *ngIf="clusters && clusters.length">
+<div class="clusters row" *ngIf="getClusters().length">
   <div class="col-xs-12">
 
     <div class="table-help">
@@ -78,11 +82,15 @@
   </div>
 </div>
 
-<pager [pagingData]="pagedData" (onChange)="fetchData($event)"></pager>
+<pager
+  [pagingData]="pagedData"
+  [isHidden]="!!shownClusterId"
+  (onChange)="fetchData($event)"
+></pager>
 
 <loader *ngIf="!clusters"></loader>
 
-<div *ngIf="clusters && !clusters.length" class="no-clusters">
+<div *ngIf="!getClusters().length" class="no-clusters">
   You don't have any clusters yet. Please create.
 </div>
 

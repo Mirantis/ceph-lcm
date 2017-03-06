@@ -64,9 +64,9 @@ describe('Playbook (Plugin) Configuration Component', () => {
     component.fetchData()
       .then(() => {
         expect(dataService.configuration().findAll).toHaveBeenCalled();
-        expect(component.configurations.length).toEqual(amount);
+        expect(component.configurations.length).toEqual(itemsPerPage);
         expect(component.pagedData.per_page).toEqual(itemsPerPage);
-        expect(dataService.playbook().findAll).toHaveBeenCalled();
+        expect(dataService.playbook().getAll).toHaveBeenCalled();
         expect(component.playbooks.length).toEqual(amount);
         done();
       });
@@ -87,9 +87,9 @@ describe('Playbook (Plugin) Configuration Component', () => {
     spyOn(component, 'editConfiguration').and.callThrough();
     dom.click('.page-title .btn-primary');
     expect(component.editConfiguration).toHaveBeenCalledTimes(1);
-    expect(dataService.cluster().findAll).toHaveBeenCalledTimes(1);
-    expect(dataService.playbook().findAll).toHaveBeenCalledTimes(2);
-    expect(dataService.server().findAll).toHaveBeenCalledTimes(1);
+    expect(dataService.cluster().getAll).toHaveBeenCalledTimes(1);
+    expect(dataService.playbook().getAll).toHaveBeenCalledTimes(2);
+    expect(dataService.server().getAll).toHaveBeenCalledTimes(1);
     expect(dom.modal().isVisible).toBeTruthy();
   });
 
@@ -105,6 +105,7 @@ describe('Playbook (Plugin) Configuration Component', () => {
       component.fetchData()
         .then(() => {
           configuration = component.configurations[0];
+          component.shownConfiguration = configuration;
           component.shownConfigurationId = configuration.id;
           fixture.detectChanges();
           fixture.whenStable().then(done);

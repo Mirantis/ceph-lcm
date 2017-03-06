@@ -43,7 +43,7 @@ export class NameAndClusterStep extends WizardStepBase {
   }
 
   fetchData() {
-    return this.data.cluster().findAll({})
+    return this.data.cluster().getAll()
       .then((clusters: pagedResult) => {
         this.clusters = clusters.items;
       });

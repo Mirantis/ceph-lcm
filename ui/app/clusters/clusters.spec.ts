@@ -86,7 +86,8 @@ describe('Clusters Component', () => {
     });
 
     it('displays received data in the tabular view', done => {
-      expect(component.clusters.length).toEqual(amount);
+      let perPage = component.pagedData.per_page;
+      expect(component.clusters.length).toEqual(perPage);
       expect(clustersTable).not.toBeNull();
       expect(noClustersDiv).toBeNull();
       done();

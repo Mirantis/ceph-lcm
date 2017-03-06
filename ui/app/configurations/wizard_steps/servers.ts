@@ -66,7 +66,7 @@ export class ServersStep extends WizardStepBase {
   }
 
   fetchData() {
-    return this.data.server().findAll({})
+    return this.data.server().getAll()
       .then((servers: pagedResult) => {
         this.servers = servers.items;
       });

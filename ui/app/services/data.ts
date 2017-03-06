@@ -40,6 +40,7 @@ export type pagedResult = {
 
 declare module 'js-data' {
   interface Mapper {
+    getAll(): Promise<pagedResult>,
     postCreate(props: Record, opts?: any): Promise<Record>;
     postUpdate(id: string, props: Record, opts?: any): Promise<Record>;
     getVersion(): any;
@@ -54,6 +55,7 @@ export class DataService {
   store = new DataStore();
   basePath = 'http://127.0.0.1:9999/v1';
   mappers: {[key: string]: Mapper} = {};
+  maxRecords = 10000;
 
   constructor(
     private session: SessionService,
@@ -195,6 +197,9 @@ export class DataService {
             result.items = _.map(result.items, (item, index) => new (this.recordClass)(item));
             return result;
           },
+          getAll: function(): pagedResult {
+            return this.findAll({page: 1, per_page: this.maxRecords});
+          },
           postCreate(props: any, opts: any = {}): Promise<Record> {
             // Only data: {} should be sent upon object creation
             return this.create(_.get(props, 'data', props), opts);
@@ -204,7 +209,7 @@ export class DataService {
             return this.update(id, props);
           },
           getVersions: function(id: string): pagedResult {
-            return this.findAll({}, {endpoint: name + '/' + id + '/version'});
+            return this.findAll({per_page: this.maxRecords}, {endpoint: name + '/' + id + '/version'});
           },
           getVersion: function(id: string, versionId: string) {
             return this.find(id, {suffix: '/version/' + versionId});

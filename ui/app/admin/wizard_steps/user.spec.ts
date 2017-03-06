@@ -58,7 +58,7 @@ describe('New user wizard step', () => {
 
   it('fetches roles', () => {
     let dataService = fixture.debugElement.injector.get(DataService);
-    expect(dataService.role().findAll).toHaveBeenCalledTimes(1);
+    expect(dataService.role().getAll).toHaveBeenCalledTimes(1);
   });
 
   it('is valid when its the fields are entered correctly', () => {

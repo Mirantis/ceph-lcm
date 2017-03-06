@@ -51,7 +51,7 @@ export function createFakeData(
     per_page: perPage,
     total: howMany
   } as pagedResult;
-  result.items = _.map(_.range(howMany), (index) => {
+  result.items = _.map(_.range(howMany > perPage ? perPage : howMany), (index) => {
     return new Model(createFakeModelData(index));
   });
   return result;
@@ -74,6 +74,9 @@ export class MockDataService {
       this.mappers[name] = {
         findAll: this.produceSpies(name, 'findAll').and.returnValue(
           Promise.resolve(createFakeData(amount, Model))
+        ),
+        getAll: this.produceSpies(name, 'getAll').and.returnValue(
+          Promise.resolve(createFakeData(amount, Model, amount))
         ),
         find: this.produceSpies(name, 'find').and.returnValue(
           Promise.resolve(_.head(createFakeData(1, Model).items))

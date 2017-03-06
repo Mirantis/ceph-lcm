@@ -20,7 +20,6 @@ import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataService, pagedResult } from '../services/data';
 import { Execution } from '../models';
-import { Pager } from '../directives';
 
 
 @Component({
@@ -28,7 +27,6 @@ import { Pager } from '../directives';
 })
 export class ExecutionsComponent {
   executions: Execution[] = null;
-  @ViewChild(Pager) pager: Pager;
   pagedData: pagedResult = {} as pagedResult;
 
   constructor(private data: DataService, private router: Router) {
@@ -46,10 +44,6 @@ export class ExecutionsComponent {
         },
         (error: any) => this.data.handleResponseError(error)
       );
-  }
-
-  getExecutions() {
-    return this.pager.getPageItems(this.executions);
   }
 
   cancelExecution(execution: Execution) {
