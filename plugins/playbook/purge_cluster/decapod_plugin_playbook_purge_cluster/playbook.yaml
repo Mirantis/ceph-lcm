@@ -75,6 +75,23 @@
         enabled: no
 
 
+- name: Stop REST APIs
+  hosts: restapis
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Stop Ceph REST API service
+      service:
+        name: ceph-rest-api.service
+        state: stopped
+        enabled: no
+
+    # After installation, ceph-ansible runs Rest API using nohup
+    # therefore we need to stop it with pkill
+    - name: Stop Ceph REST API process
+      command: pkill ceph-rest-api
+
+
 - name: Clear OSDs
   hosts: osds
   become: true
