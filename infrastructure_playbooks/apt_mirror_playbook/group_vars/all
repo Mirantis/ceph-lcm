@@ -1,0 +1,19 @@
+---
+
+# ceph_release: jewel
+# os_release: xenial
+
+# source repository
+# ceph_main_repo:
+#   url: http://mirror.fuel-infra.org/decapod/ceph # repository root
+#   gpg_keyid: 69514C18 # A254F5F0
+#   gpg_keyserver: hkp://keyserver.ubuntu.com:80
+
+# Import repo's GPG public key into this keyring
+# temp_apt_keyring: /etc/apt/trusted.gpg.d/decapod-ceph.gpg
+
+# Put the local repository here
+# local_mirror_root: /tmp/decapod-ceph
+
+# Network related settings
+# http_proxy: http://my.proxy:3128/

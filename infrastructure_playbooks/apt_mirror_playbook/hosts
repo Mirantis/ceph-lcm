@@ -1,0 +1,2 @@
+[decapod-apt-mirrors]
+localhost ansible_connection=local

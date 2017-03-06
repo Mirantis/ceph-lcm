@@ -1,0 +1,5 @@
+---
+
+- hosts: decapod-apt-mirrors
+  roles:
+    - decapod-apt-mirror

@@ -32,4 +32,4 @@ The section contains the following topics:
     please check Ansible playbooks which will prepare machine based on
     generated user-data.
 
-    https://github.com/Mirantis/ceph-lcm/tree/master/server_discovery_playbook
+    https://github.com/Mirantis/ceph-lcm/tree/master/infrastructure_playbooks/server_discovery_playbook

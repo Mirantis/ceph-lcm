@@ -1,0 +1,41 @@
+---
+###
+
+- name: Install debmirror
+  become: True
+  apt:
+    name: debmirror
+    state: present
+
+- name: Import GPG key id {{ ceph_main_repo.gpg_keyid }}
+  become: True
+  apt_key:
+    id: "{{ ceph_main_repo.gpg_keyid }}"
+    keyserver: "{{ ceph_main_repo.gpg_keyserver }}"
+    keyring: "{{ temp_apt_keyring }}"
+  environment:
+    http_proxy: "{{ http_proxy|default('') }}"
+
+- name: Set proxy related variables for debmirror
+  set_fact:
+    extra_debmirror_args: "--proxy={{ http_proxy }}"
+  when: "{{ http_proxy|default('') != '' }}"
+
+- name: Mirror {{ ceph_main_repo.url }}
+  become: False
+  command: >
+    debmirror
+    --verbose
+    --progress
+    "--method={{ scheme }}"
+    "--host={{ host }}"
+    "--root={{ path }}/{{ ceph_release }}-{{ os_release }}"
+    "--dist={{ ceph_release }}-{{ os_release }}"
+    "--keyring={{ temp_apt_keyring }}"
+    --arch=i386,amd64
+    {{ extra_debmirror_args|default('') }}
+    "{{ local_mirror_root }}/{{ ceph_release }}-{{ os_release }}"
+  vars:
+    scheme: "{{ ceph_main_repo.url | regex_replace('^([^:]+)[:]//([^/]+)/(.+)[/]*$', '\\1') }}"
+    host: "{{ ceph_main_repo.url | regex_replace('^([^:]+)[:]//([^/]+)/(.+)[/]*$', '\\2') }}"
+    path: "{{ ceph_main_repo.url | regex_replace('^([^:]+)[:]//([^/]+)/(.+)[/]*$', '\\3') }}"

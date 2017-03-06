@@ -1,5 +1,6 @@
 .. _supported_ceph_packages:
 
+
 =======================
 Supported Ceph packages
 =======================
@@ -47,6 +48,17 @@ The following table lists packages provided for upgrades only:
    Packages for old LTS releases and Jewel for Ubuntu 14.04 are intended for
    upgrade purposes only and are *not* maintained other than fixing bugs
    hindering the upgrade to Jewel and Ubuntu 16.04.
+
+.. note::
+
+    It is possible and recommended to create and use your own
+    repository. To do so, please check corresponding playbook and follow
+    the instructions.
+
+    https://github.com/Mirantis/ceph-lcm/tree/master/infrastructure_playbooks/apt_mirror_playbook
+
+    This playbook creates only server, please setup webserver like nginx
+    or caddy to serve static by yourself.
 
 .. _Jewel: http://docs.ceph.com/docs/master/release-notes/#v10-2-0-jewel
 .. _Hammer: http://docs.ceph.com/docs/master/release-notes/#v0-94-hammer

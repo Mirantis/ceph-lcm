@@ -1,0 +1,14 @@
+---
+
+## Use Jewel for Ubuntu 16.04 (xenial) by default
+ceph_release: jewel
+os_release: xenial
+
+## Mirror Mirantis' Ceph APT repository by default
+ceph_main_repo:
+  url: http://mirror.fuel-infra.org/decapod/ceph
+  gpg_keyid: 69514C18 # A254F5F0
+  gpg_keyserver: hkp://keyserver.ubuntu.com:80
+
+temp_apt_keyring: /etc/apt/trusted.gpg.d/decapod-ceph.gpg
+local_mirror_root: /tmp/decapod-ceph
