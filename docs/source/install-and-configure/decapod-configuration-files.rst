@@ -7,72 +7,150 @@ Decapod configuration files
 Decapod supports a number of configuration files you may want to propagate
 into the container:
 
-ansible_ssh_keyfile.pem
- SSH private key used by Ansible to connect to Ceph nodes. Decapod uses
- Ansible to configure remote machines. Ansible uses SSH to connect to remote
- machines. Therefore, it is required to propagate SSH private key to Decapod.
- If you do not have a prepared SSH private key, generate a new one as
- described in
- `Create SSH keys <https://confluence.atlassian.com/bitbucketserver/creating-ssh-keys-776639788.html>`_.
 
- After you generate a new one, copy it to the top level of the source code
- repository. The file name must be ``ansible_ssh_keyfile.pem`` and the format
- of the file must be PEM.
+:file:`ansible_ssh_keyfile.pem`
+-------------------------------
 
- .. warning::
+SSH private key used by Ansible to connect to Ceph nodes. Decapod
+uses Ansible to configure remote machines. Ansible uses SSH to
+connect to remote machines. Therefore, it is required to propagate
+SSH private key to Decapod. If you do not have a prepared SSH
+private key, generate a new one as described in `Create SSH keys
+<https://confluence.atlassian.com/bitbucketserver/creating-ssh-keys-776639788.html>`_.
+
+After you generate a new one, copy it to the top level of the source
+code repository. The file name must be ``ansible_ssh_keyfile.pem`` and
+the format of the file must be PEM.
+
+.. warning::
 
     Keep the key private.
 
+
 SSL certificates
- * ssl.key - Private key for SSL/TLS certificate. Used by web UI.
+----------------
 
- * ssl.crt - Signed certificate for SSL/TLS. Used by web UI.
+:file:`ssl.key`
+    Private key for SSL/TLS certificate. Used by web UI.
 
- * ssl-dhparam.pem - Diffie-Hellman ephemeral parameters for SSL/TLS. This
-   enables perfect forward secrecy for secured connection.
+:file:`ssl.crt`
+    Signed certificate for SSL/TLS. Used by web UI.
 
- If you do not have such certificates, generate new ones as described in
- `OpenSSL Essentials <https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs>`_
- and `Forward Secrecy & Diffie Hellman Ephemeral Parameters <https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html#Forward_Secrecy_&_Diffie_Hellman_Ephemeral_Parameters>`_.
- All SSL keys should be in the PEM format. Place the SSL files to the top
- level of your source code repository.
+:file:`ssl-dhparam.pem`
+    Diffie-Hellman ephemeral parameters for SSL/TLS. This enables
+    perfect forward secrecy for secured connection.
 
- .. warning::
+If you do not have such certificates, generate new ones as described in
+`OpenSSL Essentials <https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs>`_
+and `Forward Secrecy & Diffie Hellman Ephemeral Parameters <https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html#Forward_Secrecy_&_Diffie_Hellman_Ephemeral_Parameters>`_.
+All SSL keys should be in the PEM format. Place the SSL files to the top
+level of your source code repository.
 
-    Keep the key private. Do not use self-signed certificates for a production
-    installation.
+.. warning::
 
-config.yaml
- Configuration file for Decapod. Please check
- :ref:`decapod_install_and_configure_config_yaml` for details.
+   Keep the key private. Do not use self-signed certificates for a production
+   installation.
 
-mongodb.pem
- SSL/TLS pair of certificate and key, concatenated in one file. Required to
- use secured connection by MongoDB. For information on how to generate this
- file, refer to the `official documentation <https://docs.mongodb.com/manual/tutorial/configure-ssl/#pem-file>`__.
- To allow SSL/TLS on client side, verify that config file has the ``?ssl=true``
- parameter in URI. For example, ``mongodb://database:27017/db`` will not use
- a secured connection, but ``mongodb://database:27017/db?ssl=true`` will.
 
- .. note::
+:file:`config.yaml`
+-------------------
 
-    To use database authentication, follow the official guide or the community checklist:
+Configuration file for Decapod. Please check
+:ref:`decapod_install_and_configure_config_yaml` for details.
 
-    * https://docs.mongodb.com/manual/core/security-users/
-    * https://gist.github.com/leommoore/f977860d22dfb2860fc2
-    * https://hub.docker.com/_/mongo/
 
-    After you have a MongoDB running with the required authentication, verify
-    that the user/password pair is set in the config file. The URI should look
-    like ``mongodb://user:password@database:27017/db?ssl=true``.
+:file:`mongodb.pem`
+-------------------
 
-    By default, containers will have no information about users and their
-    passwords.
+SSL/TLS pair of certificate and key, concatenated in one file.
+Required to use secured connection by MongoDB. For information on
+how to generate this file, refer to the `official documentation
+<https://docs.mongodb.com/manual/tutorial/configure-ssl/#pem-file>`_.
+To allow SSL/TLS on client side, verify that config file
+has the ``?ssl=true`` parameter in URI. For example,
+``mongodb://database:27017/db`` will not use a secured connection, but
+``mongodb://database:27017/db?ssl=true`` will.
 
-To specify custom files, use the ``docker-compose.override.yml`` file. For
-details, see
-`Docker Compose documentation <https://docs.docker.com/compose/extends/#/multiple-compose-files>`_.
-An example of such file is placed in the top level of the repository:
+.. note::
+
+   To use database authentication, follow the official guide or the
+   community checklist:
+
+   * https://docs.mongodb.com/manual/core/security-users/
+   * https://gist.github.com/leommoore/f977860d22dfb2860fc2
+   * https://hub.docker.com/_/mongo/
+
+   After you have a MongoDB running with the required
+   authentication, verify that the user/password pair
+   is set in the config file. The URI should look like
+   ``mongodb://user:password@database:27017/db?ssl=true``.
+
+   By default, containers will have no information about users and their
+   passwords.
+
+
+Propagation to containers
+-------------------------
+
+Here is the list of mentioned files and their placement in containers.
+For simplicity, this table uses :program:`docker-compose` service names.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Configuration file
+     - api
+     - controller
+     - admin
+     - frontend
+     - database
+   * - :file:`ansible_ssh_keyfile.pem`
+     -
+     - :file:`/root/.ssh/id_rsa`
+     - :file:`/root/.ssh/id_rsa`
+     -
+     -
+   * - :file:`ssl.key`
+     -
+     -
+     -
+     - :file:`/ssl/ssl.key`
+     -
+   * - :file:`ssl.crt`
+     -
+     -
+     -
+     - :file:`/ssl/ssl.crt`
+     -
+   * - :file:`ssl-dhparam.pem`
+     -
+     -
+     -
+     - :file:`/ssl/dhparam.pem`
+     -
+   * - :file:`config.yaml`
+     - :file:`/etc/decapod/config.yaml`
+     - :file:`/etc/decapod/config.yaml`
+     - :file:`/etc/decapod/config.yaml`
+     -
+     -
+   * - :file:`mongodb.pem`
+     -
+     -
+     -
+     -
+     - :file:`/certs/mongodb.pem`
+   * - :file:`mongodb-ca.crt`
+     -
+     -
+     -
+     -
+     - :file:`/certs/mongodb-ca.crt`
+
+To specify custom files, use the ``docker-compose.override.yml``
+file. For details, see `Docker Compose documentation
+<https://docs.docker.com/compose/extends/#/multiple-compose-files>`_. An
+example of such file is placed in the top level of the repository:
 
 .. code-block:: yaml
 
