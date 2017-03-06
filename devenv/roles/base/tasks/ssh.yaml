@@ -24,12 +24,14 @@
   with_items: "{{ ssh_known_hosts }}"
   when: no_known_hosts.changed
 
-- name: Copy local keypair to Vagrant box
+- name: Copy local keypair to the box
   copy: src=~/.ssh/{{ item }}
         dest=.ssh/{{ item }}
         owner={{ ansible_ssh_user }}
         group={{ ansible_ssh_user }}
         mode=0400
+  ignore_errors: true
   with_items:
     - id_rsa
     - id_rsa.pub
+    - config

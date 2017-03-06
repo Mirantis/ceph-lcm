@@ -106,7 +106,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # https://raymii.org/s/tutorials/Automating_Openstack_with_Cloud_init_run_a_script_on_VMs_first_boot.html
       client.vm.provision :ansible do |ansible|
         ansible.playbook = File.join(
-          CURRENT_DIR, "server_discovery_playbook", "playbook.yaml"
+          CURRENT_DIR, "infrastructure_playbooks", "server_discovery_playbook",
+          "playbook.yaml"
         )
         ansible.extra_vars = {
           user_data: cloud_config_file

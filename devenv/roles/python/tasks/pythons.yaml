@@ -18,9 +18,21 @@
 - name: Install Pythons
   command: bash -ic "pyenv install -s {{ item }}"
   with_items: "{{ pyenv_pythons }}"
+  register: install_pythons_result
+  async: 1800
+  poll: 0
   tags:
     # -s flags for pyenv install tells that it skips if nothing to do
     - skip_ansible_lint
+
+- name:  Wait for Python to be installed
+  async_status:
+    jid: "{{ item.ansible_job_id }}"
+  register: pyenv_job_status
+  until: pyenv_job_status.finished
+  delay: 10
+  retries: 180
+  with_items: "{{ install_pythons_result.results }}"
 
 - name: Check if Decapod virtualenv exists
   stat: path="{{ pyenv_root }}/versions/decapod"

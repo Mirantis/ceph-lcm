@@ -17,7 +17,6 @@
 
 apt_packages:
   - ack-grep
-  - ansible
   - aria2
   - build-essential
   - cookiecutter
