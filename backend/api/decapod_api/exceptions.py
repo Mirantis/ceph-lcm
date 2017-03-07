@@ -197,3 +197,10 @@ class ClusterMustBeDeployedError(BadRequest):
 
     def __init__(self, model_id):
         super().__init__(self.description.format(model_id))
+
+
+class CannotExecuteOnDeletedCluster(BadRequest):
+    description = "Cannot run execution on deleted cluster {0}"
+
+    def __init__(self, model_id):
+        super().__init__(self.description.format(model_id))

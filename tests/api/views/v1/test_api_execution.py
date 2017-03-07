@@ -22,6 +22,7 @@ import unittest.mock
 import gridfs.grid_file
 import pytest
 
+from decapod_common.models import cluster
 from decapod_common.models import execution
 from decapod_common.models import execution_step
 from decapod_common.models import role
@@ -130,6 +131,19 @@ def test_post_result(sudo_client, new_pcmodel, freeze_time,
     assert not tsk.time_cancelled
     assert tsk.time_updated == int(freeze_time.return_value)
     assert tsk.time_created == int(freeze_time.return_value)
+
+
+def test_post_result_deleted_cluster(sudo_client, new_pcmodel, freeze_time,
+                                     valid_post_request):
+    clus = cluster.ClusterModel.create(pytest.faux.gen_alpha())
+    clus.delete()
+    new_pcmodel.cluster = clus
+    new_pcmodel.save()
+    valid_post_request["playbook_configuration"]["version"] = \
+        new_pcmodel.version
+
+    response = sudo_client.post("/v1/execution/", data=valid_post_request)
+    assert response.status_code == 400
 
 
 @pytest.mark.parametrize("what", ("id", "version"))

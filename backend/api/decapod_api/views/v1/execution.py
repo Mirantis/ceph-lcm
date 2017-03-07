@@ -110,6 +110,9 @@ class ExecutionView(generic.VersionedCRUDView):
 
         auth.AUTH.check_auth_permission(flask.g.token.user,
                                         "playbook", config.playbook_id)
+        if config.cluster.time_deleted:
+            raise http_exceptions.CannotExecuteOnDeletedCluster(
+                config.cluster_id)
 
         model = execution.ExecutionModel.create(config, self.initiator_id)
         LOG.info(
