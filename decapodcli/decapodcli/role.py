@@ -92,10 +92,11 @@ def get_version(role_id, version, client):
 def create(name, api_permissions, playbook_permissions, client):
     """Create new role in Decapod."""
 
-    permissions = {
-        "api": api_permissions,
-        "playbook": playbook_permissions
-    }
+    permissions = [
+        {"name": "api", "permissions": api_permissions},
+        {"name": "playbook", "permissions": playbook_permissions}
+    ]
+
     return client.create_role(name, permissions)
 
 
