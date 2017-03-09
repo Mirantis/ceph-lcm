@@ -193,6 +193,7 @@ export class DataService {
               }
             }
           ),
+          maxRecords: this.maxRecords,
           afterFindAll: function(props: any, opts: any, result: any): pagedResult {
             result.items = _.map(result.items, (item, index) => new (this.recordClass)(item));
             return result;
