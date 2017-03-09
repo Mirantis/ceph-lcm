@@ -42,7 +42,7 @@ fi
 
 MCP_DOCS_DIR="$(readlink -f "$1")"
 
-rsync -rLP -n --delete-delay \
+rsync -rLP --delete-delay \
     --exclude conf.py \
     --exclude common \
     --exclude pdf_common.rst \

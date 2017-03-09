@@ -202,6 +202,8 @@ def process_service_files(pool, name, container_id, snapshot_dir, compose_cmd):
                      [service_snapshot_dir, name, container_id])
     pool.apply_async(collect_service_packages_python3,
                      [service_snapshot_dir, name, container_id])
+    pool.apply_async(collect_service_ansible_config,
+                     [service_snapshot_dir, name, container_id])
     pool.apply_async(collect_service_private_key_sha1sum,
                      [service_snapshot_dir, name, compose_cmd])
 
@@ -354,6 +356,11 @@ def collect_service_packages_python2(snapshot_dir, service_name, container_id):
 @async()
 def collect_service_packages_python3(snapshot_dir, service_name, container_id):
     return docker_cp(container_id, "/packages-python3", snapshot_dir)
+
+
+@async()
+def collect_service_ansible_config(snapshot_dir, service_name, container_id):
+    return docker_cp(container_id, "/etc/ansible/ansible.cfg", snapshot_dir)
 
 
 def docker_cp(container_id, remote_path, local_path):
