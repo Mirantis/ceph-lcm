@@ -15,24 +15,27 @@
 # limitations under the License.
 """Healtcheck utilities for docker.
 
-These utilities are intended to support HEALTCHECK instruction of docker
+These utilities are intended to support HEALTHCHECK instruction of docker
 1.12.
 """
 
 
 import argparse
 import functools
+import os
+import random
 import socket
+import subprocess
 import sys
-import urllib.request
 
 import pymongo.uri_parser
+import uwsgi_tools.curl
 
+from decapod_common import cliutils
 from decapod_common import config
 from decapod_common import log
-from decapod_common.models import db
-from decapod_common.models import generic
 from decapod_common.models import migration_script
+from decapod_common.models import server
 
 
 LOG = log.getLogger(__name__)
@@ -50,9 +53,8 @@ HEALTH_NOK = 1
 
 def docker_healthcheck(func):
     @functools.wraps(func)
+    @cliutils.configure
     def decorator(*args, **kwargs):
-        log.configure_logging(CONF.logging_config)
-
         try:
             func(*args, **kwargs)
         except SystemExit as exc:
@@ -68,18 +70,6 @@ def docker_healthcheck(func):
         LOG.info("Finish with exit code %d", code)
 
         sys.exit(code)
-
-    return decorator
-
-
-def docker_healthcheck_with_db(func):
-    @functools.wraps(func)
-    @docker_healthcheck
-    def decorator(*args, **kwargs):
-        check_mongodb_availability()
-        generic.configure_models(db.MongoDB())
-
-        return func(*args, **kwargs)
 
     return decorator
 
@@ -105,7 +95,7 @@ def address_available(host, port):
     return True
 
 
-@docker_healthcheck_with_db
+@docker_healthcheck
 def checkdb():
     try:
         migration_script.MigrationScript.find()
@@ -130,19 +120,63 @@ def check_address():
 
 
 @docker_healthcheck
+def check_process():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("process")
+    args = parser.parse_args()
+
+    output = subprocess.check_output(["pgrep", args.process])
+    LOG.info("Pids of process are %s", output)
+
+
+@docker_healthcheck
 def check_api():
     parser = argparse.ArgumentParser()
     parser.add_argument("host")
     parser.add_argument("port", type=int)
     args = parser.parse_args()
 
-    url = "http://{0}:{1}/v1/info/".format(args.host, args.port)
-    request = urllib.request.urlopen(url, timeout=5)
-    request.read()
+    address = "{0}:{1}".format(args.host, args.port)
+    result = uwsgi_tools.curl.curl(address, "/v1/info/")
+    split_result = result.split("\n")
+    if not split_result:
+        raise Exception("Empty response from UWSGI: {0}".format(result))
 
-    if request.code != 200:
-        LOG.warning("Request has been completed with status code %d",
-                    request.code)
-        raise Exception("Finish with code {0}".format(request.code))
-    else:
+    http_code = split_result[0].split()[1]
+    if http_code == "200":
         LOG.info("Request has been completed with code 200")
+        return
+
+    raise Exception("Problemtic result from UWSGI: {0}".format(result))
+
+
+@docker_healthcheck
+def check_ansible():
+    pagination = {
+        "per_page": 100,
+        "page": 1,
+        "filter": {},
+        "sort_by": [],
+        "all": True
+    }
+    servers = server.ServerModel.list_models(pagination)
+    servers = servers.items
+    if not servers.count():
+        LOG.info("Servers are not registered yet, nothing to do.")
+        return
+
+    choosen_server = servers[random.randint(0, servers.count() - 1)]
+    command = [
+        "ansible",
+        "-i", "{0},".format(choosen_server["ip"]),
+        "-u", choosen_server["username"],
+        "-m", "ping",
+        "-o",
+        "all"
+    ]
+
+    environment = os.environ.copy()
+    environment["ANSIBLE_CONFIG"] = "/etc/ansible/ansible.cfg"
+
+    subprocess.check_call(command, env=environment)
+    LOG.info("Ansible works fine")

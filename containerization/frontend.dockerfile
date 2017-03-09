@@ -26,6 +26,13 @@ ARG npm_registry_url=
 ENV NPM_CONFIG_REGISTRY=${npm_registry:-https://registry.npmjs.org/} DEBIAN_FRONTEND=noninteractive
 
 
+HEALTHCHECK --interval=30s --timeout=20s CMD \
+  curl-healthcheck    200 http://127.0.0.1:80 \
+  && curl-healthcheck 200 http://127.0.0.1:80/v1/info/ \
+  && curl-healthcheck 200 https://127.0.0.1:443 \
+  && curl-healthcheck 200 https://127.0.0.1:443/v1/info/
+
+
 RUN set -x \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -42,7 +49,7 @@ COPY .git            /project/.git
 
 RUN set -x \
   && apt-get update \
-  && apt-get install -y --no-install-recommends wget xz-utils git \
+  && apt-get install -y --no-install-recommends curl wget xz-utils git \
   && wget https://github.com/jwilder/dockerize/releases/download/v0.3.0/dockerize-linux-amd64-v0.3.0.tar.gz \
   && tar -C /usr/local/bin -xzf dockerize-linux-amd64-v0.3.0.tar.gz \
   && rm dockerize-linux-amd64-v0.3.0.tar.gz \
@@ -52,6 +59,7 @@ RUN set -x \
   && cd /project \
   && git reset --hard \
   && echo "frontend=$(git rev-parse HEAD)" > /etc/git-release \
+  && install containerization/files/curl-healthcheck.sh /usr/local/bin/curl-healthcheck \
   && cp containerization/files/devconfigs/nginx-dhparam.pem /ssl/dhparam.pem \
   && cp containerization/files/devconfigs/nginx-selfsigned.crt /ssl/ssl.crt \
   && cp containerization/files/devconfigs/nginx-selfsigned.key /ssl/ssl.key \

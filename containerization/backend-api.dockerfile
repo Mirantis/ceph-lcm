@@ -24,6 +24,11 @@ ARG pip_index_url=
 ARG npm_registry_url=
 
 
+HEALTHCHECK --interval=30s --timeout=20s CMD \
+  decapod-healthcheck-db \
+  && decapod-healthcheck-api 127.0.0.1 8000
+
+
 COPY .git /project/.git
 
 

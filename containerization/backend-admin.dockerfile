@@ -25,6 +25,14 @@ ARG npm_registry_url=
 ENV DECAPOD_URL=http://frontend:80 DECAPOD_LOGIN=root DECAPOD_PASSWORD=root EDITOR=vim
 
 
+HEALTHCHECK --interval=30s --timeout=20s CMD \
+  decapod-healthcheck-db \
+  && decapod-healthcheck-process cron \
+  && decapod-healthcheck-ansible \
+  && curl-healthcheck 200 http://127.0.0.1:8000 '--user root:r00tme' \
+  && curl-healthcheck 200 http://127.0.0.1:8001
+
+
 COPY .git /project/.git
 
 
@@ -66,6 +74,7 @@ RUN set -x \
   && git submodule update --init --recursive \
   && echo "admin=$(git rev-parse HEAD)" >> /etc/git-release \
   && echo "admin=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
+  && install containerization/files/curl-healthcheck.sh /usr/local/bin/curl-healthcheck \
   && scd -s git_pep440 -v \
   && pip2 install --no-cache-dir --disable-pip-version-check --upgrade 'setuptools==32.3.1' \
   && pip2 install --no-cache-dir --disable-pip-version-check \
@@ -102,7 +111,7 @@ RUN set -x \
   && mkfifo /var/log/cron.log \
   && cd / \
   && rm -r /project /root/.cache/pip \
-  && apt-key del EA312927 \
+  && apt-key del 0C49F3730359A14518585931BC711F9BA15703C6 \
   && rm /etc/apt/sources.list.d/mongodb.list \
   && pip3 --no-cache-dir --disable-pip-version-check freeze > packages-python3 \
   && pip2 --no-cache-dir --disable-pip-version-check freeze > packages-python2 \

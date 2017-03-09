@@ -24,6 +24,10 @@ ARG pip_index_url=
 ARG npm_registry_url=
 
 
+HEALTHCHECK --interval=30s --timeout=20s CMD \
+  mongo --ssl --sslAllowInvalidCertificates --eval 'db.adminCommand("listDatabases")'
+
+
 COPY containerization/files/db-backup.sh              /usr/bin/backup
 COPY containerization/files/db-moshell.sh             /usr/bin/moshell
 COPY containerization/files/db-restore.sh             /usr/bin/restore

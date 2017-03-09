@@ -24,6 +24,11 @@ ARG pip_index_url=
 ARG npm_registry_url=
 
 
+HEALTHCHECK --interval=30s --timeout=20s CMD \
+  decapod-healthcheck-db \
+  && decapod-healthcheck-ansible
+
+
 COPY .git /project/.git
 
 

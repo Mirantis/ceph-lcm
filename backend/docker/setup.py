@@ -21,6 +21,7 @@ import setuptools
 
 REQUIREMENTS = (
     "decapod-common~=0.2.dev1",
+    "uwsgi-tools>=1.0.3,<1.1"
 )
 
 
@@ -43,7 +44,9 @@ setuptools.setup(
         "console_scripts": [
             "decapod-healthcheck-db = decapod_docker.healthcheck:checkdb",
             "decapod-healthcheck-api = decapod_docker.healthcheck:check_api",
-            "decapod-healthcheck-address = decapod_docker.healthcheck:check_address"  # NOQA
+            "decapod-healthcheck-address = decapod_docker.healthcheck:check_address",  # NOQA
+            "decapod-healthcheck-process = decapod_docker.healthcheck:check_process",  # NOQA
+            "decapod-healthcheck-ansible = decapod_docker.healthcheck:check_ansible"  # NOQA
         ]
     },
     classifiers=(
