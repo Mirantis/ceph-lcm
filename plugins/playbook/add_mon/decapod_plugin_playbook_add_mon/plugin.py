@@ -73,7 +73,7 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
         servers = {srv.ip: srv for srv in servers}
 
         for name, group_vars in config.items():
-            if name == "_meta" or not group_vars:
+            if name in ("_meta", "already_deployed") or not group_vars:
                 continue
             group_servers = [servers[ip] for ip in group_vars]
             cluster.add_servers(group_servers, name)
