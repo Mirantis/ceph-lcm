@@ -219,6 +219,9 @@ def get_servers(server_id, role_name, cluster_id):
         return items.response_all()["items"]
 
     clusters = cluster.ClusterModel.find_by_model_id(*cluster_id)
+    if not isinstance(clusters, list):
+        clusters = [clusters]
+
     server_ids = set()
     for clstr in clusters:
         if not role_name:
