@@ -75,7 +75,7 @@ RUN set -x \
   && echo "admin=$(git rev-parse HEAD)" >> /etc/git-release \
   && echo "admin=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
   && install containerization/files/curl-healthcheck.sh /usr/local/bin/curl-healthcheck \
-  && scd -s git_pep440 -v \
+  && scd -v \
   && pip2 install --no-cache-dir --disable-pip-version-check --upgrade 'setuptools==32.3.1' \
   && pip2 install --no-cache-dir --disable-pip-version-check \
     ./backend/ansible \

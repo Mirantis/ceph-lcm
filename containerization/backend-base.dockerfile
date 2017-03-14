@@ -71,7 +71,7 @@ RUN set -x \
   && rm dockerize-linux-amd64-v0.3.0.tar.gz \
   && pip3 --no-cache-dir --disable-pip-version-check install 'scd[yaml]~=1.2' \
   && echo "base=$(scd -s git_pep440 -p)" > /etc/decapod-release \
-  && scd -s git_pep440 -v \
+  && scd -v \
   && pip3 --no-cache-dir --disable-pip-version-check install \
     ./backend/common \
     ./backend/docker \

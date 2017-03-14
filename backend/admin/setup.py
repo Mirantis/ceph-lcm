@@ -20,10 +20,10 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapod-api~=1.0.dev1",
+    "decapod-api~=1.0",
     "decapod-common~=1.0.dev1",
-    "decapod-controller~=1.0.dev1",
-    "decapodlib~=1.0.dev1",
+    "decapod-controller~=1.0",
+    "decapodlib~=1.0",
     "python-keystoneclient>=3.9,<4",
     "click>=6,<7",
     "cryptography>=1.4,<2",
@@ -35,7 +35,7 @@ setuptools.setup(
     name="decapod-admin",
     description="Admin scripts for Decapod",
     long_description="",  # TODO
-    version="1.0.0.dev1",
+    version="1.0.0",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

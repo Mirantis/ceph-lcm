@@ -1,7 +1,7 @@
 config: 1
 
 version:
-  number: "1.0.0.dev1"
+  number: "1.0.0"
   scheme: pep440
 
 search_patterns:
@@ -32,6 +32,9 @@ files:
     - search_raw: '^release\s=.*$'
       replace_raw: "release = '{{ full }}'"
 
+  containerization/backend-admin.dockerfile:
+    - search: docker
+      replace: docker
   containerization/backend-api.dockerfile:
     - search: docker
       replace: docker

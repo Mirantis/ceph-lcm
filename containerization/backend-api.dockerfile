@@ -47,7 +47,7 @@ RUN set -x \
   && echo "api=$(git rev-parse HEAD)" >> /etc/git-release \
   && cp containerization/files/uwsgi.ini /etc/decapod-api-uwsgi.ini \
   && echo "api=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
-  && scd -s git_pep440 -v \
+  && scd -v \
   && pip3 install --no-cache-dir --disable-pip-version-check -c constraints.txt uwsgi \
   && pip3 install --no-cache-dir --disable-pip-version-check backend/api[keystone] \
   && cd / \
