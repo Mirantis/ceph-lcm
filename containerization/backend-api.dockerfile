@@ -19,7 +19,7 @@ FROM decapod/base
 MAINTAINER Mirantis Inc.
 
 
-LABEL version="1.0.0" description="API service for Decapod" vendor="Mirantis"
+LABEL version="1.1.0" description="API service for Decapod" vendor="Mirantis"
 ARG pip_index_url=
 ARG npm_registry_url=
 
@@ -47,7 +47,7 @@ RUN set -x \
   && echo "api=$(git rev-parse HEAD)" >> /etc/git-release \
   && cp containerization/files/uwsgi.ini /etc/decapod-api-uwsgi.ini \
   && echo "api=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
-  && scd -v \
+  && scd -s git_pep440 -v \
   && pip3 install --no-cache-dir --disable-pip-version-check -c constraints.txt uwsgi \
   && pip3 install --no-cache-dir --disable-pip-version-check backend/api[keystone] \
   && cd / \
