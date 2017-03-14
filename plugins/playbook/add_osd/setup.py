@@ -23,7 +23,7 @@ import setuptools
 setuptools.setup(
     name="decapod-plugin-playbook-add-osd",
     description="Add OSD plugin for Decapod",
-    version="0.2.0.dev1",
+    version="1.0.0.dev1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
@@ -42,7 +42,7 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "decapod-common~=0.2.dev1"
+        "decapod-common~=1.0.dev1"
     ],
     zip_safe=False
 )

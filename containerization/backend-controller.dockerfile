@@ -19,7 +19,7 @@ FROM decapod/base
 MAINTAINER Mirantis Inc.
 
 
-LABEL version="0.2.0" description="Controller service for Decapod" vendor="Mirantis"
+LABEL version="1.0.0" description="Controller service for Decapod" vendor="Mirantis"
 ARG pip_index_url=
 ARG npm_registry_url=
 

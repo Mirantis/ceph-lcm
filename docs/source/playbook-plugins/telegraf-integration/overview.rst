@@ -21,6 +21,6 @@ table shows the versions mapping:
 ==============    ============================================================
 Plugin version    Ansible Galaxy version
 ==============    ============================================================
->=0.2,<0.3        `dj-wasabi.telegraf 0.7.0 \
+>=1.0,<1.1        `dj-wasabi.telegraf 0.7.0 \
                   <https://galaxy.ansible.com/dj-wasabi/telegraf/>`_
 ==============    ============================================================

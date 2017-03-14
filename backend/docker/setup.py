@@ -20,7 +20,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapod-common~=0.2.dev1",
+    "decapod-common~=1.0.dev1",
     "uwsgi-tools>=1.0.3,<1.1"
 )
 
@@ -29,7 +29,7 @@ setuptools.setup(
     name="decapod-docker",
     description="Decapod docker scripts",
     long_description="",  # TODO
-    version="0.2.0.dev1",
+    version="1.0.0.dev1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

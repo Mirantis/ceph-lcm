@@ -1,7 +1,7 @@
 config: 1
 
 version:
-  number: "0.2.0.dev1"
+  number: "1.0.0.dev1"
   scheme: pep440
 
 search_patterns:
@@ -136,12 +136,22 @@ files:
       replace: setuppy
     - search: pycommon
       replace: pycommon_mm
+  plugins/playbook/purge_telegraf/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
   plugins/playbook/purge_cluster/setup.py:
     - search: setuppy
       replace: setuppy
     - search: pycommon
       replace: pycommon_mm
   plugins/playbook/remove_osd/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/remove_mon/setup.py:
     - search: setuppy
       replace: setuppy
     - search: pycommon

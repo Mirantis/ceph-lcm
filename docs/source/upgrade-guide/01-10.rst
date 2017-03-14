@@ -1,15 +1,15 @@
 .. _decapod_upgrade_guide_0102:
 
 
-Upgrade from 0.1.x to 0.2
+Upgrade from 0.1.x to 1.0
 =========================
 
 This chapter describes upgrade procedure from versions **0.1.x** to
-**0.2.x**.
+**1.0.x**.
 
-The major issues with upgrading from 0.1.x to 0.2 are:
+The major issues with upgrading from 0.1.x to 1.0 are:
 
-#. During development of 0.2 Decapod changed its name from Shrimp.
+#. During development of 1.0 Decapod changed its name from Shrimp.
    It means that naming of some defaults was changed from *shrimp* to
    *decapod*. For example, name of the database in default config was
    changed.
@@ -23,29 +23,19 @@ The major issues with upgrading from 0.1.x to 0.2 are:
 Changes in existing Ceph deployments are not required.
 
 This guide tries to cover all these obstacles. It is split into 2 parts:
-action, required to perform on version 0.1 and actions for version 0.2.
+action, required to perform on version 0.1 and actions for version 1.0.
 
 
 Initial Preparations
 --------------------
 
-To start, we need to have latest versions of 0.2 release series. To
+To start, we need to have latest versions of 1.0 release series. To
 obtain them, please clone repositories on machine which is used to run
 Decapod.
 
 .. code-block:: console
 
-    $ git clone -b stable-0.2 --recurse-submodules https://github.com/Mirantis/ceph-lcm.git ~/decapod
-
-.. important::
-
-    At the time of writing this guide, branch *stable-0.2* was not
-    created yet. If you cannot clone such branch, please use *master*
-    branch instead.
-
-    .. code-block:: console
-
-        $ git clone -b master --recurse-submodules https://github.com/Mirantis/ceph-lcm.git ~/decapod
+    $ git clone -b stable-1.0 --recurse-submodules https://github.com/Mirantis/ceph-lcm.git ~/decapod
 
 After that, please create directory where config files and private keys
 for decapod should be stored. You may choose any directory you like.
@@ -102,7 +92,7 @@ We will create 2 backups:
 
 :file:`pre_upgrade_renamed`
   This will have a backup in case if you want to use default config
-  from 0.2 and do not port existing one.
+  from 1.0 and do not port existing one.
 
 
 Create :file:`pre_upgrade` Backup
@@ -204,7 +194,7 @@ Create :file:`pre_upgrade_renamed` Backup
 *****************************************
 
 Since project was renamed from Shrimp to Decapod during development
-of release 0.2, default database name was also changed from *shrimp*
+of release 1.0, default database name was also changed from *shrimp*
 to *decapod*. If you want to use new name and keep running with
 default config, then please rename it in Mongo DB doing following:
 
@@ -272,7 +262,7 @@ Extract Config Files
 
 If you already have a configuration files from old version, please
 collect them in some directory (e.g :file:`~/decapod_runtime`). Decapod
-version 0.2.x and newer will have default files stored in containers but
+version 1.0.x and newer will have default files stored in containers but
 you need to mount your own if you've changed some defaults.
 
 If you already have all files, mentioned
@@ -298,17 +288,17 @@ using to run Shrimp 0.1:
 
 If you do not have generated any files mentioned above by yourself and
 used defaults, there is not need to copy them: all of them will be
-stored in correct places in 0.2.x images. If you've modified any of
+stored in correct places in 1.0.x images. If you've modified any of
 :file:`config.yaml` or :file:`id_rsa` (SSH private key for Ansible),
 please copy them.
 
 
-Get Images for Version 0.2
+Get Images for Version 1.0
 --------------------------
 
 Please follow :ref:`decapod_install_index` chapter to get new images.
 And remember that we have required files in :file:`~/decapod_runtime`.
-Repository for version 0.2 is cloned in :file:`~/decapod` as mentioned
+Repository for version 1.0 is cloned in :file:`~/decapod` as mentioned
 in `Initial Preparations`_.
 
 
@@ -326,7 +316,7 @@ From the directory where you run Shrimp do the following:
     $ docker-compose -p PROJ down -v
 
 
-Run 0.2.x Version
+Run 1.0.x Version
 -----------------
 
 .. note::
@@ -474,5 +464,5 @@ Change ``root`` Password (optional)
 -----------------------------------
 
 Regular reminder: if you haven't changed password for ``root`` user,
-you have to do it. Starting from version 0.2 you can do it using admin
+you have to do it. Starting from version 1.0 you can do it using admin
 service. Please check :ref:`decapod_admin_service_password_reset`.

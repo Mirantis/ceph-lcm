@@ -20,7 +20,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "requests[security,socks]>=2.10,<2.14",
+    "requests[security,socks]!=2.12.2,!=2.13.0,>=2.10.0",
     "six>=1.10",
     "PyYAML>3.10,<4"
 )
@@ -30,7 +30,7 @@ setuptools.setup(
     name="decapodlib",
     description="Decapod client library",
     long_description="",  # TODO
-    version="0.2.0.dev1",
+    version="1.0.0.dev1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

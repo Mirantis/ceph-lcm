@@ -19,7 +19,7 @@ FROM docker-prod-virtual.docker.mirantis.net/ubuntu:xenial
 MAINTAINER Mirantis Inc.
 
 
-LABEL version="0.2.0" description="Image to run UI tests" vendor="Mirantis"
+LABEL version="1.0.0" description="Image to run UI tests" vendor="Mirantis"
 
 
 ARG pip_index_url=
