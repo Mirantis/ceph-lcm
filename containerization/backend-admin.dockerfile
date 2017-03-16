@@ -19,7 +19,7 @@ FROM decapod/base
 MAINTAINER Mirantis Inc.
 
 
-LABEL version="1.0.0" description="Admin utilities for Decapod" vendor="Mirantis"
+LABEL version="1.0.1" description="Admin utilities for Decapod" vendor="Mirantis"
 ARG pip_index_url=
 ARG npm_registry_url=
 ENV DECAPOD_URL=http://frontend:80 DECAPOD_LOGIN=root DECAPOD_PASSWORD=root EDITOR=vim
@@ -75,7 +75,7 @@ RUN set -x \
   && echo "admin=$(git rev-parse HEAD)" >> /etc/git-release \
   && echo "admin=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
   && install containerization/files/curl-healthcheck.sh /usr/local/bin/curl-healthcheck \
-  && scd -v \
+  && scd -s git_pep440 -v \
   && pip2 install --no-cache-dir --disable-pip-version-check --upgrade 'setuptools==32.3.1' \
   && pip2 install --no-cache-dir --disable-pip-version-check \
     ./backend/ansible \

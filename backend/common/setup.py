@@ -31,7 +31,7 @@ setuptools.setup(
     name="decapod-common",
     description="Decapod common package",
     long_description="",  # TODO
-    version="1.0.0",
+    version="1.0.1.dev1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

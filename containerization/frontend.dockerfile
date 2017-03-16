@@ -19,7 +19,7 @@ FROM docker-prod-virtual.docker.mirantis.net/nginx:stable
 MAINTAINER Mirantis Inc.
 
 
-LABEL version="1.0.0" description="Base image with frontend for Decapod" vendor="Mirantis"
+LABEL version="1.0.1" description="Base image with frontend for Decapod" vendor="Mirantis"
 ARG pip_index_url=
 ARG npm_registry_url=
 

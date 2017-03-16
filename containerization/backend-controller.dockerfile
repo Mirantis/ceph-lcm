@@ -19,7 +19,7 @@ FROM decapod/base
 MAINTAINER Mirantis Inc.
 
 
-LABEL version="1.0.0" description="Controller service for Decapod" vendor="Mirantis"
+LABEL version="1.0.1" description="Controller service for Decapod" vendor="Mirantis"
 ARG pip_index_url=
 ARG npm_registry_url=
 
@@ -55,7 +55,7 @@ RUN set -x \
   && git submodule update --init --recursive \
   && echo "controller=$(git rev-parse HEAD)" >> /etc/git-release \
   && echo "controller=$(scd -s git_pep440 -p)" >> /etc/decapod-release \
-  && scd -v \
+  && scd -s git_pep440 -v \
   && pip2 install --no-cache-dir --disable-pip-version-check --upgrade 'setuptools==32.3.1' \
   && pip2 install --no-cache-dir --disable-pip-version-check backend/ansible \
   && pip3 install --no-cache-dir --disable-pip-version-check --process-dependency-links backend/controller[libapt] \

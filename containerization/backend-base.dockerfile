@@ -19,7 +19,7 @@ FROM docker-prod-virtual.docker.mirantis.net/ubuntu:xenial
 MAINTAINER Mirantis Inc.
 
 
-LABEL version="1.0.0" description="Base image of Decapod" vendor="Mirantis"
+LABEL version="1.0.1" description="Base image of Decapod" vendor="Mirantis"
 ARG pip_index_url=
 ARG npm_registry_url=
 
@@ -71,7 +71,7 @@ RUN set -x \
   && rm dockerize-linux-amd64-v0.3.0.tar.gz \
   && pip3 --no-cache-dir --disable-pip-version-check install 'scd[yaml]~=1.2' \
   && echo "base=$(scd -s git_pep440 -p)" > /etc/decapod-release \
-  && scd -v \
+  && scd -s git_pep440 -v \
   && pip3 --no-cache-dir --disable-pip-version-check install \
     ./backend/common \
     ./backend/docker \
