@@ -1,0 +1,71 @@
+---
+# Copyright (c) 2017 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Playbook for Ceph upgrade
+# Please check https://github.com/asheplyakov/mos9-ceph-upgrade as a
+# standalone solution.
+
+- hosts:
+    - mons
+    - osds
+  become: true
+  tasks:
+    - name: Install dependencies
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ dependencies }}"
+
+    - include: "{{ playbook_dir }}/tasks/timesync.yaml"
+      when: do_timesync
+
+    - include: "{{ playbook_dir }}/tasks/get_packages.yaml"
+
+
+- hosts: mons
+  become: true
+  serial: 1
+  tasks:
+    - include: "{{ playbook_dir }}/tasks/install_packages.yaml"
+
+    - name: Compare running version
+      command: >
+        ceph
+            --cluster "{{ cluster }}"
+        daemon "mon.{{ ansible_hostname }}" version
+      register: running_mon_version
+
+    - include: "{{ playbook_dir }}/tasks/restart_mon.yaml"
+      when: "{{ (running_mon_version.stdout | from_json).version != ceph_candidate_package_version.stdout }}"
+
+
+# # Upgrade OSDs. On each OSD node
+# # - Upgrade/install ceph packages
+# # - Set flags to prevent data rebalancing
+# # - Restart OSDs on the node
+# # - Wait for recovery to complete
+# # - Proceed to the next node
+- hosts: osds
+  become: true
+  serial: 1
+  tasks:
+    - include: "{{ playbook_dir }}/tasks/install_packages.yaml"
+    - include: "{{ playbook_dir }}/tasks/restart_osd.yaml"
+
+- hosts: clients
+  become: true
+  tasks:
+    - include: "{{ playbook_dir }}/tasks/install_packages.yaml"

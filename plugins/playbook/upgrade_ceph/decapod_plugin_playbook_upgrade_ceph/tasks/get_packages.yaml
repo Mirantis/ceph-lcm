@@ -1,0 +1,42 @@
+---
+# Copyright (c) 2017 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+# Download ceph packages into local APT cache, but not install them.
+# Intended to
+# - fail early if packages can't be downloaded on some node
+# - reduce the time when multiple versions of ceph daemons are running
+
+
+- name: find out currently installed ceph package version
+  shell: apt-cache policy ceph | awk '/Installed:/ { print $2 }'
+  register: ceph_package_version
+
+- name: find out ceph package candidate version
+  shell: apt-cache policy ceph | awk '/Candidate:/ { print $2 }'
+  register: ceph_candidate_package_version
+
+- name: grab ceph packages into local cache
+  command: >
+    apt-get install -y --download-only {{ item.value | join(" ") }}
+  with_items: "{{ packages.ceph }}"
+  when: ceph_package_version.stdout != ceph_candidate_package_version.stdout
+
+- name: grab radosgw packages into local cache
+  command: >
+    apt-get install -y --download-only {{ item.value | join(" ") }}
+  with_items: "{{ packages.radosgw }}"
+  when: has_radosgw and ceph_package_version.stdout != ceph_candidate_package_version.stdout

@@ -1,0 +1,19 @@
+---
+# vim: ft=yaml:
+
+packages:
+  ceph:
+    - ceph-common
+    - ceph-fs-common
+    - ceph-fuse
+    - libcephfs1
+    - librbd1
+    - librados2
+  radosgw:
+    - radosgw
+
+dependencies:
+  - "python-pycurl"
+  - hdparm
+  - ntp
+  - "python-apt"

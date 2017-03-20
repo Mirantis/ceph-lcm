@@ -16,6 +16,7 @@ The section contains the following topics:
    :maxdepth: 1
 
    playbook-plugins/plugin-deploy-ceph-cluster.rst
+   playbook-plugins/plugin-upgrade-ceph-cluster.rst
    playbook-plugins/plugin-add-osd.rst
    playbook-plugins/plugin-remove-osd.rst
    playbook-plugins/plugin-add-monitor.rst

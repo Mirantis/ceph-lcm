@@ -1,0 +1,70 @@
+---
+# Copyright (c) 2017 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- set_fact: osd_number="{{ item }}"
+
+
+- name: find out osd.{{ osd_number }} version
+  command: ceph --cluster "{{ cluster }}" daemon "osd.{{ osd_number }}" version
+  register: running_osd_version
+
+- name: find out OSD data owner
+  stat:
+    path: "/var/lib/ceph/osd/{{ cluster }}-{{ osd_number }}"
+  register: osd_dir_stat
+
+- name: check if osd.{{ osd_number }} should be restarted
+  set_fact:
+    dont_restart_osd: true
+  when:
+    - "{{ (running_osd_version.stdout | from_json).version == ceph_candidate_package_version.stdout }}"
+    - "{{ (ceph_user.stdout == '') or osd_dir_stat.stat.pw_name == ceph_user.stdout }}"
+
+- name: stop OSD item
+  service:
+    name: "ceph-osd@{{ osd_number }}"
+    state: stopped
+  when: "{{ not(dont_restart_osd | default(false) | bool) }}"
+
+- name: fix OSD data ownership
+  file:
+    path: "/var/lib/ceph/osd/{{ cluster }}-{{ osd_number }}"
+    state: directory
+    owner: "{{ ceph_user.stdout }}"
+    group: "{{ ceph_group.stdout }}"
+    mode: 0770
+    recurse: yes
+  when:
+    - ceph_user.stdout != ''
+    - osd_dir_stat.stat.pw_name != ceph_user.stdout
+    - "{{ not(dont_restart_osd | default(false) | bool) }}"
+
+- name: start OSD {{ osd_number }}
+  service:
+    name: "ceph-osd@{{ osd_number }}"
+    state: started
+  when: "{{ not(dont_restart_osd | default(false) | bool) }}"
+
+- name: wait for PGs to become active+clean
+  command: ceph --cluster "{{ cluster }}" -s --format json
+  register: ceph_health_post
+  delegate_to: "{{ groups.mons[0] }}"
+  until: ((ceph_health_post.stdout | from_json).pgmap.pgs_by_state | length) == 1 and
+         (ceph_health_post.stdout | from_json).pgmap.pgs_by_state.0.state_name == "active+clean"
+  retries: "{{ osd.restart_attempts }}"
+  delay: "{{ osd.restart_delay }}"
+  when: "{{ not(dont_restart_osd | default(false) | bool) }}"

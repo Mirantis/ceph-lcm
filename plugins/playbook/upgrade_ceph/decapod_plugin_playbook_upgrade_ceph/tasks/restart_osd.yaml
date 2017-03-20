@@ -1,0 +1,54 @@
+---
+# Copyright (c) 2017 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- set_fact: cluster_data="{{ ansible_local['ceph_%s' | format(cluster)] }}"
+- set_fact: osd_data="{{ cluster_data.osd_tree[ansible_hostname] | default([]) }}"
+- set_fact: osd_numbers="{{ osd_data | json_query('[*].id') }}"
+
+- name: find out ceph user
+  command: >
+    sed -rne
+    '/^\s*exec\s+.*ceph-osd/ s/^.*--setuser\s+([^[:space:]]+).*$/\1/p'
+    /etc/init/ceph-osd.conf
+  register: ceph_user
+
+- name: find out ceph group
+  command: >
+    sed -rne
+    '/^\s*exec\s+.*ceph-osd/ s/^.*--setgroup\s+([^[:space:]]+).*$/\1/p'
+    /etc/init/ceph-osd.conf
+  register: ceph_group
+
+- name: disable data rebalancing and scrubbing
+  command: ceph osd set "{{ item }}"
+  with_items:
+    - noout
+    - noscrub
+    - "nodeep-scrub"
+  delegate_to: "{{ groups.mons[0] }}"
+
+- name: Restart OSDs
+  include: "{{ playbook_dir }}/tasks/restart_single_osd.yaml"
+  with_items: "{{ osd_numbers }}"
+
+- name: reenable data rebalancing and scrubbing
+  command: ceph osd unset "{{ item }}"
+  with_items:
+    - noout
+    - noscrub
+    - "nodeep-scrub"
+  delegate_to: "{{ groups.mons[0] }}"
