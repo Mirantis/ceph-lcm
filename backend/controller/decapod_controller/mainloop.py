@@ -107,7 +107,21 @@ def possible_to_process(tsk):
 
 def process_task(tsk):
     LOG.info("Start to process task %s", tsk._id)
-    TASK_POOL.submit(tsk)
+
+    if tsk.task_type == task.TaskType.playbook:
+        TASK_POOL.submit(tsk)
+    elif tsk.task_type == task.TaskType.cancel:
+        tsk.start()
+        executing_task = tsk.get_executing_task()
+        if executing_task:
+            TASK_POOL.cancel(executing_task._id)
+            tsk.complete()
+        else:
+            LOG.error("Cannot find executing task for %s", tsk._id)
+            tsk.fail("Cannot find executing task")
+    else:
+        LOG.error("Unknown task %s", tsk._id)
+        tsk.fail("Unknown task")
 
 
 def get_servers_for_task(execution_id):

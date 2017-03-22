@@ -536,3 +536,6 @@ class CancelPlaybookPluginTask(Task):
 
     def __init__(self, initiator_id):
         super().__init__(TaskType.cancel, initiator_id)
+
+    def get_executing_task(self):
+        return self.get_by_execution_id(self.execution_id, TaskType.playbook)
