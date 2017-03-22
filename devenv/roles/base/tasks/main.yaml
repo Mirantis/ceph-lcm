@@ -22,4 +22,3 @@
 - include: docker.yaml
 - include: nodejs.yaml
 - include: bashrc.yaml
-- include: branches.yaml
