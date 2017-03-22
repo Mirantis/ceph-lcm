@@ -35,17 +35,31 @@
 
 - name: Create nonet meta-data
   become: true
-  lineinfile:
-    state: present
-    create: yes
+  template:
+    src: meta-data.j2
     dest: /var/lib/cloud/seed/nocloud-net/meta-data
-    line: "local-hostname: {{ ansible_hostname }}"
 
 - name: Upload user-data
   become: true
   copy:
-    src: "{{ user_data }}"
+    src: "{{ user_data | realpath }}"
     dest: /var/lib/cloud/seed/nocloud-net/user-data
+
+- name: Update cloud-init datasource list
+  become: true
+  lineinfile:
+    dest: /etc/cloud/cloud.cfg.d/90_dpkg.cfg
+    regexp: '^datasource_list'
+    line: 'datasource_list: [ NoCloud, None ]'
+
+- name: Upload cloud-init configs
+  become: true
+  copy:
+    src: "{{ item }}"
+    dest: /etc/cloud/cloud.cfg.d
+  with_items:
+    - 99_disable_warnings.cfg
+    - 99_decapod_datasource.cfg
 
 - name: Run local cloud-init
   become: true

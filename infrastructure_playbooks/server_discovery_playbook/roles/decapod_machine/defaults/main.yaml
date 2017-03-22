@@ -15,4 +15,6 @@
 # limitations under the License.
 
 # This variable defines do we need to setup host using cloud-init
+
+
 cloud_init: true

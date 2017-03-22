@@ -16,7 +16,7 @@
 
 
 - name: Slurp user-data
-  include_vars: "{{ user_data }}"
+  include_vars: "{{ user_data | realpath }}"
 
 - name: Install packages
   become: true
