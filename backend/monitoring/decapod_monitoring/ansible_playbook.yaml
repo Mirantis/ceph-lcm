@@ -20,7 +20,9 @@
 
   handlers:
     - name: remove_remote_directory
-      file: path="monitoring_{{ random_string }}" state=absent
+      file:
+        path: "monitoring_{{ random_string }}"
+        state: absent
 
   tasks:
     - set_fact: remote_directory_path="{{ 'monitoring_%s'|format(random_string) }}"
@@ -33,7 +35,10 @@
     - name: Create remote directory
       run_once: true
       notify: remove_remote_directory
-      file: path="{{ remote_directory_path }}" state=directory recurse=yes
+      file:
+        path: "{{ remote_directory_path }}"
+        state: directory
+        recurse: yes
 
     - name: Upload collector
       run_once: true
@@ -52,7 +57,14 @@
     - name: Run collector
       run_once: true
       become: true
-      shell: 'python "{{ remote_collector_path }}" --log-level DEBUG --conf "/etc/ceph/{{ cluster }}.conf" --key "/etc/ceph/{{ cluster }}.client.admin.keyring" --username "{{ username }}" --ssh-private-key "{{ remote_ssh_key }}" --result "$(pwd)/{{ remote_result_path }}"'
+      shell: >
+        python "{{ remote_collector_path }}"
+        --log-level DEBUG
+        --conf "/etc/ceph/{{ cluster }}.conf"
+        --key "/etc/ceph/{{ cluster }}.client.admin.keyring"
+        --username "{{ username }}"
+        --ssh-private-key "{{ remote_ssh_key }}"
+        --result "$(pwd)/{{ remote_result_path }}"
 
     - name: Fetch result
       run_once: true
@@ -61,6 +73,7 @@
         src: "{{ remote_result_path }}"
         dest: "{{ local_result_directory }}/"
         flat: yes
+        fail_on_missing: yes
 
 
 - hosts: localhost
@@ -69,14 +82,21 @@
 
   handlers:
     - name: remove_local_results
-      file: path="{{ local_result }}" state=absent
+      file:
+        path: "{{ local_result }}"
+        state: absent
 
   tasks:
     - set_fact: local_result="/tmp/{{ random_string }}/results.tar.gz"
 
     - name: Ensure local static directory is created
-      file: path="{{ local_static_directory }}" state=directory recurse=yes
+      file:
+        path: "{{ local_static_directory }}"
+        state: directory
+        recurse: yes
 
     - name: Visualize cluster
-      command: python "{{ visualizator_path }}" -w -g -o "{{ local_static_directory }}" "{{ local_result }}"
+      command: >
+        python "{{ visualizator_path }}"
+        -w -g -o "{{ local_static_directory }}" "{{ local_result }}"
       notify: remove_local_results

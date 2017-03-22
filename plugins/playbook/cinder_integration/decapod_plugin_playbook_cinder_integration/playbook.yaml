@@ -32,21 +32,28 @@
     - set_fact: mon_host="{{ groups['mons'].0 }}"
 
     - name: Create OSD pool
-      command: "ceph --cluster {{ cluster }} osd pool create {{ item.key }} {{ item.value }}"
+      command: >
+        ceph --cluster "{{ cluster }}"
+        osd pool create {{ item.key }} {{ item.value }}
       with_dict: "{{ pools }}"
       delegate_to: "{{ mon_host }}"
 
     - name: Create OSD auth keyring
-      command: "ceph --cluster {{ cluster }} auth get-or-create client.{{ item.key }}{% for name, perm in item.value.items() %} {{ name }} {{ perm|quote }}{% endfor %} -o /tmp/{{ item.key }}.keyring"
+      command: >
+        ceph --cluster "{{ cluster }}"
+        auth get-or-create client.{{ item.key }}{%
+        for name, perm in item.value.items() %} {{ name }} {{ perm|quote }}
+        {% endfor %} -o /tmp/{{ item.key }}.keyring
       with_dict: "{{ clients }}"
       delegate_to: "{{ mon_host }}"
       notify: remove_keyring
 
     - name: Fetch ceph.conf
       fetch:
-        src: /etc/ceph/ceph.conf
-        dest: "{{ fetch_directory }}/"
+        src: "/etc/ceph/{{ cluster }}.conf"
+        dest: "{{ fetch_directory }}/ceph.conf"
         flat: yes
+        fail_on_missing: yes
       delegate_to: "{{ mon_host }}"
 
     - name: Fetch keyring
@@ -54,5 +61,6 @@
         src: "/tmp/{{ item.key }}.keyring"
         dest: "{{ fetch_directory }}/"
         flat: yes
+        fail_on_missing: yes
       with_dict: "{{ clients }}"
       delegate_to: "{{ mon_host }}"
