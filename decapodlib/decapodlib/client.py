@@ -704,7 +704,7 @@ class V1Client(Client):
             response.
         """
 
-        url = self._make_url("/v1/execution/")
+        url = self._make_url("/v1/execution/{0}/".format(execution_id))
         return self._session.delete(url, **kwargs)
 
     @inject_pagination_params
