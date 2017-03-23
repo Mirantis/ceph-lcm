@@ -108,7 +108,8 @@ def possible_to_process(tsk):
 def process_task(tsk):
     LOG.info("Start to process task %s", tsk._id)
 
-    if tsk.task_type == task.TaskType.playbook:
+    if tsk.task_type in (task.TaskType.playbook,
+                         task.TaskType.server_discovery):
         TASK_POOL.submit(tsk)
     elif tsk.task_type == task.TaskType.cancel:
         tsk.start()
