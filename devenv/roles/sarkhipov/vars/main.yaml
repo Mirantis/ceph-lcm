@@ -44,6 +44,10 @@ aliases:
     value: tig --all
   - name: ag
     value: ag --color -fS
+  - name: dc
+    value: docker-compose -f /vagrant/docker-compose.yml -p decapod
+  - name: dcd
+    value: docker-compose -f /vagrant/docker-compose.yml -f /vagrant/docker-compose.dev.yml -p decapod
 
 env_vars:
   - name: NVIM_TUI_ENABLE_TRUE_COLOR
