@@ -24,3 +24,4 @@ The section contains the following topics:
    playbook-plugins/plugin-purge-cluster.rst
    playbook-plugins/plugin-telegraf-integration.rst
    playbook-plugins/plugin-purge-telegraf.rst
+   playbook-plugins/plugin-cinder-integration.rst
