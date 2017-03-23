@@ -15,11 +15,21 @@
 # limitations under the License.
 
 
-- include: apt.yaml
-- include: locale.yaml
-- include: htop.yaml
-- include: ssh.yaml
-- include: docker.yaml
-- include: nodejs.yaml
-- include: bashrc.yaml
-- include: docker_build.yaml
+- name: Copy example keys
+  command: make copy_example_keys chdir=/vagrant creates=/vagrant/ubuntu_apt.list
+  tags:
+    - skip_ansible_lint
+
+- name: Copy ubuntu repo as a source for container build
+  copy:
+    src: apt.sources.list
+    dest: /vagrant/ubuntu_apt.list
+
+- name: Build containers
+  become: true
+  command: >
+    make -j {{ ansible_processor_count }}
+    build_containers build_container_ui_tests build_container_test_keystone
+    chdir=/vagrant
+  tags:
+    - skip_ansible_lint
