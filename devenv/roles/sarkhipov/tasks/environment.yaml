@@ -15,16 +15,18 @@
 # limitations under the License.
 
 
-- name: Set environment variables
-  lineinfile: dest=.bashrc
-              line="export {{ item.name }}={{ item.value }}"
-  with_items: "{{ env_vars }}"
+- name: Set managed section in bashrc
+  blockinfile:
+    dest: "{{ ansible_env.HOME }}/.bashrc"
+    marker: "# {mark} ANSIBLE MANAGED SARKHIPOV"
+    content: |
+      {% for item in env_vars %}
+      export {{ item.name }}="{{ item.value }}"
+      {% endfor %}
 
-- name: Setup aliases
-  lineinfile: dest=.bashrc
-              line="alias {{ item.name }}='{{ item.value }}'"
-              state=present
-  with_items: "{{ aliases }}"
+      {% for item in aliases %}
+      alias {{ item.name }}={{ item.value | string | quote }}
+      {% endfor %}
 
 - name: Set local timezone
   become: true
