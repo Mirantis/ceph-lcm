@@ -188,7 +188,7 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
         for srv in servers:
             hostvars = inventory["_meta"]["hostvars"].setdefault(srv.ip, {})
             hostvars["ansible_user"] = srv.username
-            hostvars["monitor_interface"] = networkutils.get_public_network_if(
+            hostvars["monitor_address"] = networkutils.get_public_network_ip(
                 srv, servers)
 
             if hints["collocation"]:
