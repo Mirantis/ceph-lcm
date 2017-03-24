@@ -133,6 +133,7 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
     def make_inventory(self, cluster, data, servers, hints):
         groups = self.get_inventory_groups(cluster, servers, hints)
         inventory = {"_meta": {"hostvars": {}}}
+        all_servers = server.ServerModel.cluster_servers(cluster.model_id)
 
         for name, group_servers in groups.items():
             for srv in group_servers:
@@ -145,8 +146,10 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
                 if "ansible_user" not in hostvars:
                     hostvars["ansible_user"] = srv.username
                 if "monitor_interface" not in hostvars:
-                    hostvars["monitor_interface"] = \
-                        networkutils.get_public_network_if(srv, servers)
+                    if "monitor_address" not in hostvars:
+                        hostvars["monitor_address"] = \
+                            networkutils.get_public_network_ip(
+                                srv, all_servers)
 
         return inventory
 

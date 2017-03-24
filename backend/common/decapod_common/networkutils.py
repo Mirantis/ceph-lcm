@@ -24,14 +24,20 @@ def get_networks(server):
     networks = {}
 
     for ifname in server.facts["ansible_interfaces"]:
-        ifname = ifname.replace("-", "_")
-        interface = server.facts.get("ansible_{0}".format(ifname))
+        ifname = "ansible_{0}".format(ifname.replace("-", "_"))
+        interface = server.facts.get(ifname)
 
         if not interface:
             continue
-        if not interface["active"] or interface["type"] == "loopback":
-            continue
         if not interface.get("ipv4"):
+            continue
+
+        hw_ifname = get_hw_ifname(ifname, server.facts)
+        if not hw_ifname:
+            continue
+
+        hw_interface = server.facts[hw_ifname]
+        if not hw_interface["active"] or hw_interface["type"] == "loopback":
             continue
 
         network = "{0}/{1}".format(
@@ -90,7 +96,7 @@ def get_public_network_if(server, all_servers):
     for name in server.facts["ansible_interfaces"]:
         name = name.replace("-", "_")
         interface = server.facts["ansible_{0}".format(name)]
-        if not interface.get("ipv4"):
+        if not interface.get("ipv4") or "device" not in interface:
             continue
 
         addr = interface["ipv4"]["address"]
@@ -98,8 +104,22 @@ def get_public_network_if(server, all_servers):
         if addr in public_network:
             return interface["device"]
 
-    raise ValueError("Cannot find suitable interface for server %s",
-                     server.model_id)
+    raise ValueError(
+        "Cannot find suitable interface for server {0}".format(
+            server.model_id))
+
+
+def get_public_network_ip(server, all_servers):
+    public_network = get_public_network(all_servers)
+
+    for server_ip in server.facts["ansible_all_ipv4_addresses"]:
+        addr = ipaddress.ip_address(server_ip)
+        if addr in public_network:
+            return str(addr)
+
+    raise ValueError(
+        "Cannot find suitable public address for server {0}".format(
+            server.model_id))
 
 
 def spanning_network(networks):
@@ -134,3 +154,23 @@ def get_default_ip_address(server):
     # `ip route get 8.8.8.8` output. We follow the same logic on server
     # discovery.
     return server.facts["ansible_default_ipv4"]["address"]
+
+
+def get_hw_ifname(ifname, facts):
+    # Ansible has a mess in facts about NICs and aliases. The solution is
+    # understandable but not convenient. The most irritating part is that
+    # it is impossible to recognize if interface is alias and if it is
+    # an alias, then to get a device of HW NIC. This drives nuts.
+    #
+    # https://github.com/ansible/ansible/issues/842
+    #
+    # Here is the heuristics we are using: if interface has "device"
+    # field then hooray, this is HW NIC. Otherwise (NIC alias), logic
+    # is following: we cut ifname till it can detect some HW NIC and it
+    # means that we've found our desired NIC.
+    while len(ifname) > len("ansible_"):
+        if "device" in facts.get(ifname, {}):
+            return ifname
+
+        # if ifname == "ansible_eth0_1", search for "ansible_eth0"
+        ifname = ifname[:-1]

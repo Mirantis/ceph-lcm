@@ -152,8 +152,10 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
                 if "ansible_user" not in hostvars:
                     hostvars["ansible_user"] = srv.username
                 if "monitor_interface" not in hostvars:
-                    hostvars["monitor_interface"] = \
-                        networkutils.get_public_network_if(srv, all_servers)
+                    if "monitor_address" not in hostvars:
+                        hostvars["monitor_address"] = \
+                            networkutils.get_public_network_ip(
+                                srv, all_servers)
 
                 if hints["collocation"]:
                     hostvars["devices"] = diskutils.get_devices(srv)
