@@ -1,4 +1,4 @@
 include decapod_plugin_playbook_upgrade_ceph/config.yaml
-include decapod_plugin_playbook_upgrade_ceph/plugin.yaml
+include decapod_plugin_playbook_upgrade_ceph/playbook.yaml
 graft decapod_plugin_playbook_upgrade_ceph/tasks
 graft decapod_plugin_playbook_upgrade_ceph/group_vars
