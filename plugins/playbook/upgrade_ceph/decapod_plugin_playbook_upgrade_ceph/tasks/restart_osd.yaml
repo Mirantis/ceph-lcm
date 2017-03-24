@@ -34,7 +34,7 @@
   register: ceph_group
 
 - name: disable data rebalancing and scrubbing
-  command: ceph osd set "{{ item }}"
+  command: ceph --cluster "{{ cluster }}" osd set "{{ item }}"
   with_items:
     - noout
     - noscrub
@@ -46,7 +46,7 @@
   with_items: "{{ osd_numbers }}"
 
 - name: reenable data rebalancing and scrubbing
-  command: ceph osd unset "{{ item }}"
+  command: ceph --cluster "{{ cluster }}" osd unset "{{ item }}"
   with_items:
     - noout
     - noscrub
