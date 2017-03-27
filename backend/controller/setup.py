@@ -52,7 +52,7 @@ setuptools.setup(
         "libapt": ["python-apt"]
     },
     dependency_links=[
-        "git+https://anonscm.debian.org/cgit/apt/python-apt.git@1.1.0_beta2#egg=python-apt-1.1.0"  # NOQA
+        "git+http://anonscm.debian.org/cgit/apt/python-apt.git@1.1.0_beta2#egg=python-apt-1.1.0"  # NOQA
     ],
     classifiers=(
         "Intended Audience :: Information Technology",
