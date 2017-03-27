@@ -46,11 +46,13 @@ services:
       - "./plugins/playbook/server_discovery/decapod_plugin_playbook_server_discovery:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_server_discovery:ro"
       - "./plugins/playbook/telegraf_integration/decapod_plugin_playbook_telegraf_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_telegraf_integration:ro"
       - "./plugins/playbook/upgrade_ceph/decapod_plugin_playbook_upgrade_ceph:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_upgrade_ceph:ro"
+      - "./plugins/playbook/update_ceph_configuration/decapod_plugin_playbook_update_ceph_configuration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_update_ceph_configuration"
   controller:
     volumes:
       - "./backend/controller/decapod_controller:/usr/local/lib/python3.5/dist-packages/decapod_controller:ro"
       - "./backend/common/decapod_common:/usr/local/lib/python3.5/dist-packages/decapod_common:ro"
       - "./backend/docker/decapod_docker:/usr/local/lib/python3.5/dist-packages/decapod_docker:ro"
+      - "./backend/ansible/decapod_ansible:/usr/local/lib/python2.7/dist-packages/decapod_ansible:ro"
       - "./plugins/playbook/add_mon/decapod_plugin_playbook_add_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_mon:ro"
       - "./plugins/playbook/add_osd/decapod_plugin_playbook_add_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_osd:ro"
       - "./plugins/playbook/cinder_integration/decapod_plugin_playbook_cinder_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_cinder_integration:ro"
@@ -62,7 +64,7 @@ services:
       - "./plugins/playbook/server_discovery/decapod_plugin_playbook_server_discovery:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_server_discovery:ro"
       - "./plugins/playbook/telegraf_integration/decapod_plugin_playbook_telegraf_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_telegraf_integration:ro"
       - "./plugins/playbook/upgrade_ceph/decapod_plugin_playbook_upgrade_ceph:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_upgrade_ceph:ro"
-      - "./backend/ansible/decapod_ansible:/usr/local/lib/python2.7/dist-packages/decapod_ansible:ro"
+      - "./plugins/playbook/update_ceph_configuration/decapod_plugin_playbook_update_ceph_configuration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_update_ceph_configuration"
   database:
     volumes:
       - "./containerization/files/db-backup.sh:/usr/bin/backup:ro"
@@ -81,6 +83,7 @@ services:
       - "./backend/monitoring/decapod_monitoring:/usr/local/lib/python2.7/dist-packages/decapod_monitoring:ro"
       - "./decapodlib/decapodlib:/usr/local/lib/python3.5/dist-packages/decapodlib"
       - "./decapodcli/decapodcli:/usr/local/lib/python3.5/dist-packages/decapodcli"
+      - "./backend/ansible/decapod_ansible:/usr/local/lib/python2.7/dist-packages/decapod_ansible:ro"
       - "./plugins/playbook/add_mon/decapod_plugin_playbook_add_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_mon:ro"
       - "./plugins/playbook/add_osd/decapod_plugin_playbook_add_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_osd:ro"
       - "./plugins/playbook/cinder_integration/decapod_plugin_playbook_cinder_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_cinder_integration:ro"
@@ -92,4 +95,4 @@ services:
       - "./plugins/playbook/server_discovery/decapod_plugin_playbook_server_discovery:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_server_discovery:ro"
       - "./plugins/playbook/telegraf_integration/decapod_plugin_playbook_telegraf_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_telegraf_integration:ro"
       - "./plugins/playbook/upgrade_ceph/decapod_plugin_playbook_upgrade_ceph:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_upgrade_ceph:ro"
-      - "./backend/ansible/decapod_ansible:/usr/local/lib/python2.7/dist-packages/decapod_ansible:ro"
+      - "./plugins/playbook/update_ceph_configuration/decapod_plugin_playbook_update_ceph_configuration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_update_ceph_configuration"

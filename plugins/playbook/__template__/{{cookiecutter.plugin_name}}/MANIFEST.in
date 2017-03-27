@@ -1,2 +1,2 @@
 include {{ cookiecutter.package }}/config.yaml
-include {{ cookiecutter.package }}/plugin.yaml
+include {{ cookiecutter.package }}/playbook.yaml

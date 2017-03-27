@@ -25,3 +25,4 @@ The section contains the following topics:
    playbook-plugins/plugin-telegraf-integration.rst
    playbook-plugins/plugin-purge-telegraf.rst
    playbook-plugins/plugin-cinder-integration.rst
+   playbook-plugins/plugin-update-ceph-configuration.rst

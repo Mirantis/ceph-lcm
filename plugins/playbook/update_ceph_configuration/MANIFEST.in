@@ -1,0 +1,2 @@
+include decapod_plugin_playbook_update_ceph_configuration/config.yaml
+include decapod_plugin_playbook_update_ceph_configuration/playbook.yaml

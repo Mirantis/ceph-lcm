@@ -89,7 +89,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.define "#{host}", autostart: false do |client|
       client.vm.hostname = "ceph-#{host}"
       client.vm.network "private_network", ip: "10.0.0.2#{idx}"
-      config.vm.synced_folder ".", "/vagrant", disabled: true
+      client.vm.synced_folder ".", "/vagrant", disabled: true
+
+      if Vagrant.has_plugin?("vagrant-cachier")
+        client.cache.scope = :box
+        client.cache.enable :apt
+        client.cache.enable :apt_lists
+        client.cache.synced_folder_opts = {
+          type: :nfs, mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
+        }
+      end
 
       # http://foo-o-rama.com/vagrant--stdin-is-not-a-tty--fix.html
       client.vm.provision "fix-no-tty", type: "shell" do |s|
