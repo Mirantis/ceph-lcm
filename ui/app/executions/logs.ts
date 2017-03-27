@@ -22,7 +22,8 @@ import { Record } from 'js-data';
 import { ErrorService } from '../services/error';
 import { DataService, pagedResult } from '../services/data';
 import { Execution, ExecutionStep } from '../models';
-import { Filter, Criterion, Pager } from '../directives';
+import { Pager } from '../directives';
+import { Filter, Criterion } from '../filter';
 
 @Component({
   templateUrl: './app/templates/logs.html'

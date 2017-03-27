@@ -1,9 +1,8 @@
-<div class="col-xs-3">
+<div [ngClass]="getCss()">
   <div class="form-group">
-    <label class="control-label">{{name|deparametrize}}:</label>
+    <label class="control-label">{{title|deparametrize}}</label>
     <select
       class="form-control"
-      name="criterion"
       [(ngModel)]="value"
       (ngModelChange)="handleUpdate($event)"
     >

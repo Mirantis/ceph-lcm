@@ -1,26 +1,14 @@
 <div class="filters">
   <div class="row">
     <form class="form-horizontal">
-      <div class="col-xs-2">
-        <div class="form-group">
-          <input
-            type="text"
-            class="form-control"
-            name="search"
-            placeholder="Search by Name"
-            [(ngModel)]="search"
-            (ngModelChange)="criterionUpdated($event)"
-          >
-        </div>
+      <ng-content></ng-content>
+      <div class="col-xs-1" [ngClass]="{'col-xs-offset-8': criteria.length === 1}">
+        <button
+          class="btn btn-default"
+          (click)="reset()"
+          [disabled]="isQuerySet()"
+        >Reset</button>
       </div>
-      <div class="col-xs-{{getCriteriaOffset()}}" *ngIf="getCriteriaOffset()"></div>
-      <criterion
-        *ngFor="let criterion of criteria|keys"
-        [name]="criterion"
-        [values]="criteria[criterion]"
-        (onChange)="criterionUpdated($event)"
-      >
-      </criterion>
     </form>
   </div>
 </div>

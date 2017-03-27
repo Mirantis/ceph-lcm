@@ -17,7 +17,8 @@
 
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Modal, Filter } from '../directives';
+import { Modal } from '../directives';
+import { Filter } from '../filter';
 import { DataService, pagedResult } from '../services/data';
 import { Cluster } from '../models';
 import { WizardComponent } from '../wizard';

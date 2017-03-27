@@ -83,57 +83,6 @@ export class Modal {
 })
 export class Loader {};
 
-type CriterionType = {name: string, value: string};
-
-// Filter control
-@Component({
-  selector: 'filter',
-  templateUrl: './app/templates/filter.html'
-})
-export class Filter {
-  @Input() criteria: Object = {};
-  @Output() onChange = new EventEmitter();
-  query: Object = {};
-  timeout: number;
-
-  getCriteriaOffset() {
-    let criteriaCount = _.keys(this.criteria).length;
-    return 10 - criteriaCount * 3;
-  }
-
-  criterionUpdated(criterion: CriterionType|string) {
-    if (typeof criterion === 'string') {
-      this.query['name'] = {'regexp': criterion};
-    } else {
-      if (criterion.value) {
-        this.query[criterion.name] = criterion.value;
-      } else {
-        _.unset(this.query, criterion.name);
-      }
-    }
-    if (this.timeout) {
-      window.clearTimeout(this.timeout);
-    }
-    this.timeout = window.setTimeout(() => this.onChange.emit(), 1000);
-  }
-}
-
-// Filtering criterion
-@Component({
-  selector: 'criterion',
-  templateUrl: './app/templates/filtering_criterion.html'
-})
-export class Criterion {
-  @Input() name: string = '';
-  @Input() values: string[] = [];
-  @Output() onChange  = new EventEmitter();
-  value: string = '';
-
-  handleUpdate(newValue: Object) {
-    this.onChange.emit({name: this.name, value: newValue});
-  }
-}
-
 // Pagination
 @Component({
   selector: 'pager',

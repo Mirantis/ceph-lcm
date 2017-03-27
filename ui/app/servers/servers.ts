@@ -17,7 +17,8 @@
 
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { DataService, pagedResult } from '../services/data';
-import { Filter, Pager } from '../directives';
+import { Pager } from '../directives';
+import { Filter } from '../filter';
 import { Server } from '../models';
 import { Router, ActivatedRoute } from '@angular/router';
 

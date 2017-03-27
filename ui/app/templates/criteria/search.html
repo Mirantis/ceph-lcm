@@ -1,0 +1,11 @@
+<div [ngClass]="getCss()">
+  <div class="form-group">
+    <input
+      type="text"
+      class="form-control"
+      [placeholder]="title || 'Name'"
+      [(ngModel)]="value"
+      (ngModelChange)="handleUpdate($event)"
+    >
+  </div>
+</div>

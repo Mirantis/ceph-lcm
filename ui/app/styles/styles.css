@@ -7378,7 +7378,7 @@ textarea {
   margin: 2px 0;
 }
 .page-title .main-button .btn + .btn {
-  margin-left: 5px;
+  margin-left: 25px;
 }
 label {
   font-size: 12px;
@@ -7403,10 +7403,14 @@ label {
   margin-top: 3px;
   margin-right: 5px;
   text-align: right;
+  padding-top: 0 !important;
 }
 .filters select {
   display: inline-block;
   width: 58%;
+}
+.filters button {
+  padding: 9px 20px 8px 20px;
 }
 .group-name h2 {
   font-size: 16px;

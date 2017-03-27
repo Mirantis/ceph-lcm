@@ -12,7 +12,9 @@
 <filter
   *ngIf="!shownClusterId"
   (onChange)="fetchData()"
-></filter>
+>
+  <search criterion [target]="'name'"></search>
+</filter>
 
 <pager
   [pagingData]="pagedData"

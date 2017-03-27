@@ -27,8 +27,21 @@
   </div>
 </div>
 
-<filter (onChange)="fetchData()"></filter>
-
+<filter
+  *ngIf="!shownServerId"
+  (onChange)="fetchData()"
+>
+  <search criterion [target]="'name'"></search>
+  <choice criterion
+    [title]="'Result'"
+    [target]="'result'"
+    [values]="['ok', 'skipped', 'error']"
+  ></choice>
+  <search criterion
+    [title]="'Server ID'"
+    [target]="'server_id'"
+  ></search>
+</filter>
 <pager [pagingData]="pagedData" (onChange)="fetchData($event)"></pager>
 
 <div class="logs grid row" *ngIf="steps && steps.length">

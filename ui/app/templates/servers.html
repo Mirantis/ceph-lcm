@@ -1,16 +1,25 @@
 <div class="page-title">
   <div class="row">
-    <div class="col-xs-12">
+    <div class="col-xs-9">
       <h1>Servers<span *ngIf="shownServerId"> / {{ shownServerId }}</span></h1>
+    </div>
+    <div class="col-xs-3 main-button">
+      <button class="btn btn-primary" (click)="fetchData()">Refresh</button>
     </div>
   </div>
 </div>
 
 <filter
   *ngIf="!shownServerId"
-  [criteria]="{state: ['error', 'operational', 'down']}"
-  (onChange)="fetchData($event)"
-></filter>
+  (onChange)="fetchData()"
+>
+  <search criterion [target]="'name'"></search>
+  <choice criterion
+    [title]="'State'"
+    [target]="'state'"
+    [values]="['error', 'operational', 'down']"
+  ></choice>
+</filter>
 
 <pager [pagingData]="pagedData" (onChange)="fetchData($event)"></pager>
 
@@ -20,9 +29,8 @@
     <div class="table-help">
       <div class="col-xs-3">Name</div>
       <div class="col-xs-4">ID</div>
-      <div class="col-xs-1">IP</div>
-      <div class="col-xs-2">FQDN</div>
-      <div class="col-xs-2">Status</div>
+      <div class="col-xs-2">IP</div>
+      <div class="col-xs-3">Status</div>
     </div>
 
     <div
@@ -33,9 +41,8 @@
       <div class="col-xs-4 parameter">
         {{server.id}}
       </div>
-      <div class="col-xs-1 parameter">{{server.data.ip}}</div>
-      <div class="col-xs-2 parameter">{{server.data.fqdn}}</div>
-      <div class="col-xs-1 state" [ngClass]="server.data.state">
+      <div class="col-xs-2 parameter">{{server.data.ip}}</div>
+      <div class="col-xs-2 state" [ngClass]="server.data.state">
         {{server.data.state}}
       </div>
       <div class="col-xs-1 action">

@@ -12,9 +12,14 @@
 
 <filter
   *ngIf="!shownConfigurationId"
-  [criteria]="{playbook_id: getPlaybooksForFilter()}"
   (onChange)="fetchData()"
 >
+  <search criterion [target]="'name'"></search>
+  <choice criterion
+    [target]="'playbook_id'"
+    [title]="'Playbook'"
+    [values]="getPlaybooksForFilter()"
+  ></choice>
 </filter>
 
 <pager
