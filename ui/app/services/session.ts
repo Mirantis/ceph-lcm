@@ -17,12 +17,12 @@
 
 import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
-import { CookieService } from 'angular2-cookie/core';
+import * as Cookies from 'js-cookie';
 import { Token } from '../models';
 
 @Injectable()
 export class SessionService {
-  constructor(private cookieService: CookieService) {}
+  constructor() {}
 
   tokenKey = 'auth_token';
   userIdKey = 'user_id';
@@ -31,19 +31,19 @@ export class SessionService {
     let expiration = {
       expires: new Date(token.data.expires_at * 1000)
     };
-    this.cookieService.put(this.tokenKey, token.id, expiration);
-    this.cookieService.put(this.userIdKey, token.data.user.id, expiration);
+    Cookies.set(this.tokenKey, token.id, expiration);
+    Cookies.set(this.userIdKey, token.data.user.id, expiration);
   }
 
   removeToken(): void {
-    this.cookieService.remove(this.tokenKey);
+    Cookies.remove(this.tokenKey);
   }
 
   getToken(): string {
-    return this.cookieService.get(this.tokenKey);
+    return Cookies.get(this.tokenKey);
   }
 
   getLoggedUserId(): string {
-    return this.cookieService.get(this.userIdKey);
+    return Cookies.get(this.userIdKey);
   }
 }

@@ -58,7 +58,7 @@ describe('Role wizard: permissions group step', () => {
 
   it('fetches its data and picks corresponding permissions group', done => {
     let dataService = fixture.debugElement.injector.get(DataService);
-    dataService.permission().findAll
+    dataService.permission().findAll = jasmine.createSpy('findAll')
       .and.returnValue(
         Promise.resolve({items: [
             new PermissionGroup({name: 'a', permissions: []}),

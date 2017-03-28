@@ -32,7 +32,7 @@ import { ExecutionsModule } from './executions/executions.module';
 
 import { AuthService, LoggedIn} from './services/auth';
 import { SessionService } from './services/session';
-import { CookieService } from 'angular2-cookie/core';
+// import { CookieService } from 'angular2-cookie/core';
 import { DataService } from './services/data';
 import { ErrorService } from './services/error';
 
@@ -61,7 +61,7 @@ import { appRoutingProviders, routing } from './app.routes';
     LoggedIn,
     AuthService,
     DataService,
-    CookieService,
+    // CookieService,
     SessionService,
     ErrorService,
     appRoutingProviders,

@@ -38,7 +38,7 @@
     'lodash': 'npm:lodash/lodash.js',
     'js-data': 'npm:js-data',
     'js-data-http': 'npm:js-data-http',
-    'angular2-cookie': 'npm:angular2-cookie',
+    'js-cookie': 'npm:js-cookie',
 
     'jquery': 'npm:jquery',
     'bootstrap': 'npm:bootstrap',
@@ -63,8 +63,9 @@
     'js-data-http': {
       main: 'dist/js-data-http.js'
     },
-    'angular2-cookie': {
-      main: 'core.js'
+    'js-cookie': {
+      main: 'src/js.cookie',
+      defaultExtension: 'js'
     },
     'jquery': {
       main: 'dist/jquery.min.js'

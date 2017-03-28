@@ -62,11 +62,11 @@ export class AuthService {
   }
 
   logout(): Promise<void> {
-    this.session.removeToken();
     this.loggedUser = null;
     return this.data.token().destroy(null)
       .then(
         () => {
+          this.session.removeToken();
           this.router.navigate(['/login']);
         },
         (error: any) => this.data.handleResponseError(error)

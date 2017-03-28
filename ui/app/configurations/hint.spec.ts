@@ -43,7 +43,7 @@ describe('Hint component', () => {
     component.scheme = getDummyHint();
     expect(component.ngOnChanges({})).toBeUndefined();
     component.ngOnChanges({scheme: new SimpleChange(
-      null, getDummyHint({value: newValue})
+      null, getDummyHint({value: newValue}), false
     )});
     fixture.detectChanges();
     expect(component.value).toBe(newValue);
