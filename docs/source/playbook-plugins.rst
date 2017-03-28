@@ -26,3 +26,4 @@ The section contains the following topics:
    playbook-plugins/plugin-purge-telegraf.rst
    playbook-plugins/plugin-cinder-integration.rst
    playbook-plugins/plugin-update-ceph-configuration.rst
+   playbook-plugins/plugin-restart-services.rst

@@ -1,0 +1,55 @@
+---
+# Copyright (c) 2017 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- name: Get ceph-rest-api PID
+  command: pgrep ceph-rest-api
+  register: ceph_rest_api_pid
+
+- name: Is running by systemd
+  command: systemctl is-active ceph-rest-api
+  failed_when: false
+  register: is_active_in_systemd
+
+- set_fact:
+    ceph_rest_api_pid_number: "{{ ceph_rest_api_pid.stdout | trim }}"
+
+- name: Get REST API IP
+  shell: netstat -nptl | awk '$NF ~ /^{{ ceph_rest_api_pid_number }}/ { sub(":.*", "", $4); print $4 }'
+  register: rest_api_ip
+
+- name: Get REST API Port
+  shell: netstat -nptl | awk '$NF ~ /^{{ ceph_rest_api_pid_number }}/ { sub(".*:", "", $4); print $4 }'
+  register: rest_api_port
+
+# By default ceph-ansible is running rest api with nohup (yes). Therefore
+# we have to kill it first.
+- name: Stop nohup ceph-rest-api process
+  shell: kill -15 "{{ ceph_rest_api_pid_number }}"
+  when: ceph_rest_api_pid.rc == 0 and is_active_in_systemd.rc != 0
+
+- name: Restart REST API
+  service:
+    name: ceph-rest-api.service
+    state: restarted
+    sleep: 5
+
+- name: Wait for REST API to start up
+  wait_for:
+    host: "{{ rest_api_ip.stdout }}"
+    port: "{{ rest_api_port.stdout }}"
+    state: started
+    timeout: "{{ restapi.startup_wait }}"

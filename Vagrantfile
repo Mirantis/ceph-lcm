@@ -91,15 +91,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       client.vm.network "private_network", ip: "10.0.0.2#{idx}"
       client.vm.synced_folder ".", "/vagrant", disabled: true
 
-      if Vagrant.has_plugin?("vagrant-cachier")
-        client.cache.scope = :box
-        client.cache.enable :apt
-        client.cache.enable :apt_lists
-        client.cache.synced_folder_opts = {
-          type: :nfs, mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
-        }
-      end
-
       # http://foo-o-rama.com/vagrant--stdin-is-not-a-tty--fix.html
       client.vm.provision "fix-no-tty", type: "shell" do |s|
         s.privileged = false
@@ -119,7 +110,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           "playbook.yaml"
         )
         ansible.extra_vars = {
-          user_data: cloud_config_file
+          user_data: cloud_config_file,
+          cloud_init: false
         }
       end
 

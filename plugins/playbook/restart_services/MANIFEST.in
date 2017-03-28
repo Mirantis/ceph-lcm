@@ -1,0 +1,3 @@
+include decapod_plugin_playbook_restart_services/config.yaml
+include decapod_plugin_playbook_restart_services/playbook.yaml
+graft decapod_plugin_playbook_restart_services/tasks

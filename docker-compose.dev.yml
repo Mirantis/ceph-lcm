@@ -41,6 +41,7 @@ services:
     - ./plugins/playbook/purge_telegraf/decapod_plugin_playbook_purge_telegraf:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_telegraf:ro
     - ./plugins/playbook/remove_mon/decapod_plugin_playbook_remove_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_mon:ro
     - ./plugins/playbook/remove_osd/decapod_plugin_playbook_remove_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_osd:ro
+    - ./plugins/playbook/restart_services/decapod_plugin_playbook_restart_services:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_restart_services:ro
     - ./plugins/playbook/server_discovery/decapod_plugin_playbook_server_discovery:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_server_discovery:ro
     - ./plugins/playbook/telegraf_integration/decapod_plugin_playbook_telegraf_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_telegraf_integration:ro
     - ./plugins/playbook/update_ceph_configuration/decapod_plugin_playbook_update_ceph_configuration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_update_ceph_configuration:ro
@@ -60,6 +61,7 @@ services:
     - ./plugins/playbook/purge_telegraf/decapod_plugin_playbook_purge_telegraf:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_telegraf:ro
     - ./plugins/playbook/remove_mon/decapod_plugin_playbook_remove_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_mon:ro
     - ./plugins/playbook/remove_osd/decapod_plugin_playbook_remove_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_osd:ro
+    - ./plugins/playbook/restart_services/decapod_plugin_playbook_restart_services:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_restart_services:ro
     - ./plugins/playbook/server_discovery/decapod_plugin_playbook_server_discovery:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_server_discovery:ro
     - ./plugins/playbook/telegraf_integration/decapod_plugin_playbook_telegraf_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_telegraf_integration:ro
     - ./plugins/playbook/update_ceph_configuration/decapod_plugin_playbook_update_ceph_configuration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_update_ceph_configuration:ro
@@ -80,6 +82,7 @@ services:
     - ./plugins/playbook/purge_telegraf/decapod_plugin_playbook_purge_telegraf:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_telegraf:ro
     - ./plugins/playbook/remove_mon/decapod_plugin_playbook_remove_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_mon:ro
     - ./plugins/playbook/remove_osd/decapod_plugin_playbook_remove_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_osd:ro
+    - ./plugins/playbook/restart_services/decapod_plugin_playbook_restart_services:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_restart_services:ro
     - ./plugins/playbook/server_discovery/decapod_plugin_playbook_server_discovery:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_server_discovery:ro
     - ./plugins/playbook/telegraf_integration/decapod_plugin_playbook_telegraf_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_telegraf_integration:ro
     - ./plugins/playbook/update_ceph_configuration/decapod_plugin_playbook_update_ceph_configuration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_update_ceph_configuration:ro
