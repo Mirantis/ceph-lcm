@@ -90,8 +90,12 @@ RUN set -x \
   && /usr/local/bin/decapod-ansible-deploy-config \
   && _DECAPOD_ADMIN_COMPLETE=source decapod-admin >> /root/.bashrc || true \
   && _DECAPOD_COMPLETE=source decapod >> /root/.bashrc || true \
+  && cp ./containerization/files/decapod-admin-dockerize.sh /usr/local/bin/decapod-admin-wait \
+  && cp ./containerization/files/decapod-dockerize.sh /usr/local/bin/decapod-wait \
   && ln -s /usr/local/bin/decapod /usr/local/bin/cli \
+  && ln -s /usr/local/bin/decapod-wait /usr/local/bin/cli-wait \
   && ln -s /usr/local/bin/decapod-admin /usr/local/bin/admin \
+  && ln -s /usr/local/bin/decapod-admin-wait /usr/local/bin/admin-wait \
   && cp ./scripts/debug_snapshot.py /debug-snapshot \
   && curl --silent --show-error --fail --location \
     --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \

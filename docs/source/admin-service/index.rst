@@ -100,6 +100,28 @@ check :envvar:`DECAPOD_DOCS_PORT` environment variable (default is
 **9998**). So, if you access Decapod like **http://10.0.0.10:9999**,
 docs will be served on **http://10.0.0.10:9998**.
 
+.. note::
+
+    Sometimes you need to wait till all services are up and running
+    before execution commands from admin service. You can set some sleep
+    before command execution but there is a better way: admin service
+    has a wrappers for :program:`decapod-admin` and :program:`decapod`
+    tools which will wait for remote dependencies before executing a
+    command.
+
+    These wrappers are available using *-wait* suffix: for
+    :program:`decapod-admin` this is :program:`decapod-admin-wait`; for
+    :program:`decapod` - :program:`decapod-wait`.
+
+    **Example**
+
+    If you want to run migrations safely with waiting for DB up and
+    running, do following:
+
+    .. code-block:: console
+
+        $ docker-compose -p decapod exec -T admin decapod-admin-wait migraion apply
+
 .. seealso::
 
     * `jq <https://stedolan.github.io/jq/>`_
