@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2016 Mirantis Inc.
+# Copyright (c) 2016-2017 Mirantis Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,78 +21,81 @@
 # Please run dev version as
 # docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 
-version: "2"
-
 services:
-  frontend:
-    volumes:
-      - "./containerization/files/devconfigs/nginx-dhparam.pem:/ssl/dhparam.pem:ro"
-      - "./containerization/files/devconfigs/nginx-selfsigned.crt:/ssl/ssl.crt:ro"
-      - "./containerization/files/devconfigs/nginx-selfsigned.key:/ssl/ssl.key:ro"
-      - "./containerization/files/nginx.conf:/etc/nginx/nginx.conf:ro"
-  api:
-    volumes:
-      - "./backend/api/decapod_api:/usr/local/lib/python3.5/dist-packages/decapod_api:ro"
-      - "./backend/common/decapod_common:/usr/local/lib/python3.5/dist-packages/decapod_common:ro"
-      - "./backend/docker/decapod_docker:/usr/local/lib/python3.5/dist-packages/decapod_docker:ro"
-      - "./plugins/playbook/add_mon/decapod_plugin_playbook_add_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_mon:ro"
-      - "./plugins/playbook/add_osd/decapod_plugin_playbook_add_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_osd:ro"
-      - "./plugins/playbook/cinder_integration/decapod_plugin_playbook_cinder_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_cinder_integration:ro"
-      - "./plugins/playbook/deploy_cluster/decapod_plugin_playbook_deploy_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_deploy_cluster:ro"
-      - "./plugins/playbook/purge_cluster/decapod_plugin_playbook_purge_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_cluster:ro"
-      - "./plugins/playbook/purge_telegraf/decapod_plugin_playbook_purge_telegraf:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_telegraf:ro"
-      - "./plugins/playbook/remove_mon/decapod_plugin_playbook_remove_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_mon:ro"
-      - "./plugins/playbook/remove_osd/decapod_plugin_playbook_remove_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_osd:ro"
-      - "./plugins/playbook/server_discovery/decapod_plugin_playbook_server_discovery:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_server_discovery:ro"
-      - "./plugins/playbook/telegraf_integration/decapod_plugin_playbook_telegraf_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_telegraf_integration:ro"
-      - "./plugins/playbook/upgrade_ceph/decapod_plugin_playbook_upgrade_ceph:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_upgrade_ceph:ro"
-      - "./plugins/playbook/update_ceph_configuration/decapod_plugin_playbook_update_ceph_configuration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_update_ceph_configuration"
-  controller:
-    volumes:
-      - "./backend/controller/decapod_controller:/usr/local/lib/python3.5/dist-packages/decapod_controller:ro"
-      - "./backend/common/decapod_common:/usr/local/lib/python3.5/dist-packages/decapod_common:ro"
-      - "./backend/docker/decapod_docker:/usr/local/lib/python3.5/dist-packages/decapod_docker:ro"
-      - "./backend/ansible/decapod_ansible:/usr/local/lib/python2.7/dist-packages/decapod_ansible:ro"
-      - "./plugins/playbook/add_mon/decapod_plugin_playbook_add_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_mon:ro"
-      - "./plugins/playbook/add_osd/decapod_plugin_playbook_add_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_osd:ro"
-      - "./plugins/playbook/cinder_integration/decapod_plugin_playbook_cinder_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_cinder_integration:ro"
-      - "./plugins/playbook/deploy_cluster/decapod_plugin_playbook_deploy_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_deploy_cluster:ro"
-      - "./plugins/playbook/purge_cluster/decapod_plugin_playbook_purge_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_cluster:ro"
-      - "./plugins/playbook/purge_telegraf/decapod_plugin_playbook_purge_telegraf:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_telegraf:ro"
-      - "./plugins/playbook/remove_mon/decapod_plugin_playbook_remove_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_mon:ro"
-      - "./plugins/playbook/remove_osd/decapod_plugin_playbook_remove_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_osd:ro"
-      - "./plugins/playbook/server_discovery/decapod_plugin_playbook_server_discovery:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_server_discovery:ro"
-      - "./plugins/playbook/telegraf_integration/decapod_plugin_playbook_telegraf_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_telegraf_integration:ro"
-      - "./plugins/playbook/upgrade_ceph/decapod_plugin_playbook_upgrade_ceph:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_upgrade_ceph:ro"
-      - "./plugins/playbook/update_ceph_configuration/decapod_plugin_playbook_update_ceph_configuration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_update_ceph_configuration"
-  database:
-    volumes:
-      - "./containerization/files/db-backup.sh:/usr/bin/backup:ro"
-      - "./containerization/files/db-moshell.sh:/usr/bin/moshell:ro"
-      - "./containerization/files/db-restore.sh:/usr/bin/restore:ro"
-      - "./containerization/files/devconfigs/mongodb-ca.crt:/certs/mongodb-ca.crt:ro"
-      - "./containerization/files/devconfigs/mongodb.pem:/certs/mongodb.pem:ro"
-      - "./containerization/files/mongod.conf:/etc/mongod.conf:ro"
   admin:
     volumes:
-      - "./backend/admin/decapod_admin:/usr/local/lib/python3.5/dist-packages/decapod_admin:ro"
-      - "./backend/api/decapod_api:/usr/local/lib/python3.5/dist-packages/decapod_api:ro"
-      - "./backend/controller/decapod_controller:/usr/local/lib/python3.5/dist-packages/decapod_controller:ro"
-      - "./backend/common/decapod_common:/usr/local/lib/python3.5/dist-packages/decapod_common:ro"
-      - "./backend/docker/decapod_docker:/usr/local/lib/python3.5/dist-packages/decapod_docker:ro"
-      - "./backend/monitoring/decapod_monitoring:/usr/local/lib/python2.7/dist-packages/decapod_monitoring:ro"
-      - "./decapodlib/decapodlib:/usr/local/lib/python3.5/dist-packages/decapodlib"
-      - "./decapodcli/decapodcli:/usr/local/lib/python3.5/dist-packages/decapodcli"
-      - "./backend/ansible/decapod_ansible:/usr/local/lib/python2.7/dist-packages/decapod_ansible:ro"
-      - "./plugins/playbook/add_mon/decapod_plugin_playbook_add_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_mon:ro"
-      - "./plugins/playbook/add_osd/decapod_plugin_playbook_add_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_osd:ro"
-      - "./plugins/playbook/cinder_integration/decapod_plugin_playbook_cinder_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_cinder_integration:ro"
-      - "./plugins/playbook/deploy_cluster/decapod_plugin_playbook_deploy_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_deploy_cluster:ro"
-      - "./plugins/playbook/purge_cluster/decapod_plugin_playbook_purge_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_cluster:ro"
-      - "./plugins/playbook/purge_telegraf/decapod_plugin_playbook_purge_telegraf:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_telegraf:ro"
-      - "./plugins/playbook/remove_mon/decapod_plugin_playbook_remove_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_mon:ro"
-      - "./plugins/playbook/remove_osd/decapod_plugin_playbook_remove_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_osd:ro"
-      - "./plugins/playbook/server_discovery/decapod_plugin_playbook_server_discovery:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_server_discovery:ro"
-      - "./plugins/playbook/telegraf_integration/decapod_plugin_playbook_telegraf_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_telegraf_integration:ro"
-      - "./plugins/playbook/upgrade_ceph/decapod_plugin_playbook_upgrade_ceph:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_upgrade_ceph:ro"
-      - "./plugins/playbook/update_ceph_configuration/decapod_plugin_playbook_update_ceph_configuration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_update_ceph_configuration"
+    - ./backend/admin/decapod_admin:/usr/local/lib/python3.5/dist-packages/decapod_admin:ro
+    - ./backend/ansible/decapod_ansible:/usr/local/lib/python2.7/dist-packages/decapod_ansible:ro
+    - ./backend/api/decapod_api:/usr/local/lib/python3.5/dist-packages/decapod_api:ro
+    - ./backend/common/decapod_common:/usr/local/lib/python3.5/dist-packages/decapod_common:ro
+    - ./backend/controller/decapod_controller:/usr/local/lib/python3.5/dist-packages/decapod_controller:ro
+    - ./backend/docker/decapod_docker:/usr/local/lib/python3.5/dist-packages/decapod_docker:ro
+    - ./backend/monitoring/decapod_monitoring:/usr/local/lib/python2.7/dist-packages/decapod_monitoring:ro
+    - ./plugins/alerts/emails/decapod_plugin_alerts_emails:/usr/local/lib/python3.5/dist-packages/decapod_plugin_alerts_emails:ro
+    - ./plugins/playbook/add_mon/decapod_plugin_playbook_add_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_mon:ro
+    - ./plugins/playbook/add_osd/decapod_plugin_playbook_add_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_osd:ro
+    - ./plugins/playbook/cinder_integration/decapod_plugin_playbook_cinder_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_cinder_integration:ro
+    - ./plugins/playbook/deploy_cluster/decapod_plugin_playbook_deploy_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_deploy_cluster:ro
+    - ./plugins/playbook/playbook_helloworld/decapod_plugin_playbook_helloworld:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_helloworld:ro
+    - ./plugins/playbook/purge_cluster/decapod_plugin_playbook_purge_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_cluster:ro
+    - ./plugins/playbook/purge_telegraf/decapod_plugin_playbook_purge_telegraf:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_telegraf:ro
+    - ./plugins/playbook/remove_mon/decapod_plugin_playbook_remove_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_mon:ro
+    - ./plugins/playbook/remove_osd/decapod_plugin_playbook_remove_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_osd:ro
+    - ./plugins/playbook/server_discovery/decapod_plugin_playbook_server_discovery:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_server_discovery:ro
+    - ./plugins/playbook/telegraf_integration/decapod_plugin_playbook_telegraf_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_telegraf_integration:ro
+    - ./plugins/playbook/update_ceph_configuration/decapod_plugin_playbook_update_ceph_configuration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_update_ceph_configuration:ro
+    - ./plugins/playbook/upgrade_ceph/decapod_plugin_playbook_upgrade_ceph:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_upgrade_ceph:ro
+  api:
+    volumes:
+    - ./backend/api/decapod_api:/usr/local/lib/python3.5/dist-packages/decapod_api:ro
+    - ./backend/common/decapod_common:/usr/local/lib/python3.5/dist-packages/decapod_common:ro
+    - ./backend/docker/decapod_docker:/usr/local/lib/python3.5/dist-packages/decapod_docker:ro
+    - ./plugins/alerts/emails/decapod_plugin_alerts_emails:/usr/local/lib/python3.5/dist-packages/decapod_plugin_alerts_emails:ro
+    - ./plugins/playbook/add_mon/decapod_plugin_playbook_add_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_mon:ro
+    - ./plugins/playbook/add_osd/decapod_plugin_playbook_add_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_osd:ro
+    - ./plugins/playbook/cinder_integration/decapod_plugin_playbook_cinder_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_cinder_integration:ro
+    - ./plugins/playbook/deploy_cluster/decapod_plugin_playbook_deploy_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_deploy_cluster:ro
+    - ./plugins/playbook/playbook_helloworld/decapod_plugin_playbook_helloworld:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_helloworld:ro
+    - ./plugins/playbook/purge_cluster/decapod_plugin_playbook_purge_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_cluster:ro
+    - ./plugins/playbook/purge_telegraf/decapod_plugin_playbook_purge_telegraf:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_telegraf:ro
+    - ./plugins/playbook/remove_mon/decapod_plugin_playbook_remove_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_mon:ro
+    - ./plugins/playbook/remove_osd/decapod_plugin_playbook_remove_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_osd:ro
+    - ./plugins/playbook/server_discovery/decapod_plugin_playbook_server_discovery:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_server_discovery:ro
+    - ./plugins/playbook/telegraf_integration/decapod_plugin_playbook_telegraf_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_telegraf_integration:ro
+    - ./plugins/playbook/update_ceph_configuration/decapod_plugin_playbook_update_ceph_configuration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_update_ceph_configuration:ro
+    - ./plugins/playbook/upgrade_ceph/decapod_plugin_playbook_upgrade_ceph:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_upgrade_ceph:ro
+  controller:
+    volumes:
+    - ./backend/ansible/decapod_ansible:/usr/local/lib/python2.7/dist-packages/decapod_ansible:ro
+    - ./backend/common/decapod_common:/usr/local/lib/python3.5/dist-packages/decapod_common:ro
+    - ./backend/controller/decapod_controller:/usr/local/lib/python3.5/dist-packages/decapod_controller:ro
+    - ./backend/docker/decapod_docker:/usr/local/lib/python3.5/dist-packages/decapod_docker:ro
+    - ./plugins/alerts/emails/decapod_plugin_alerts_emails:/usr/local/lib/python3.5/dist-packages/decapod_plugin_alerts_emails:ro
+    - ./plugins/playbook/add_mon/decapod_plugin_playbook_add_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_mon:ro
+    - ./plugins/playbook/add_osd/decapod_plugin_playbook_add_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_osd:ro
+    - ./plugins/playbook/cinder_integration/decapod_plugin_playbook_cinder_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_cinder_integration:ro
+    - ./plugins/playbook/deploy_cluster/decapod_plugin_playbook_deploy_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_deploy_cluster:ro
+    - ./plugins/playbook/playbook_helloworld/decapod_plugin_playbook_helloworld:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_helloworld:ro
+    - ./plugins/playbook/purge_cluster/decapod_plugin_playbook_purge_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_cluster:ro
+    - ./plugins/playbook/purge_telegraf/decapod_plugin_playbook_purge_telegraf:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_telegraf:ro
+    - ./plugins/playbook/remove_mon/decapod_plugin_playbook_remove_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_mon:ro
+    - ./plugins/playbook/remove_osd/decapod_plugin_playbook_remove_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_osd:ro
+    - ./plugins/playbook/server_discovery/decapod_plugin_playbook_server_discovery:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_server_discovery:ro
+    - ./plugins/playbook/telegraf_integration/decapod_plugin_playbook_telegraf_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_telegraf_integration:ro
+    - ./plugins/playbook/update_ceph_configuration/decapod_plugin_playbook_update_ceph_configuration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_update_ceph_configuration:ro
+    - ./plugins/playbook/upgrade_ceph/decapod_plugin_playbook_upgrade_ceph:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_upgrade_ceph:ro
+  database:
+    volumes:
+    - ./containerization/files/db-backup.sh:/usr/bin/backup:ro
+    - ./containerization/files/db-moshell.sh:/usr/bin/moshell:ro
+    - ./containerization/files/db-restore.sh:/usr/bin/restore:ro
+    - ./containerization/files/devconfigs/mongodb-ca.crt:/certs/mongodb-ca.crt:ro
+    - ./containerization/files/devconfigs/mongodb.pem:/certs/mongodb.pem:ro
+    - ./containerization/files/mongod.conf:/etc/mongod.conf:ro
+  frontend:
+    volumes:
+    - ./containerization/files/devconfigs/nginx-dhparam.pem:/ssl/dhparam.pem:ro
+    - ./containerization/files/devconfigs/nginx-selfsigned.crt:/ssl/ssl.crt:ro
+    - ./containerization/files/devconfigs/nginx-selfsigned.key:/ssl/ssl.key:ro
+    - ./containerization/files/nginx.conf:/etc/nginx/nginx.conf:ro
+version: '2'
