@@ -55,3 +55,10 @@ services:
     ports:
       - "${DECAPOD_MONITORING_PORT}:8000"
       - "${DECAPOD_DOCS_PORT}:8001"
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.10.0.2/24

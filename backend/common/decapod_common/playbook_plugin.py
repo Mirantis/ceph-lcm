@@ -434,6 +434,26 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
         # if I set another network.
         result["cluster_network"] = result["public_network"]
 
+        result["radosgw_civetweb_port"] = self.config["radosgw"]["port"]
+        result["radosgw_civetweb_num_threads"] = \
+            self.config["radosgw"]["num_threads"]
+        result["radosgw_usage_log"] = self.config["radosgw"]["usage"]["log"]
+        result["radosgw_usage_log_tick_interval"] = \
+            self.config["radosgw"]["usage"]["log_tick_interval"]
+        result["radosgw_usage_log_flush_threshold"] = \
+            self.config["radosgw"]["usage"]["log_flush_threshold"]
+        result["radosgw_usage_max_shards"] = \
+            self.config["radosgw"]["usage"]["max_shards"]
+        result["radosgw_usage_max_user_shards"] = \
+            self.config["radosgw"]["usage"]["user_shards"]
+        result["radosgw_static_website"] = \
+            self.config["radosgw"]["static_website"]
+        result["radosgw_dns_s3website_name"] = \
+            self.config["radosgw"]["dns_s3website_name"]
+        result["ceph_facts_template"] = pathutils.resource(
+            "decapod_common", "facts", "ceph_facts_module.py.j2")
+        result["ceph_facts_template"] = str(result["ceph_facts_template"])
+
         for family, values in self.config.get("os", {}).items():
             for param, value in values.items():
                 parameter = {

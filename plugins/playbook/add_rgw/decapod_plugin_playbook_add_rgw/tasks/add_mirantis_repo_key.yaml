@@ -1,0 +1,41 @@
+---
+# Copyright (c) 2017 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- name: Check if proxy is required to connect to internet
+  shell: >
+    grep -r /etc/apt/apt.conf.d -h -i -e 'Acquire::http::Proxy'
+    | sed -rne 's/^[^"]+"([^"]+).*$/\1/p'
+    | sort -u
+  register: apt_http_proxy
+  changed_when: false
+  failed_when: false
+
+- name: Import Ceph repo key from keyserver without proxy
+  apt_key:
+    id: "{{ ceph_stable_repo_key }}"
+    keyserver: "{{ ceph_stable_repo_keyserver }}"
+    keyring: /etc/apt/trusted.gpg.d/ceph.gpg
+  when: apt_http_proxy.stdout == ""
+
+- name: Import Ceph repo key from keyserver with proxy
+  apt_key:
+    id: "{{ ceph_stable_repo_key }}"
+    keyserver: "{{ ceph_stable_repo_keyserver }}"
+    keyring: /etc/apt/trusted.gpg.d/ceph.gpg
+  environment:
+    http_proxy: "{{ apt_http_proxy.stdout }}"
+  when: apt_http_proxy.stdout != ""

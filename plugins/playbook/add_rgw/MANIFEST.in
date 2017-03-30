@@ -1,0 +1,3 @@
+include decapod_plugin_playbook_add_rgw/config.yaml
+include decapod_plugin_playbook_add_rgw/playbook.yaml
+graft decapod_plugin_playbook_add_rgw/tasks

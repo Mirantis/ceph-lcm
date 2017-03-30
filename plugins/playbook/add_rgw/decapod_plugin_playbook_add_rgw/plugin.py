@@ -13,41 +13,22 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Playbook plugin to add OSD to cluster."""
+"""Playbook plugin for add_rgw plugin for Decapod."""
 
 
-from decapod_common import diskutils
 from decapod_common import log
-from decapod_common import networkutils
-from decapod_common import pathutils
 from decapod_common import playbook_plugin
 from decapod_common import playbook_plugin_hints
 from decapod_common.models import cluster_data
 from decapod_common.models import server
 
-from . import exceptions
-
 
 DESCRIPTION = """\
-Adding new OSD to the cluster.
-
-This plugin adds OSD to the existing cluster.
+add_rgw plugin for Decapod
 """.strip()
 """Plugin description."""
 
 HINTS_SCHEMA = {
-    "dmcrypt": {
-        "description": "Setup OSDs with dmcrypt",
-        "typename": "boolean",
-        "type": "boolean",
-        "default_value": False
-    },
-    "collocation": {
-        "description": "Setup OSDs with collocated journals",
-        "typename": "boolean",
-        "type": "boolean",
-        "default_value": False
-    },
     "ceph_version_verify": {
         "description": "Verify Ceph version consistency on install",
         "typename": "boolean",
@@ -61,27 +42,26 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class AddOSD(playbook_plugin.CephAnsiblePlaybook):
+class AddRgw(playbook_plugin.CephAnsiblePlaybook):
 
-    NAME = "Add OSD to Ceph cluster"
+    NAME = "add_rgw plugin for Decapod"
     DESCRIPTION = DESCRIPTION
     PUBLIC = True
     REQUIRED_SERVER_LIST = True
     SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.not_in_other_cluster
-
     HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
 
     def on_pre_execute(self, task):
         super().on_pre_execute(task)
 
         playbook_config = self.get_playbook_configuration(task)
-        config = playbook_config.configuration["inventory"]
+        config = playbook_config.configuration
         cluster = playbook_config.cluster
         servers = playbook_config.servers
         servers = {srv.ip: srv for srv in servers}
 
-        for name, group_vars in config.items():
-            if name in ("_meta", "already_deployed") or not group_vars:
+        for name, group_vars in config["inventory"].items():
+            if name != "rgws" or not group_vars:
                 continue
             group_servers = [servers[ip] for ip in group_vars]
             cluster.add_servers(group_servers, name)
@@ -90,20 +70,16 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
             cluster.save()
 
         data = cluster_data.ClusterData.find_one(cluster.model_id)
-        hostvars = config.get("_meta", {}).get("hostvars", {})
+        data.global_vars = config["global_vars"]
+        hostvars = config["inventory"].get("_meta", {}).get("hostvars", {})
         for hostname, values in hostvars.items():
             data.update_host_vars(hostname, values)
         data.save()
 
     def make_playbook_configuration(self, cluster, servers, hints):
-        cluster_config = cluster.configuration.make_api_structure()
-        if not cluster_config.get("mons"):
-            raise exceptions.NoMonitorsError(cluster.model_id)
-
         data = cluster_data.ClusterData.find_one(cluster.model_id)
         global_vars = self.make_global_vars(cluster, data, servers, hints)
-        inventory = self.make_inventory(
-            cluster, data, servers, hints, global_vars)
+        inventory = self.make_inventory(cluster, data, servers, hints)
 
         return global_vars, inventory
 
@@ -111,32 +87,52 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
         result = super().make_global_vars(cluster, servers, hints)
         result.update(data.global_vars)
 
-        result["journal_collocation"] = False
-        result["dmcrypt_journal_collocation"] = False
-        result["dmcrypt_dedicated_journal"] = False
-        result["raw_multi_journal"] = False
         result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
         result["ceph_version_verify_packagename"] = \
             self.config["ceph_version_verify_packagename"]
-        if hints["dmcrypt"]:
-            if hints["collocation"]:
-                result["dmcrypt_journal_collocation"] = True
-            else:
-                result["dmcrypt_dedicated_journal"] = True
-        elif hints["collocation"]:
-            result["journal_collocation"] = True
-        else:
-            result["raw_multi_journal"] = True
 
-        if "journal_size" not in result:
-            result["journal_size"] = self.config["journal"]["size"]
+        result.setdefault(
+            "radosgw_civetweb_port",
+            self.config["radosgw"]["port"]
+        )
+        result.setdefault(
+            "radosgw_civetweb_num_threads",
+            self.config["radosgw"]["num_threads"]
+        )
+        result.setdefault(
+            "radosgw_usage_log",
+            self.config["radosgw"]["usage"]["log"]
+        )
+        result.setdefault(
+            "radosgw_usage_log_tick_interval",
+            self.config["radosgw"]["usage"]["log_tick_interval"]
+        )
+        result.setdefault(
+            "radosgw_usage_log_flush_threshold",
+            self.config["radosgw"]["usage"]["log_flush_threshold"]
+        )
+        result.setdefault(
+            "radosgw_usage_max_shards",
+            self.config["radosgw"]["usage"]["max_shards"]
+        )
+        result.setdefault(
+            "radosgw_usage_max_user_shards",
+            self.config["radosgw"]["usage"]["user_shards"]
+        )
+        result.setdefault(
+            "radosgw_static_website",
+            self.config["radosgw"]["static_website"]
+        )
+        result.setdefault(
+            "radosgw_dns_s3website_name",
+            self.config["radosgw"]["dns_s3website_name"]
+        )
 
         return result
 
-    def make_inventory(self, cluster, data, servers, hints, global_vars):
+    def make_inventory(self, cluster, data, servers, hints):
         groups = self.get_inventory_groups(cluster, servers, hints)
         inventory = {"_meta": {"hostvars": {}}}
-        all_servers = server.ServerModel.cluster_servers(cluster.model_id)
 
         for name, group_servers in groups.items():
             for srv in group_servers:
@@ -145,24 +141,7 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
                 hostvars = inventory["_meta"]["hostvars"].setdefault(
                     srv.ip, {})
                 hostvars.update(data.get_host_vars(srv.ip))
-
-                if "ansible_user" not in hostvars:
-                    hostvars["ansible_user"] = srv.username
-                if "monitor_interface" not in hostvars:
-                    if "monitor_address" not in hostvars:
-                        hostvars["monitor_address"] = \
-                            networkutils.get_public_network_ip(
-                                srv, all_servers)
-
-                if hints["collocation"]:
-                    hostvars["devices"] = diskutils.get_devices(srv)
-                else:
-                    hostvars["devices"] = []
-                    hostvars["raw_journal_devices"] = []
-                    for pair in diskutils.get_data_journal_pairs_iter(
-                            srv, int(global_vars["journal_size"])):
-                        hostvars["devices"].append(pair["data"])
-                        hostvars["raw_journal_devices"].append(pair["journal"])
+                hostvars["ansible_user"] = srv.username
 
         return inventory
 
@@ -177,12 +156,6 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
 
         return {
             "mons": mons,
-            "osds": servers,
+            "rgws": servers,
             "already_deployed": list(cluster_servers.values())
         }
-
-    def prepare_plugin(self):
-        resource_path = pathutils.resource(
-            "decapod_plugin_playbook_add_osd", "roles")
-        resource_path.symlink_to(
-            str(playbook_plugin.PATH_CEPH_ANSIBLE.joinpath("roles")))

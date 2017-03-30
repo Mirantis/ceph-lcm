@@ -34,6 +34,7 @@ services:
     - ./plugins/alerts/emails/decapod_plugin_alerts_emails:/usr/local/lib/python3.5/dist-packages/decapod_plugin_alerts_emails:ro
     - ./plugins/playbook/add_mon/decapod_plugin_playbook_add_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_mon:ro
     - ./plugins/playbook/add_osd/decapod_plugin_playbook_add_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_osd:ro
+    - ./plugins/playbook/add_rgw/decapod_plugin_playbook_add_rgw:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_rgw:ro
     - ./plugins/playbook/cinder_integration/decapod_plugin_playbook_cinder_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_cinder_integration:ro
     - ./plugins/playbook/deploy_cluster/decapod_plugin_playbook_deploy_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_deploy_cluster:ro
     - ./plugins/playbook/playbook_helloworld/decapod_plugin_playbook_helloworld:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_helloworld:ro
@@ -54,6 +55,7 @@ services:
     - ./plugins/alerts/emails/decapod_plugin_alerts_emails:/usr/local/lib/python3.5/dist-packages/decapod_plugin_alerts_emails:ro
     - ./plugins/playbook/add_mon/decapod_plugin_playbook_add_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_mon:ro
     - ./plugins/playbook/add_osd/decapod_plugin_playbook_add_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_osd:ro
+    - ./plugins/playbook/add_rgw/decapod_plugin_playbook_add_rgw:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_rgw:ro
     - ./plugins/playbook/cinder_integration/decapod_plugin_playbook_cinder_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_cinder_integration:ro
     - ./plugins/playbook/deploy_cluster/decapod_plugin_playbook_deploy_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_deploy_cluster:ro
     - ./plugins/playbook/playbook_helloworld/decapod_plugin_playbook_helloworld:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_helloworld:ro
@@ -75,6 +77,7 @@ services:
     - ./plugins/alerts/emails/decapod_plugin_alerts_emails:/usr/local/lib/python3.5/dist-packages/decapod_plugin_alerts_emails:ro
     - ./plugins/playbook/add_mon/decapod_plugin_playbook_add_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_mon:ro
     - ./plugins/playbook/add_osd/decapod_plugin_playbook_add_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_osd:ro
+    - ./plugins/playbook/add_rgw/decapod_plugin_playbook_add_rgw:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_rgw:ro
     - ./plugins/playbook/cinder_integration/decapod_plugin_playbook_cinder_integration:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_cinder_integration:ro
     - ./plugins/playbook/deploy_cluster/decapod_plugin_playbook_deploy_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_deploy_cluster:ro
     - ./plugins/playbook/playbook_helloworld/decapod_plugin_playbook_helloworld:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_helloworld:ro

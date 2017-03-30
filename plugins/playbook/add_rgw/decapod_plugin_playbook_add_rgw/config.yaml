@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Configuration for add_rgw
+
 max_open_files: 131072
 copy_admin_key: true
 
@@ -33,6 +35,8 @@ os:
     pid_max: 4194303
   fs:
     file-max: 26234859
+
+ceph_version_verify_packagename: "ceph-common"
 
 radosgw:
   port: 8080

@@ -170,8 +170,6 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
             result["raw_multi_journal"] = True
 
         result["journal_size"] = self.config["journal"]["size"]
-        result["ceph_facts_template"] = str(pathutils.resource(
-            "decapod_common", "facts", "ceph_facts_module.py.j2"))
         result["restapi_template_local_path"] = str(pathutils.resource(
             "decapod_plugin_playbook_deploy_cluster",
             "ceph-rest-api.service"))

@@ -101,9 +101,6 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
         result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
         result["ceph_version_verify_packagename"] = \
             self.config["ceph_version_verify_packagename"]
-        result["ceph_facts_template"] = pathutils.resource(
-            "decapod_common", "facts", "ceph_facts_module.py.j2")
-        result["ceph_facts_template"] = str(result["ceph_facts_template"])
 
         return result
 

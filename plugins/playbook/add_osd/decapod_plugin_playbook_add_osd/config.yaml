@@ -35,3 +35,15 @@ os:
     pid_max: 4194303
   fs:
     file-max: 26234859
+
+radosgw:
+  port: 8080
+  num_threads: 50
+  usage:
+    log: false
+    log_tick_interval: 30
+    log_flush_threshold: 1024
+    max_shards: 32
+    user_shards: 1
+  static_website: false
+  dns_s3website_name: your.subdomain.tld
