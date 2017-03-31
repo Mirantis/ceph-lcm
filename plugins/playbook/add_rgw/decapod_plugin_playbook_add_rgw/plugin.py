@@ -87,6 +87,8 @@ class AddRgw(playbook_plugin.CephAnsiblePlaybook):
         result = super().make_global_vars(cluster, servers, hints)
         result.update(data.global_vars)
 
+        result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
+
         return result
 
     def make_inventory(self, cluster, data, servers, hints):

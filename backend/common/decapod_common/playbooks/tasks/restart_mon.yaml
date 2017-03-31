@@ -14,6 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- include: "{{ decapod_common_playbooks }}/init.yaml"
+  when: decapod_initialized | default(false) | bool
+
+- set_fact:
+    mon_retry_attempts: "{{ (mon | default(decapod_vars.mon)).retry_attempts }}"
+    mon_retry_delay: "{{ (mon | default(decapod_vars.mon)).retry_delay }}"
+    mon_startup_wait: "{{ (mon | default(decapod_vars.mon)).startup_wait }}"
 
 - name: find out monitor interface
   shell: netstat -nptl | awk '/ceph-mon/ { sub(":.*", "", $4); print $4 }'
@@ -30,11 +37,12 @@
     host: "{{ monitor_ip.stdout }}"
     port: 6789
     state: started
-    timeout: "{{ mon.startup_wait }}"
+    timeout: "{{ mon_startup_wait }}"
 
 - name: wait for monitor to join quorum
   command: ceph --cluster "{{ cluster }}" -s --format json
   register: ceph_health_raw
-  until: ansible_hostname in (ceph_health_raw.stdout | from_json)["quorum_names"]
-  retries: "{{ mon.retry_attempts }}"
-  delay: "{{ mon.retry_delay }}"
+  until: >
+    ansible_hostname in (ceph_health_raw.stdout | from_json)["quorum_names"]
+  retries: "{{ mon_retry_attempts }}"
+  delay: "{{ mon_retry_delay }}"

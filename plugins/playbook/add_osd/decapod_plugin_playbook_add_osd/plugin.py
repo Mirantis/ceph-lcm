@@ -111,6 +111,7 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
         result = super().make_global_vars(cluster, servers, hints)
         result.update(data.global_vars)
 
+        result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
         result["journal_collocation"] = False
         result["dmcrypt_journal_collocation"] = False
         result["dmcrypt_dedicated_journal"] = False

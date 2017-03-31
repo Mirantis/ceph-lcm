@@ -20,27 +20,16 @@
   gather_facts: false
   tasks:
   - include: "{{ decapod_common_playbooks }}/init.yaml"
+    when: decapod_vars is not defined
 
-- hosts: mons
-  become: true
-  serial: 1
-  tasks:
-  - include: "{{ decapod_common_playbooks }}/tasks/restart_mon.yaml"
+  - include: "{{ decapod_common_playbooks }}/tasks/install_facts.yaml"
+    when: decapod_install_facts | default(decapod_vars.install_facts) | bool
 
-- hosts: osds
-  become: true
-  serial: 1
-  tasks:
-  - include: "{{ decapod_common_playbooks }}/tasks/restart_osd.yaml"
+  - name: Run setup after facts were installed
+    setup: {}
 
-- hosts: rgws
-  become: true
-  serial: 1
-  tasks:
-  - include: "{{ decapod_common_playbooks }}/tasks/restart_rgw.yaml"
-
-- hosts: restapis
-  become: true
-  serial: 1
-  tasks:
-  - include: "{{ decapod_common_playbooks }}/tasks/restart_rest_api.yaml"
+  - include: "{{ decapod_common_playbooks }}/tasks/add_gpg_repo_key.yaml"
+    when:
+    - decapod_add_gpg_repo_key | default(decapod_vars.add_gpg_repo_key) | bool
+    - ceph_stable_repo_key is defined
+    - ceph_stable_repo_keyserver is defined

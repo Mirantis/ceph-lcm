@@ -20,4 +20,4 @@
 - hosts: all
   become: true
   roles:
-    - ceph-common
+  - ceph-common

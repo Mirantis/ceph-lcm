@@ -15,9 +15,19 @@
 # limitations under the License.
 
 
-- include: "{{ decapod_common_playbooks }}/plays/add_ceph_ansible_role.yaml"
+- include: "{{ decapod_common_playbooks }}/init.yaml"
+  when: decapod_initialized | default(false) | bool
 
-- hosts: rgws
-  become: True
-  roles:
-  - ceph-rgw
+- name: Ensure ansible local facts directory is created
+  file:
+    path: /etc/ansible/facts.d
+    state: directory
+    recurse: yes
+
+- name: Create local facts to gather ceph clusters
+  template:
+    src: "{{ decapod_path_facts }}/ceph_facts_module.py.j2"
+    dest: "/etc/ansible/facts.d/ceph_{{ cluster }}.fact"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0770

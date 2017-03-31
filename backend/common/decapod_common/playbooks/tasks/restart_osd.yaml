@@ -15,10 +15,10 @@
 # limitations under the License.
 
 
-- set_fact: cluster_data="{{ ansible_local['ceph_%s' | format(cluster)] }}"
-- set_fact: osd_data="{{ cluster_data.osd_tree[ansible_hostname] | default([]) }}"
-- set_fact: osd_numbers="{{ osd_data | json_query('[*].id') }}"
+- include: "{{ decapod_common_playbooks }}/init.yaml"
+  when: decapod_initialized | default(false) | bool
 
+- include: "{{ decapod_common_playbooks }}/tasks/set_ceph_facts.yaml"
 
 - name: Disable data rebalancing and scrubbing
   command: ceph --cluster "{{ cluster }}" osd set "{{ item }}"
@@ -28,8 +28,10 @@
     - nodeep-scrub
 
 - name: Restart OSDs
-  include: "{{ playbook_dir }}/tasks/restart_single_osd.yaml"
+  include: "{{ decapod_common_playbooks }}/tasks/restart_single_osd.yaml"
   with_items: "{{ osd_numbers }}"
+  loop_control:
+    loop_var: osd_number
 
 - name: Enable data rebalancing and scrubbing
   command: ceph --cluster "{{ cluster }}" osd unset "{{ item }}"

@@ -1,0 +1,88 @@
+---
+# Copyright (c) 2017 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- include: "{{ decapod_common_playbooks }}/init.yaml"
+  when: decapod_initialized | default(false) | bool
+
+- include: "{{ decapod_common_playbooks }}/tasks/set_ceph_facts.yaml"
+
+- set_fact:
+    osd_partition: "{{ osd_partitions['osd.%s' | format(osd_number)] }}"
+
+- name: Decrease weight of removing OSDs
+  command: >
+    ceph --cluster "{{ cluster }}"
+    osd crush reweight "osd.{{ osd_number }}" 0.0
+  delegate_to: "{{ mon_host }}"
+  when: mon_host is defined
+
+- name: Set OSDs out of cluster
+  command: >
+    ceph --cluster "{{ cluster }}"
+    osd out "{{ osd_number }}"
+  delegate_to: "{{ mon_host }}"
+  when: mon_host is defined
+
+- name: Stop OSDs daemon
+  service:
+    name: "ceph-osd@{{ osd_number }}"
+    state: stopped
+    enabled: false
+
+- name: Get OSD mount point
+  shell: >
+    grep '/var/lib/ceph/osd/{{ cluster }}-{{ osd_number }}' /proc/mounts
+    | awk '{ print $2 }'
+  register: mounted_osd
+  changed_when: false
+
+- name: Unmount OSD mount points
+  command: umount "{{ mounted_osd.stdout }}"
+  when: mounted_osd.stdout != ""
+
+- name: Set OSDs down
+  command: >
+    ceph --cluster "{{ cluster }}"
+    osd down "{{ osd_number }}"
+  delegate_to: "{{ mon_host }}"
+  when: mon_host is defined
+
+- name: Remove OSDs from crush map
+  command: >
+    ceph --cluster "{{ cluster }}"
+    osd crush remove "osd.{{ osd_number }}"
+  delegate_to: "{{ mon_host }}"
+  when: mon_host is defined
+
+- name: Delete auth data for OSDs
+  command: ceph --cluster "{{ cluster }}" auth del "osd.{{ osd_number }}"
+  delegate_to: "{{ mon_host }}"
+  when: mon_host is defined
+
+- name: Remove OSDs
+  command: ceph --cluster "{{ cluster }}" osd rm "osd.{{ osd_number }}"
+  delegate_to: "{{ mon_host }}"
+  when: mon_host is defined
+
+- name: Destroy OSD partitions
+  shell: |
+    raw_device=$(echo "{{ osd_partition[item] }}" | egrep -o '/dev/([hsv]d[a-z]{1,2}|cciss/c[0-9]d[0-9]p|nvme[0-9]n[0-9]p){1,2}')
+    partition_nb=$(echo "{{ osd_partition[item] }}" | egrep -o '[0-9]{1,2}$')
+    sgdisk --delete $partition_nb $raw_device
+  with_items:
+  - data
+  - journal

@@ -18,38 +18,44 @@
 # Please check https://github.com/asheplyakov/mos9-ceph-upgrade as a
 # standalone solution.
 
+- hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+  - include: "{{ decapod_common_playbooks }}/init.yaml"
+
+
 - hosts:
-    - mons
-    - osds
+  - mons
+  - osds
   become: true
   tasks:
-    - name: Install dependencies
-      package:
-        name: "{{ item }}"
-        state: present
-      with_items: "{{ dependencies }}"
+  - name: Install dependencies
+    package:
+      name: "{{ item }}"
+      state: present
+    with_items: "{{ dependencies }}"
 
-    - include: "{{ playbook_dir }}/tasks/timesync.yaml"
-      when: do_timesync
+  - include: "{{ playbook_dir }}/tasks/timesync.yaml"
+    when: do_timesync
 
-    - include: "{{ playbook_dir }}/tasks/get_packages.yaml"
+  - include: "{{ playbook_dir }}/tasks/get_packages.yaml"
 
 
 - hosts: mons
   become: true
   serial: 1
   tasks:
-    - include: "{{ playbook_dir }}/tasks/install_packages.yaml"
+  - include: "{{ playbook_dir }}/tasks/install_packages.yaml"
 
-    - name: Compare running version
-      command: >
-        ceph
-            --cluster "{{ cluster }}"
-        daemon "mon.{{ ansible_hostname }}" version
-      register: running_mon_version
+  - name: Compare running version
+    command: >
+      ceph --cluster "{{ cluster }}"
+      daemon "mon.{{ ansible_hostname }}" version
+    register: running_mon_version
 
-    - include: "{{ playbook_dir }}/tasks/restart_mon.yaml"
-      when: "{{ (running_mon_version.stdout | from_json).version != ceph_candidate_package_version.stdout }}"
+  - include: "{{ decapod_common_playbooks }}/tasks/restart_mon.yaml"
+    when: "{{ (running_mon_version.stdout | from_json).version != ceph_candidate_package_version.stdout }}"
 
 
 # # Upgrade OSDs. On each OSD node
@@ -62,10 +68,10 @@
   become: true
   serial: 1
   tasks:
-    - include: "{{ playbook_dir }}/tasks/install_packages.yaml"
-    - include: "{{ playbook_dir }}/tasks/restart_osd.yaml"
+  - include: "{{ playbook_dir }}/tasks/install_packages.yaml"
+  - include: "{{ decapod_common_playbooks }}/tasks/restart_osd.yaml"
 
 - hosts: clients
   become: true
   tasks:
-    - include: "{{ playbook_dir }}/tasks/install_packages.yaml"
+  - include: "{{ playbook_dir }}/tasks/install_packages.yaml"

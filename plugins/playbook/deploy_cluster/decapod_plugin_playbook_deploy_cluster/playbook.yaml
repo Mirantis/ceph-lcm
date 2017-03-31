@@ -14,51 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Add custom local facts
-# Can be obtained by ansible_local.ceph_{{ cluster }} section in facts
-- hosts: all
-  become: true
-  tasks:
-    - name: Ensure ansible local facts directory is created
-      file:
-        path: /etc/ansible/facts.d
-        state: directory
-        recurse: yes
 
-    - name: Create local facts to gather ceph clusters
-      template:
-        src: "{{ ceph_facts_template }}"
-        dest: "/etc/ansible/facts.d/ceph_{{ cluster }}.fact"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        mode: 0770
-
-    - block:
-      - name: Check if proxy is required to connect to internet
-        shell: grep -r /etc/apt/apt.conf.d -h -i -e 'Acquire::http::Proxy' | sed -rne 's/^[^"]+"([^"]+).*$/\1/p' | sort -u
-        register: apt_http_proxy
-        changed_when: false
-        failed_when: false
-
-      - name: Import Ceph repo key from keyserver without proxy
-        apt_key:
-          id: "{{ ceph_stable_repo_key }}"
-          keyserver: "{{ ceph_stable_repo_keyserver }}"
-          keyring: /etc/apt/trusted.gpg.d/ceph.gpg
-        when: apt_http_proxy.stdout == ""
-
-      - name: Import Ceph repo key from keyserver with proxy
-        apt_key:
-          id: "{{ ceph_stable_repo_key }}"
-          keyserver: "{{ ceph_stable_repo_keyserver }}"
-          keyring: /etc/apt/trusted.gpg.d/ceph.gpg
-        environment:
-          http_proxy: "{{ apt_http_proxy.stdout }}"
-        when: apt_http_proxy.stdout != ""
-      when:
-        - ceph_stable_repo_keyserver is defined
-        - ceph_stable_repo_key is defined
-
+- include: "{{ decapod_common_playbooks }}/plays/init.yaml"
 
 - hosts: mons
   become: True

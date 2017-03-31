@@ -15,6 +15,9 @@
 # limitations under the License.
 
 
+- include: "{{ decapod_common_playbooks }}/init.yaml"
+  when: decapod_initialized | default(false) | bool
+
 - name: Create version files
   file:
     path: "/tmp/{{ item }}"
@@ -30,26 +33,27 @@
 
 - name: Collect installed package version
   command: >
-    dpkg-query --showformat='${Version}'
-               --show "{{ ceph_version_verify_packagename|quote }}"
+    dpkg-query
+    --showformat='${Version}'
+    --show "{{ ceph_version_verify_packagename|quote }}"
   register: ceph_package_version
   ignore_errors: true
 
 - name: Save Ceph version
   shell: echo {{ item|quote }} >> /tmp/ceph_version
   with_items: "{{ ceph_version.stdout_lines }}"
-  when: ceph_version|succeeded
+  when: ceph_version | succeeded
 
 - name: Save package version
   shell: echo {{ item|quote }} >> /tmp/ceph_package_version
   with_items: "{{ ceph_package_version.stdout_lines }}"
-  when: ceph_package_version|succeeded
+  when: ceph_package_version | succeeded
 
 - name: Download versions
   fetch:
-    dest: "{{ fetch_directory }}/{{ inventory_hostname }}/{{ item }}"
+    dest: "{{ fetch_directory }}/ceph-version/{{ inventory_hostname }}/{{ item }}"
     flat: yes
     src: "/tmp/{{ item }}"
   with_items:
-    - ceph_version
-    - ceph_package_version
+  - ceph_version
+  - ceph_package_version

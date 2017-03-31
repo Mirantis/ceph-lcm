@@ -1,2 +1,2 @@
 graft decapod_common/configs
-graft decapod_common/facts
+graft decapod_common/playbooks

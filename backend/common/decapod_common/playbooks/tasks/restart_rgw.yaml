@@ -15,6 +15,12 @@
 # limitations under the License.
 
 
+- include: "{{ decapod_common_playbooks }}/init.yaml"
+  when: decapod_initialized | default(false) | bool
+
+- set_fact:
+    radosgw_startup_wait: "{{ (radosgw | default(decapod_vars.radosgw)).startup_wait }}"
+
 - name: Get Rados Gateway IP
   shell: netstat -nptl | awk '/radosgw/ { sub(":.*", "", $4); print $4 }'
   register: radosgw_ip
@@ -34,4 +40,4 @@
     host: "{{ radosgw_ip.stdout }}"
     port: "{{ radosgw_port.stdout }}"
     state: started
-    timeout: "{{ radosgw.startup_wait }}"
+    timeout: "{{ radosgw_startup_wait }}"

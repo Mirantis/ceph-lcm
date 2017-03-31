@@ -15,6 +15,9 @@
 # limitations under the License.
 
 
+- include: "{{ decapod_common_playbooks }}/init.yaml"
+  when: decapod_initialized | default(false) | bool
+
 - name: Check if proxy is required to connect to internet
   shell: >
     grep -r /etc/apt/apt.conf.d -h -i -e 'Acquire::http::Proxy'

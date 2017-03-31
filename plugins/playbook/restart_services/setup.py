@@ -38,8 +38,7 @@ setuptools.setup(
     package_data={
         "decapod_plugin_playbook_restart_services": [
             "config.yaml",
-            "playbook.yaml",
-            "tasks/*"
+            "playbook.yaml"
         ]
     },
     install_requires=[

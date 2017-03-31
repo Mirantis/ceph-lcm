@@ -15,16 +15,15 @@
 # limitations under the License.
 
 
-- name: Ensure ansible local facts directory is created
-  file:
-    path: /etc/ansible/facts.d
-    state: directory
-    recurse: yes
+- hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+  - include: "{{ decapod_common_playbooks }}/init.yaml"
 
-- name: Create local facts to gather ceph clusters
-  template:
-    src: "{{ ceph_facts_template }}"
-    dest: "/etc/ansible/facts.d/ceph_{{ cluster }}.fact"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: 0770
+- include: "{{ decapod_common_playbooks }}/plays/ceph_version.yaml"
+
+- hosts: mons
+  become: True
+  roles:
+  - ceph-fetch-keys

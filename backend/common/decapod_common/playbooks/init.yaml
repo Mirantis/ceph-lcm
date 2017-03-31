@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2017 Mirantis Inc.
+# Copyright (c) 2016 Mirantis Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,8 +15,14 @@
 # limitations under the License.
 
 
-- include: "{{ playbook_dir }}/tasks/add_custom_facts.yaml"
-- include: "{{ playbook_dir }}/tasks/add_mirantis_repo_key.yaml"
-  when:
-    - ceph_stable_repo_keyserver is defined
-    - ceph_stable_repo_key is defined
+- set_fact:
+    decapod_initialized: true
+    decapod_path_tasks: "{{ decapod_common_playbooks }}/tasks"
+    decapod_path_plays: "{{ decapod_common_playbooks }}/plays"
+    decapod_path_facts: "{{ decapod_common_playbooks }}/facts"
+
+- name: Include Decapod vars
+  include_vars:
+    file: "{{ decapod_common_playbooks }}/vars.yaml"
+    name: decapod_vars
+  when: decapod_vars is not defined

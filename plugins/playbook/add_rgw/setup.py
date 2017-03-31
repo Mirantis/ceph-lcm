@@ -38,8 +38,7 @@ setuptools.setup(
     package_data={
         "decapod_plugin_playbook_add_rgw": [
             "config.yaml",
-            "playbook.yaml",
-            "tasks/*"
+            "playbook.yaml"
         ]
     },
     install_requires=[

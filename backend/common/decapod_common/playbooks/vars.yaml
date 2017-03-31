@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2017 Mirantis Inc.
+# Copyright (c) 2016 Mirantis Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,9 +15,20 @@
 # limitations under the License.
 
 
-- include: "{{ decapod_common_playbooks }}/plays/add_ceph_ansible_role.yaml"
+install_facts: true
+add_gpg_repo_key: true
 
-- hosts: rgws
-  become: True
-  roles:
-  - ceph-rgw
+mon:
+  retry_attempts: 30
+  retry_delay: 10
+  startup_wait: 60
+
+osd:
+  retry_attempts: 40
+  retry_delay: 20
+
+radosgw:
+  startup_wait: 60
+
+rest_api:
+  startup_wait: 30

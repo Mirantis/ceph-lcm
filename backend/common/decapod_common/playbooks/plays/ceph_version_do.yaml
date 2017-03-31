@@ -18,8 +18,11 @@
 - hosts: already_deployed
   become: true
   tasks:
+  - include: "{{ decapod_common_playbooks }}/init.yaml"
+    when: decapod_vars is not defined
+
   - block:
-    - include: "{{ playbook_dir }}/ceph_version_collect.yaml"
+    - include: "{{ decapod_common_playbooks }}/tasks/ceph_version_collect.yaml"
     always:
       - name: Remove created version files
         file:
@@ -43,13 +46,9 @@
           -u "{{ ceph_stable_repo | quote }}"
           -d "{{ ceph_stable_distro_source | quote }}"
           -p "{{ ceph_version_verify_packagename | quote }}"
-          "{{ fetch_directory | quote }}"
+          "{{ fetch_directory }}/ceph-version"
       always:
       - name: Remove tempfiles
         file:
-          path: "{{ fetch_directory }}"
+          path: "{{ fetch_directory }}/ceph-version"
           state: absent
-      - name: Create fetch directory
-        file:
-          path: "{{ fetch_directory }}"
-          state: directory

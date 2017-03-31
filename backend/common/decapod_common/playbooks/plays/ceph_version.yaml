@@ -15,19 +15,5 @@
 # limitations under the License.
 
 
-- set_fact: osd_number="{{ item }}"
-
-
-- name: Restart OSD item
-  service:
-    name: "ceph-osd@{{ osd_number }}"
-    state: restarted
-    sleep: 10
-
-- name: wait for PGs to become active+clean
-  command: ceph --cluster "{{ cluster }}" -s --format json
-  register: ceph_health_post
-  until: ((ceph_health_post.stdout | from_json).pgmap.pgs_by_state | length) == 1 and
-         (ceph_health_post.stdout | from_json).pgmap.pgs_by_state.0.state_name == "active+clean"
-  retries: "{{ osd.retry_attempts }}"
-  delay: "{{ osd.retry_delay }}"
+- include: "{{ decapod_common_playbooks }}/plays/ceph_version_do.yaml"
+  when: ceph_version_verify | default(false) | bool

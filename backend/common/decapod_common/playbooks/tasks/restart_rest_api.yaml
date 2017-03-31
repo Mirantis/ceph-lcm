@@ -15,9 +15,15 @@
 # limitations under the License.
 
 
+- include: "{{ decapod_common_playbooks }}/init.yaml"
+  when: decapod_initialized | default(false) | bool
+
+- set_fact:
+    restapi_startup_wait: "{{ (restapi | default(decapod_vars.rest_api)).startup_wait }}"
+
 - name: Get ceph-rest-api PID
   command: pgrep ceph-rest-api
-  register: ceph_rest_api_pid
+  register: ceph_restapi_pid
 
 - name: Is running by systemd
   command: systemctl is-active ceph-rest-api
@@ -25,31 +31,35 @@
   register: is_active_in_systemd
 
 - set_fact:
-    ceph_rest_api_pid_number: "{{ ceph_rest_api_pid.stdout | trim }}"
+    ceph_restapi_pid_number: "{{ ceph_restapi_pid.stdout | trim }}"
 
 - name: Get REST API IP
-  shell: netstat -nptl | awk '$NF ~ /^{{ ceph_rest_api_pid_number }}/ { sub(":.*", "", $4); print $4 }'
-  register: rest_api_ip
+  shell: >
+    netstat -nptl
+    | awk '$NF ~ /^{{ ceph_restapi_pid_number }}/ { sub(":.*", "", $4); print $4 }'
+  register: restapi_ip
 
 - name: Get REST API Port
-  shell: netstat -nptl | awk '$NF ~ /^{{ ceph_rest_api_pid_number }}/ { sub(".*:", "", $4); print $4 }'
-  register: rest_api_port
+  shell: >
+    netstat -nptl
+    | awk '$NF ~ /^{{ ceph_restapi_pid_number }}/ { sub(".*:", "", $4); print $4 }'
+  register: restapi_port
 
 # By default ceph-ansible is running rest api with nohup (yes). Therefore
 # we have to kill it first.
 - name: Stop nohup ceph-rest-api process
-  shell: kill -15 "{{ ceph_rest_api_pid_number }}"
-  when: ceph_rest_api_pid.rc == 0 and is_active_in_systemd.rc != 0
+  shell: kill -15 "{{ ceph_restapi_pid_number }}"
+  when: ceph_restapi_pid.rc == 0 and is_active_in_systemd.rc != 0
 
 - name: Restart REST API
   service:
     name: ceph-rest-api.service
     state: restarted
-    sleep: 5
+    sleep: 10
 
 - name: Wait for REST API to start up
   wait_for:
-    host: "{{ rest_api_ip.stdout }}"
-    port: "{{ rest_api_port.stdout }}"
+    host: "{{ restapi_ip.stdout }}"
+    port: "{{ restapi_port.stdout }}"
     state: started
-    timeout: "{{ restapi.startup_wait }}"
+    timeout: "{{ restapi_startup_wait }}"

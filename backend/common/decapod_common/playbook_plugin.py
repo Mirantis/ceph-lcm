@@ -319,6 +319,8 @@ class Playbook(Base, metaclass=abc.ABCMeta):
     def get_extra_vars(self, task):
         config = self.get_playbook_configuration(task)
         config = config.configuration["global_vars"]
+        config["decapod_common_playbooks"] = str(pathutils.resource(
+            "decapod_common", "playbooks"))
 
         return config
 
@@ -391,8 +393,6 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
     def get_ceph_ansible_common_settings(cls, cluster, servers, *,
                                          verify_ceph_version=False):
         config = load_config(cls.CEPH_ANSIBLE_CONFIGFILE)
-        ceph_facts_template = pathutils.resource(
-            "decapod_common", "facts", "ceph_facts_module.py.j2")
 
         result = {
             "ceph_{0}".format(config["install"]["source"]): True,
@@ -403,7 +403,6 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
             "os_tuning_params": [],
             "nfs_file_gw": False,
             "nfs_obj_gw": False,
-            "ceph_facts_template": str(ceph_facts_template),
             "max_open_files": config["max_open_files"],
             "ceph_stable_release": config["install"]["release"],
             "ceph_stable_repo": config["install"]["repo"],

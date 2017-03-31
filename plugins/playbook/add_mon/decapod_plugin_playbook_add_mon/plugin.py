@@ -73,7 +73,8 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
         servers = {srv.ip: srv for srv in servers}
 
         for name, group_vars in config.items():
-            if name in ("_meta", "already_deployed") or not group_vars:
+            skip = {"_meta", "oldmons", "already_deployed"}
+            if name in skip or not group_vars:
                 continue
             group_servers = [servers[ip] for ip in group_vars]
             cluster.add_servers(group_servers, name)
@@ -97,6 +98,8 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
     def make_global_vars(self, cluster, data, servers, hints):
         result = super().make_global_vars(cluster, servers, hints)
         result.update(data.global_vars)
+
+        result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
 
         return result
 
@@ -150,14 +153,15 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
         cluster_servers = server.ServerModel.cluster_servers(cluster.model_id)
         cluster_servers = {item._id: item for item in cluster_servers}
 
-        mons = [
+        old_mons = [
             cluster_servers[item["server_id"]]
             for item in cluster.configuration.state if item["role"] == "mons"
         ]
-        mons = {srv.model_id: srv for srv in mons}
+        mons = {srv.model_id: srv for srv in old_mons}
         mons.update((srv.model_id, srv) for srv in servers)
 
         return {
+            "oldmons": old_mons,
             "mons": sorted(mons.values(), key=lambda srv: srv.ip),
             "already_deployed": list(cluster_servers.values())
         }
