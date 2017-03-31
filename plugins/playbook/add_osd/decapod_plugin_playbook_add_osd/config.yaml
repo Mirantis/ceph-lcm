@@ -13,37 +13,3 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-max_open_files: 131072
-copy_admin_key: true
-
-install:
-  source: "stable"
-  release: "jewel"
-  repo: "http://mirror.fuel-infra.org/decapod/ceph/jewel-xenial"
-  distro_source: "jewel-xenial"
-  keyserver: "hkp://keyserver.ubuntu.com:80"
-  repo_key: "AF94F6A6A254F5F0"
-
-ceph_version_verify_packagename: "ceph-common"
-
-journal:
-  size: 100
-
-os:
-  kernel:
-    pid_max: 4194303
-  fs:
-    file-max: 26234859
-
-radosgw:
-  port: 8080
-  num_threads: 50
-  usage:
-    log: false
-    log_tick_interval: 30
-    log_flush_threshold: 1024
-    max_shards: 32
-    user_shards: 1
-  static_website: false
-  dns_s3website_name: your.subdomain.tld

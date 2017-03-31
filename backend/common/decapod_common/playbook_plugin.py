@@ -384,6 +384,61 @@ class Playbook(Base, metaclass=abc.ABCMeta):
 
 class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
 
+    CEPH_ANSIBLE_CONFIGFILE = pathutils.resource(
+        "decapod_common", "configs", "ceph-ansible-defaults.yaml")
+
+    @classmethod
+    def get_ceph_ansible_common_settings(cls, cluster, servers, *,
+                                         verify_ceph_version=False):
+        config = load_config(cls.CEPH_ANSIBLE_CONFIGFILE)
+        ceph_facts_template = pathutils.resource(
+            "decapod_common", "facts", "ceph_facts_module.py.j2")
+
+        result = {
+            "ceph_{0}".format(config["install"]["source"]): True,
+            "fsid": cluster.model_id,
+            "cluster": cluster.name,
+            "copy_admin_key": bool(config.get("copy_admin_key", False)),
+            "public_network": str(networkutils.get_public_network(servers)),
+            "os_tuning_params": [],
+            "nfs_file_gw": False,
+            "nfs_obj_gw": False,
+            "ceph_facts_template": str(ceph_facts_template),
+            "max_open_files": config["max_open_files"],
+            "ceph_stable_release": config["install"]["release"],
+            "ceph_stable_repo": config["install"]["repo"],
+            "ceph_stable_distro_source": config["install"]["distro_source"],
+            "ceph_stable_repo_keyserver": config["install"]["keyserver"],
+            "ceph_stable_repo_key": config["install"]["repo_key"],
+            "radosgw_civetweb_port": config["radosgw"]["port"],
+            "radosgw_civetweb_num_threads": config["radosgw"]["num_threads"],
+            "radosgw_usage_log": config["radosgw"]["usage"]["log"],
+            "radosgw_usage_log_tick_interval": config["radosgw"]["usage"]["log_tick_interval"],  # NOQA
+            "radosgw_usage_log_flush_threshold": config["radosgw"]["usage"]["log_flush_threshold"],  # NOQA
+            "radosgw_usage_max_shards": config["radosgw"]["usage"]["max_shards"],  # NOQA
+            "radosgw_usage_max_user_shards": config["radosgw"]["usage"]["user_shards"],  # NOQA
+            "radosgw_static_website": config["radosgw"]["static_website"],
+            "radosgw_dns_s3website_name": config["radosgw"]["dns_s3website_name"],  # NOQA
+            "ceph_version_verify_packagename": config["ceph_version_verify_packagename"],  # NOQA
+            "ceph_version_verify": verify_ceph_version,
+            "journal_size": config["journal"]["size"]
+        }
+        result["ceph_stable_release_uca"] = result["ceph_stable_distro_source"]
+
+        # FIXME(Sergey Arkhipov): For some reason, Ceph cannot converge
+        # if I set another network.
+        result["cluster_network"] = result["public_network"]
+
+        for family, values in config.get("os", {}).items():
+            for param, value in values.items():
+                parameter = {
+                    "name": ".".join([family, param]),
+                    "value": value
+                }
+                result["os_tuning_params"].append(parameter)
+
+        return result
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fetchdir = None
@@ -403,69 +458,10 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
         return config
 
     def make_global_vars(self, cluster, servers, hints):
-        result = {
-            "ceph_{0}".format(self.config["install"]["source"]): True,
-            "fsid": cluster.model_id,
-            "cluster": cluster.name,
-            "copy_admin_key": bool(self.config.get("copy_admin_key", False)),
-            "public_network": str(networkutils.get_public_network(servers)),
-            "os_tuning_params": [],
-            "nfs_file_gw": False,
-            "nfs_obj_gw": False
-        }
-        if self.config["install"]["source"] == "stable":
-            result["ceph_stable_release"] = self.config["install"]["release"]
-        if self.config["install"].get("repo"):
-            result["ceph_stable_repo"] = self.config["install"]["repo"]
-        if self.config["install"].get("distro_source"):
-            result["ceph_stable_distro_source"] = \
-                self.config["install"]["distro_source"]
-            # This is required to prevent Ansible for installation
-            # from default repo
-            result["ceph_stable_release_uca"] = \
-                result["ceph_stable_distro_source"]
-        if self.config["install"].get("keyserver"):
-            result["ceph_stable_repo_keyserver"] = \
-                self.config["install"]["keyserver"]
-        if self.config["install"].get("repo_key"):
-            result["ceph_stable_repo_key"] = self.config["install"]["repo_key"]
-
-        # FIXME(Sergey Arkhipov): For some reason, Ceph cannot converge
-        # if I set another network.
-        result["cluster_network"] = result["public_network"]
-
-        result["radosgw_civetweb_port"] = self.config["radosgw"]["port"]
-        result["radosgw_civetweb_num_threads"] = \
-            self.config["radosgw"]["num_threads"]
-        result["radosgw_usage_log"] = self.config["radosgw"]["usage"]["log"]
-        result["radosgw_usage_log_tick_interval"] = \
-            self.config["radosgw"]["usage"]["log_tick_interval"]
-        result["radosgw_usage_log_flush_threshold"] = \
-            self.config["radosgw"]["usage"]["log_flush_threshold"]
-        result["radosgw_usage_max_shards"] = \
-            self.config["radosgw"]["usage"]["max_shards"]
-        result["radosgw_usage_max_user_shards"] = \
-            self.config["radosgw"]["usage"]["user_shards"]
-        result["radosgw_static_website"] = \
-            self.config["radosgw"]["static_website"]
-        result["radosgw_dns_s3website_name"] = \
-            self.config["radosgw"]["dns_s3website_name"]
-        result["ceph_facts_template"] = pathutils.resource(
-            "decapod_common", "facts", "ceph_facts_module.py.j2")
-        result["ceph_facts_template"] = str(result["ceph_facts_template"])
-
-        for family, values in self.config.get("os", {}).items():
-            for param, value in values.items():
-                parameter = {
-                    "name": ".".join([family, param]),
-                    "value": value
-                }
-                result["os_tuning_params"].append(parameter)
-
-        if "max_open_files" in self.config:
-            result["max_open_files"] = self.config["max_open_files"]
-
-        return result
+        return self.get_ceph_ansible_common_settings(
+            cluster, servers,
+            verify_ceph_version=bool(hints.get("ceph_version_verify"))
+        )
 
     def get_dynamic_inventory(self):
         if not self.playbook_config:

@@ -87,47 +87,6 @@ class AddRgw(playbook_plugin.CephAnsiblePlaybook):
         result = super().make_global_vars(cluster, servers, hints)
         result.update(data.global_vars)
 
-        result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
-        result["ceph_version_verify_packagename"] = \
-            self.config["ceph_version_verify_packagename"]
-
-        result.setdefault(
-            "radosgw_civetweb_port",
-            self.config["radosgw"]["port"]
-        )
-        result.setdefault(
-            "radosgw_civetweb_num_threads",
-            self.config["radosgw"]["num_threads"]
-        )
-        result.setdefault(
-            "radosgw_usage_log",
-            self.config["radosgw"]["usage"]["log"]
-        )
-        result.setdefault(
-            "radosgw_usage_log_tick_interval",
-            self.config["radosgw"]["usage"]["log_tick_interval"]
-        )
-        result.setdefault(
-            "radosgw_usage_log_flush_threshold",
-            self.config["radosgw"]["usage"]["log_flush_threshold"]
-        )
-        result.setdefault(
-            "radosgw_usage_max_shards",
-            self.config["radosgw"]["usage"]["max_shards"]
-        )
-        result.setdefault(
-            "radosgw_usage_max_user_shards",
-            self.config["radosgw"]["usage"]["user_shards"]
-        )
-        result.setdefault(
-            "radosgw_static_website",
-            self.config["radosgw"]["static_website"]
-        )
-        result.setdefault(
-            "radosgw_dns_s3website_name",
-            self.config["radosgw"]["dns_s3website_name"]
-        )
-
         return result
 
     def make_inventory(self, cluster, data, servers, hints):

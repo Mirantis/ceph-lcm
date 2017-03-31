@@ -115,9 +115,6 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
         result["dmcrypt_journal_collocation"] = False
         result["dmcrypt_dedicated_journal"] = False
         result["raw_multi_journal"] = False
-        result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
-        result["ceph_version_verify_packagename"] = \
-            self.config["ceph_version_verify_packagename"]
         if hints["dmcrypt"]:
             if hints["collocation"]:
                 result["dmcrypt_journal_collocation"] = True
@@ -127,9 +124,6 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
             result["journal_collocation"] = True
         else:
             result["raw_multi_journal"] = True
-
-        if "journal_size" not in result:
-            result["journal_size"] = self.config["journal"]["size"]
 
         return result
 

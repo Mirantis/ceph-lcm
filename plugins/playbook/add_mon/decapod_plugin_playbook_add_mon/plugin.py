@@ -98,10 +98,6 @@ class AddMon(playbook_plugin.CephAnsiblePlaybook):
         result = super().make_global_vars(cluster, servers, hints)
         result.update(data.global_vars)
 
-        result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
-        result["ceph_version_verify_packagename"] = \
-            self.config["ceph_version_verify_packagename"]
-
         return result
 
     def get_dynamic_inventory(self):
