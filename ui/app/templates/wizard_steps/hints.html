@@ -8,6 +8,7 @@
       *ngFor="let hint of selectedPlaybook.hints"
       [scheme]="addHintValue(hint)"
       (callback)="registerHint($event)"
+      [submits]="['#next', '#save']"
     ></hint>
   </div>
 </step>

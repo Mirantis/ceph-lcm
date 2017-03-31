@@ -24,6 +24,7 @@
               type="checkbox"
               (change)="toggleServer(server)"
               [checked]="isServerSelected(server)"
+              [submits]="'#save'"
               required
             > {{server.data.name|trim_by:60}}
           </label>

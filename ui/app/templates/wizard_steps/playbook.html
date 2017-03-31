@@ -14,6 +14,7 @@
             name="playbook"
             [value]="playbook.id"
             [checked]="model.data.playbook_id === playbook.id"
+            [submits]="['#next', '#save']"
             type="radio"
             required
           > {{playbook.name|trim_by:60}}

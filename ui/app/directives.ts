@@ -16,7 +16,7 @@
 */
 
 import { Component, Directive, Input, Output, EventEmitter, ViewChild,
-  AfterViewInit, HostListener } from '@angular/core';
+  AfterViewInit, HostListener, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { ErrorService } from './services/error';
 import * as jQuery from 'jquery';
 import * as _ from 'lodash';
@@ -159,7 +159,36 @@ export class Confirmation {
 
   @Input() confirmation = 'Are you sure?';
   @Output() confirmedClick = new EventEmitter();
-  @HostListener('click', ['$event']) onClick(e: any) {
+  @HostListener('click', ['$event']) onClick(e: MouseEvent) {
     Confirmation.bus.emit({confirmation: this.confirmation, callback: this.confirmedClick});
+  }
+}
+
+@Directive({
+  selector: '[submits]'
+})
+export class Submitter {
+  @Input('submits') submitterRef: string|string[];
+  @HostListener('keyup', ['$event']) onKeyUp(e: KeyboardEvent) {
+    if (e.keyCode === 13) {
+      this.clicker.emit();
+    }
+  }
+  clicker = new EventEmitter();
+  constructor(cdr: ChangeDetectorRef) {
+    this.clicker.subscribe(() => {
+      _.some(
+        _.flatten([this.submitterRef]),
+        (submittee: string) => {
+          let element = jQuery(submittee + ':enabled')[0];
+          if (!_.isEmpty(element)) {
+            element.click();
+            cdr.detectChanges();
+            return true;
+          }
+          return false;
+        }
+      );
+    });
   }
 }

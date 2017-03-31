@@ -8,6 +8,7 @@
       id="user_login"
       placeholder="Login"
       [(ngModel)]="model.data.login"
+      [submits]="'#save'"
       focused
       required
     >
@@ -21,6 +22,7 @@
       id="user_name"
       placeholder="Full Name"
       [(ngModel)]="model.data.full_name"
+      [submits]="'#save'"
       required
     >
   </div>
@@ -33,6 +35,7 @@
       id="user_email"
       placeholder="Email"
       [(ngModel)]="model.data.email"
+      [submits]="'#save'"
       required
     >
   </div>
@@ -43,6 +46,7 @@
       name="user_role"
       id="user_role"
       [(ngModel)]="model.data.role_id"
+      [submits]="'#save'"
       required
     >
       <option value=""></option>

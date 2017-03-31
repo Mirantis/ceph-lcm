@@ -7,6 +7,7 @@
       name="configuration_name"
       id="configuration_name"
       [(ngModel)]="model.data.name"
+      [submits]="'#next'"
       focused
       required
   >
@@ -18,11 +19,11 @@
       name="configuration_cluster"
       id="configuration_cluster"
       [(ngModel)]="model.data.cluster_id"
+      [submits]="'#next'"
     >
       <option
         *ngFor="let cluster of clusters"
         [value]="cluster.id"
-        (change)="cluster.data.name = $event.target.value"
       >
         {{cluster.data.name}}
       </option>

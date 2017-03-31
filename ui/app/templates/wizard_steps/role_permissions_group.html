@@ -9,8 +9,9 @@
             [name]="group"
             [value]="permission"
             [checked]="getGroupPermission(permission)"
-            (click)="toggleGroupPermission(permission)">
-            {{permission|deparametrize}}
+            (click)="toggleGroupPermission(permission)"
+            [submits]="['#next', '#save']"
+          >{{permission|deparametrize}}
         </label>
       </div>
     </div>
