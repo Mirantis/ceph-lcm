@@ -136,4 +136,16 @@ export class ClustersComponent implements OnInit {
         (error: any) => this.data.handleResponseError(error)
       );
   }
+
+  delete(cluster: Cluster) {
+    this.data.cluster().destroy(cluster.id)
+      .then(
+        () => {
+          this.shownClusterId = null;
+          this.shownCluster = null;
+          this.fetchData();
+        },
+        (error: any) => this.data.handleResponseError(error)
+      );
+  }
 }
