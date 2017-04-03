@@ -28,6 +28,7 @@ import { JSONString } from '../../pipes';
   templateUrl: './app/templates/wizard_steps/json_configuration.html'
 })
 export class JsonConfigurationStep extends WizardStepBase {
+  oldJsonConfiguration: string;
   jsonConfiguration: string;
 
   init() {
@@ -35,6 +36,7 @@ export class JsonConfigurationStep extends WizardStepBase {
     this.jsonConfiguration = new JSONString().transform(
       _.get(this.model, 'data.configuration')
     );
+    this.oldJsonConfiguration = this.jsonConfiguration;
   }
 
   constructor(wizard: WizardService, private data: DataService) {
@@ -57,12 +59,20 @@ export class JsonConfigurationStep extends WizardStepBase {
     }
   }
 
-  isValid() {
+  isJsonValid() {
     try {
       this.parseJSON(this.jsonConfiguration);
     } catch (e) {
       return false;
     }
     return true;
+  }
+
+  hasChanges() {
+    return this.jsonConfiguration !== this.oldJsonConfiguration;
+  }
+
+  isValid() {
+    return this.isJsonValid() && this.hasChanges();
   }
 }
