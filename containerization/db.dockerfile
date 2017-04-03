@@ -39,4 +39,5 @@ COPY containerization/files/mongod.conf               /etc/mongod.conf
 RUN chmod 0755 /usr/bin/moshell
 
 
+ENTRYPOINT ["mongod"]
 CMD ["--config", "/etc/mongod.conf"]
