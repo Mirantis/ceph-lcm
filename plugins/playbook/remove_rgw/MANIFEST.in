@@ -1,0 +1,2 @@
+include decapod_plugin_playbook_remove_rgw/config.yaml
+include decapod_plugin_playbook_remove_rgw/playbook.yaml
