@@ -13,7 +13,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Playbook plugin for add_rgw plugin for Decapod."""
+"""Playbook plugin for adding RGWs to the cluster."""
 
 
 from decapod_common import log
@@ -44,7 +44,7 @@ LOG = log.getLogger(__name__)
 
 class AddRgw(playbook_plugin.CephAnsiblePlaybook):
 
-    NAME = "add_rgw plugin for Decapod"
+    NAME = "Add Rados Gateway to the cluster"
     DESCRIPTION = DESCRIPTION
     PUBLIC = True
     REQUIRED_SERVER_LIST = True
