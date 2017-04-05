@@ -51,3 +51,5 @@ radosgw:
     user_shards: 1
   static_website: false
   dns_s3website_name: your.subdomain.tld
+
+restapi_port: 5000

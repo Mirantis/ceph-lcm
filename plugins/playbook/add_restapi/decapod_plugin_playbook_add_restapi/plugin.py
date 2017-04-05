@@ -13,7 +13,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Playbook plugin for adding RGWs to the cluster."""
+"""Playbook plugin for Add Ceph REST API host."""
 
 
 from decapod_common import log
@@ -23,9 +23,7 @@ from decapod_common.models import cluster_data
 from decapod_common.models import server
 
 
-DESCRIPTION = """\
-add_rgw plugin for Decapod
-""".strip()
+DESCRIPTION = "Add Ceph REST API host"
 """Plugin description."""
 
 HINTS_SCHEMA = {
@@ -42,9 +40,9 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class AddRgw(playbook_plugin.CephAnsiblePlaybook):
+class AddRestapi(playbook_plugin.CephAnsiblePlaybook):
 
-    NAME = "Add Rados Gateway to the cluster"
+    NAME = "Add Ceph REST API host"
     DESCRIPTION = DESCRIPTION
     PUBLIC = True
     REQUIRED_SERVER_LIST = True
@@ -61,7 +59,7 @@ class AddRgw(playbook_plugin.CephAnsiblePlaybook):
         servers = {srv.ip: srv for srv in servers}
 
         for name, group_vars in config["inventory"].items():
-            if name != "rgws" or not group_vars:
+            if name != "restapis" or not group_vars:
                 continue
             group_servers = [servers[ip] for ip in group_vars]
             cluster.add_servers(group_servers, name)
@@ -70,7 +68,7 @@ class AddRgw(playbook_plugin.CephAnsiblePlaybook):
             cluster.save()
 
         data = cluster_data.ClusterData.find_one(cluster.model_id)
-        data.global_vars.update(config["global_vars"])
+        data.global_vars = config["global_vars"]
         hostvars = config["inventory"].get("_meta", {}).get("hostvars", {})
         for hostname, values in hostvars.items():
             data.update_host_vars(hostname, values)
@@ -117,6 +115,6 @@ class AddRgw(playbook_plugin.CephAnsiblePlaybook):
 
         return {
             "mons": mons,
-            "rgws": servers,
+            "restapis": servers,
             "already_deployed": list(cluster_servers.values())
         }

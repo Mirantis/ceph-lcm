@@ -18,6 +18,6 @@
 - include: "{{ decapod_common_playbooks }}/plays/add_ceph_ansible_role.yaml"
 
 - hosts: osds
-  become: True
+  become: true
   roles:
   - ceph-osd

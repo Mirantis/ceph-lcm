@@ -1,0 +1,22 @@
+[Unit]
+Description=Ceph Rest Api
+After=network-online.target local-fs.target time-sync.target
+Wants=network-online.target local-fs.target time-sync.target
+PartOf=ceph.target
+
+[Service]
+LimitNOFILE=1048576
+LimitNPROC=1048576
+EnvironmentFile=-/etc/default/ceph
+ExecStart=/usr/bin/ceph-rest-api
+PrivateDevices=yes
+ProtectHome=true
+ProtectSystem=full
+PrivateTmp=true
+TasksMax=infinity
+Restart=on-failure
+StartLimitInterval=30s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

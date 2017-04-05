@@ -420,6 +420,7 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
             "radosgw_dns_s3website_name": config["radosgw"]["dns_s3website_name"],  # NOQA
             "ceph_version_verify_packagename": config["ceph_version_verify_packagename"],  # NOQA
             "ceph_version_verify": verify_ceph_version,
+            "ceph_restapi_port": config["restapi_port"],
             "journal_size": config["journal"]["size"]
         }
         result["ceph_stable_release_uca"] = result["ceph_stable_distro_source"]
