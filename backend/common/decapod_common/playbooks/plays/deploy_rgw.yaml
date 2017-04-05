@@ -1,0 +1,43 @@
+---
+# Copyright (c) 2017 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- include: "{{ decapod_common_playbooks }}/plays/add_ceph_ansible_role.yaml"
+
+- hosts: rgws
+  become: true
+  roles:
+  - ceph-rgw
+
+- hosts: rgws
+  become: true
+  tasks:
+  - name: Create dependencies directory for ceph.target
+    file:
+      path: /etc/systemd/system/ceph.target.wants
+      state: directory
+
+  - name: Create symlink for RGW service
+    file:
+      src: /lib/systemd/system/ceph-radosgw@.service
+      dest: "/etc/systemd/system/ceph.target.wants/ceph-radosgw@rgw.{{ ansible_hostname }}.service"
+      state: link
+
+  - name: Enable RGW service
+    systemd:
+      daemon_reload: yes
+      enabled: yes
+      state: started
+      name: "ceph-radosgw@rgw.{{ ansible_hostname }}"

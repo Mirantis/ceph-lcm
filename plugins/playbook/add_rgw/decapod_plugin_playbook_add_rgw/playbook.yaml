@@ -15,9 +15,4 @@
 # limitations under the License.
 
 
-- include: "{{ decapod_common_playbooks }}/plays/add_ceph_ansible_role.yaml"
-
-- hosts: rgws
-  become: True
-  roles:
-  - ceph-rgw
+- include: "{{ decapod_common_playbooks }}/plays/deploy_rgw.yaml"

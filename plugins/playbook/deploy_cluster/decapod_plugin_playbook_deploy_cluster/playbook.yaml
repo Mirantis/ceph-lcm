@@ -18,6 +18,8 @@
 - include: "{{ decapod_common_playbooks }}/plays/init.yaml"
 
 - include: "{{ decapod_common_playbooks }}/plays/deploy_mon.yaml"
+- include: "{{ decapod_common_playbooks }}/plays/deploy_rgw.yaml"
+- include: "{{ decapod_common_playbooks }}/plays/deploy_restapi.yaml"
 
 - hosts: agents
   become: True
@@ -34,17 +36,10 @@
   roles:
   - ceph-mds
 
-- hosts: rgws
-  become: True
-  roles:
-  - ceph-rgw
-
 - hosts: nfss
   become: True
   roles:
   - ceph-nfs
-
-- include: "{{ decapod_common_playbooks }}/plays/deploy_restapi.yaml"
 
 - hosts: rbdmirrors
   become: True
@@ -69,17 +64,3 @@
       daemon_reload: yes
       enabled: yes
       name: ceph.target
-
-# By default, ceph-ansible do not enable rgws so after restart
-# processes won't up.
-- hosts: rgws
-  become: true
-  tasks:
-  - name: Create dependencies directory for ceph-target
-    file: path=/etc/systemd/system/ceph.target.wants state=directory
-
-  - name: Create symlink for RGW service
-    file:
-      src: /lib/systemd/system/ceph-radosgw@.service
-      dest: "/etc/systemd/system/ceph.target.wants/ceph-radosgw@rgw.{{ ansible_hostname }}.service"
-      state: link
