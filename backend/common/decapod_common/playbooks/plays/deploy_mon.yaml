@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2016 Mirantis Inc.
+# Copyright (c) 2017 Mirantis Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,12 +15,17 @@
 # limitations under the License.
 
 
-- include: "{{ decapod_common_playbooks }}/plays/init.yaml"
-- include: "{{ decapod_common_playbooks }}/plays/ceph_version.yaml"
-
-- hosts: oldmons
+- hosts: mons
   become: true
   roles:
-  - ceph-fetch-keys
+  - ceph-mon
 
-- include: "{{ decapod_common_playbooks }}/plays/deploy_mon.yaml"
+- hosts: mons
+  become: true
+  tasks:
+  - name: Enable monitors on startup
+    systemd:
+      daemon_reload: yes
+      enabled: yes
+      state: started
+      name: "ceph-mon@{{ ansible_hostname }}"
