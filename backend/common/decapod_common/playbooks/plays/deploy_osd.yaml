@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2016 Mirantis Inc.
+# Copyright (c) 2017 Mirantis Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,5 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- include: "{{ decapod_common_playbooks }}/plays/add_ceph_ansible_role.yaml"
 
-- include: "{{ decapod_common_playbooks }}/plays/deploy_osd.yaml"
+- hosts: osds
+  become: true
+  roles:
+  - ceph-osd

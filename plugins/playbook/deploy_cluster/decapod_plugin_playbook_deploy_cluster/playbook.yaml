@@ -18,6 +18,7 @@
 - include: "{{ decapod_common_playbooks }}/plays/init.yaml"
 
 - include: "{{ decapod_common_playbooks }}/plays/deploy_mon.yaml"
+- include: "{{ decapod_common_playbooks }}/plays/deploy_osd.yaml"
 - include: "{{ decapod_common_playbooks }}/plays/deploy_rgw.yaml"
 - include: "{{ decapod_common_playbooks }}/plays/deploy_restapi.yaml"
 
@@ -25,11 +26,6 @@
   become: True
   roles:
   - ceph-agent
-
-- hosts: osds
-  become: True
-  roles:
-  - ceph-osd
 
 - hosts: mdss
   become: True
