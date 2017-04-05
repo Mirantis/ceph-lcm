@@ -15,12 +15,7 @@
 # limitations under the License.
 
 
-- hosts: all
-  become: true
-  gather_facts: false
-  tasks:
-  - include: "{{ decapod_common_playbooks }}/init.yaml"
-
+- include: "{{ decapod_common_playbooks }}/plays/init.yaml"
 - include: "{{ decapod_common_playbooks }}/plays/ceph_version.yaml"
 
 - hosts: mons
