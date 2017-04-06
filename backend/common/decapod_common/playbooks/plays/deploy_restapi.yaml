@@ -31,8 +31,8 @@
       state: directory
 
   - name: Upload service file
-    copy:
-      src: "{{ decapod_path_files }}/ceph-rest-api.service"
+    template:
+      src: "{{ decapod_path_templates }}/ceph-rest-api.service.j2"
       dest: /lib/systemd/system/ceph-rest-api.service
 
   - name: Add rest-api to ceph-target.wants

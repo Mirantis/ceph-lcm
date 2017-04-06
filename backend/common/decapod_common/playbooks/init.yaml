@@ -21,6 +21,7 @@
     decapod_path_plays: "{{ decapod_common_playbooks }}/plays"
     decapod_path_facts: "{{ decapod_common_playbooks }}/facts"
     decapod_path_files: "{{ decapod_common_playbooks }}/files"
+    decapod_path_templates: "{{ decapod_common_playbooks }}/templates"
 
 - name: Include Decapod vars
   include_vars:

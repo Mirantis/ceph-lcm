@@ -30,26 +30,44 @@
   failed_when: false
   register: is_active_in_systemd
 
-- set_fact:
-    ceph_restapi_pid_number: "{{ ceph_restapi_pid.stdout | trim }}"
-
 - name: Get REST API IP
   shell: >
     netstat -nptl
-    | awk '$NF ~ /^{{ ceph_restapi_pid_number }}/ { sub(":.*", "", $4); print $4 }'
+    | awk '$NF ~ /^{{ ceph_restapi_pid.stdout }}/ { sub(":.*", "", $4); print $4 }'
   register: restapi_ip
 
 - name: Get REST API Port
   shell: >
     netstat -nptl
-    | awk '$NF ~ /^{{ ceph_restapi_pid_number }}/ { sub(".*:", "", $4); print $4 }'
+    | awk '$NF ~ /^{{ ceph_restapi_pid.stdout }}/ { sub(".*:", "", $4); print $4 }'
   register: restapi_port
 
 # By default ceph-ansible is running rest api with nohup (yes). Therefore
 # we have to kill it first.
-- name: Stop nohup ceph-rest-api process
-  shell: kill -15 "{{ ceph_restapi_pid_number }}"
-  when: ceph_restapi_pid.rc == 0 and is_active_in_systemd.rc != 0
+- name: SIGTERM nohup ceph-rest-api process
+  shell: kill -15 "{{ ceph_restapi_pid.stdout }}"
+  when: is_active_in_systemd.rc != 0
+
+- name: Wait until nohupped process is stopped
+  command: pgrep ceph-rest-api
+  register: ceph_restapi_pid
+  until: ceph_restapi_pid.rc != 0
+  failed_when: false
+  retries: 10
+  delay: 2
+  when: is_active_in_systemd.rc != 0
+
+- name: SIGKILL nohup ceph-rest-api process
+  command: kill -9 "{{ ceph_restapi_pid.stdout }}"
+  when: is_active_in_systemd.rc != 0 and ceph_restapi_pid.rc == 0
+
+- name: Wait until nohupped process is stopped
+  wait_for:
+    host: "{{ restapi_ip.stdout }}"
+    port: "{{ restapi_port.stdout }}"
+    timeout: 10
+    state: stopped
+  when: is_active_in_systemd.rc != 0
 
 - name: Restart REST API
   service:
