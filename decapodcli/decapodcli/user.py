@@ -46,6 +46,13 @@ def get(user_id, client):
     return client.get_user(str(user_id))
 
 
+@decorators.command(user)
+def self(client):
+    """Requests information on current user."""
+
+    return client.get_user_self()
+
+
 @click.argument("user-id", type=click.UUID)
 @decorators.command(user, True, True)
 def get_version_all(user_id, client, query_params):

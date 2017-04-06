@@ -162,3 +162,24 @@ class RoleView(generic.VersionedCRUDView):
         LOG.info("Role %s was deleted by %s", item_id, self.initiator_id)
 
         return item
+
+
+class RoleSelfView(generic.View):
+
+    NAME = "role_self"
+
+    decorators = [auth.AUTH.require_authentication]
+
+    @classmethod
+    def register_to(cls, application):
+        main_endpoint = generic.make_endpoint(RoleView.ENDPOINT, "self")
+        application.add_url_rule(
+            main_endpoint,
+            view_func=cls.as_view(cls.NAME), methods=["GET"])
+
+    def get(self):
+        role_model = auth.AUTH.get_current_user().role
+        if role_model is None:
+            raise http_exceptions.NotFound("Cannot find role")
+
+        return role_model

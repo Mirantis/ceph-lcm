@@ -58,6 +58,13 @@ def get(role_id, client):
     return client.get_role(str(role_id))
 
 
+@decorators.command(role)
+def self(client):
+    """Requests information on role of the current user."""
+
+    return client.get_role_self()
+
+
 @click.argument("role-id", type=click.UUID)
 @decorators.command(role, True, True)
 def get_version_all(role_id, client, query_params):

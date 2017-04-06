@@ -1138,6 +1138,22 @@ class V1Client(Client):
         url = self._make_url("/v1/user/{0}/".format(user_id))
         return self._session.get(url, **kwargs)
 
+    def get_user_self(self, **kwargs):
+        """This methods requests model of current user.
+
+        This method does ``GET /v1/user/self/`` endpoint call.
+
+        :return: User model of current user.
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
+        url = self._make_url("/v1/user/self/")
+        return self._session.get(url, **kwargs)
+
     @inject_pagination_params
     def get_user_versions(self, user_id, query_params, **kwargs):
         """This method fetches a list of all versions for a certain user
@@ -1282,6 +1298,22 @@ class V1Client(Client):
         """
 
         url = self._make_url("/v1/role/{0}/".format(role_id))
+        return self._session.get(url, **kwargs)
+
+    def get_role_self(self, **kwargs):
+        """This methods requests model of role of current user.
+
+        This method does ``GET /v1/role/self/`` endpoint call.
+
+        :return: Role model of current user.
+        :rtype: dict
+        :raises decapodlib.exceptions.DecapodError: if not possible to
+            connect to API.
+        :raises decapodlib.exceptions.DecapodAPIError: if API returns error
+            response.
+        """
+
+        url = self._make_url("/v1/role/self/")
         return self._session.get(url, **kwargs)
 
     @inject_pagination_params

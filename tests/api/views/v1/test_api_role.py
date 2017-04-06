@@ -359,3 +359,18 @@ def test_delete_role_with_active_user(sudo_client_v1, normal_user_with_role):
 
     response = sudo_client_v1.delete("/v1/role/{0}/".format(role_data["id"]))
     assert response.status_code == 200
+
+
+def test_get_role_self_wo_role(client_v1, normal_user):
+    client_v1.login(normal_user.login, "qwerty")
+    response = client_v1.get("/v1/role/self/")
+
+    assert response.status_code == 404
+
+
+def test_get_role_self(client_v1, normal_user_with_role):
+    client_v1.login(normal_user_with_role.login, "qwerty")
+    response = client_v1.get("/v1/role/self/")
+
+    assert response.status_code == 200
+    assert response.json["id"] == normal_user_with_role.role.model_id

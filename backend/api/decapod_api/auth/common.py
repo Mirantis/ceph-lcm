@@ -78,18 +78,23 @@ class Authenticator(metaclass=abc.ABCMeta):
 
         return user_model
 
+    @staticmethod
+    def get_current_user():
+        user_model = getattr(flask.g, "token", None)
+        user_model = getattr(user_model, "user", None)
+        if not user_model:
+            LOG.warning("Cannot find authenticated user model")
+            raise exceptions.Forbidden
+
+        return user_model
+
     def require_authorization(self, permission_class, permission_name):
         role.PermissionSet.add_permission(permission_class, permission_name)
 
         def outer_decorator(func):
             @functools.wraps(func)
             def inner_decorator(*args, **kwargs):
-                user_model = getattr(flask.g, "token", None)
-                user_model = getattr(user_model, "user", None)
-                if not user_model:
-                    LOG.warning("Cannot find authenticated user model")
-                    raise exceptions.Forbidden
-
+                user_model = self.get_current_user()
                 self.check_auth_permission(
                     user_model, permission_class, permission_name)
 

@@ -164,6 +164,23 @@ class UserView(generic.VersionedCRUDView):
         return item
 
 
+class UserSelfView(generic.View):
+
+    NAME = "user_self"
+
+    decorators = [auth.AUTH.require_authentication]
+
+    @classmethod
+    def register_to(cls, application):
+        main_endpoint = generic.make_endpoint(UserView.ENDPOINT, "self")
+        application.add_url_rule(
+            main_endpoint,
+            view_func=cls.as_view(cls.NAME), methods=["GET"])
+
+    def get(self):
+        return auth.AUTH.get_current_user()
+
+
 def make_password_message(model, password):
     """Creates email message for password."""
 

@@ -491,3 +491,11 @@ def test_user_filtering(sudo_client_v1, email, clean_user_collection):
         "/v1/user/?filter={0}".format(json.dumps({"login": {"ne": login}}))
     )
     assert response.json["total"] == 10
+
+
+def test_get_self(client_v1, normal_user):
+    client_v1.login(normal_user.login, "qwerty")
+    response = client_v1.get("/v1/user/self/")
+
+    assert response.status_code == 200
+    assert response.json["id"] == normal_user.model_id
