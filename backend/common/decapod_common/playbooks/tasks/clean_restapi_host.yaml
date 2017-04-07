@@ -1,0 +1,59 @@
+---
+# Copyright (c) 2017 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- name: Is running by systemd
+  command: systemctl is-active ceph-rest-api
+  failed_when: false
+  register: is_active_in_systemd
+
+- name: SIGTERM nohupped process
+  command: pkill -TERM ceph-rest-api
+  failed_when: false
+  register: sigterm_result
+  when: is_active_in_systemd.rc != 0
+
+- name: Wait untill nohupped process is stopped
+  command: pgrep ceph-rest-api
+  register: ceph_restapi_pid.rc
+  until: ceph_restapi_pid.rc != 0
+  failed_when: false
+  retries: 10
+  delay: 2
+  when: is_active_in_systemd.rc != 0
+
+- name: SIGKILL nohupped process
+  command: pkill -KILL ceph-rest-api
+  when: is_active_in_systemd.rc != 0 and ceph_restapi_pid.rc == 0
+
+- name: Stop SystemD unit
+  service:
+    name: ceph-rest-api.service
+    state: stopped
+    enabled: no
+
+- name: Remove SystemD unit
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+  - /lib/systemd/system/ceph-rest-api.service
+  - /etc/systemd/system/ceph.target.wants/ceph-rest-api.service
+
+- name: Remove Rest API directory
+  file:
+    path: /var/lib/ceph/restapi
+    state: absent

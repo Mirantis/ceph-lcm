@@ -1,0 +1,2 @@
+include decapod_plugin_playbook_remove_restapi/config.yaml
+include decapod_plugin_playbook_remove_restapi/playbook.yaml

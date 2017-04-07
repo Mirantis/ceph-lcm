@@ -24,6 +24,7 @@ The section contains the following topics:
    playbook-plugins/plugin-add-rgw.rst
    playbook-plugins/plugin-remove-rgw.rst
    playbook-plugins/plugin-add-restapi.rst
+   playbook-plugins/plugin-remove-restapi.rst
    playbook-plugins/plugin-purge-cluster.rst
    playbook-plugins/plugin-telegraf-integration.rst
    playbook-plugins/plugin-purge-telegraf.rst
