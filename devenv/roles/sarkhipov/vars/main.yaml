@@ -26,41 +26,29 @@ stow_dotfiles:
   - vim
 
 aliases:
-  - name: g
-    value: git
-  - name: v
-    value: nvim
-  - name: vim
-    value: nvim
-  - name: mkdir
-    value: mkdir -pv
-  - name: gst
-    value: g s
-  - name: gdf
-    value: g df
-  - name: t
-    value: tig
-  - name: ta
-    value: tig --all
-  - name: ag
-    value: ag --color -fS
-  - name: dc
-    value: docker-compose -f /vagrant/docker-compose.yml -p decapod
-  - name: dcd
-    value: docker-compose -f /vagrant/docker-compose.yml -f /vagrant/docker-compose.dev.yml -p decapod
+  g: git
+  v: nvim
+  vim: nvim
+  mkdir: mkdir -pv
+  gst: g s
+  gs: g s
+  gdf: g df
+  t: tig
+  ta: tig --all
+  ag: ag --color -fS
+  dc: docker-compose -f /vagrant/docker-compose.yml -p decapod
+  dcd: docker-compose -f /vagrant/docker-compose.yml -f /vagrant/docker-compose.dev.yml -p decapod
+
+oneliners:
+  dal: dcd exec -T admin decapod execution log "$1" | less
+  dam: dcd exec -T admin decapod-admin migration apply
+  dab: dcd exec admin bash
 
 env_vars:
-  - name: NVIM_TUI_ENABLE_TRUE_COLOR
-    value: 1
-  - name: NVIM_TUI_ENABLE_CURSOR_SHAPE
-    value: 1
-  - name: EDITOR
-    value: nvim
-  - name: PYTHONSTARTUP
-    value: $HOME/.pythonrc
-  - name: DECAPOD_URL
-    value: 'http://127.0.0.1:9999'
-  - name: DECAPOD_LOGIN
-    value: root
-  - name: DECAPOD_PASSWORD
-    value: root
+  NVIM_TUI_ENABLE_CURSOR_SHAPE: 1
+  NVIM_TUI_ENABLE_TRUE_COLOR: 1
+  EDITOR: nvim
+  PYTHONSTARTUP: $HOME/.pythonrc
+  DECAPOD_URL: http://127.0.0.1:9999
+  DECAPOD_LOGIN: root
+  DECAPOD_PASSWORD: root

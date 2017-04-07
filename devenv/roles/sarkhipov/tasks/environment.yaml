@@ -20,12 +20,20 @@
     dest: "{{ ansible_env.HOME }}/.bashrc"
     marker: "# {mark} ANSIBLE MANAGED SARKHIPOV"
     content: |
-      {% for item in env_vars %}
-      export {{ item.name }}="{{ item.value }}"
+      {% for name, body in env_vars.items() %}
+      export {{ name }}="{{ body }}"
       {% endfor %}
 
-      {% for item in aliases %}
-      alias {{ item.name }}={{ item.value | string | quote }}
+      {% for name, body in aliases.items() %}
+      alias {{ name }}={{ body | string | quote }}
+      {% endfor %}
+
+      {% for name, body in oneliners.items() %}
+      {{ name }}() {
+        {{ body }}
+      }
+      export -f {{ name }}
+
       {% endfor %}
 
 - name: Set local timezone
