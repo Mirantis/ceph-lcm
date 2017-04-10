@@ -421,7 +421,21 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
             "ceph_version_verify_packagename": config["ceph_version_verify_packagename"],  # NOQA
             "ceph_version_verify": verify_ceph_version,
             "ceph_restapi_port": config["restapi_port"],
-            "journal_size": config["journal"]["size"]
+            "journal_size": config["journal"]["size"],
+            "ceph_nfs_export_id": config["nfs"]["ganesha"]["export_id"],
+            "ceph_nfs_pseudo_path": config["nfs"]["ganesha"]["pseudo_path"],
+            "ceph_nfs_protocols": config["nfs"]["ganesha"]["protocols"],
+            "ceph_nfs_access_type": config["nfs"]["ganesha"]["access_type"],
+            "ceph_nfs_log_file": config["nfs"]["ganesha"]["log_file"],
+            "ceph_nfs_ceph_export_id": config["nfs"]["ceph"]["export_id"],
+            "ceph_nfs_ceph_pseudo_path": config["nfs"]["ceph"]["pseudo_path"],
+            "ceph_nfs_ceph_protocols": config["nfs"]["ceph"]["protocols"],
+            "ceph_nfs_ceph_access_type": config["nfs"]["ceph"]["access_type"],
+            "ceph_nfs_rgw_export_id": config["nfs"]["rgw"]["export_id"],
+            "ceph_nfs_rgw_pseudo_path": config["nfs"]["rgw"]["pseudo_path"],
+            "ceph_nfs_rgw_protocols": config["nfs"]["rgw"]["protocols"],
+            "ceph_nfs_rgw_access_type": config["nfs"]["rgw"]["access_type"],
+            "ceph_nfs_rgw_user": config["nfs"]["rgw"]["user"]
         }
         result["ceph_stable_release_uca"] = result["ceph_stable_distro_source"]
 

@@ -53,3 +53,22 @@ radosgw:
   dns_s3website_name: your.subdomain.tld
 
 restapi_port: 5000
+
+nfs:
+  ganesha:
+    export_id: 20134
+    pseudo_path: /cephfile
+    protocols: "3,4"
+    access_type: "RW"
+    log_file: /var/log/ganesha.log
+  ceph:
+    export_id: 20134
+    pseudo_path: /cephobject
+    protocols: "3,4"
+    access_type: RW
+  rgw:
+    export_id: 20134
+    pseudo_path: /ceph
+    protocols: "3,4"
+    access_type: RW
+    user: cephnfs

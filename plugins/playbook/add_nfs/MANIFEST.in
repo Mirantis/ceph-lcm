@@ -1,0 +1,2 @@
+include decapod_plugin_playbook_add_nfs/config.yaml
+include decapod_plugin_playbook_add_nfs/playbook.yaml
