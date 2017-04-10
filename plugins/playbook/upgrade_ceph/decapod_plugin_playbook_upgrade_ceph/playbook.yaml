@@ -18,11 +18,8 @@
 # Please check https://github.com/asheplyakov/mos9-ceph-upgrade as a
 # standalone solution.
 
-- hosts: all
-  become: true
-  gather_facts: false
-  tasks:
-  - include: "{{ decapod_common_playbooks }}/plays/init.yaml"
+
+- include: "{{ decapod_common_playbooks }}/plays/init.yaml"
 
 
 - hosts:
@@ -39,6 +36,13 @@
   - include: "{{ playbook_dir }}/tasks/timesync.yaml"
     when: do_timesync
 
+  - include: "{{ playbook_dir }}/tasks/packages_version_check_p1.yaml"
+
+- hosts:
+  - mons
+  - osds
+  tasks:
+  - include: "{{ playbook_dir }}/tasks/packages_version_check_p2.yaml"
   - include: "{{ playbook_dir }}/tasks/get_packages.yaml"
 
 
@@ -54,7 +58,7 @@
       daemon "mon.{{ ansible_hostname }}" version
     register: running_mon_version
 
-  - include: "{{ decapod_common_playbooks }}/tasks/restart_mon.yaml"
+  - include: "{{ playbook_dir }}/tasks/restart_mon.yaml"
     when: "{{ (running_mon_version.stdout | from_json).version != ceph_candidate_package_version.stdout }}"
 
 
@@ -69,7 +73,7 @@
   serial: 1
   tasks:
   - include: "{{ playbook_dir }}/tasks/install_packages.yaml"
-  - include: "{{ decapod_common_playbooks }}/tasks/restart_osd.yaml"
+  - include: "{{ playbook_dir }}/tasks/restart_osd.yaml"
 
 - hosts: clients
   become: true

@@ -1,0 +1,86 @@
+---
+# Copyright (c) 2017 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- include: "{{ decapod_common_playbooks }}/tasks/set_ceph_facts.yaml"
+
+- name: find out ceph user
+  command: >
+    sed -rne
+    '/^\s*exec\s+.*ceph-osd/ s/^.*--setuser\s+([^[:space:]]+).*$/\1/p'
+    /etc/init/ceph-osd.conf
+  register: ceph_user
+
+- name: find out ceph group
+  command: >
+    sed -rne
+    '/^\s*exec\s+.*ceph-osd/ s/^.*--setgroup\s+([^[:space:]]+).*$/\1/p'
+    /etc/init/ceph-osd.conf
+  register: ceph_group
+
+- name: disable data rebalancing and scrubbing
+  command: ceph --cluster "{{ cluster }}" osd set "{{ item }}"
+  with_items:
+    - noout
+    - noscrub
+    - nodeep-scrub
+  delegate_to: "{{ mon_host }}"
+
+
+- block:
+  - name: Restart OSDs
+    include: "{{ playbook_dir }}/tasks/restart_single_osd.yaml"
+    with_items: "{{ osd_numbers }}"
+    loop_control:
+      loop_var: osd_number
+  always:
+  - block:
+    - name: find out final OSD map flags, part 1
+      command: ceph osd getmap -o /tmp/osdmap_fin.bin
+      delegate_to: "{{ mon_host }}"
+      when: inventory_hostname == groups.osds[-1]
+
+    - name: find out final OSD map flags, part 2
+      shell: >
+        osdmaptool --print /tmp/osdmap_fin.bin
+        | awk '/^flags/ { gsub(",", "\",\"", $2); print "[\"" $2 "\"]" }'
+      register: osdmap_final_flags
+      delegate_to: "{{ mon_host }}"
+      when: inventory_hostname == groups.osds[-1]
+
+    - name: reenable data rebalancing and scrubbing
+      command: ceph osd unset "{{ item }}"
+      delegate_to: "{{ mon_host }}"
+      with_items:
+      - noout
+      - noscrub
+      - nodeep-scrub
+      when:
+      - inventory_hostname == groups.osds[-1]
+      - "{{ item in (osdmap_final_flags.stdout | default([]) | from_json) }}"
+    always:
+    - name: remove OSD map temporary file
+      file:
+        path: /tmp/osdmap_fin.bin
+        state: absent
+
+- name: reenable data rebalancing and scrubbing
+  command: ceph --cluster "{{ cluster }}" osd unset "{{ item }}"
+  with_items:
+    - noout
+    - noscrub
+    - nodeep-scrub
+  delegate_to: "{{ mon_host }}"
