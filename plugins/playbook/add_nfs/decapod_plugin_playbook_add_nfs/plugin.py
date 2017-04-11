@@ -47,6 +47,12 @@ HINTS_SCHEMA = {
         "typename": "boolean",
         "type": "boolean",
         "default_value": False
+    },
+    "deploy_rgw": {
+        "description": "Deploy Rados Gateway on the same machines",
+        "typename": "boolean",
+        "type": "boolean",
+        "default_value": True
     }
 }
 """Schema for playbook hints."""
@@ -132,9 +138,14 @@ class AddNfs(playbook_plugin.CephAnsiblePlaybook):
             for item in cluster.configuration.state if item["role"] == "mons"
         ]
 
+        rgws = []
+        if hints["deploy_rgw"]:
+            rgws = servers
+
         return {
             "mons": mons,
             "nfss": servers,
+            "rgws": rgws,
             "already_deployed": list(cluster_servers.values())
         }
 

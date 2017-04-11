@@ -23,9 +23,7 @@ from decapod_common.models import cluster_data
 from decapod_common.models import server
 
 
-DESCRIPTION = """\
-add_rgw plugin for Decapod
-""".strip()
+DESCRIPTION = "Add Rados Gateway to the cluster"
 """Plugin description."""
 
 HINTS_SCHEMA = {

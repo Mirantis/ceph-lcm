@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-- include: "{{ decapod_common_playbooks }}/plays/add_ceph_ansible_role.yaml"
+- include: "{{ decapod_common_playbooks }}/plays/deploy_rgw.yaml"
 
 - hosts: nfss
   become: true
