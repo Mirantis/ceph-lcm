@@ -15,6 +15,9 @@
 # limitations under the License.
 
 
+- include: "{{ decapod_common_playbooks }}/init.yaml"
+  when: decapod_initialized | default(false) | bool
+
 - name: Is running by systemd
   command: systemctl is-active ceph-rest-api
   failed_when: false

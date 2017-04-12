@@ -13,9 +13,3 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
-- hosts: rgws
-  become: true
-  tasks:
-  - include: "{{ decapod_common_playbooks }}/tasks/clean_rgw_host.yaml"

@@ -19,14 +19,9 @@
 
 - hosts: restapis
   become: true
-  vars:
+  roles:
+  - role: ceph-client
     user_config: false
-  roles:
-  - ceph-client
-
-- hosts: restapis
-  become: true
-  roles:
   - ceph-restapi
 
 - hosts: restapis

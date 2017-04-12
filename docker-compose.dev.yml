@@ -43,6 +43,7 @@ services:
     - ./plugins/playbook/purge_cluster/decapod_plugin_playbook_purge_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_cluster:ro
     - ./plugins/playbook/purge_telegraf/decapod_plugin_playbook_purge_telegraf:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_telegraf:ro
     - ./plugins/playbook/remove_mon/decapod_plugin_playbook_remove_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_mon:ro
+    - ./plugins/playbook/remove_nfs/decapod_plugin_playbook_remove_nfs:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_nfs:ro
     - ./plugins/playbook/remove_osd/decapod_plugin_playbook_remove_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_osd:ro
     - ./plugins/playbook/remove_restapi/decapod_plugin_playbook_remove_restapi:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_restapi:ro
     - ./plugins/playbook/remove_rgw/decapod_plugin_playbook_remove_rgw:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_rgw:ro
@@ -68,6 +69,7 @@ services:
     - ./plugins/playbook/purge_cluster/decapod_plugin_playbook_purge_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_cluster:ro
     - ./plugins/playbook/purge_telegraf/decapod_plugin_playbook_purge_telegraf:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_telegraf:ro
     - ./plugins/playbook/remove_mon/decapod_plugin_playbook_remove_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_mon:ro
+    - ./plugins/playbook/remove_nfs/decapod_plugin_playbook_remove_nfs:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_nfs:ro
     - ./plugins/playbook/remove_osd/decapod_plugin_playbook_remove_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_osd:ro
     - ./plugins/playbook/remove_restapi/decapod_plugin_playbook_remove_restapi:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_restapi:ro
     - ./plugins/playbook/remove_rgw/decapod_plugin_playbook_remove_rgw:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_rgw:ro
@@ -94,6 +96,7 @@ services:
     - ./plugins/playbook/purge_cluster/decapod_plugin_playbook_purge_cluster:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_cluster:ro
     - ./plugins/playbook/purge_telegraf/decapod_plugin_playbook_purge_telegraf:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_purge_telegraf:ro
     - ./plugins/playbook/remove_mon/decapod_plugin_playbook_remove_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_mon:ro
+    - ./plugins/playbook/remove_nfs/decapod_plugin_playbook_remove_nfs:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_nfs:ro
     - ./plugins/playbook/remove_osd/decapod_plugin_playbook_remove_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_osd:ro
     - ./plugins/playbook/remove_restapi/decapod_plugin_playbook_remove_restapi:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_restapi:ro
     - ./plugins/playbook/remove_rgw/decapod_plugin_playbook_remove_rgw:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_remove_rgw:ro
