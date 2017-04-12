@@ -43,16 +43,16 @@ HINTS_SCHEMA = {
         "default_value": True
     },
     "object_access": {
-        "description": "Enable NFS object access (nodes should be RGWs)",
-        "typename": "boolean",
-        "type": "boolean",
-        "default_value": False
-    },
-    "deploy_rgw": {
-        "description": "Deploy Rados Gateway on the same machines",
+        "description": "Enable NFS object access",
         "typename": "boolean",
         "type": "boolean",
         "default_value": True
+    },
+    "dont_deploy_rgw": {
+        "description": "Do not deploy Rados Gateway",
+        "typename": "boolean",
+        "type": "boolean",
+        "default_value": False
     }
 }
 """Schema for playbook hints."""
@@ -137,10 +137,7 @@ class AddNfs(playbook_plugin.CephAnsiblePlaybook):
             cluster_servers[item["server_id"]]
             for item in cluster.configuration.state if item["role"] == "mons"
         ]
-
-        rgws = []
-        if hints["deploy_rgw"]:
-            rgws = servers
+        rgws = servers if not hints["dont_deploy_rgw"] else []
 
         return {
             "mons": mons,

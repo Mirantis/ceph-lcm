@@ -17,6 +17,27 @@
 
 - include: "{{ decapod_common_playbooks }}/plays/deploy_rgw.yaml"
 
+
+- hosts: nfss
+  become: true
+  tasks:
+  - name: check if Rados Gateway is running
+    command: pgrep radosgw
+    register: radosgw_pid
+    failed_when: false
+
+  - name: check if Rados Gateway keyring is present
+    stat:
+      path: "/var/lib/ceph/radosgw/{{ cluster }}-rgw.{{ ansible_hostname }}/keyring"
+    register: keyring_stat
+    when: radosgw_pid.rc != 0
+
+  - name: fail if Rados Gateway is not installed
+    fail:
+      msg: Rados Gateway is required for NFS Gateway
+    when: not(radosgw_pid.rc == 0 or keyring_stat.stat.exists)
+
+
 - hosts: nfss
   become: true
   roles:
