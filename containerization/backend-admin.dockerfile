@@ -56,6 +56,7 @@ RUN set -x \
     libpython2.7 \
     libssl-dev \
     libtool \
+    locales \
     make \
     mongodb-org-tools \
     nano \
