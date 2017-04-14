@@ -94,7 +94,9 @@ CONFIG_OPTIONS = {
     "record_host_keys": False,
     "retry_files_enabled": False,
     "timeout": 10,
-    "transport": "smart"
+    "transport": "smart",
+    "error_on_undefined_vars": True,
+    "retry_files_enabled": False
 }
 
 SSH_CONFIG_OPTIONS = {
