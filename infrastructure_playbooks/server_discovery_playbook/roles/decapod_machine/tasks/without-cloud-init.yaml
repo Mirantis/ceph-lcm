@@ -91,3 +91,4 @@
 - name: Run rc.local
   become: true
   command: /etc/rc.local
+  ignore_errors: true
