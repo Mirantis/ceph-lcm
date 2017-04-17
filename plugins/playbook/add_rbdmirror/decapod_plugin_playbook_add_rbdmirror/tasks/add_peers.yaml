@@ -15,18 +15,21 @@
 # limitations under the License.
 
 
-- set_fact:
-    clustername: "{{ mirror_data.key }}"
-    poolnames: "{{ mirror_data.value | unique }}"
-
-- name: enable pool mirroring
+- name: find out peers for remote cluster
   command: >
     rbd --cluster {{ cluster | quote }} mirror pool
-    enable {{ item | quote }} pool
-  with_items: "{{ poolnames }}"
+    info {{ poolname | quote }}
+    --format json
+  register: pool_info
 
-- include: "{{ playbook_dir }}/tasks/add_peers.yaml"
-  when: add_peers
-  with_items: "{{ poolnames }}"
-  loop_control:
-    loop_var: poolname
+- name: add cluster peers
+  command: >
+    rbd --cluster {{ cluster | quote }} mirror pool
+    peer add {{ poolname | quote }}
+    {{
+       ('client.%s@%s' | format(ceph_rbd_mirror_remote_user, clustername))
+       | quote
+    }}
+  when: >
+    clustername not in
+    (pool_info.stdout | from_json | json_query("peers[*].cluster_name"))

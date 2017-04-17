@@ -1,0 +1,42 @@
+---
+# Copyright (c) 2016 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- include: "{{ decapod_common_playbooks }}/init.yaml"
+  when: decapod_initialized | default(false) | bool
+
+- name: clean out pool
+  include: "{{ decapod_common_playbooks }}/tasks/clean_rbdmirror_pool.yaml"
+  with_items: "{{ rbd_mirrors | unique }}"
+  loop_control:
+    loop_var: poolname
+
+- name: Is running by systemd
+  command: systemctl is-active ceph-rbd-mirror@admin
+  failed_when: false
+  register: is_active_in_systemd
+
+- name: stop rbd mirror daemon
+  service:
+    name: ceph-rbd-mirror@admin
+    state: stopped
+    enabled: no
+  when: is_active_in_systemd.rc == 0
+
+- name: remove rbd-mirror package
+  apt:
+    name: rbd-mirror
+    state: absent

@@ -1,0 +1,45 @@
+---
+# Copyright (c) 2016 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- name: find out mirroring data, part 1
+  command: >
+    rbd --cluster {{ cluster | quote }} mirror pool
+    info {{ poolname | quote }}
+    --format json
+  register: pool_data
+
+- name: remove peers
+  command: >
+    rbd --cluster {{ cluster | quote }} mirror pool
+    peer remove {{ poolname | quote }} {{ item | quote }}
+  register: peers_removed
+  with_items: "{{ pool_data.stdout | from_json | json_query('peers[0].uuid') }}"
+  when: pool_data.stdout | from_json | json_query('peers[0].uuid') | bool
+
+- name: find out mirroring data, part 2
+  command: >
+    rbd --cluster {{ cluster | quote }} mirror pool
+    info {{ poolname | quote }}
+    --format json
+  register: pool_data
+  when: not(peers_removed | skipped)
+
+- name: disable mirroring if no peers are available
+  command: >
+    rbd --cluster {{ cluster | quote }} mirror pool
+    disable {{ poolname | quote }}
+  when: not(pool_data.stdout | from_json | json_query('peers[0].uuid') | bool)
