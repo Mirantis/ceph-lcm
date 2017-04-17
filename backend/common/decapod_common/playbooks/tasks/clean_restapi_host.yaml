@@ -47,6 +47,7 @@
     name: ceph-rest-api.service
     state: stopped
     enabled: no
+  when: is_active_in_systemd.rc == 0
 
 - name: Remove SystemD unit
   file:
