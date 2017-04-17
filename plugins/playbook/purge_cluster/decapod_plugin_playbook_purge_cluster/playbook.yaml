@@ -26,11 +26,9 @@
         state: stopped
       when: ansible_service_mgr == "systemd" and "mons" not in group_names
 
-
 - name: Stop MDSes
   hosts: mdss
   become: true
-  gather_facts: false
   tasks:
     - name: Stop MDS if systemd
       service:
@@ -38,42 +36,23 @@
         state: stopped
         enabled: no
 
-
 - name: Stop RGWs
   hosts: rgws
   become: true
-  gather_facts: false
   tasks:
-    - name: Stop RGW if systemd
-      service:
-        name: "ceph-radosgw@rgw.{{ ansible_hostname }}"
-        state: stopped
-        enabled: no
-
+  - include: "{{ decapod_common_playbooks }}/tasks/clean_rgw_host.yaml"
 
 - name: Stop RBD Mirrors
   hosts: rbdmirrors
   become: true
-  gather_facts: false
   tasks:
-    - name: Stop RGW if systemd
-      service:
-        name: "ceph-rbd-mirror@admin.service"
-        state: stopped
-        enabled: no
+  - include: "{{ decapod_common_playbooks }}/tasks/clean_rbdmirror_host.yaml"
 
-
-- name: Stop RBD Mirrors
+- name: Stop NFS gateways
   hosts: nfss
   become: true
-  gather_facts: false
   tasks:
-    - name: Stop NFS Ganesha if systemd
-      service:
-        name: nfs-ganesha
-        state: stopped
-        enabled: no
-
+  - include: "{{ decapod_common_playbooks }}/tasks/clean_nfs_host.yaml"
 
 - name: Clear REST APIs
   hosts: restapis
@@ -81,7 +60,6 @@
   gather_facts: false
   tasks:
   - include: "{{ decapod_common_playbooks }}/tasks/clean_restapi_host.yaml"
-
 
 - name: Clear OSDs
   hosts: osds
@@ -106,7 +84,6 @@
 - name: Remove ceph data
   become: true
   hosts: all
-  gather_facts: false
   vars:
     ceph_packages:
       - ceph
@@ -116,6 +93,8 @@
       - ceph-mds
       - ceph-release
       - ceph-radosgw
+      - radosgw
+      - rbd-mirror
     ceph_remaining_packages:
       - libcephfs1
       - librados2
