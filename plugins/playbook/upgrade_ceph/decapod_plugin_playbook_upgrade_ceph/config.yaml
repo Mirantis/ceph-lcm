@@ -16,7 +16,7 @@
 
 # Configuration for Ceph upgrade
 
-ntp_server: 0.pool.ntp.org
+ntp_server: pool.ntp.org
 mon:
   restart_delay: 10
   restart_attempts: 10

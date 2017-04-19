@@ -21,14 +21,40 @@
 - set_fact:
     restapi_startup_wait: "{{ (restapi | default(decapod_vars.rest_api)).startup_wait }}"
 
-- name: Get ceph-rest-api PID
-  command: pgrep ceph-rest-api
-  register: ceph_restapi_pid
-
 - name: Is running by systemd
   command: systemctl is-active ceph-rest-api
   failed_when: false
   register: is_active_in_systemd
+
+# By default ceph-ansible is running rest api with nohup (yes). Therefore
+# we have to kill it first.
+- name: SIGTERM nohup ceph-rest-api process
+  command: pkill -15 ceph-rest-api
+  when: is_active_in_systemd.rc != 0
+  failed_when: false
+
+- name: Wait until nohupped process is stopped
+  command: pgrep ceph-rest-api
+  register: ceph_restapi_pid
+  until: ceph_restapi_pid.rc != 0
+  failed_when: false
+  retries: 10
+  delay: 2
+  when: is_active_in_systemd.rc != 0
+
+- name: SIGKILL nohup ceph-rest-api process
+  command: pkill -9 ceph-rest-api
+  when: is_active_in_systemd.rc != 0 and ceph_restapi_pid.rc == 0
+
+- name: Restart REST API
+  service:
+    name: ceph-rest-api.service
+    state: restarted
+    sleep: 10
+
+- name: Get ceph-rest-api PID
+  command: pgrep ceph-rest-api
+  register: ceph_restapi_pid
 
 - name: Get REST API IP
   shell: >
@@ -41,39 +67,6 @@
     netstat -nptl
     | awk '$NF ~ /^{{ ceph_restapi_pid.stdout }}/ { sub(".*:", "", $4); print $4 }'
   register: restapi_port
-
-# By default ceph-ansible is running rest api with nohup (yes). Therefore
-# we have to kill it first.
-- name: SIGTERM nohup ceph-rest-api process
-  shell: kill -15 "{{ ceph_restapi_pid.stdout }}"
-  when: is_active_in_systemd.rc != 0
-
-- name: Wait until nohupped process is stopped
-  command: pgrep ceph-rest-api
-  register: ceph_restapi_pid
-  until: ceph_restapi_pid.rc != 0
-  failed_when: false
-  retries: 10
-  delay: 2
-  when: is_active_in_systemd.rc != 0
-
-- name: SIGKILL nohup ceph-rest-api process
-  command: kill -9 "{{ ceph_restapi_pid.stdout }}"
-  when: is_active_in_systemd.rc != 0 and ceph_restapi_pid.rc == 0
-
-- name: Wait until nohupped process is stopped
-  wait_for:
-    host: "{{ restapi_ip.stdout }}"
-    port: "{{ restapi_port.stdout }}"
-    timeout: 10
-    state: stopped
-  when: is_active_in_systemd.rc != 0
-
-- name: Restart REST API
-  service:
-    name: ceph-rest-api.service
-    state: restarted
-    sleep: 10
 
 - name: Wait for REST API to start up
   wait_for:

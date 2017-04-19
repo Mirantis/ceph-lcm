@@ -396,46 +396,47 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
 
         result = {
             "ceph_{0}".format(config["install"]["source"]): True,
-            "fsid": cluster.model_id,
-            "cluster": cluster.name,
-            "copy_admin_key": bool(config.get("copy_admin_key", False)),
-            "public_network": str(networkutils.get_public_network(servers)),
-            "os_tuning_params": [],
-            "nfs_file_gw": False,
-            "nfs_obj_gw": False,
-            "max_open_files": config["max_open_files"],
+            "ceph_nfs_access_type": config["nfs"]["ganesha"]["access_type"],
+            "ceph_nfs_ceph_access_type": config["nfs"]["ceph"]["access_type"],
+            "ceph_nfs_ceph_export_id": config["nfs"]["ceph"]["export_id"],
+            "ceph_nfs_ceph_protocols": config["nfs"]["ceph"]["protocols"],
+            "ceph_nfs_ceph_pseudo_path": config["nfs"]["ceph"]["pseudo_path"],
+            "ceph_nfs_export_id": config["nfs"]["ganesha"]["export_id"],
+            "ceph_nfs_log_file": config["nfs"]["ganesha"]["log_file"],
+            "ceph_nfs_protocols": config["nfs"]["ganesha"]["protocols"],
+            "ceph_nfs_pseudo_path": config["nfs"]["ganesha"]["pseudo_path"],
+            "ceph_nfs_rgw_access_type": config["nfs"]["rgw"]["access_type"],
+            "ceph_nfs_rgw_export_id": config["nfs"]["rgw"]["export_id"],
+            "ceph_nfs_rgw_protocols": config["nfs"]["rgw"]["protocols"],
+            "ceph_nfs_rgw_pseudo_path": config["nfs"]["rgw"]["pseudo_path"],
+            "ceph_nfs_rgw_user": config["nfs"]["rgw"]["user"],
+            "ceph_restapi_port": config["restapi_port"],
+            "ceph_stable_distro_source": config["install"]["distro_source"],
             "ceph_stable_release": config["install"]["release"],
             "ceph_stable_repo": config["install"]["repo"],
-            "ceph_stable_distro_source": config["install"]["distro_source"],
-            "ceph_stable_repo_keyserver": config["install"]["keyserver"],
             "ceph_stable_repo_key": config["install"]["repo_key"],
-            "radosgw_civetweb_port": config["radosgw"]["port"],
-            "radosgw_civetweb_num_threads": config["radosgw"]["num_threads"],
-            "radosgw_usage_log": config["radosgw"]["usage"]["log"],
-            "radosgw_usage_log_tick_interval": config["radosgw"]["usage"]["log_tick_interval"],  # NOQA
-            "radosgw_usage_log_flush_threshold": config["radosgw"]["usage"]["log_flush_threshold"],  # NOQA
-            "radosgw_usage_max_shards": config["radosgw"]["usage"]["max_shards"],  # NOQA
-            "radosgw_usage_max_user_shards": config["radosgw"]["usage"]["user_shards"],  # NOQA
-            "radosgw_static_website": config["radosgw"]["static_website"],
-            "radosgw_dns_s3website_name": config["radosgw"]["dns_s3website_name"],  # NOQA
+            "ceph_stable_repo_keyserver": config["install"]["keyserver"],
             "ceph_version_verify_packagename": config["ceph_version_verify_packagename"],  # NOQA
             "ceph_version_verify": verify_ceph_version,
-            "ceph_restapi_port": config["restapi_port"],
+            "cluster": cluster.name,
+            "common_single_host_mode": True,  # allow to deploy single OSD
+            "copy_admin_key": bool(config.get("copy_admin_key", False)),
+            "fsid": cluster.model_id,
             "journal_size": config["journal"]["size"],
-            "ceph_nfs_export_id": config["nfs"]["ganesha"]["export_id"],
-            "ceph_nfs_pseudo_path": config["nfs"]["ganesha"]["pseudo_path"],
-            "ceph_nfs_protocols": config["nfs"]["ganesha"]["protocols"],
-            "ceph_nfs_access_type": config["nfs"]["ganesha"]["access_type"],
-            "ceph_nfs_log_file": config["nfs"]["ganesha"]["log_file"],
-            "ceph_nfs_ceph_export_id": config["nfs"]["ceph"]["export_id"],
-            "ceph_nfs_ceph_pseudo_path": config["nfs"]["ceph"]["pseudo_path"],
-            "ceph_nfs_ceph_protocols": config["nfs"]["ceph"]["protocols"],
-            "ceph_nfs_ceph_access_type": config["nfs"]["ceph"]["access_type"],
-            "ceph_nfs_rgw_export_id": config["nfs"]["rgw"]["export_id"],
-            "ceph_nfs_rgw_pseudo_path": config["nfs"]["rgw"]["pseudo_path"],
-            "ceph_nfs_rgw_protocols": config["nfs"]["rgw"]["protocols"],
-            "ceph_nfs_rgw_access_type": config["nfs"]["rgw"]["access_type"],
-            "ceph_nfs_rgw_user": config["nfs"]["rgw"]["user"]
+            "max_open_files": config["max_open_files"],
+            "nfs_file_gw": False,
+            "nfs_obj_gw": False,
+            "os_tuning_params": [],
+            "public_network": str(networkutils.get_public_network(servers)),
+            "radosgw_civetweb_num_threads": config["radosgw"]["num_threads"],
+            "radosgw_civetweb_port": config["radosgw"]["port"],
+            "radosgw_dns_s3website_name": config["radosgw"]["dns_s3website_name"],  # NOQA
+            "radosgw_static_website": config["radosgw"]["static_website"],
+            "radosgw_usage_log": config["radosgw"]["usage"]["log"],
+            "radosgw_usage_log_flush_threshold": config["radosgw"]["usage"]["log_flush_threshold"],  # NOQA
+            "radosgw_usage_log_tick_interval": config["radosgw"]["usage"]["log_tick_interval"],  # NOQA
+            "radosgw_usage_max_shards": config["radosgw"]["usage"]["max_shards"],  # NOQA
+            "radosgw_usage_max_user_shards": config["radosgw"]["usage"]["user_shards"]  # NOQA
         }
         result["ceph_stable_release_uca"] = result["ceph_stable_distro_source"]
 

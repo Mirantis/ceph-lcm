@@ -95,8 +95,10 @@
       - ceph-radosgw
       - radosgw
       - rbd-mirror
+      - calamari-server
     ceph_remaining_packages:
       - libcephfs1
+      - libcephfs2
       - librados2
       - libradosstriper1
       - librbd1
@@ -104,61 +106,30 @@
       - python-rados
       - python-rbd
   tasks:
-    - name: Remove /var/lib/ceph
-      file:
-        path: /var/lib/ceph
-        state: absent
-
-    - name: purge ceph packages with yum
-      yum:
-        name: "{{ item }}"
-        state: absent
-      with_items: "{{ ceph_packages }}"
-      when: ansible_pkg_mgr == "yum"
-
-    - name: purge ceph packages with dnf
-      dnf:
-        name: "{{ item }}"
-        state: absent
-      with_items: "{{ ceph_packages }}"
-      when: ansible_pkg_mgr == "dnf"
-
-    - name: purge ceph packages with apt
+    - name: purge ceph packages
       apt:
         name: "{{ item }}"
         state: absent
+        purge: yes
+        autoremove: yes
       with_items: "{{ ceph_packages }}"
-      when: ansible_pkg_mgr == "apt"
-
-    - name: purge remaining ceph packages with yum
-      yum:
-        name: "{{ item }}"
-        state: absent
-      with_items: "{{ ceph_remaining_packages }}"
-      when: ansible_pkg_mgr == "yum"
-
-    - name: purge remaining ceph packages with dnf
-      dnf:
-        name: "{{ item }}"
-        state: absent
-      with_items: "{{ ceph_remaining_packages }}"
-      when: ansible_pkg_mgr == "dnf"
 
     - name: purge remaining ceph packages with apt
       apt:
         name: "{{ item }}"
         state: absent
+        purge: yes
+        autoremove: yes
       with_items: "{{ ceph_remaining_packages }}"
-      when: ansible_pkg_mgr == "apt"
 
-    - name: remove config
+    - name: remove ceph files
       file:
-        path: /etc/ceph
+        path: "{{ item }}"
         state: absent
-
-    - name: remove from SysV
-      command: "update-rc.d -f ceph remove"
-      when: ansible_distribution == "Ubuntu"
+      with_items:
+      - /var/lib/ceph
+      - /etc/ceph
+      - /var/log/ceph
 
     - name: Remove ceph fact
       file:

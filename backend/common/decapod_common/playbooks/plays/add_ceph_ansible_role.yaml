@@ -19,6 +19,6 @@
 - include: "{{ decapod_common_playbooks }}/plays/ceph_version.yaml"
 
 - hosts: mons
-  become: True
+  become: true
   roles:
   - ceph-fetch-keys

@@ -17,6 +17,26 @@
 
 - include: "{{ decapod_common_playbooks }}/plays/add_ceph_ansible_role.yaml"
 
+- hosts: mons
+  gather_facts: false
+  become: true
+  tasks:
+  - block:
+    - name: ensure restapi key is created
+      command: >
+        ceph --cluster {{ cluster | quote }} auth get-or-create
+        client.restapi osd 'allow *' mon 'allow *'
+        -o "/etc/ceph/{{ cluster }}.client.restapi.keyring"
+      args:
+        creates: /etc/ceph/{{ cluster }}.client.restapi.keyring
+
+    - name: copy rest api key to the ansible server
+      fetch:
+        src: /etc/ceph/{{ cluster }}.client.restapi.keyring
+        dest: "{{ fetch_directory }}/{{ fsid }}/etc/ceph/{{ cluster }}.client.restapi.keyring"
+        flat: yes
+    when: inventory_hostname == (groups["mons"] | last)
+
 - hosts: restapis
   become: true
   roles:

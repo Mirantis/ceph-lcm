@@ -146,9 +146,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         lv.disk_bus       = "virtio"
         lv.nic_model_type = "virtio"
 
-        lv.storage :file, :size => "5G", :bus => "sata"
-        lv.storage :file, :size => "5G", :bus => "sata"
-        lv.storage :file, :size => "5G", :bus => "sata"
+        5.times do
+          lv.storage :file, :size => "5G"
+          lv.storage :file, :size => "1G"
+        end
       end
     end
   end

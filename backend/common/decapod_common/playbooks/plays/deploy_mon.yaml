@@ -17,15 +17,42 @@
 
 - hosts: mons
   become: true
-  roles:
-  - ceph-mon
+  gather_facts: false
+
+  handlers:
+  - name: reload systemd units
+    command: systemctl daemon-reload
+
+  tasks:
+  - name: create dropin systemd unit directory
+    file:
+      path: /etc/systemd/system/ceph-mon@.service.d
+      state: directory
+
+  - name: disable ceph monitor start burst
+    template:
+      src: "{{ decapod_common_playbooks }}/templates/disable-burst.conf.j2"
+      dest: /etc/systemd/system/ceph-mon@.service.d/disable-burst.conf
+    notify: reload systemd units
+
 
 - hosts: mons
   become: true
+  roles:
+  - ceph-mon
+
+
+- hosts: mons
+  become: true
+  gather_facts: false
+
+  handlers:
+  - name: reload systemd units
+    command: systemctl daemon-reload
+
   tasks:
-  - name: Enable monitors on startup
-    systemd:
-      daemon_reload: yes
-      enabled: yes
-      state: started
-      name: "ceph-mon@{{ ansible_hostname }}"
+  - name: remove bursting for systemd
+    file:
+      path: /etc/systemd/system/ceph-mon@.service.d/disable-burst.conf
+      state: absent
+    notify: reload systemd units
