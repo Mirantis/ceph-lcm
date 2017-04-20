@@ -32,6 +32,7 @@ services:
     - ./backend/docker/decapod_docker:/usr/local/lib/python3.5/dist-packages/decapod_docker:ro
     - ./backend/monitoring/decapod_monitoring:/usr/local/lib/python2.7/dist-packages/decapod_monitoring:ro
     - ./plugins/alerts/emails/decapod_plugin_alerts_emails:/usr/local/lib/python3.5/dist-packages/decapod_plugin_alerts_emails:ro
+    - ./plugins/playbook/add_client/decapod_plugin_playbook_add_client:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_client:ro
     - ./plugins/playbook/add_mon/decapod_plugin_playbook_add_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_mon:ro
     - ./plugins/playbook/add_nfs/decapod_plugin_playbook_add_nfs:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_nfs:ro
     - ./plugins/playbook/add_osd/decapod_plugin_playbook_add_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_osd:ro
@@ -60,6 +61,7 @@ services:
     - ./backend/common/decapod_common:/usr/local/lib/python3.5/dist-packages/decapod_common:ro
     - ./backend/docker/decapod_docker:/usr/local/lib/python3.5/dist-packages/decapod_docker:ro
     - ./plugins/alerts/emails/decapod_plugin_alerts_emails:/usr/local/lib/python3.5/dist-packages/decapod_plugin_alerts_emails:ro
+    - ./plugins/playbook/add_client/decapod_plugin_playbook_add_client:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_client:ro
     - ./plugins/playbook/add_mon/decapod_plugin_playbook_add_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_mon:ro
     - ./plugins/playbook/add_nfs/decapod_plugin_playbook_add_nfs:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_nfs:ro
     - ./plugins/playbook/add_osd/decapod_plugin_playbook_add_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_osd:ro
@@ -89,6 +91,7 @@ services:
     - ./backend/controller/decapod_controller:/usr/local/lib/python3.5/dist-packages/decapod_controller:ro
     - ./backend/docker/decapod_docker:/usr/local/lib/python3.5/dist-packages/decapod_docker:ro
     - ./plugins/alerts/emails/decapod_plugin_alerts_emails:/usr/local/lib/python3.5/dist-packages/decapod_plugin_alerts_emails:ro
+    - ./plugins/playbook/add_client/decapod_plugin_playbook_add_client:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_client:ro
     - ./plugins/playbook/add_mon/decapod_plugin_playbook_add_mon:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_mon:ro
     - ./plugins/playbook/add_nfs/decapod_plugin_playbook_add_nfs:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_nfs:ro
     - ./plugins/playbook/add_osd/decapod_plugin_playbook_add_osd:/usr/local/lib/python3.5/dist-packages/decapod_plugin_playbook_add_osd:ro

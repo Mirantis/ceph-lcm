@@ -1,0 +1,2 @@
+include decapod_plugin_playbook_add_client/config.yaml
+include decapod_plugin_playbook_add_client/playbook.yaml
