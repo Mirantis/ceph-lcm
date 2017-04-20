@@ -1,0 +1,75 @@
+---
+# Copyright (c) 2017 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Mandatory parameters to use:
+# - purge_only_client - if we run it as a part ot removing 'clients' role.
+# - uninstall_packages - if we need to remove packages.
+# - apt_purge - if we need not only to remove packages but to purge them
+#               as well.
+
+
+- name: fail if node has blocking role
+  fail:
+    msg: >
+      Cannot remove client for {{ inventory_hostname }}
+      because it is still has role {{ blocked_by }}
+  when:
+  - purge_only_client
+  - blocked_by is defined and blocked_by
+
+- name: uninstall ceph packages
+  apt:
+    name: "{{ item }}"
+    state: absent
+    purge: "{{ apt_purge | ternary('yes', 'no') }}"
+    autoremove: "{{ apt_purge | ternary('yes', 'no') }}"
+  when: uninstall_packages
+  with_items:
+  - ceph
+  - ceph-common
+  - ceph-fs-common
+  - ceph-fuse
+  - ceph-mds
+  - ceph-release
+  - ceph-radosgw
+  - radosgw
+  - rbd-mirror
+  - calamari-server
+
+- name: uninstall ceph remaining packages
+  apt:
+    name: "{{ item }}"
+    state: absent
+    purge: "{{ apt_purge | ternary('yes', 'no') }}"
+    autoremove: "{{ apt_purge | ternary('yes', 'no') }}"
+  when: uninstall_packages
+  with_items:
+  - libcephfs1
+  - libcephfs2
+  - librados2
+  - libradosstriper1
+  - librbd1
+  - python-cephfs
+  - python-rados
+  - python-rbd
+
+- name: remove configuration and own files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+  - /var/lib/ceph
+  - /etc/ceph

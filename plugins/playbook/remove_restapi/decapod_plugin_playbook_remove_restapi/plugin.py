@@ -23,11 +23,6 @@ from decapod_common import playbook_plugin
 DESCRIPTION = "Remove Ceph REST API host"
 """Plugin description."""
 
-HINTS_SCHEMA = {
-
-}
-"""Schema for playbook hints."""
-
 LOG = log.getLogger(__name__)
 """Logger."""
 

@@ -1,0 +1,2 @@
+include decapod_plugin_playbook_remove_client/config.yaml
+include decapod_plugin_playbook_remove_client/playbook.yaml

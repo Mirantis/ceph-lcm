@@ -82,56 +82,21 @@
 
 
 - name: Remove ceph data
-  become: true
   hosts: all
+  become: true
   vars:
-    ceph_packages:
-      - ceph
-      - ceph-common
-      - ceph-fs-common
-      - ceph-fuse
-      - ceph-mds
-      - ceph-release
-      - ceph-radosgw
-      - radosgw
-      - rbd-mirror
-      - calamari-server
-    ceph_remaining_packages:
-      - libcephfs1
-      - libcephfs2
-      - librados2
-      - libradosstriper1
-      - librbd1
-      - python-cephfs
-      - python-rados
-      - python-rbd
+    purge_only_client: false
+    uninstall_packages: true
+    apt_purge: true
   tasks:
-    - name: purge ceph packages
-      apt:
-        name: "{{ item }}"
-        state: absent
-        purge: yes
-        autoremove: yes
-      with_items: "{{ ceph_packages }}"
+  - include: "{{ decapod_common_playbooks }}/tasks/purge_ceph_client.yaml"
 
-    - name: purge remaining ceph packages with apt
-      apt:
-        name: "{{ item }}"
-        state: absent
-        purge: yes
-        autoremove: yes
-      with_items: "{{ ceph_remaining_packages }}"
+  - name: Remove Ceph logs
+    file:
+      path: /var/log/ceph
+      state: absent
 
-    - name: remove ceph files
-      file:
-        path: "{{ item }}"
-        state: absent
-      with_items:
-      - /var/lib/ceph
-      - /etc/ceph
-      - /var/log/ceph
-
-    - name: Remove ceph fact
-      file:
-        path: "/etc/ansible/facts.d/ceph_{{ cluster }}.fact"
-        state: absent
+  - name: Remove Ceph facts
+    file:
+      path: "/etc/ansible/facts.d/ceph_{{ cluster }}.fact"
+      state: absent
