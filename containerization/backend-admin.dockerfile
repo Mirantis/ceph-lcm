@@ -94,13 +94,9 @@ RUN set -x \
   && ln -s /usr/local/bin/decapod /usr/local/bin/cli \
   && ln -s /usr/local/bin/decapod-admin /usr/local/bin/admin \
   && cp ./scripts/debug_snapshot.py /debug-snapshot \
-  && curl --silent --show-error --fail --location \
-    --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
-    "https://caddyserver.com/download/build?os=linux&arch=amd64&features=" | \
-    tar --no-same-owner -C /usr/bin/ -xz caddy \
+  && curl https://getcaddy.com | bash \
   && curl --silent --show-error --fail --location -o /usr/local/bin/jp https://github.com/jmespath/jp/releases/download/0.1.2/jp-linux-amd64 \
   && chmod +x /usr/local/bin/jp \
-  && chmod 0755 /usr/bin/caddy \
   && mkdir -p /www/monitoring /www/docs \
   && locale-gen "en_US.UTF-8" \
   && cd /project \
