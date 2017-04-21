@@ -83,6 +83,11 @@ CONFIG_OPTIONS = {
     "ask_pass": False,
     "ask_sudo_pass": False,
     "bin_ansible_callbacks": False,
+    "error_on_undefined_vars": True,
+    "fact_caching_connection": "/tmp/ansible_fact_cache",
+    "fact_caching": "jsonfile",
+    "fact_caching_timeout": 60 * 10,  # 10 minutes
+    "gathering": "smart",
     "gather_subset": "!facter,!ohai",
     "host_key_checking": False,
     "internal_poll_interval": "0.2",
@@ -93,10 +98,9 @@ CONFIG_OPTIONS = {
     "record_host_keys": False,
     "record_host_keys": False,
     "retry_files_enabled": False,
+    "retry_files_enabled": False,
     "timeout": 10,
-    "transport": "smart",
-    "error_on_undefined_vars": True,
-    "retry_files_enabled": False
+    "transport": "smart"
 }
 
 SSH_CONFIG_OPTIONS = {
