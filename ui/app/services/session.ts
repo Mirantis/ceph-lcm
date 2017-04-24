@@ -26,6 +26,7 @@ export class SessionService {
 
   tokenKey = 'auth_token';
   userIdKey = 'user_id';
+  roleIdKey = 'role_id';
 
   saveToken(token: Token) {
     let expiration = {
@@ -33,6 +34,7 @@ export class SessionService {
     };
     Cookies.set(this.tokenKey, token.id, expiration);
     Cookies.set(this.userIdKey, token.data.user.id, expiration);
+    Cookies.set(this.roleIdKey, token.data.user.data.role_id, expiration);
   }
 
   removeToken(): void {
@@ -45,5 +47,9 @@ export class SessionService {
 
   getLoggedUserId(): string {
     return Cookies.get(this.userIdKey);
+  }
+
+  getCurrentRoleId(): string {
+    return Cookies.get(this.roleIdKey);
   }
 }

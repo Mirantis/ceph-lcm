@@ -1,10 +1,10 @@
 <div class="header">
   <div class="row">
     <ul class="col-xs-12 navigation">
-      <li class="menu-item">
+      <li class="menu-item" [shownFor]="['view_user']">
         <a [routerLink]="['users']" routerLinkActive="active">Users</a>
       </li>
-      <li class="menu-item">
+      <li class="menu-item" [shownFor]="['view_role']">
         <a [routerLink]="['roles']" routerLinkActive="active">Roles</a>
       </li>
     </ul>

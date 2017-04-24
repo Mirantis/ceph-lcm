@@ -25,7 +25,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
 
 @Component({
-  templateUrl: './app/templates/servers.html',
+  templateUrl: './app/templates/servers.html'
 })
 export class ServersComponent implements OnInit {
   servers: Server[] = null;

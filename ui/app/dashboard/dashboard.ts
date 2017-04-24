@@ -29,6 +29,7 @@ export class DashboardComponent {
   errors: string[] = [];
   confirmationText: string;
   confirmationCallback: EventEmitter<any> = new EventEmitter();
+  adminSubroute = 'users';
 
   constructor(
     private auth: AuthService,
@@ -36,8 +37,10 @@ export class DashboardComponent {
     private modal: Modal
   ) {
     error.errorHappened.subscribe((error: any) => this.addError(error));
+    auth.userDataUpdated.subscribe(() => this.updateAdminRoute());
     auth.getLoggedUser();
     Confirmation.bus.subscribe((data: confirmationData) => this.showConfirmation(data));
+    this.updateAdminRoute();
   }
 
   hideConfirmation() {
@@ -72,5 +75,10 @@ export class DashboardComponent {
 
   logout() {
     this.auth.logout().catch(() => true);
+  }
+
+  updateAdminRoute() {
+    this.auth.isAuthorizedTo('view_user')
+      .then(isAllowed => this.adminSubroute = isAllowed ? 'users' : 'roles');
   }
 }

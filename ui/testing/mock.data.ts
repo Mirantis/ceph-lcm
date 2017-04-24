@@ -137,4 +137,6 @@ export class MockDataService {
   execution() {
     return this.mapperFactory(Execution, 'execution');
   }
+
+  handleResponseError(error: any): void {}
 }

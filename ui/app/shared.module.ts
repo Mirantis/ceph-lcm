@@ -24,7 +24,10 @@ import { WizardStepContainer, TestWizardStep } from './wizard_step';
 import { Filter, Criterion, SearchCriterion, ChoiceCriterion } from './filter';
 
 import { Modal, Loader, Pager, LongData, Confirmation, Submitter } from './directives';
-import { Key, Keys, TrimBy, DateTime, JSONString, Index, Deparametrize, Deprefix, FilterById } from './pipes';
+import { Key, Keys, TrimBy, DateTime, JSONString, Index, Deparametrize,
+  Deprefix, FilterById } from './pipes';
+
+import { ShownFor } from './services/auth';
 
 @NgModule({
   imports: [
@@ -34,13 +37,13 @@ import { Key, Keys, TrimBy, DateTime, JSONString, Index, Deparametrize, Deprefix
     Modal, Loader, Filter, Criterion, SearchCriterion, ChoiceCriterion, Pager, LongData,
     Keys, Key, TrimBy, DateTime, JSONString, Index, Deparametrize, Deprefix, FilterById,
     WizardComponent, WizardStepContainer, TestWizardStep,
-    Confirmation, Submitter
+    Confirmation, Submitter, ShownFor
   ],
   exports: [
     Modal, Loader, Filter, Criterion, SearchCriterion, ChoiceCriterion, Pager, LongData,
     Keys, Key, TrimBy, DateTime, JSONString, Index, Deparametrize, Deprefix, FilterById,
     WizardComponent, WizardStepContainer, TestWizardStep,
-    Confirmation, Submitter
+    Confirmation, Submitter, ShownFor
   ],
   entryComponents: [
     TestWizardStep

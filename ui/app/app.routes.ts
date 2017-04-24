@@ -41,7 +41,7 @@ const appRoutes: Routes = [
       ...serversRoutes,
       ...executionsRoutes,
       ...adminRoutes,
-      {path: '**', redirectTo: 'clusters'}
+      {path: '**', redirectTo: 'playbooks'}
     ]
   },
   {path: '**', redirectTo: 'login', pathMatch: 'full'}

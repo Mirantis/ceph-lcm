@@ -42,6 +42,7 @@
           class="btn btn-primary btn-xs"
           type="button"
           (click)="showExecutionLog(execution)"
+          [shownFor]="'view_execution_steps'"
         >
           Logs
         </button>
@@ -50,6 +51,7 @@
           (click)="cancelExecution(execution)"
           class="btn btn-danger btn-xs"
           type="button"
+          [shownFor]="'delete_execution'"
         >
           Stop
         </button>

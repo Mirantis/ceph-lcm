@@ -2,7 +2,12 @@
   <div class="row">
     <div class="col-xs-9"><h1>Roles</h1></div>
     <div class="col-xs-3 main-button">
-      <button type="button" class="btn btn-primary" (click)="editRole()">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="editRole()"
+        [shownFor]="'create_role'"
+      >
         Create New Role
       </button>
     </div>
@@ -20,13 +25,18 @@
       title="{{role.data.name}}"
     >
       {{role.data.name|trim_by:10}}
-      <button class="btn btn-link" (click)="editRole(role)">
+      <button
+        class="btn btn-link"
+        (click)="editRole(role)"
+        [shownFor]="'edit_role'"
+      >
         <span class="glyphicon glyphicon-pencil"></span>
       </button>
       <button
         class="btn btn-link"
         (confirmedClick)="deleteRole(role)"
         [confirmation]="'Delete role ' + role.data.name + '?'"
+        [shownFor]="'delete_role'"
       >
         <span class="glyphicon glyphicon-trash"></span>
       </button>

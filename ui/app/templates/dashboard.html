@@ -4,25 +4,25 @@
     <div class="header-background"></div>
     <div class="main">
       <div class="row">
-        <div class="col-xs-2"><a [routerLink]="['/clusters']" class="logo"></a></div>
+        <div class="col-xs-2"><a [routerLink]="['/playbooks']" class="logo"></a></div>
         <ul class="col-xs-8 navigation">
-          <li class="menu-item">
-            <a [routerLink]="['/clusters']" routerLinkActive="active">Clusters</a>
-          </li>
-          <li class="menu-item">
-            <a [routerLink]="['/configurations']" routerLinkActive="active">Configurations</a>
-          </li>
           <li class="menu-item">
             <a [routerLink]="['/playbooks']" routerLinkActive="active">Playbooks</a>
           </li>
-          <li class="menu-item">
+          <li class="menu-item" [shownFor]="'view_playbook_configuration'">
+            <a [routerLink]="['/configurations']" routerLinkActive="active">Configurations</a>
+          </li>
+          <li class="menu-item" [shownFor]="'view_cluster'">
+            <a [routerLink]="['/clusters']" routerLinkActive="active">Clusters</a>
+          </li>
+          <li class="menu-item" [shownFor]="'view_server'">
             <a [routerLink]="['/servers']" routerLinkActive="active">Servers</a>
           </li>
-          <li class="menu-item">
+          <li class="menu-item" [shownFor]="'view_execution'">
             <a [routerLink]="['/executions']" routerLinkActive="active">Executions</a>
           </li>
-          <li class="menu-item">
-            <a [routerLink]="['/admin']" routerLinkActive="active">Users Management</a>
+          <li class="menu-item" [shownFor]="['view_user', 'view_role']">
+            <a [routerLink]="['/admin', adminSubroute]" routerLinkActive="active">Users Management</a>
           </li>
         </ul>
         <div class="col-xs-2">

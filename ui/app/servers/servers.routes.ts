@@ -20,6 +20,28 @@ import { LoggedIn } from '../services/auth';
 import { ServersComponent } from './index';
 
 export const serversRoutes: Routes = [
-  {path: 'servers', component: ServersComponent, canActivate: [LoggedIn]},
-  {path: 'servers/:server_id', component: ServersComponent, canActivate: [LoggedIn]}
+  {
+    path: 'servers',
+    component: ServersComponent,
+    canActivate: [LoggedIn],
+    data: {restrictTo: [
+      'create_server',
+      'view_server',
+      'view_server_versions',
+      'edit_server',
+      'delete_server'
+    ]}
+  },
+  {
+    path: 'servers/:server_id',
+    component: ServersComponent,
+    canActivate: [LoggedIn],
+    data: {restrictTo: [
+      'view_server',
+      'view_server_versions',
+      'create_server',
+      'edit_server',
+      'delete_server'
+    ]}
+  }
 ];

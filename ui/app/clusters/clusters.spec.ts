@@ -22,10 +22,12 @@ import { ClustersComponent } from './clusters';
 import { AppModule } from '../app.module';
 import { ActivatedRoute } from '@angular/router';
 import { DataService, pagedResult } from '../services/data';
+import { AuthService } from '../services/auth';
 import { Cluster } from '../models';
 import * as _ from 'lodash';
 
 import { MockDataService, amount } from '../../testing/mock.data';
+import { MockAuthService } from '../../testing/mock.auth';
 import { MockActivatedRoute } from '../../testing/mock.router';
 import { DOMHelper } from '../../testing/dom';
 
@@ -45,6 +47,7 @@ describe('Clusters Component', () => {
         providers: [
           {provide: APP_BASE_HREF, useValue: '/'},
           {provide: DataService, useClass: MockDataService},
+          {provide: AuthService, useClass: MockAuthService},
           {provide: ActivatedRoute, useClass: MockActivatedRoute}
         ]
       })

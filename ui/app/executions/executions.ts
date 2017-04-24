@@ -21,11 +21,12 @@ import { Router } from '@angular/router';
 import { DataService, pagedResult } from '../services/data';
 import { Execution } from '../models';
 
-
 @Component({
   templateUrl: './app/templates/executions.html',
 })
 export class ExecutionsComponent {
+  static restrictTo = 'view_execution';
+
   executions: Execution[] = null;
   pagedData: pagedResult = {} as pagedResult;
 

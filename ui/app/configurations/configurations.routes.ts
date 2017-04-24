@@ -20,5 +20,16 @@ import { LoggedIn } from '../services/auth';
 import { ConfigurationsComponent } from './index';
 
 export const configurationsRoutes: Routes = [
-  {path: 'configurations', component: ConfigurationsComponent, canActivate: [LoggedIn]}
+  {
+    path: 'configurations',
+    component: ConfigurationsComponent,
+    canActivate: [LoggedIn],
+    data: {restrictTo: [
+      'create_playbook_configuration',
+      'view_playbook_configuration',
+      'view_playbook_configuration_version',
+      'edit_playbook_configuration',
+      'delete_playbook_configuration'
+    ]}
+  }
 ];

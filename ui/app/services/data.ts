@@ -79,7 +79,12 @@ export class DataService {
             let token = new Token({
               id: this.session.getToken(),
               data: {
-                user: {id: this.session.getLoggedUserId()},
+                user: {
+                  id: this.session.getLoggedUserId(),
+                  data: {
+                    role_id: this.session.getCurrentRoleId()
+                  }
+                },
                 expires_at: expiration
               }
             });
@@ -104,7 +109,15 @@ export class DataService {
 
   private modelsProperties: {[key: string]: Object} = {
     auth: {
-     user_id: {type: 'string'},
+     user: {
+       id: {type: 'string'},
+       data: {
+          login: {type: 'string'},
+          full_name: {type: 'string'},
+          email: {type: 'string'},
+          role_id: {type: 'string'}
+       }
+     },
      expires_at: {type: 'number'}
     },
     cluster: {

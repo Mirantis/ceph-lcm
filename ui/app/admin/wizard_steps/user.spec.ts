@@ -23,7 +23,9 @@ import { UserStep } from './user';
 import { AppModule } from '../../app.module';
 import { BaseModel } from '../../models';
 import { DataService, pagedResult } from '../../services/data';
+import { AuthService } from '../../services/auth';
 import { MockDataService } from '../../../testing/mock.data';
+import { MockAuthService } from '../../../testing/mock.auth';
 
 describe('New user wizard step', () => {
   let fixture: ComponentFixture<UserStep>;
@@ -34,6 +36,7 @@ describe('New user wizard step', () => {
         imports: [AppModule],
         providers: [
           {provide: DataService, useClass: MockDataService},
+          {provide: AuthService, useClass: MockAuthService},
           {provide: APP_BASE_HREF, useValue: '/'}
         ]
       })
@@ -56,9 +59,17 @@ describe('New user wizard step', () => {
     expect(component.model.data.role_id).toBeNull();
   });
 
-  it('fetches roles', () => {
-    let dataService = fixture.debugElement.injector.get(DataService);
-    expect(dataService.role().getAll).toHaveBeenCalledTimes(1);
+  it('fetches roles', done => {
+    component.fetchData()
+      .then(() => {
+        let authService = fixture.debugElement.injector.get(AuthService);
+        expect(authService.isAuthorizedTo).toHaveBeenCalledWith('view_role');
+
+        let dataService = fixture.debugElement.injector.get(DataService);
+        expect(dataService.role().getAll).toHaveBeenCalledTimes(2);
+
+        done();
+      })
   });
 
   it('is valid when its the fields are entered correctly', () => {

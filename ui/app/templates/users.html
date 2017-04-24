@@ -2,7 +2,12 @@
   <div class="row">
     <div class="col-xs-9"><h1>Users Management</h1></div>
     <div class="col-xs-3 main-button">
-      <button type="button" class="btn btn-primary" (click)="editUser()">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="editUser()"
+        [shownFor]="'create_user'"
+      >
         Create New User
       </button>
     </div>
@@ -96,7 +101,7 @@
                 >
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" *ngIf="canSeeRoles">
               <label for="user_role" class="col-xs-2">Role</label>
               <div class="col-xs-10">
                 <select
@@ -105,9 +110,8 @@
                   id="user_role"
                   [(ngModel)]="newUser.data.role_id"
                   [submits]="'#save'"
-                  required
                 >
-                  <option value=""></option>
+                  <option [value]="null">&mdash;</option>
                   <option *ngFor="let role of roles" [value]="role.id">
                     {{role.data.name}}
                   </option>
@@ -121,6 +125,7 @@
                   class="btn btn-danger"
                   (confirmedClick)="deleteUser(user)"
                   [confirmation]="'Delete user ' + user.data.login + '?'"
+                  [shownFor]="'delete_user'"
                 >
                   Delete User
                 </button>
@@ -130,6 +135,7 @@
                   type="button"
                   class="btn btn-default pull-right"
                   (click)="resetUserPassword(user)"
+                  [shownFor]="'edit_user'"
                 >
                   Reset Password
                 </button>
@@ -141,6 +147,7 @@
                   class="btn btn-primary pull-right"
                   (click)="saveUser()"
                   [disabled]="!editUserForm.form.valid"
+                  [shownFor]="'edit_user'"
                 >
                   Save
                 </button>

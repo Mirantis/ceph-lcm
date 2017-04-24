@@ -20,5 +20,15 @@ import { LoggedIn } from '../services/auth';
 import { ClustersComponent } from './index';
 
 export const clustersRoutes: Routes = [
-  {path: 'clusters', component: ClustersComponent, canActivate: [LoggedIn]}
+  {
+    path: 'clusters',
+    component: ClustersComponent,
+    canActivate: [LoggedIn],
+    data: {restrictTo: [
+      'create_cluster',
+      'view_cluster',
+      'edit_cluster',
+      'delete_cluster'
+    ]}
+  }
 ];

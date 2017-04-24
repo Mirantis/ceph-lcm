@@ -20,6 +20,23 @@ import { LoggedIn } from '../services/auth';
 import { ExecutionsComponent, LogsComponent } from './index';
 
 export const executionsRoutes: Routes = [
-  {path: 'executions', component: ExecutionsComponent, canActivate: [LoggedIn]},
-  {path: 'executions/:execution_id', component: LogsComponent, canActivate: [LoggedIn]}
+  {
+    path: 'executions',
+    component: ExecutionsComponent,
+    canActivate: [LoggedIn],
+    data: {restrictTo: [
+      'create_execution',
+      'view_execution',
+      'view_execution_steps',
+      'delete_execution'
+    ]}
+  },
+  {
+    path: 'executions/:execution_id',
+    component: LogsComponent,
+    canActivate: [LoggedIn],
+    data: {restrictTo: [
+      'view_execution_steps'
+    ]}
+  }
 ];

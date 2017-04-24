@@ -22,10 +22,25 @@ import { AdminComponent, UsersComponent, RolesComponent } from './index';
 export const adminRoutes: Routes = [
   {
     path: 'admin', component: AdminComponent, canActivate: [LoggedIn],
+    data: {restrictTo: ['view_user', 'view_role']},
     children: [
-      {path: 'users', component: UsersComponent, canActivate: [LoggedIn]},
-      {path: 'roles', component: RolesComponent, canActivate: [LoggedIn]},
-      {path: '**', redirectTo: 'users', pathMatch: 'full'}
+      {
+        path: 'users',
+        component: UsersComponent,
+        canActivate: [LoggedIn],
+        data: {restrictTo: 'view_user'}
+      },
+      {
+        path: 'roles',
+        component: RolesComponent,
+        canActivate: [LoggedIn],
+        data: {restrictTo: 'view_role'}
+      },
+      {
+        path: '**',
+        redirectTo: 'users',
+        pathMatch: 'full'
+      }
     ]
   }
 ];

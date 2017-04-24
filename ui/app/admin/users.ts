@@ -42,6 +42,7 @@ export class UsersComponent {
   newUser: User = new User({});
   shownUserId: string = null;
   pagedData: pagedResult = {} as pagedResult;
+  canSeeRoles: boolean = false;
 
   constructor(
     private auth: AuthService,
@@ -61,21 +62,28 @@ export class UsersComponent {
         },
         (error: any) => this.data.handleResponseError(error)
        );
-    this.data.role().findAll({})
-      .then(
-        (roles: pagedResult) => {
-          this.roles = roles.items;
-          this.roleIds = _.reduce(
-            this.roles,
-            (result: roleIdsType, role: Role) => {
-              result[role.id] = role;
-              return result;
+
+    this.auth.isAuthorizedTo('view_role')
+      .then(canSeeRoles => {
+        this.canSeeRoles = canSeeRoles;
+        if (!canSeeRoles) return;
+
+        this.data.role().findAll({})
+          .then(
+            (roles: pagedResult) => {
+              this.roles = roles.items;
+              this.roleIds = _.reduce(
+                this.roles,
+                (result: roleIdsType, role: Role) => {
+                  result[role.id] = role;
+                  return result;
+                },
+                {} as roleIdsType
+              );
             },
-            {} as roleIdsType
+            (error: any) => this.data.handleResponseError(error)
           );
-        },
-        (error: any) => this.data.handleResponseError(error)
-      );
+      });
   }
 
   getRoleName(role_id: string): string {
@@ -91,6 +99,10 @@ export class UsersComponent {
   }
 
   saveUser() {
+    if (!this.canSeeRoles) {
+      _.unset(this.newUser, 'data.role_id');
+    }
+
     var savePromise: Promise<any>;
     if (this.newUser.id) {
       // Update existing user' data

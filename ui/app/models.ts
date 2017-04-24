@@ -32,7 +32,6 @@ declare module './models' {
   interface Token extends BaseModel {
     data: {
       expires_at: number,
-      user_id: string,
       user: User
     }
   }
@@ -156,9 +155,9 @@ export class Cluster extends BaseModel {}
 export class Token extends BaseModel {}
 export class User extends BaseModel {}
 export class Role extends BaseModel {}
-export class PermissionGroup extends Record {}
-export class Playbook extends Record {}
-export class PlaybookConfiguration extends BaseModel {}
 export class Server extends BaseModel {}
+export class Playbook extends Record {}
 export class Execution extends BaseModel {}
 export class ExecutionStep extends BaseModel {}
+export class PermissionGroup extends Record {}
+export class PlaybookConfiguration extends BaseModel {}

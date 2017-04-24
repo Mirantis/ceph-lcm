@@ -20,6 +20,7 @@ import { Component } from '@angular/core';
 import { WizardStepBase } from '../../wizard_step';
 import { WizardService } from '../../services/wizard';
 import { DataService, pagedResult } from '../../services/data';
+import { AuthService } from '../../services/auth';
 import { Role } from '../../models';
 
 // New user wizard step
@@ -30,6 +31,7 @@ export class UserStep extends WizardStepBase {
   private mandatoryFields = ['login', 'full_name', 'email'];
   private emailRegex = new RegExp('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]{2,}\\.[a-zA-Z0-9-.]{2,}');
   roles: Role[] = [];
+  canSeeRoles = false;
 
   init() {
     _.forEach(
@@ -40,11 +42,16 @@ export class UserStep extends WizardStepBase {
   }
 
   fetchData() {
-    return this.data.role().getAll()
-      .then(
-        (roles: pagedResult) => this.roles = roles.items,
-        (error: any) => this.data.handleResponseError(error)
-      );
+    return this.auth.isAuthorizedTo('view_role')
+      .then(canSeeRoles => {
+        this.canSeeRoles = canSeeRoles;
+        if (!canSeeRoles) return;
+        return this.data.role().getAll()
+          .then(
+            (roles: pagedResult) => this.roles = roles.items,
+            (error: any) => {}
+          );
+        })
   }
 
   isEmailValid() {
@@ -52,12 +59,11 @@ export class UserStep extends WizardStepBase {
   }
 
   isValid() {
-    return !!_.get(this.model, 'data.role_id')
-      && !_.some(this.mandatoryFields, (field: string) => !_.get(this.model.data, field))
+    return !_.some(this.mandatoryFields, (field: string) => !_.get(this.model.data, field))
       && this.isEmailValid();
   }
 
-  constructor(wizard: WizardService, private data: DataService) {
+  constructor(wizard: WizardService, private data: DataService, private auth: AuthService) {
     super(wizard);
     this.fetchData();
   }
