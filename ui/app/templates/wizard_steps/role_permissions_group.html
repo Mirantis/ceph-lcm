@@ -1,4 +1,14 @@
 <step [title]="'Role Permissions Groups'">
+  <div class="subtitle">
+    <label>
+      <input
+        type="checkbox"
+        [name]="group"
+        [checked]="areAllSelected()"
+        (click)="toggleSelectAll()"
+      > SELECT ALL
+    </label>
+  </div>
   <h5>{{groupName}}</h5>
   <div class="permissions long-content grid" *ngIf="allGroupPermissions">
     <div class="col-xs-12 col-sm-6" *ngFor="let permission of allGroupPermissions.permissions">

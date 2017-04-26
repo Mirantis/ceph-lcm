@@ -26,14 +26,15 @@ import { PermissionGroup } from '../../models';
 class RolePermissionsGroupStep extends WizardStepBase {
   protected groupName = '';
   allGroupPermissions: PermissionGroup = null;
+  allPermissionsList: string[] = [];
 
-  public get modelGroupPermissions(): string[] {
+  public get modelGroup(): any {
     let group: PermissionGroup = _.find(this.model.data.permissions, {name: this.groupName}) as PermissionGroup;
     if (!group) {
       group = {name: this.groupName, permissions: []} as PermissionGroup;
       this.model.data.permissions.push(group);
     }
-    return group.permissions;
+    return group;
   }
 
   init() {
@@ -45,23 +46,32 @@ class RolePermissionsGroupStep extends WizardStepBase {
       .then(
         (permissions: pagedResult) => {
           this.allGroupPermissions = _.find(permissions.items, {name: this.groupName});
+          this.allPermissionsList = _.get(this.allGroupPermissions, 'permissions') as string[];
         },
         (error: any) => this.data.handleResponseError(error)
       );
   }
 
   getGroupPermission(permission: string): boolean {
-    return _.includes(this.modelGroupPermissions, permission);
+    return _.includes(this.modelGroup.permissions, permission);
   }
 
   toggleGroupPermission(permission: string) {
-    let groupPermissions = this.modelGroupPermissions;
+    let groupPermissions = this.modelGroup.permissions;
 
     if (_.includes(groupPermissions, permission)) {
       _.pull(groupPermissions, permission);
     } else {
       groupPermissions.push(permission);
     }
+  }
+
+  areAllSelected(): boolean {
+    return _.difference(this.allPermissionsList, this.modelGroup.permissions).length === 0;
+  }
+
+  toggleSelectAll() {
+    this.modelGroup.permissions = this.areAllSelected() ? [] : _.clone(this.allPermissionsList);
   }
 
   constructor(wizard: WizardService, private data: DataService) {

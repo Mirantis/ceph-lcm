@@ -79,7 +79,7 @@ describe('Role wizard: permissions group step', () => {
     beforeEach(() => {
       component.model = new Role({});
       component.init();
-      expect(component.modelGroupPermissions).toEqual([]);
+      expect(component.modelGroup.permissions).toEqual([]);
       component.model = new Role({
         name: 'Dummy Role',
         data: {
@@ -93,7 +93,7 @@ describe('Role wizard: permissions group step', () => {
     });
 
     it('that corresponds to given group name', () => {
-      expect(component.modelGroupPermissions).toEqual(targetGroup.permissions);
+      expect(component.modelGroup.permissions).toEqual(targetGroup.permissions);
     });
 
     it('to get their states', () => {

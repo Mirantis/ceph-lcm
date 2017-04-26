@@ -7900,6 +7900,12 @@ longdata ul li {
 .modal-footer {
   border: 0;
 }
+.wizard-step .subtitle {
+  float: right;
+}
+.wizard-step .subtitle input[type='checkbox'] {
+  margin-right: 5px;
+}
 .wizard-step .has-error .control-label {
   color: inherit;
 }
