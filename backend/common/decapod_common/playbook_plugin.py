@@ -426,6 +426,8 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
             "max_open_files": config["max_open_files"],
             "nfs_file_gw": False,
             "nfs_obj_gw": False,
+            "mds_max_mds": config["mds"]["max"],
+            "mds_allow_multimds": config["mds"]["multi"],
             "os_tuning_params": [],
             "public_network": str(networkutils.get_public_network(servers)),
             "radosgw_civetweb_num_threads": config["radosgw"]["num_threads"],

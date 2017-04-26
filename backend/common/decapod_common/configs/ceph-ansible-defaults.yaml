@@ -72,3 +72,7 @@ nfs:
     protocols: "3,4"
     access_type: RW
     user: cephnfs
+
+mds:
+  multi: true
+  max: 3
