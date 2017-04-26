@@ -1,7 +1,6 @@
 parameters:
   instance_type: m1.small
-  image: xenial-server-cloudimg-amd64-disk1
-  volumes_per_instance: 10
+  image_id: b7b8c4b4-64af-48aa-8d9e-d82540f9a278
   volume_size: 2
   instance_count: 5
   network: jenkins_ci_internal

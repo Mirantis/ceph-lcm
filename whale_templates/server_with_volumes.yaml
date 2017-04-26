@@ -10,17 +10,10 @@ parameters:
         - m1.small
         - m1.medium
         - m1.large
-  image:
+  image_id:
     type: string
     label: Image
-    description: Image to use for VMs (should be Ubuntu Xenial)
-  volumes_per_instance:
-    type: number
-    label: Volume count
-    description: Amount of volumes to attach per instance
-    default: 5
-    constraints:
-      - range: {min: 1, max: 1024}
+    description: Image ID to use for VMs (should be Ubuntu Xenial)
   volume_type:
     type: string
     label: Type of volume
@@ -54,22 +47,101 @@ resources:
   ceph_host:
     type: OS::Nova::Server
     properties:
-      image: {get_param: image}
       flavor: {get_param: instance_type}
       networks:
         - network: {get_param: network}
+      block_device_mapping:
+        - device_name: vda
+          volume_id: {get_resource: volume_vda}
+          delete_on_termination: true
+        - device_name: vdb
+          volume_id: {get_resource: volume_vdb}
+          delete_on_termination: true
+        - device_name: vdc
+          volume_id: {get_resource: volume_vdc}
+          delete_on_termination: true
+        - device_name: vdd
+          volume_id: {get_resource: volume_vdd}
+          delete_on_termination: true
+        - device_name: vde
+          volume_id: {get_resource: volume_vde}
+          delete_on_termination: true
+        - device_name: vdf
+          volume_id: {get_resource: volume_vdf}
+          delete_on_termination: true
+        - device_name: vdg
+          volume_id: {get_resource: volume_vdg}
+          delete_on_termination: true
+        - device_name: vdh
+          volume_id: {get_resource: volume_vdh}
+          delete_on_termination: true
+        - device_name: vdi
+          volume_id: {get_resource: volume_vdi}
+          delete_on_termination: true
+        - device_name: vdj
+          volume_id: {get_resource: volume_vdj}
+          delete_on_termination: true
+        - device_name: vdk
+          volume_id: {get_resource: volume_vdk}
+          delete_on_termination: true
       user_data: {get_file: 'user-data.txt'}
       user_data_format: RAW
-  ceph_volumes:
-    type: OS::Heat::ResourceGroup
+  volume_vda:
+    type: OS::Cinder::Volume
     properties:
-      count: {get_param: volumes_per_instance}
-      resource_def:
-        type: volume_with_attachment.yaml
-        properties:
-          volume_size: {get_param: volume_size}
-          volume_type: {get_param: volume_type}
-          instance_id: {get_resource: ceph_host}
+      size: 15
+      image: {get_param: image_id}
+      volume_type: {get_param: volume_type}
+  volume_vdb:
+    type: OS::Cinder::Volume
+    properties:
+      size: {get_param: volume_size}
+      volume_type: {get_param: volume_type}
+  volume_vdc:
+    type: OS::Cinder::Volume
+    properties:
+      size: {get_param: volume_size}
+      volume_type: {get_param: volume_type}
+  volume_vdd:
+    type: OS::Cinder::Volume
+    properties:
+      size: {get_param: volume_size}
+      volume_type: {get_param: volume_type}
+  volume_vde:
+    type: OS::Cinder::Volume
+    properties:
+      size: {get_param: volume_size}
+      volume_type: {get_param: volume_type}
+  volume_vdf:
+    type: OS::Cinder::Volume
+    properties:
+      size: {get_param: volume_size}
+      volume_type: {get_param: volume_type}
+  volume_vdg:
+    type: OS::Cinder::Volume
+    properties:
+      size: {get_param: volume_size}
+      volume_type: {get_param: volume_type}
+  volume_vdh:
+    type: OS::Cinder::Volume
+    properties:
+      size: {get_param: volume_size}
+      volume_type: {get_param: volume_type}
+  volume_vdi:
+    type: OS::Cinder::Volume
+    properties:
+      size: {get_param: volume_size}
+      volume_type: {get_param: volume_type}
+  volume_vdj:
+    type: OS::Cinder::Volume
+    properties:
+      size: {get_param: volume_size}
+      volume_type: {get_param: volume_type}
+  volume_vdk:
+    type: OS::Cinder::Volume
+    properties:
+      size: {get_param: volume_size}
+      volume_type: {get_param: volume_type}
 
 outputs:
   host_ip:
