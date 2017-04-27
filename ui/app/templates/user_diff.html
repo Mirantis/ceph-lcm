@@ -1,0 +1,11 @@
+<div class="row">
+  <div class="col-xs-1">{{currentVersion.version}}</div>
+  <div class="col-xs-2">{{currentVersion.time_updated|date_time:false}}</div>
+  <div class="col-xs-9">
+    <ul>
+      <li *ngFor="let change of diff">
+        <strong>{{change.name}}:</strong> {{change.oldValue}} &rarr; {{change.newValue}}
+      </li>
+    </ul>
+  </div>
+</div>

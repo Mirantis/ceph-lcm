@@ -23,7 +23,7 @@ import { RouterModule } from '@angular/router';
 import { SharedModule } from '../shared.module';
 
 import { AdminComponent, UsersComponent,
-  RolesComponent, PermissionsGroup } from './index';
+  RolesComponent, PermissionsGroup, UserDiff } from './index';
 import { RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep, UserStep } from './wizard_steps/index';
 
 @NgModule({
@@ -32,7 +32,7 @@ import { RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep, User
     UsersComponent,
     RolesComponent,
     PermissionsGroup,
-    RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep, UserStep
+    RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep, UserStep, UserDiff
   ],
   imports: [
     BrowserModule,
@@ -48,7 +48,7 @@ import { RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep, User
     UsersComponent,
     RolesComponent,
     PermissionsGroup,
-    RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep, UserStep
+    RoleNameStep, RoleApiPermissionsStep, RolePlaybookPermissionsStep, UserStep, UserDiff
   ]
 })
 export class AdminModule { }

@@ -49,14 +49,14 @@ function two(value: number): string {
 
 @Pipe({name: 'date_time'})
 export class DateTime implements PipeTransform {
-  transform(value: number): string {
+  transform(value: number, showTime: boolean = true): string {
     var date = new Date(1000 * value);
     return two(date.getDate()) + '/' +
       two(1 + date.getMonth()) + '/' +
-      date.getFullYear() + ' ' +
+      date.getFullYear() + (showTime ? ' ' +
       two(date.getHours()) + ':' +
       two(date.getMinutes()) + ':' +
-      two(date.getSeconds());
+      two(date.getSeconds()) : '');
   }
 }
 

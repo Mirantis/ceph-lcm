@@ -157,8 +157,17 @@
         </div>
 
         <div class="col-xs-7">
-          <div *ngFor="let user of getUserVersions(user)">
-            {{user.version}}: {{user.time_updated|date_time}}
+          <div class="user-diff grid">
+            <div class="grid-header">
+              <div class="col-xs-1 name">Ver.</div>
+              <div class="col-xs-2 name">Date</div>
+              <div class="col-xs-9 name">Changes</div>
+            </div>
+            <diff
+              *ngFor="let user of getUserVersions(user);let i = index"
+              [index]="i"
+              [versions]="getUserVersions(user)"
+            ></diff>
           </div>
         </div>
 

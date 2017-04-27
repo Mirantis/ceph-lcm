@@ -19,4 +19,5 @@ export * from './admin.module';
 export * from './admin';
 export * from './users';
 export * from './roles';
+export * from './user_diff';
 export * from './admin.routes';

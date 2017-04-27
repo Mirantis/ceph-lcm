@@ -7774,6 +7774,22 @@ a.grid .grid-header .icon:focus {
 .roles.grid .icon {
   text-align: center;
 }
+.user-diff.grid .grid-header {
+  padding: auto 15px;
+}
+.user-diff.grid .grid-header div {
+  text-align: center;
+}
+.user-diff.grid .row {
+  border: solid 1px #acb0b2;
+  border-width: 1px 0 0 0;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+.user-diff.grid .row div:first-child,
+.user-diff.grid .row div:nth-child(2) {
+  text-align: center;
+}
 .permissions.long-content {
   padding-bottom: 10px;
 }
