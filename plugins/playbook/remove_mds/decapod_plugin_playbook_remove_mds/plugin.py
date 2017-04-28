@@ -13,45 +13,37 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Playbook plugin for Add metadata server host."""
+"""Playbook plugin for Remove metadata server from host."""
 
 
 from decapod_common import log
 from decapod_common import playbook_plugin
-from decapod_common import playbook_plugin_hints
 from decapod_common.models import cluster_data
 from decapod_common.models import server
 
 
-DESCRIPTION = "Add metadata server host"
+DESCRIPTION = "Remove metadata server from host"
 """Plugin description."""
-
-HINTS_SCHEMA = {
-    "ceph_version_verify": {
-        "description": "Verify Ceph version consistency on install",
-        "typename": "boolean",
-        "type": "boolean",
-        "default_value": True
-    }
-}
-"""Schema for playbook hints."""
 
 LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class AddMds(playbook_plugin.CephAnsiblePlaybook):
+class RemoveMds(playbook_plugin.CephAnsiblePlaybook):
 
-    NAME = "Add metadata server host"
+    NAME = "Remove metadata server from host"
     DESCRIPTION = DESCRIPTION
     PUBLIC = True
     REQUIRED_SERVER_LIST = True
-    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.not_in_other_cluster
+    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.in_this_cluster
 
-    HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
+    def on_post_execute(self, task, exc_value, exc_type, exc_tb):
+        super().on_post_execute(task, exc_value, exc_type, exc_tb)
 
-    def on_pre_execute(self, task):
-        super().on_pre_execute(task)
+        if exc_value:
+            LOG.warning("Cannot remove REST API host: %s (%s)",
+                        exc_value, exc_type)
+            raise exc_value
 
         playbook_config = self.get_playbook_configuration(task)
         config = playbook_config.configuration["inventory"]
@@ -59,11 +51,9 @@ class AddMds(playbook_plugin.CephAnsiblePlaybook):
         servers = playbook_config.servers
         servers = {srv.ip: srv for srv in servers}
 
-        for name, group_vars in config.items():
-            if name != "mdss" or not group_vars:
-                continue
-            group_servers = [servers[ip] for ip in group_vars]
-            cluster.add_servers(group_servers, name)
+        group_vars = config.pop("mdss_to_remove")
+        group_servers = [servers[ip] for ip in group_vars]
+        cluster.remove_servers(group_servers, "mdss")
 
         if cluster.configuration.changed:
             cluster.save()
@@ -78,8 +68,6 @@ class AddMds(playbook_plugin.CephAnsiblePlaybook):
     def make_global_vars(self, cluster, data, servers, hints):
         result = super().make_global_vars(cluster, servers, hints)
         result.update(data.global_vars)
-
-        result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
 
         return result
 
@@ -102,21 +90,21 @@ class AddMds(playbook_plugin.CephAnsiblePlaybook):
         cluster_servers = server.ServerModel.cluster_servers(cluster.model_id)
         cluster_servers = {item._id: item for item in cluster_servers}
 
+        all_mdss = [
+            cluster_servers[item["server_id"]]
+            for item in cluster.configuration.state if item["role"] == "mdss"
+        ]
+        all_mdss_ips = {srv.ip for srv in all_mdss}
+        for srv in servers:
+            all_mdss_ips.discard(srv.ip)
+
         mons = [
             cluster_servers[item["server_id"]]
-            for item in cluster.configuration.state if item["role"] == "mons"]
-        mdss = [
-            cluster_servers[item["server_id"]]
-            for item in cluster.configuration.state if item["role"] == "mdss"]
-
-        mdss_ips = {srv.ip for srv in mdss}
-        for srv in servers:
-            if srv.ip not in mdss_ips:
-                mdss_ips.add(srv.ip)
-                mdss.append(srv)
+            for item in cluster.configuration.state if item["role"] == "mons"
+        ]
 
         return {
+            "mdss": [srv for srv in all_mdss if srv.ip in all_mdss_ips],
             "mons": mons,
-            "mdss": servers,
-            "already_deployed": list(cluster_servers.values())
+            "mdss_to_remove": servers
         }

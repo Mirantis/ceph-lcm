@@ -1,0 +1,2 @@
+include decapod_plugin_playbook_remove_mds/config.yaml
+include decapod_plugin_playbook_remove_mds/playbook.yaml

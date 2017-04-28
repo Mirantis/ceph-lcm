@@ -1,0 +1,74 @@
+---
+# Copyright (c) 2016 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- include: "{{ decapod_common_playbooks }}/plays/init.yaml"
+
+
+- hosts: mdss_to_remove
+  become: true
+  tasks:
+  - name: get ceph status
+    command: ceph --cluster {{ cluster | quote }} -s --format json
+    register: ceph_status
+
+  - name: get ranks of mdss on this host
+    set_fact:
+      mds_ranks: "{{ ceph_status.stdout | from_json | json_query(query) }}"
+    vars:
+      query: "fsmap.by_rank[?name=='{{ ansible_hostname }}'].rank"
+
+  - name: stop mds on this host
+    service:
+      name: "ceph-mds@{{ ansible_hostname }}"
+      state: stopped
+      enabled: no
+    when: mds_ranks
+
+  - name: remove mds rank
+    command: ceph --cluster {{ cluster | quote }} mds rm {{ item }}
+    with_items: "{{ mds_ranks }}"
+
+  - name: rmfailed mds
+    command: >
+      ceph --cluster {{ cluster | quote }} mds rmfailed {{ item }}
+      --yes-i-really-mean-it
+    with_items: "{{ mds_ranks }}"
+
+  - name: remove mds package
+    apt:
+      name: ceph-mds
+      state: absent
+
+  - name: remove mds data
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - /var/lib/ceph/mds
+    - /var/lib/ceph/bootstrap-mds
+
+
+- hosts: mons
+  become: true
+  roles:
+  - ceph-fetch-keys
+
+
+- hosts: mdss
+  become: true
+  roles:
+  - ceph-mds

@@ -15,4 +15,61 @@
 # limitations under the License.
 
 
-- include: "{{ decapod_common_playbooks }}/plays/deploy_mds.yaml"
+- include: "{{ decapod_common_playbooks }}/plays/add_ceph_ansible_role.yaml"
+
+- hosts: mons
+  become: true
+  tasks:
+  - block:
+    - name: get default pg_num
+      command: >
+        ceph --cluster {{ cluster | quote }} daemon
+        mon.{{ ansible_hostname }} config get osd_pool_default_pg_num
+      register: default_pg_num
+
+    - name: create filesystem pools
+      command: >
+        ceph --cluster {{ cluster | quote }} osd pool create
+        {{ item | quote }}
+        {{ (default_pg_num.stdout | from_json).osd_pool_default_pg_num }}
+      with_items:
+      - cephfs_data
+      - cephfs_metadata
+      changed_when: false
+
+    - name: check if ceph filesystem already exists
+      command: ceph --cluster {{ cluster | quote }} fs get cephfs
+      register: check_existing_cephfs
+      changed_when: false
+      failed_when: false
+
+    - name: create ceph filesystem
+      command: >
+        ceph --cluster {{ cluster | quote }} fs new
+        cephfs cephfs_metadata cephfs_data
+      changed_when: false
+      when: check_existing_cephfs.rc != 0
+
+    - name: allow multimds
+      command: >
+        ceph --cluster {{ cluster | quote }} fs set cephfs
+        allow_multimds true --yes-i-really-mean-it
+      changed_when: false
+      when: mds_allow_multimds
+
+    - name: set max mds
+      command: >
+        ceph --cluster {{ cluster | quote }} fs set cephfs max_mds
+        {{ mds_max_mds }}
+      changed_when: false
+      when:
+      - mds_allow_multimds
+      - mds_max_mds
+    when:
+    - "{{ (groups.mdss | length) > 0 }}"
+    - "{{ inventory_hostname == (groups.mons | last) }}"
+
+- hosts: mdss
+  become: true
+  roles:
+  - ceph-mds
