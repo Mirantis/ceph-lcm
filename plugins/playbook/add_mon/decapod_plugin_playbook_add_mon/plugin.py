@@ -28,9 +28,7 @@ from decapod_common.models import server
 from . import exceptions
 
 
-DESCRIPTION = """\
-Add monitor to the cluster
-""".strip()
+DESCRIPTION = "Add monitor to the cluster"
 """Plugin description."""
 
 HINTS_SCHEMA = {
@@ -53,55 +51,24 @@ def get_monitor_secret(secret_id):
         return secret[0]
 
 
-class AddMon(playbook_plugin.CephAnsiblePlaybook):
+class AddMon(playbook_plugin.CephAnsibleNewWithVerification):
 
     NAME = "Add monitor to the cluster"
     DESCRIPTION = DESCRIPTION
-    PUBLIC = True
-    REQUIRED_SERVER_LIST = True
-    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.not_in_other_cluster
-
     HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
 
     def on_pre_execute(self, task):
-        super().on_pre_execute(task)
+        super().on_pre_execute(["mons"], task)
 
         playbook_config = self.get_playbook_configuration(task)
         config = playbook_config.configuration["inventory"]
         cluster = playbook_config.cluster
-        servers = playbook_config.servers
-        servers = {srv.ip: srv for srv in servers}
-
-        for name, group_vars in config.items():
-            skip = {"_meta", "oldmons", "already_deployed"}
-            if name in skip or not group_vars:
-                continue
-            group_servers = [servers[ip] for ip in group_vars]
-            cluster.add_servers(group_servers, name)
-
-        if cluster.configuration.changed:
-            cluster.save()
 
         data = cluster_data.ClusterData.find_one(cluster.model_id)
         hostvars = config.get("_meta", {}).get("hostvars", {})
         for hostname, values in hostvars.items():
             data.update_host_vars(hostname, values)
         data.save()
-
-    def make_playbook_configuration(self, cluster, servers, hints):
-        data = cluster_data.ClusterData.find_one(cluster.model_id)
-        global_vars = self.make_global_vars(cluster, data, servers, hints)
-        inventory = self.make_inventory(cluster, data, servers, hints)
-
-        return global_vars, inventory
-
-    def make_global_vars(self, cluster, data, servers, hints):
-        result = super().make_global_vars(cluster, servers, hints)
-        result.update(data.global_vars)
-
-        result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
-
-        return result
 
     def get_dynamic_inventory(self):
         if not self.playbook_config:

@@ -32,6 +32,8 @@ from decapod_common import networkutils
 from decapod_common import pathutils
 from decapod_common import playbook_plugin_hints
 from decapod_common import process
+from decapod_common.models import cluster_data
+from decapod_common.models import server
 from decapod_common.models import task
 
 
@@ -485,6 +487,75 @@ class CephAnsiblePlaybook(Playbook, metaclass=abc.ABCMeta):
             raise exceptions.UnknownPlaybookConfiguration()
 
         return self.playbook_config.configuration["inventory"]
+
+
+class CephAnsibleNewWithVerification(CephAnsiblePlaybook):
+
+    PUBLIC = True
+    REQUIRED_SERVER_LIST = True
+    SERVER_LIST_POLICY = ServerListPolicy.not_in_other_cluster
+
+    def on_pre_execute(self, skip_roles, task):
+        super().on_pre_execute(task)
+
+        skip_roles = set(skip_roles)
+        playbook_config = self.get_playbook_configuration(task)
+        config = playbook_config.configuration["inventory"]
+        cluster = playbook_config.cluster
+        servers = playbook_config.servers
+        servers = {srv.ip: srv for srv in servers}
+
+        for name, group_vars in config.items():
+            if name not in skip_roles or not group_vars:
+                continue
+            group_servers = [servers[ip] for ip in group_vars]
+            cluster.add_servers(group_servers, name)
+
+        if cluster.configuration.changed:
+            cluster.save()
+
+    def make_playbook_configuration(self, cluster, servers, hints):
+        data = cluster_data.ClusterData.find_one(cluster.model_id)
+        global_vars = self.make_global_vars(cluster, data, servers, hints)
+        inventory = self.make_inventory(cluster, data, servers, hints)
+
+        return global_vars, inventory
+
+    def make_global_vars(self, cluster, data, servers, hints):
+        result = super().make_global_vars(cluster, servers, hints)
+        result.update(data.global_vars)
+
+        result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
+
+        return result
+
+    def get_inventory_groups(self, cluster, servers, hints):
+        cluster_servers = server.ServerModel.cluster_servers(cluster.model_id)
+        cluster_servers = {item._id: item for item in cluster_servers}
+
+        mons = [
+            cluster_servers[item["server_id"]]
+            for item in cluster.configuration.state if item["role"] == "mons"]
+
+        return {
+            "mons": mons,
+            "already_deployed": list(cluster_servers.values())
+        }
+
+    def make_inventory(self, cluster, data, servers, hints):
+        groups = self.get_inventory_groups(cluster, servers, hints)
+        inventory = {"_meta": {"hostvars": {}}}
+
+        for name, group_servers in groups.items():
+            for srv in group_servers:
+                inventory.setdefault(name, []).append(srv.ip)
+
+                hostvars = inventory["_meta"]["hostvars"].setdefault(
+                    srv.ip, {})
+                hostvars.update(data.get_host_vars(srv.ip))
+                hostvars.setdefault("ansible_user", srv.username)
+
+        return inventory
 
 
 @functools.lru_cache()

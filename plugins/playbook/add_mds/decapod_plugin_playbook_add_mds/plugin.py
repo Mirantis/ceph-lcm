@@ -19,7 +19,6 @@
 from decapod_common import log
 from decapod_common import playbook_plugin
 from decapod_common import playbook_plugin_hints
-from decapod_common.models import cluster_data
 from decapod_common.models import server
 
 
@@ -40,71 +39,20 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class AddMds(playbook_plugin.CephAnsiblePlaybook):
+class AddMds(playbook_plugin.CephAnsibleNewWithVerification):
 
     NAME = "Add metadata server host"
     DESCRIPTION = DESCRIPTION
-    PUBLIC = True
-    REQUIRED_SERVER_LIST = True
-    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.not_in_other_cluster
-
     HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
 
     def on_pre_execute(self, task):
-        super().on_pre_execute(task)
-
-        playbook_config = self.get_playbook_configuration(task)
-        config = playbook_config.configuration["inventory"]
-        cluster = playbook_config.cluster
-        servers = playbook_config.servers
-        servers = {srv.ip: srv for srv in servers}
-
-        for name, group_vars in config.items():
-            if name != "mdss" or not group_vars:
-                continue
-            group_servers = [servers[ip] for ip in group_vars]
-            cluster.add_servers(group_servers, name)
-
-        if cluster.configuration.changed:
-            cluster.save()
-
-    def make_playbook_configuration(self, cluster, servers, hints):
-        data = cluster_data.ClusterData.find_one(cluster.model_id)
-        global_vars = self.make_global_vars(cluster, data, servers, hints)
-        inventory = self.make_inventory(cluster, data, servers, hints)
-
-        return global_vars, inventory
-
-    def make_global_vars(self, cluster, data, servers, hints):
-        result = super().make_global_vars(cluster, servers, hints)
-        result.update(data.global_vars)
-
-        result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
-
-        return result
-
-    def make_inventory(self, cluster, data, servers, hints):
-        groups = self.get_inventory_groups(cluster, servers, hints)
-        inventory = {"_meta": {"hostvars": {}}}
-
-        for name, group_servers in groups.items():
-            for srv in group_servers:
-                inventory.setdefault(name, []).append(srv.ip)
-
-                hostvars = inventory["_meta"]["hostvars"].setdefault(
-                    srv.ip, {})
-                hostvars.update(data.get_host_vars(srv.ip))
-                hostvars["ansible_user"] = srv.username
-
-        return inventory
+        super().on_pre_execute(["mdss"], task)
 
     def get_inventory_groups(self, cluster, servers, hints):
+        base = super().get_inventory_groups(cluster, servers, hints)
+
         cluster_servers = server.ServerModel.cluster_servers(cluster.model_id)
         cluster_servers = {item._id: item for item in cluster_servers}
-
-        mons = [
-            cluster_servers[item["server_id"]]
-            for item in cluster.configuration.state if item["role"] == "mons"]
         mdss = [
             cluster_servers[item["server_id"]]
             for item in cluster.configuration.state if item["role"] == "mdss"]
@@ -115,8 +63,6 @@ class AddMds(playbook_plugin.CephAnsiblePlaybook):
                 mdss_ips.add(srv.ip)
                 mdss.append(srv)
 
-        return {
-            "mons": mons,
-            "mdss": servers,
-            "already_deployed": list(cluster_servers.values())
-        }
+        base["mdss"] = mdss
+
+        return base

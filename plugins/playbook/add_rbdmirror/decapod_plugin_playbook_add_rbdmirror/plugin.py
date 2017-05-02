@@ -20,7 +20,6 @@ from decapod_common import log
 from decapod_common import playbook_plugin
 from decapod_common import playbook_plugin_hints
 from decapod_common.models import cluster_data
-from decapod_common.models import server
 
 
 DESCRIPTION = "Add RBD Mirroring host"
@@ -64,45 +63,24 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class AddRbdmirror(playbook_plugin.CephAnsiblePlaybook):
+class AddRbdmirror(playbook_plugin.CephAnsibleNewWithVerification):
 
     NAME = "Add RBD Mirroring host"
     DESCRIPTION = DESCRIPTION
-    PUBLIC = True
-    REQUIRED_SERVER_LIST = True
-    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.not_in_other_cluster
     HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
 
     def on_pre_execute(self, task):
-        super().on_pre_execute(task)
+        super().on_pre_execute(["rbdmirrors"], task)
 
         playbook_config = self.get_playbook_configuration(task)
         config = playbook_config.configuration["inventory"]
         cluster = playbook_config.cluster
-        servers = playbook_config.servers
-        servers = {srv.ip: srv for srv in servers}
-
-        for name, group_vars in config.items():
-            if name in ("_meta", "already_deployed") or not group_vars:
-                continue
-            group_servers = [servers[ip] for ip in group_vars]
-            cluster.add_servers(group_servers, name)
-
-        if cluster.configuration.changed:
-            cluster.save()
 
         data = cluster_data.ClusterData.find_one(cluster.model_id)
         hostvars = config.get("_meta", {}).get("hostvars", {})
         for hostname, values in hostvars.items():
             data.update_host_vars(hostname, values)
         data.save()
-
-    def make_playbook_configuration(self, cluster, servers, hints):
-        data = cluster_data.ClusterData.find_one(cluster.model_id)
-        global_vars = self.make_global_vars(cluster, data, servers, hints)
-        inventory = self.make_inventory(cluster, data, servers, hints)
-
-        return global_vars, inventory
 
     def get_dynamic_inventory(self):
         inventory = super().get_dynamic_inventory()
@@ -132,13 +110,10 @@ class AddRbdmirror(playbook_plugin.CephAnsiblePlaybook):
         return extra_vars
 
     def make_global_vars(self, cluster, data, servers, hints):
-        result = super().make_global_vars(cluster, servers, hints)
-        result.update(data.global_vars)
+        base = super().make_global_vars(cluster, data, servers, hints)
+        base["add_peers"] = bool(hints["add_peers"])
 
-        result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
-        result["add_peers"] = bool(hints["add_peers"])
-
-        return result
+        return base
 
     def make_inventory(self, cluster, data, servers, hints):
         groups = self.get_inventory_groups(cluster, servers, hints)
@@ -159,19 +134,10 @@ class AddRbdmirror(playbook_plugin.CephAnsiblePlaybook):
         return inventory
 
     def get_inventory_groups(self, cluster, servers, hints):
-        cluster_servers = server.ServerModel.cluster_servers(cluster.model_id)
-        cluster_servers = {item._id: item for item in cluster_servers}
+        base = super().get_inventory_groups(cluster, servers, hints)
+        base["rbdmirrors"] = servers
 
-        mons = [
-            cluster_servers[item["server_id"]]
-            for item in cluster.configuration.state if item["role"] == "mons"
-        ]
-
-        return {
-            "mons": mons,
-            "rbdmirrors": servers,
-            "already_deployed": list(cluster_servers.values())
-        }
+        return base
 
     def update_hostvars(self, hostvars, srv, hints):
         pools = hostvars.setdefault("rbd_mirrors", {})

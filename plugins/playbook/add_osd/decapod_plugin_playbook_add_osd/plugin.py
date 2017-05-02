@@ -25,8 +25,6 @@ from decapod_common import playbook_plugin_hints
 from decapod_common.models import cluster_data
 from decapod_common.models import server
 
-from . import exceptions
-
 
 DESCRIPTION = """\
 Adding new OSD to the cluster.
@@ -61,33 +59,18 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class AddOSD(playbook_plugin.CephAnsiblePlaybook):
+class AddOSD(playbook_plugin.CephAnsibleNewWithVerification):
 
     NAME = "Add OSD to Ceph cluster"
     DESCRIPTION = DESCRIPTION
-    PUBLIC = True
-    REQUIRED_SERVER_LIST = True
-    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.not_in_other_cluster
-
     HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
 
     def on_pre_execute(self, task):
-        super().on_pre_execute(task)
+        super().on_pre_execute(["osds"], task)
 
         playbook_config = self.get_playbook_configuration(task)
         config = playbook_config.configuration["inventory"]
         cluster = playbook_config.cluster
-        servers = playbook_config.servers
-        servers = {srv.ip: srv for srv in servers}
-
-        for name, group_vars in config.items():
-            if name in ("_meta", "already_deployed") or not group_vars:
-                continue
-            group_servers = [servers[ip] for ip in group_vars]
-            cluster.add_servers(group_servers, name)
-
-        if cluster.configuration.changed:
-            cluster.save()
 
         data = cluster_data.ClusterData.find_one(cluster.model_id)
         hostvars = config.get("_meta", {}).get("hostvars", {})
@@ -95,40 +78,27 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
             data.update_host_vars(hostname, values)
         data.save()
 
-    def make_playbook_configuration(self, cluster, servers, hints):
-        cluster_config = cluster.configuration.make_api_structure()
-        if not cluster_config.get("mons"):
-            raise exceptions.NoMonitorsError(cluster.model_id)
-
-        data = cluster_data.ClusterData.find_one(cluster.model_id)
-        global_vars = self.make_global_vars(cluster, data, servers, hints)
-        inventory = self.make_inventory(
-            cluster, data, servers, hints, global_vars)
-
-        return global_vars, inventory
-
     def make_global_vars(self, cluster, data, servers, hints):
-        result = super().make_global_vars(cluster, servers, hints)
-        result.update(data.global_vars)
+        base = super().make_global_vars(cluster, data, servers, hints)
 
-        result["ceph_version_verify"] = bool(hints["ceph_version_verify"])
-        result["journal_collocation"] = False
-        result["dmcrypt_journal_collocation"] = False
-        result["dmcrypt_dedicated_journal"] = False
-        result["raw_multi_journal"] = False
+        base["journal_collocation"] = False
+        base["dmcrypt_journal_collocation"] = False
+        base["dmcrypt_dedicated_journal"] = False
+        base["raw_multi_journal"] = False
         if hints["dmcrypt"]:
             if hints["collocation"]:
-                result["dmcrypt_journal_collocation"] = True
+                base["dmcrypt_journal_collocation"] = True
             else:
-                result["dmcrypt_dedicated_journal"] = True
+                base["dmcrypt_dedicated_journal"] = True
         elif hints["collocation"]:
-            result["journal_collocation"] = True
+            base["journal_collocation"] = True
         else:
-            result["raw_multi_journal"] = True
+            base["raw_multi_journal"] = True
 
-        return result
+        return base
 
-    def make_inventory(self, cluster, data, servers, hints, global_vars):
+    def make_inventory(self, cluster, data, servers, hints):
+        global_vars = self.make_global_vars(cluster, data, servers, hints)
         groups = self.get_inventory_groups(cluster, servers, hints)
         inventory = {"_meta": {"hostvars": {}}}
         all_servers = server.ServerModel.cluster_servers(cluster.model_id)
@@ -162,19 +132,10 @@ class AddOSD(playbook_plugin.CephAnsiblePlaybook):
         return inventory
 
     def get_inventory_groups(self, cluster, servers, hints):
-        cluster_servers = server.ServerModel.cluster_servers(cluster.model_id)
-        cluster_servers = {item._id: item for item in cluster_servers}
+        base = super().get_inventory_groups(cluster, servers, hints)
+        base["osds"] = servers
 
-        mons = [
-            cluster_servers[item["server_id"]]
-            for item in cluster.configuration.state if item["role"] == "mons"
-        ]
-
-        return {
-            "mons": mons,
-            "osds": servers,
-            "already_deployed": list(cluster_servers.values())
-        }
+        return base
 
     def prepare_plugin(self):
         resource_path = pathutils.resource(
