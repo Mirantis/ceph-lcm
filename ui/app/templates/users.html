@@ -146,7 +146,7 @@
                   type="button"
                   class="btn btn-primary pull-right"
                   (click)="saveUser()"
-                  [disabled]="!editUserForm.form.valid"
+                  [disabled]="!editUserForm.form.valid || !hasChanges(user)"
                   [shownFor]="'edit_user'"
                 >
                   Save

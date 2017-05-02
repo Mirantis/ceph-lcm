@@ -41,22 +41,21 @@ export class UserDiff {
   };
 
   ngOnInit() {
+    let versionsCount = this.versions.length - 1;
+
     this.currentVersion = this.versions[this.index];
 
-    if (!this.index) return;
+    if (this.index === versionsCount) return;
 
     let currentData = this.currentVersion.data;
-    let previousData = this.versions[this.index - 1].data;
+    let previousData = this.versions[this.index + 1].data;
 
     _.forEach(this.fields, (name, field) => {
-      let [oldValue, newValue] = [currentData[field], previousData[field]];
+      let [newValue, oldValue] = [currentData[field], previousData[field]];
 
-      console.log(field, oldValue, newValue);
       if (!_.isEqual(oldValue, newValue)) {
         this.diff.push({name, oldValue, newValue});
       }
     });
-
-    console.log(this.diff);
   }
 }

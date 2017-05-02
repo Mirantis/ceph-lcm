@@ -43,6 +43,7 @@ export class UsersComponent {
   shownUserId: string = null;
   pagedData: pagedResult = {} as pagedResult;
   canSeeRoles: boolean = false;
+  fields = ['login', 'full_name', 'email', 'role_id'];
 
   constructor(
     private auth: AuthService,
@@ -89,6 +90,12 @@ export class UsersComponent {
   getRoleName(role_id: string): string {
     let role = this.roleIds[role_id];
     return role ? role.data.name : '-';
+  }
+
+  hasChanges(user: User) {
+    return _.some(this.fields, field => {
+      return _.get(this.newUser.data, field) !== _.get(user.data, field);
+    });
   }
 
   editUser(user: User = null) {
