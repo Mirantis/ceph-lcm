@@ -203,7 +203,7 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
 
         return pcmodel
 
-    @auth.AUTH.require_authorization("api", "delete_playbook_confuiguration")
+    @auth.AUTH.require_authorization("api", "delete_playbook_configuration")
     @validators.with_model(playbook_configuration.PlaybookConfigurationModel)
     def delete(self, item_id, item):
         try:

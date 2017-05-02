@@ -299,7 +299,7 @@ Real-world Example
                         "create_user",
                         "delete_cluster",
                         "delete_execution",
-                        "delete_playbook_confuiguration",
+                        "delete_playbook_configuration",
                         "delete_role",
                         "delete_server",
                         "delete_user",
