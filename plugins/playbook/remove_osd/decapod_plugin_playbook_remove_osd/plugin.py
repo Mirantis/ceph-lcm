@@ -20,8 +20,6 @@ from decapod_common import log
 from decapod_common import playbook_plugin
 from decapod_common.models import server
 
-from . import exceptions
-
 
 DESCRIPTION = "Remove OSD host from cluster."
 """Plugin description."""
@@ -30,67 +28,13 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class RemoveOSD(playbook_plugin.CephAnsiblePlaybook):
+class RemoveOSD(playbook_plugin.CephAnsiblePlaybookRemove):
 
     NAME = "Remove OSD host from Ceph cluster"
     DESCRIPTION = DESCRIPTION
-    PUBLIC = True
-    REQUIRED_SERVER_LIST = True
-    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.in_this_cluster
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
-        super().on_post_execute(task, exc_value, exc_type, exc_tb)
-
-        if exc_value:
-            LOG.warning("Cannot remove OSD host: %s (%s)", exc_value, exc_type)
-            raise exc_value
-
-        playbook_config = self.get_playbook_configuration(task)
-        config = playbook_config.configuration["inventory"]
-        cluster = playbook_config.cluster
-        servers = playbook_config.servers
-        servers = {srv.ip: srv for srv in servers}
-
-        group_vars = config.pop("osds")
-        group_servers = [servers[ip] for ip in group_vars]
-        cluster.remove_servers(group_servers, "osds")
-
-        if cluster.configuration.changed:
-            cluster.save()
-
-    def make_playbook_configuration(self, cluster, servers, hints):
-        cluster_config = cluster.configuration.make_api_structure()
-        if not cluster_config.get("mons"):
-            raise exceptions.NoMonitorsError(cluster.model_id)
-
-        osd_ids = {
-            item["server_id"] for item in cluster_config.get("osds", [])}
-        to_remove_ids = {srv.model_id for srv in servers}
-        unknown_servers = to_remove_ids - osd_ids
-        if unknown_servers:
-            raise exceptions.IncorrectOSDServers(cluster.model_id,
-                                                 unknown_servers)
-
-        global_vars = self.make_global_vars(cluster, servers, hints)
-        inventory = self.make_inventory(cluster, servers, hints)
-
-        return global_vars, inventory
-
-    def make_inventory(self, cluster, servers, hints):
-        groups = self.get_inventory_groups(cluster, servers, hints)
-        inventory = {"_meta": {"hostvars": {}}}
-
-        for name, group_servers in groups.items():
-            for srv in group_servers:
-                inventory.setdefault(name, []).append(srv.ip)
-                hostvars = inventory["_meta"]["hostvars"].setdefault(
-                    srv.ip, {})
-                hostvars["ansible_user"] = srv.username
-
-        return inventory
-
-    def make_global_vars(self, cluster, servers, hints):
-        return {"cluster": cluster.name}
+        super().on_post_execute("osds", task, exc_value, exc_type, exc_tb)
 
     def get_inventory_groups(self, cluster, servers, hints):
         cluster_config = cluster.configuration.make_api_structure()

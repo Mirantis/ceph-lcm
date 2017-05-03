@@ -19,7 +19,6 @@
 from decapod_common import log
 from decapod_common import playbook_plugin
 from decapod_common import playbook_plugin_hints
-from decapod_common.models import cluster_data
 
 
 DESCRIPTION = "Remove CLI/RBD client from the host"
@@ -58,13 +57,10 @@ BLOCKED_ROLES = {
 """Do not execute if server has such role."""
 
 
-class RemoveClient(playbook_plugin.Playbook):
+class RemoveClient(playbook_plugin.CephAnsiblePlaybookRemove):
 
     NAME = DESCRIPTION
     DESCRIPTION = DESCRIPTION
-    PUBLIC = True
-    REQUIRED_SERVER_LIST = True
-    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.in_this_cluster
     HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
 
     def get_dynamic_inventory(self):
@@ -83,50 +79,14 @@ class RemoveClient(playbook_plugin.Playbook):
         return inventory
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
-        super().on_post_execute(task, exc_value, exc_type, exc_tb)
-
-        if exc_value:
-            LOG.warning("Cannot remove client from host: %s (%s)",
-                        exc_value, exc_type)
-            raise exc_value
-
-        playbook_config = self.get_playbook_configuration(task)
-        config = playbook_config.configuration["inventory"]
-        cluster = playbook_config.cluster
-        servers = playbook_config.servers
-        servers = {srv.ip: srv for srv in servers}
-
-        group_vars = config.pop("clients")
-        group_servers = [servers[ip] for ip in group_vars]
-        cluster.remove_servers(group_servers, "clients")
-
-        if cluster.configuration.changed:
-            cluster.save()
-
-    def make_playbook_configuration(self, cluster, servers, hints):
-        data = cluster_data.ClusterData.find_one(cluster.model_id)
-        global_vars = self.make_global_vars(cluster, data, servers, hints)
-        inventory = self.make_inventory(cluster, data, servers, hints)
-
-        return global_vars, inventory
+        super().on_post_execute("clients", task, exc_value, exc_type, exc_tb)
 
     def make_global_vars(self, cluster, data, servers, hints):
-        return {
-            "cluster": data.global_vars.get("cluster", cluster.name),
-            "uninstall_packages": bool(hints["uninstall_packages"]),
-            "apt_purge": bool(hints["apt_purge"])
-        }
+        base = super().make_global_vars(cluster, data, servers, hints)
+        base["uninstall_packages"] = bool(hints["uninstall_packages"])
+        base["apt_purge"] = bool(hints["apt_purge"])
 
-    def make_inventory(self, cluster, data, servers, hints):
-        groups = {"clients": servers}
-        inventory = {"_meta": {"hostvars": {}}}
+        return base
 
-        for name, group_servers in groups.items():
-            for srv in group_servers:
-                inventory.setdefault(name, []).append(srv.ip)
-
-                hostvars = inventory["_meta"]["hostvars"].setdefault(
-                    srv.ip, {})
-                hostvars["ansible_user"] = srv.username
-
-        return inventory
+    def get_inventory_groups(self, cluster, servers, hints):
+        return {"clients": servers}

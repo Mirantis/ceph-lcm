@@ -27,54 +27,13 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class RemoveRgw(playbook_plugin.Playbook):
+class RemoveRgw(playbook_plugin.CephAnsiblePlaybookRemove):
 
     NAME = "Remove Rados Gateway host from cluster"
     DESCRIPTION = DESCRIPTION
-    PUBLIC = True
-    REQUIRED_SERVER_LIST = True
-    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.in_this_cluster
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
-        super().on_post_execute(task, exc_value, exc_type, exc_tb)
+        super().on_post_execute("rgws", task, exc_value, exc_type, exc_tb)
 
-        if exc_value:
-            LOG.warning("Cannot remove Rados Gateway host: %s (%s)",
-                        exc_value, exc_type)
-            raise exc_value
-
-        playbook_config = self.get_playbook_configuration(task)
-        config = playbook_config.configuration["inventory"]
-        cluster = playbook_config.cluster
-        servers = playbook_config.servers
-        servers = {srv.ip: srv for srv in servers}
-
-        group_vars = config.pop("rgws")
-        group_servers = [servers[ip] for ip in group_vars]
-        cluster.remove_servers(group_servers, "rgws")
-
-        if cluster.configuration.changed:
-            cluster.save()
-
-    def make_playbook_configuration(self, cluster, servers, hints):
-        global_vars = self.make_global_vars(cluster, servers, hints)
-        inventory = self.make_inventory(cluster, servers, hints)
-
-        return global_vars, inventory
-
-    def make_global_vars(self, cluster, servers, hints):
-        return {"cluster": cluster.name}
-
-    def make_inventory(self, cluster, servers, hints):
-        groups = {"rgws": servers}
-        inventory = {"_meta": {"hostvars": {}}}
-
-        for name, group_servers in groups.items():
-            for srv in group_servers:
-                inventory.setdefault(name, []).append(srv.ip)
-
-                hostvars = inventory["_meta"]["hostvars"].setdefault(
-                    srv.ip, {})
-                hostvars["ansible_user"] = srv.username
-
-        return inventory
+    def get_inventory_groups(self, cluster, servers, hints):
+        return {"rgws": servers}

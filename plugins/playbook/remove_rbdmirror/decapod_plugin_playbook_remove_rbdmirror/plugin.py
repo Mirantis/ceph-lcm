@@ -30,16 +30,14 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class RemoveRbdmirror(playbook_plugin.Playbook):
+class RemoveRbdmirror(playbook_plugin.CephAnsiblePlaybookRemove):
 
     NAME = "Remove RBD mirror host from cluster"
     DESCRIPTION = DESCRIPTION
-    PUBLIC = True
-    REQUIRED_SERVER_LIST = True
-    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.in_this_cluster
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
-        super().on_post_execute(task, exc_value, exc_type, exc_tb)
+        playbook_plugin.CephAnsiblePlaybook.on_post_execute(
+            self, task, exc_value, exc_type, exc_tb)
 
         if exc_value:
             raise exc_value
@@ -64,13 +62,6 @@ class RemoveRbdmirror(playbook_plugin.Playbook):
             data.host_vars[srv.ip] = hostvars
         data.save()
 
-    def make_playbook_configuration(self, cluster, servers, hints):
-        data = cluster_data.ClusterData.find_one(cluster.model_id)
-        global_vars = self.make_global_vars(cluster, data, servers, hints)
-        inventory = self.make_inventory(cluster, data, servers, hints)
-
-        return global_vars, inventory
-
     def get_dynamic_inventory(self):
         inventory = super().get_dynamic_inventory()
 
@@ -82,22 +73,5 @@ class RemoveRbdmirror(playbook_plugin.Playbook):
 
         return inventory
 
-    def make_global_vars(self, cluster, data, servers, hints):
-        return {
-            "cluster": data.global_vars.get("cluster", cluster.name)
-        }
-
-    def make_inventory(self, cluster, data, servers, hints):
-        groups = {"rbdmirrors": servers}
-        inventory = {"_meta": {"hostvars": {}}}
-
-        for name, group_servers in groups.items():
-            for srv in group_servers:
-                inventory.setdefault(name, []).append(srv.ip)
-
-                hostvars = inventory["_meta"]["hostvars"].setdefault(
-                    srv.ip, {})
-                hostvars.update(data.get_host_vars(srv.ip))
-                hostvars.setdefault("ansible_user", srv.username)
-
-        return inventory
+    def get_inventory_groups(self, cluster, servers, hints):
+        return {"rbdmirrors": servers}

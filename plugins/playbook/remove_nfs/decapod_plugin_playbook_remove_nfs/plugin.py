@@ -44,17 +44,15 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class RemoveNfs(playbook_plugin.CephAnsiblePlaybook):
+class RemoveNfs(playbook_plugin.CephAnsiblePlaybookRemove):
 
     NAME = "Remove NFS Gateway host"
     DESCRIPTION = DESCRIPTION
-    PUBLIC = True
-    REQUIRED_SERVER_LIST = True
-    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.in_this_cluster
     HINTS = playbook_plugin_hints.Hints(HINTS_SCHEMA)
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
-        super().on_post_execute(task, exc_value, exc_type, exc_tb)
+        playbook_plugin.CephAnsiblePlaybook.on_post_execute(
+            task, exc_value, exc_type, exc_tb)
 
         if exc_value:
             LOG.warning("Cannot remove NFS gateway host: %s (%s)",
@@ -79,34 +77,16 @@ class RemoveNfs(playbook_plugin.CephAnsiblePlaybook):
         if cluster.configuration.changed:
             cluster.save()
 
-    def make_playbook_configuration(self, cluster, servers, hints):
-        global_vars = self.make_global_vars(cluster, servers, hints)
-        inventory = self.make_inventory(cluster, servers, hints)
+    def make_global_vars(self, cluster, data, servers, hints):
+        base = super().make_global_vars(cluster, data, servers, hints)
+        base["ceph_nfs_rgw_user"] = data.global_vars["ceph_nfs_rgw_user"]
+        base["remove_nfs_rgw_user"] = bool(hints["remove_nfs_rgw_user"])
 
-        return global_vars, inventory
+        return base
 
-    def make_global_vars(self, cluster, servers, hints):
-        result = super().make_global_vars(cluster, servers, hints)
-
-        return {
-            "cluster": result["cluster"],
-            "ceph_nfs_rgw_user": result["ceph_nfs_rgw_user"],
-            "remove_nfs_rgw_user": bool(hints["remove_nfs_rgw_user"])
-        }
-
-    def make_inventory(self, cluster, servers, hints):
+    def get_inventory_groups(self, cluster, data, servers, hints):
         groups = {"nfss": servers}
         if hints["remove_rgw"]:
             groups["rgws"] = servers
 
-        inventory = {"_meta": {"hostvars": {}}}
-
-        for name, group_servers in groups.items():
-            for srv in group_servers:
-                inventory.setdefault(name, []).append(srv.ip)
-
-                hostvars = inventory["_meta"]["hostvars"].setdefault(
-                    srv.ip, {})
-                hostvars["ansible_user"] = srv.username
-
-        return inventory
+        return groups

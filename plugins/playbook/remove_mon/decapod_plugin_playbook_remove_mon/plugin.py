@@ -18,6 +18,7 @@
 
 from decapod_common import log
 from decapod_common import playbook_plugin
+from decapod_common.models import cluster_data
 
 from . import exceptions
 
@@ -29,34 +30,13 @@ LOG = log.getLogger(__name__)
 """Logger."""
 
 
-class RemoveMon(playbook_plugin.CephAnsiblePlaybook):
+class RemoveMon(playbook_plugin.CephAnsiblePlaybookRemove):
 
     NAME = "Remove monitor host from Ceph cluster"
     DESCRIPTION = DESCRIPTION
-    PUBLIC = True
-    REQUIRED_SERVER_LIST = True
-    SERVER_LIST_POLICY = playbook_plugin.ServerListPolicy.in_this_cluster
 
     def on_post_execute(self, task, exc_value, exc_type, exc_tb):
-        super().on_pre_execute(task)
-
-        if exc_value:
-            LOG.warning("Cannot remove monitor host: %s (%s)",
-                        exc_value, exc_type)
-            raise exc_value
-
-        playbook_config = self.get_playbook_configuration(task)
-        config = playbook_config.configuration["inventory"]
-        cluster = playbook_config.cluster
-        servers = playbook_config.servers
-        servers = {srv.ip: srv for srv in servers}
-
-        group_vars = config.pop("mons")
-        group_servers = [servers[ip] for ip in group_vars]
-        cluster.remove_servers(group_servers, "mons")
-
-        if cluster.configuration.changed:
-            cluster.save()
+        super().on_post_execute("mons", task, exc_value, exc_type, exc_tb)
 
     def make_playbook_configuration(self, cluster, servers, hints):
         cluster_config = cluster.configuration.make_api_structure()
@@ -74,24 +54,11 @@ class RemoveMon(playbook_plugin.CephAnsiblePlaybook):
         if mon_ids == to_remove_ids:
             raise exceptions.CannotRemoveAllMonitors(cluster.model_id)
 
-        global_vars = self.make_global_vars(cluster, servers, hints)
-        inventory = self.make_inventory(cluster, servers, hints)
+        data = cluster_data.ClusterData.find_one(cluster.model_id)
+        global_vars = self.make_global_vars(cluster, data, servers, hints)
+        inventory = self.make_inventory(cluster, data, servers, hints)
 
         return global_vars, inventory
 
-    def make_global_vars(self, cluster, servers, hints):
-        return {"cluster": cluster.name}
-
-    def make_inventory(self, cluster, servers, hints):
-        groups = {"mons": servers}
-        inventory = {"_meta": {"hostvars": {}}}
-
-        for name, group_servers in groups.items():
-            for srv in group_servers:
-                inventory.setdefault(name, []).append(srv.ip)
-
-                hostvars = inventory["_meta"]["hostvars"].setdefault(
-                    srv.ip, {})
-                hostvars["ansible_user"] = srv.username
-
-        return inventory
+    def get_inventory_groups(self, cluster, servers, hints):
+        return {"mons": servers}
