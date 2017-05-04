@@ -23,6 +23,8 @@
   shell: ssh-keyscan -T 10 -H {{ item }} >> .ssh/known_hosts
   with_items: "{{ ssh_known_hosts }}"
   when: no_known_hosts.changed
+  tags:
+  - skip_ansible_lint
 
 - name: Copy local keypair to the box
   copy: src=~/.ssh/{{ item }}

@@ -30,3 +30,5 @@
   command: bash -ic "stow -t ~ -R {{ item }}" chdir=.dotfiles
   with_items: "{{ stow_dotfiles }}"
   when: dotfiles.changed
+  tags:
+  - skip_ansible_lint

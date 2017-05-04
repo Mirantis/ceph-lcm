@@ -24,3 +24,5 @@
   lineinfile: dest=.bashrc
               line='eval "$(keychain --nocolor --eval --agents ssh,gpg id_rsa 2> /dev/null)"'
   when: keychain_installed.changed
+  tags:
+  - skip_ansible_lint

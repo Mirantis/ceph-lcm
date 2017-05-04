@@ -52,8 +52,12 @@
   become: true
   command: systemctl enable mongodb.service
   when: script_result.changed
+  tags:
+  - skip_ansible_lint
 
 - name: Restart mongodb service
   become: true
   command: systemctl restart mongodb.service
   when: script_result.changed
+  tags:
+  - skip_ansible_lint
