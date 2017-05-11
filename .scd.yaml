@@ -28,9 +28,9 @@ defaults:
 files:
   docs/source/conf.py:
     - search_raw: '^version\s=.*$'
-      replace_raw: "version = '{{ major }}.{{ minor }}'"
+      replace_raw: 'version = "{{ major }}.{{ minor }}"'
     - search_raw: '^release\s=.*$'
-      replace_raw: "release = '{{ full }}'"
+      replace_raw: 'release = "{{ full }}"'
 
   containerization/backend-admin.dockerfile:
     - search: docker
@@ -114,12 +114,47 @@ files:
       replace: setuppy
     - search: pycommon
       replace: pycommon_mm
+  plugins/playbook/add_client/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/add_mds/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
   plugins/playbook/add_mon/setup.py:
     - search: setuppy
       replace: setuppy
     - search: pycommon
       replace: pycommon_mm
+  plugins/playbook/add_nfs/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
   plugins/playbook/add_osd/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/add_rbdmirror/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/add_restapi/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/add_rgw/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/cinder_integration/setup.py:
     - search: setuppy
       replace: setuppy
     - search: pycommon
@@ -144,7 +179,22 @@ files:
       replace: setuppy
     - search: pycommon
       replace: pycommon_mm
-  plugins/playbook/purge_cluster/setup.py:
+  plugins/playbook/remove_client/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/remove_mds/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/remove_mon/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/remove_nfs/setup.py:
     - search: setuppy
       replace: setuppy
     - search: pycommon
@@ -154,7 +204,22 @@ files:
       replace: setuppy
     - search: pycommon
       replace: pycommon_mm
-  plugins/playbook/remove_mon/setup.py:
+  plugins/playbook/remove_rbdmirror/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/remove_restapi/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/remove_rgw/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/restart_services/setup.py:
     - search: setuppy
       replace: setuppy
     - search: pycommon
@@ -169,7 +234,12 @@ files:
       replace: setuppy
     - search: pycommon
       replace: pycommon_mm
-  plugins/playbook/cinder_integration/setup.py:
+  plugins/playbook/update_ceph_configuration/setup.py:
+    - search: setuppy
+      replace: setuppy
+    - search: pycommon
+      replace: pycommon_mm
+  plugins/playbook/upgrade_ceph/setup.py:
     - search: setuppy
       replace: setuppy
     - search: pycommon
@@ -215,12 +285,47 @@ files:
       replace: deb_common_min
     - search: deb_common_max
       replace: deb_common_max
+  plugins/playbook/add_client/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/add_mds/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
   plugins/playbook/add_mon/stdeb.cfg:
     - search: deb_common_min
       replace: deb_common_min
     - search: deb_common_max
       replace: deb_common_max
+  plugins/playbook/add_nfs/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
   plugins/playbook/add_osd/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/add_rbdmirror/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/add_restapi/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/add_rgw/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/cinder_integration/stdeb.cfg:
     - search: deb_common_min
       replace: deb_common_min
     - search: deb_common_max
@@ -240,7 +345,52 @@ files:
       replace: deb_common_min
     - search: deb_common_max
       replace: deb_common_max
+  plugins/playbook/purge_telegraf/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/remove_client/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/remove_mds/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/remove_mon/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/remove_nfs/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
   plugins/playbook/remove_osd/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/remove_rbdmirror/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/remove_restapi/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/remove_rgw/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/restart_services/stdeb.cfg:
     - search: deb_common_min
       replace: deb_common_min
     - search: deb_common_max
@@ -255,7 +405,12 @@ files:
       replace: deb_common_min
     - search: deb_common_max
       replace: deb_common_max
-  plugins/playbook/cinder_integration/stdeb.cfg:
+  plugins/playbook/update_ceph_configuration/stdeb.cfg:
+    - search: deb_common_min
+      replace: deb_common_min
+    - search: deb_common_max
+      replace: deb_common_max
+  plugins/playbook/upgrade_ceph/stdeb.cfg:
     - search: deb_common_min
       replace: deb_common_min
     - search: deb_common_max

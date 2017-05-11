@@ -1,0 +1,133 @@
+.. _decapod_config_yaml_example:
+
+===========================
+Decapod config.yaml example
+===========================
+
+The following is an example of the default Decapod configuration file for
+containers:
+
+.. code-block:: yaml
+
+    ---
+    common:
+      password:
+        length: 10
+        time_cost: 10
+        memory_cost: 2048
+        parallelism: 3
+        hash_len: 32
+        salt_len: 16
+      password_reset_ttl_in_seconds: 86400  # 1 day
+      email:
+        enabled: false
+        from: "noreply@mirantis.com"
+        host: "localhost"
+        port: 25
+        login: ""
+        password: ""
+
+    # Options here are Flask options so please check
+    # http://flask.pocoo.org/docs/0.11/config/#builtin-configuration-values
+    api:
+      debug: false
+      testing: false
+      logger_name: "decapod.decapod_api.wsgi"
+      logger_handler_policy: "never"
+      json_sort_keys: faluse
+      jsonify_prettyprint_regular: false
+      json_as_ascii: false
+      pagination_per_page: 25
+      server_discovery_token: "26758c32-3421-4f3d-9603-e4b5337e7ecc"
+      reset_password_url: "http://127.0.0.1/password_reset/{reset_token}/"
+      token:
+        ttl_in_seconds: 1800
+      logging:
+        propagate: true
+        level: "DEBUG"
+        handlers:
+          - "stderr_debug"
+      auth:
+        type: native
+        parameters: {}
+        # type: keystone
+        # parameters:
+        #   auth_url: http://keystone:5000/v3
+        #   username: admin
+        #   password: nomoresecret
+        #   project_domain_name: default
+        #   project_name: admin
+        #   user_domain_name: default
+
+    controller:
+      pidfile: "/tmp/decapod-controller.pid"
+      daemon: false
+      ansible_config: "/etc/ansible/ansible.cfg"
+      # 0 worker_threads means that we will have 2 * CPU count threads
+      worker_threads: 0
+      graceful_stop: 10
+      logging:
+        propagate: true
+        level: "DEBUG"
+        handlers:
+          - "stderr_debug"
+
+    cron:
+      clean_finished_tasks_after_seconds: 2592000  # 60 * 60 * 24 * 30; 30 days
+
+    db:
+      uri: "mongodb://database:27017/decapod?ssl=true"
+      connect: false
+      connect_timeout: 5000  # ms, 5 seconds
+      socket_timeout: 5000  # ms, 5 seconds
+      pool_size: 50
+      gridfs_chunk_size_in_bytes: 261120  # 255 kilobytes
+
+    plugins:
+      alerts:
+        enabled: []
+        email:
+          enabled: false
+          send_to:
+            - "bigboss@example.com"
+          from: "errors@example.com"
+      playbooks:
+        disabled:
+          - hello_world
+
+    # Default Python logging is used.
+    # https://docs.python.org/2/library/logging.config.html#dictionary-schema-details
+    logging:
+      version: 1
+      incremental: false
+      disable_existing_loggers: true
+      root:
+        handlers: []
+      filters: {}
+      formatters:
+        stderr_default:
+          format: "%(asctime)s [%(levelname)-8s]: %(message)s"
+          datefmt: "%Y-%m-%d %H:%M:%S"
+        stderr_debug:
+          format: "%(asctime)s [%(levelname)-8s] (%(filename)15s:%(lineno)-4d): %(message)s"
+          datefmt: "%Y-%m-%d %H:%M:%S"
+        syslog:
+          format: "%(name)s %(asctime)s [%(levelname)-8s]: %(message)s"
+          datefmt: "%Y-%m-%d %H:%M:%S"
+      handlers:
+        stderr_debug:
+          class: "logging.StreamHandler"
+          formatter: "stderr_debug"
+          level: "DEBUG"
+        stderr_default:
+          class: "logging.StreamHandler"
+          formatter: "stderr_default"
+          level: "DEBUG"
+        syslog:
+          class: "logging.handlers.SysLogHandler"
+          formatter: "syslog"
+          level: "DEBUG"
+
+.. seealso::
+
+   :ref:`Decapod config.yaml settings description <decapod_config_yaml_description>`

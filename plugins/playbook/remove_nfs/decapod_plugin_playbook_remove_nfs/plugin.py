@@ -84,7 +84,7 @@ class RemoveNfs(playbook_plugin.CephAnsiblePlaybookRemove):
 
         return base
 
-    def get_inventory_groups(self, cluster, data, servers, hints):
+    def get_inventory_groups(self, cluster, servers, hints):
         groups = {"nfss": servers}
         if hints["remove_rgw"]:
             groups["rgws"] = servers
