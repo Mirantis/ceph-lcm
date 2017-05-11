@@ -8,6 +8,38 @@ The format is based on `Keep a Changelog <http://keepachangelog.com>`_
 and this project adheres to `Sematic Versioning <http://semver.org>`_.
 
 
+-----------
+[1.1] - XXX
+-----------
+
+Added
+*****
+
+* New plugins were updated. Decapod is in parity with `ceph-ansible
+  <https://github.com/ceph/ceph-ansible>`_ project. New plugins are:
+  * Add CLI/RBD client
+  * Add MDS server
+  * Add NFS Gateway to Rados Gateway
+  * Add Ceph REST API server
+  * Add RBD Mirror server
+  * Add Rados Gateway server
+  * Remove CLI/RBD client
+  * Remove NFS Gateway from Rados Gateway
+  * Remove RBD Mirror server
+  * Remove Ceph REST API
+  * Remove Rados Gateway
+  * Restart Ceph Services
+  * Update Ceph Configuration
+  * Upgrade Ceph Cluster
+* Support for NIC aliases on generating playbook configurations
+* More consistent user permission support on UI
+
+Changed
+*******
+
+* Upgrade ceph-ansible to v2.2.4
+* Upgrade of Ansible to 2.3.0.0
+
 
 ------------------
 [1.0] - 2017-03-14
