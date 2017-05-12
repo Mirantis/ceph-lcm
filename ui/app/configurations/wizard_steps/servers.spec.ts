@@ -135,7 +135,7 @@ describe('Configuration wizard: servers step component', () => {
     beforeEach(() => {
       component.model.data.cluster_id = 'dummy_cluster_id1';
       component.servers = _.map(_.range(0, 10), (index) => new Server({
-        id: index,
+        id: '' + index,
         data: {
           name: 'name' + index,
           fqdn: 'name' + index,
@@ -157,32 +157,32 @@ describe('Configuration wizard: servers step component', () => {
 
     it('returns servers that belong to the selected cluster for "in_this_cluster" policy', () => {
       imitatePolicy('in_this_cluster');
-      expect(getServersIds()).toEqual([3, 4, 5, 6]);
+      expect(getServersIds()).toEqual(['3', '4', '5', '6']);
     });
 
     it('returns servers that do not belong to the selected cluster for "not_in_this_cluster" policy', () => {
       imitatePolicy('not_in_this_cluster');
-      expect(getServersIds()).toEqual([0, 1, 2, 7, 8, 9]);
+      expect(getServersIds()).toEqual(['0', '1', '2', '7', '8', '9']);
     });
 
     it('returns servers that are not in selected cluster for "in_other_cluster" policy', () => {
       imitatePolicy('in_other_cluster');
-      expect(getServersIds()).toEqual([7, 8, 9]);
+      expect(getServersIds()).toEqual(['7', '8', '9']);
     });
 
     it('returns unassigned servers or ones that belong to selected cluster for "not_in_other_cluster" policy', () => {
       imitatePolicy('not_in_other_cluster');
-      expect(getServersIds()).toEqual([0, 1, 2, 3, 4, 5, 6]);
+      expect(getServersIds()).toEqual(['0', '1', '2', '3', '4', '5', '6']);
     });
 
     it('returns assigned to clusters servers for "in_any_cluster" policy', () => {
       imitatePolicy('in_any_cluster');
-      expect(getServersIds()).toEqual([3, 4, 5, 6, 7, 8, 9]);
+      expect(getServersIds()).toEqual(['3', '4', '5', '6', '7', '8', '9']);
     });
 
     it('returns unassigned to clusters servers for "not_in_any_cluster" policy', () => {
       imitatePolicy('not_in_any_cluster');
-      expect(getServersIds()).toEqual([0, 1, 2]);
+      expect(getServersIds()).toEqual(['0', '1', '2']);
     });
   });
 });
