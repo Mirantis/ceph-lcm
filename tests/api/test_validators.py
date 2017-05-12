@@ -157,6 +157,24 @@ def test_require_schema_uuid_ok():
     function(mck)
 
 
+@pytest.mark.parametrize("version", (
+    # these were taken from complains on failed discovery
+    "04D192B0-7F16-4071-80B5-FD55F7A57DB1",
+    "E840B5D9-B4A3-414E-A75F-E27779911998"
+))
+def test_known_funky_uuids(version):
+    schema = {
+        "data": {"$ref": "#/definitions/uuid4"}
+    }
+    schema = validators.create_data_schema(schema)
+    function = validators.require_schema(schema)(dummy_function)
+
+    mck = mock.MagicMock()
+    mck.request_json = {"data": pytest.faux.gen_uuid()}
+
+    function(mck)
+
+
 @pytest.mark.parametrize("wrap_into_array", (True, False))
 @pytest.mark.parametrize("value", (
     "", 0, 1, -1, {}, None, 1.0, "1",
