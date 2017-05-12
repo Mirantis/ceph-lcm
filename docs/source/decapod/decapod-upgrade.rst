@@ -15,6 +15,7 @@ upgrade Decapod from version *X* to *X+3*, first upgrade to *X+1*, then to
 
    decapod-upgrade/verify-decapod-version.rst
    decapod-upgrade/upgrade-from-0-1-to-1-0.rst
+   decapod-upgrade/upgrade-from-1-0-to-1-1.rst
 
 .. seealso::
 
