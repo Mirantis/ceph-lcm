@@ -25,6 +25,7 @@ Deployment Guide
 
    install-decapod/prerequisites.rst
    install-decapod/install-decapod.rst
+   install-decapod/install-cli.rst
    install-decapod/configure-docker-compose.rst
 
 
