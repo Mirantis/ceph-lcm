@@ -20,7 +20,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapod-common~=1.1",
+    "decapod-common~=1.1.dev1",
 )
 
 
@@ -28,7 +28,7 @@ setuptools.setup(
     name="decapod-plugin-alerts-emails",
     description="Decapod email alerts plugin",
     long_description="",  # TODO
-    version="1.1.0",
+    version="1.1.1.dev1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

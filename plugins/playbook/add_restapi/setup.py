@@ -23,7 +23,7 @@ import setuptools
 setuptools.setup(
     name="decapod-plugin-playbook-add-restapi",
     description="Add Ceph REST API host",
-    version="1.1.0",
+    version="1.1.1.dev1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
@@ -42,7 +42,7 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "decapod-common~=1.1"
+        "decapod-common~=1.1.dev1"
     ],
     zip_safe=False
 )

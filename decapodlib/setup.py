@@ -30,7 +30,7 @@ setuptools.setup(
     name="decapodlib",
     description="Decapod client library",
     long_description="",  # TODO
-    version="1.1.0",
+    version="1.1.1.dev1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

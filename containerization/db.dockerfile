@@ -19,7 +19,7 @@ FROM docker-prod-virtual.docker.mirantis.net/mongo:3.4
 MAINTAINER Mirantis Inc.
 
 
-LABEL version="1.1.0" description="Base image with database for Decapod" vendor="Mirantis"
+LABEL version="1.1.1" description="Base image with database for Decapod" vendor="Mirantis"
 ARG pip_index_url=
 ARG npm_registry_url=
 
