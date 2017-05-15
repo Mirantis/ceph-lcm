@@ -23,7 +23,7 @@ import setuptools
 setuptools.setup(
     name="decapod-plugin-playbook-purge-cluster",
     description="Purge cluster plugin for Decapod",
-    version="1.1.0",
+    version="1.2.0.dev1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
@@ -42,7 +42,7 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "decapod-common~=1.1"
+        "decapod-common~=1.2.dev1"
     ],
     zip_safe=False
 )

@@ -8,6 +8,11 @@ The format is based on `Keep a Changelog <http://keepachangelog.com>`_
 and this project adheres to `Sematic Versioning <http://semver.org>`_.
 
 
+-----------
+[1.2] - XXX
+-----------
+
+
 ------------------
 [1.1] - 2017-05-15
 ------------------
@@ -39,6 +44,20 @@ Changed
 
 * Upgrade ceph-ansible to v2.2.4
 * Upgrade of Ansible to 2.3.0.0
+
+
+
+--------------------
+[1.0.1] - 2017-05-15
+--------------------
+
+Changed
+*******
+
+* Fixes for `cidner_integration` playbook
+* Correct task canceling
+* Support for NIC aliases on playbook generation
+* More liberal verification of IDs on server discovery
 
 
 ------------------
