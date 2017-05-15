@@ -3,7 +3,7 @@
 config: 1
 
 version:
-  number: "1.0.1"
+  number: "1.0.2.dev1"
   scheme: pep440
 
 search_patterns:
