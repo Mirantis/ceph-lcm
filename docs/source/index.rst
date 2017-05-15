@@ -46,3 +46,15 @@ Operational Guide
    decapod/debug-snapshot.rst
    decapod/decapod-upgrade.rst
    decapod/userdocs/backup-restore.rst
+
+
+API Reference
+-------------
+
+.. toctree::
+   :maxdepth: 1
+
+   api-reference/data-models.rst
+   api-reference/api-models.rst
+   api-reference/usage.rst
+   api-reference/decapodlib.rst
