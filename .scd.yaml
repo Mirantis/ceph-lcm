@@ -1,7 +1,9 @@
+---
+
 config: 1
 
 version:
-  number: "1.0.1.dev1"
+  number: "1.0.1"
   scheme: pep440
 
 search_patterns:
@@ -77,6 +79,8 @@ files:
     - search_raw: '(?<=decapod-api~=){{ pep440 }}'
       replace: pycommon_mm
     - search_raw: '(?<=decapod-controller~=){{ pep440 }}'
+      replace: pycommon_mm
+    - search_raw: '(?<=decapod-common~=){{ pep440 }}'
       replace: pycommon_mm
   backend/ansible/setup.py:
     - search: setuppy

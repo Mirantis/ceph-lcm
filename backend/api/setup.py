@@ -20,7 +20,7 @@ import setuptools
 
 
 REQUIREMENTS = (
-    "decapod-common~=1.0.dev1",
+    "decapod-common~=1.0",
     "Flask>=0.12,<0.13",
     "jsonschema>=2.6,<2.7"
 )
@@ -30,7 +30,7 @@ setuptools.setup(
     name="decapod-api",
     description="Decapod API service",
     long_description="",  # TODO
-    version="1.0.1.dev1",
+    version="1.0.1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     maintainer="Sergey Arkhipov",

@@ -23,7 +23,7 @@ import setuptools
 setuptools.setup(
     name="decapod-plugin-playbook-telegraf-integration",
     description="Telegraf Integration Plugin for Decapod",
-    version="1.0.1.dev1",
+    version="1.0.1",
     author="Sergey Arkhipov",
     author_email="sarkhipov@mirantis.com",
     url="https://github.com/Mirantis/ceph-lcm",
@@ -43,7 +43,7 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        "decapod-common~=1.0.dev1"
+        "decapod-common~=1.0"
     ],
     zip_safe=False
 )
