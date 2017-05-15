@@ -8,9 +8,9 @@ The format is based on `Keep a Changelog <http://keepachangelog.com>`_
 and this project adheres to `Sematic Versioning <http://semver.org>`_.
 
 
------------
-[1.1] - XXX
------------
+------------------
+[1.1] - 2017-05-15
+------------------
 
 Added
 *****
