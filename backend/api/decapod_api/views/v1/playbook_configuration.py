@@ -20,6 +20,7 @@ from decapod_api import auth
 from decapod_api import exceptions as http_exceptions
 from decapod_api import validators
 from decapod_api.views import generic
+from decapod_api.views.v1 import misc
 from decapod_common import exceptions as base_exceptions
 from decapod_common import log
 from decapod_common import plugins
@@ -68,6 +69,7 @@ POST_SCHEMA = {
     }
 }
 POST_SCHEMA = validators.create_data_schema(POST_SCHEMA, True)
+POST_SCHEMA["properties"]["run"] = {"type": "boolean"}
 """Schema for the creating new playbook configuration."""
 
 LOG = log.getLogger(__name__)
@@ -174,34 +176,27 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
                 exc
             )
 
-        try:
-            pcmodel = playbook_configuration.PlaybookConfigurationModel.create(
-                name=self.request_json["name"],
-                playbook_id=self.request_json["playbook_id"],
-                cluster=cluster_model,
-                servers=servers_for_playbook,
-                initiator_id=self.initiator_id,
-                hints=self.request_json["hints"]
-            )
-        except base_exceptions.UniqueConstraintViolationError as exc:
-            LOG.warning(
-                "Cannot create cluster %s (unique constraint "
-                "violation)",
-                self.request_json["name"]
-            )
-            raise http_exceptions.ImpossibleToCreateSuchModel() from exc
-        except base_exceptions.ClusterMustBeDeployedError as exc:
-            mid = cluster_model.model_id
-            LOG.warning(
-                "Attempt to create playbook configuration for not "
-                "deployed cluster %s", mid)
-            raise http_exceptions.ClusterMustBeDeployedError(mid) from exc
+        run_after = self.request_json.get("run", False)
+        parameters = {
+            "name": self.request_json["name"],
+            "playbook_id": self.request_json["playbook_id"],
+            "cluster_model": cluster_model,
+            "servers": servers_for_playbook,
+            "initiator_id": self.initiator_id,
+            "hints": self.request_json["hints"]
+        }
+        with misc.created_playbook_configuration_model(
+                **parameters, delete_on_fail=run_after) as model:
+            response = model.make_api_structure()
+            response["data"]["created_execution_id"] = None
 
-        LOG.info("Playbook configuration %s (%s) created by %s",
-                 self.request_json["name"], pcmodel.model_id,
-                 self.initiator_id)
+            if run_after:
+                with misc.created_execution_model(
+                        model, self.initiator_id) as exc_model:
+                    response["data"]["created_execution_id"] = \
+                        exc_model.model_id
 
-        return pcmodel
+            return response
 
     @auth.AUTH.require_authorization("api", "delete_playbook_configuration")
     @validators.with_model(playbook_configuration.PlaybookConfigurationModel)

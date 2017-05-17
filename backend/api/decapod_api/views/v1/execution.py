@@ -25,6 +25,7 @@ from decapod_api import auth
 from decapod_api import exceptions as http_exceptions
 from decapod_api import validators
 from decapod_api.views import generic
+from decapod_api.views.v1 import misc
 from decapod_common import exceptions as base_exceptions
 from decapod_common import log
 from decapod_common.models import execution
@@ -108,35 +109,8 @@ class ExecutionView(generic.VersionedCRUDView):
                 pc_id, pc_version
             )
 
-        auth.AUTH.check_auth_permission(flask.g.token.user,
-                                        "playbook", config.playbook_id)
-        if config.cluster.time_deleted:
-            raise http_exceptions.CannotExecuteOnDeletedCluster(
-                config.cluster_id)
-
-        model = execution.ExecutionModel.create(config, self.initiator_id)
-        LOG.info(
-            "Created execution %s for playbook configuration %s of "
-            "version %s",
-            model.model_id, config.model_id, config.version
-        )
-
-        try:
-            tsk = task.PlaybookPluginTask(
-                config.playbook_id, config._id, model.model_id
-            )
-            tsk.create()
-        except Exception as exc:
-            LOG.error("Cannot create task for execution %s: %s",
-                      model.model_id, exc)
-            model.state = execution.ExecutionState.failed
-            model.save()
-            raise
-        else:
-            LOG.info("Created task for execution %s: %s",
-                     model.model_id, tsk._id)
-
-        return model
+        with misc.created_execution_model(config, self.initiator_id) as model:
+            return model
 
     @auth.AUTH.require_authorization("api", "delete_execution")
     @validators.with_model(execution.ExecutionModel)

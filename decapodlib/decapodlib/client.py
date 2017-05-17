@@ -848,7 +848,8 @@ class V1Client(Client):
         return self._session.get(url, **kwargs)
 
     def create_playbook_configuration(self, name, cluster_id, playbook_id,
-                                      server_ids, hints=None, **kwargs):
+                                      server_ids, hints=None, run_after=False,
+                                      **kwargs):
         """This method creates new playbook configuration model.
 
         This method does ``POST /v1/playbook_configuration/`` endpoint
@@ -876,6 +877,7 @@ class V1Client(Client):
             form of server model IDs.
         :type server_ids: [:py:class:`str`, ...]
         :param list hints: List of hints for playbook configuration.
+        :param bool run_after: Run playbook configuration after create.
         :return: New cluster model.
         :rtype: dict
         :raises decapodlib.exceptions.DecapodError: if not possible to
@@ -890,7 +892,8 @@ class V1Client(Client):
             "cluster_id": cluster_id,
             "playbook_id": playbook_id,
             "server_ids": list(set(server_ids)),
-            "hints": hints or []
+            "hints": hints or [],
+            "run": run_after
         }
 
         return self._session.post(url, json=payload, **kwargs)

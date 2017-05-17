@@ -21,6 +21,7 @@ import pytest
 from decapod_common import playbook_plugin
 from decapod_common import plugins
 from decapod_common.models import playbook_configuration
+from decapod_common.models import role
 from decapod_common.models import server
 
 
@@ -164,8 +165,43 @@ def test_create_new_playbook_configuration(
     assert response.status_code == 200
     for key in "name", "playbook_id":
         assert response.json["data"][key] == valid_post_request[key]
+    assert response.json["data"]["created_execution_id"] is None
 
     assert isinstance(response.json["data"]["configuration"], dict)
+
+
+def test_create_and_run_new_playbook_configuration_nok(
+        sudo_client_v1, valid_post_request):
+    valid_post_request["run"] = True
+
+    items_before = sudo_client_v1.get("/v1/playbook_configuration/")
+    response = sudo_client_v1.post("/v1/playbook_configuration/",
+                                   data=valid_post_request)
+    items_after = sudo_client_v1.get("/v1/playbook_configuration/")
+
+    assert response.status_code == 403
+    assert items_before.json == items_after.json
+
+
+def test_create_and_run_new_playbook_configuration_ok(
+        sudo_client_v1, sudo_role, valid_post_request):
+    valid_post_request["run"] = True
+
+    role.PermissionSet.add_permission(
+        "playbook", valid_post_request["playbook_id"])
+    sudo_role.add_permissions("playbook", [valid_post_request["playbook_id"]])
+    sudo_role.save()
+
+    response = sudo_client_v1.post("/v1/playbook_configuration/",
+                                   data=valid_post_request)
+    assert response.status_code == 200
+    assert response.json["data"]["created_execution_id"]
+
+    response2 = sudo_client_v1.get(
+        "/v1/execution/{0}/".format(
+            response.json["data"]["created_execution_id"]))
+    assert response2.status_code == 200
+    assert response2.json["data"]["state"] == "created"
 
 
 def test_create_new_playbook_configuration_unknown_playbook(
