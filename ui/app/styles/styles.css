@@ -7912,6 +7912,12 @@ longdata ul li {
 .wizard-step .has-error .form-control.ng-untouched {
   border-color: inherit;
 }
+.wizard-step .single-row {
+  margin: 0 -15px 15px -15px;
+}
+.wizard-step .single-row input[type='checkbox'] {
+  margin-right: 4px;
+}
 .login-background {
   position: absolute;
   top: 0;

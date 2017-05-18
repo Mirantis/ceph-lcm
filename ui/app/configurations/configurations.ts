@@ -139,7 +139,12 @@ export class ConfigurationsComponent implements OnInit {
             _.omit(configuration, ['playbook_id', 'cluster_id', 'name', 'server_ids', 'hints'])
           );
           this.model = pureConfig;
-          this.refreshConfigurations(this.pagedData.page);
+
+          if (_.get(configuration, 'data.created_execution_id')) {
+            this.router.navigate(['/executions']);
+          } else {
+            this.refreshConfigurations(this.pagedData.page);
+          }
         }
       )
       .catch(

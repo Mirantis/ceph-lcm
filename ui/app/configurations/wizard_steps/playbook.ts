@@ -40,6 +40,7 @@ export class PlaybookStep extends WizardStepBase {
   init() {
     this.selectedPlaybook = null;
     this.initModelProperty('data.playbook_id', '');
+    this.initModelProperty('data.run', false);
   }
 
   constructor(wizard: WizardService, private data: DataService) {

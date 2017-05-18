@@ -25,7 +25,7 @@ import { BaseModel } from './models';
 // Every wizard step should be wrapped into the <step> tag
 @Component({
   selector: 'step',
-  template: `<div *ngIf="isSelected()" class="wizard-step"><h1>{{title}}</h1><ng-content></ng-content></div>`
+  templateUrl: './app/templates/wizard_step.html'
 })
 export class WizardStepContainer {
   id = Math.random();
