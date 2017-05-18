@@ -66,9 +66,9 @@ RUN set -x \
   && wget --no-check-certificate https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64.deb \
   && dpkg -i dumb-init_1.2.0_amd64.deb \
   && rm dumb-init_*.deb \
-  && wget --no-check-certificate https://github.com/jwilder/dockerize/releases/download/v0.3.0/dockerize-linux-amd64-v0.3.0.tar.gz \
-  && tar -C /usr/local/bin -xzf dockerize-linux-amd64-v0.3.0.tar.gz \
-  && rm dockerize-linux-amd64-v0.3.0.tar.gz \
+  && wget --no-check-certificate https://github.com/jwilder/dockerize/releases/download/v0.4.0/dockerize-linux-amd64-v0.4.0.tar.gz \
+  && tar -C /usr/local/bin -xzf dockerize-linux-amd64-v0.4.0.tar.gz \
+  && rm dockerize-linux-amd64-v0.4.0.tar.gz \
   && pip3 --no-cache-dir --disable-pip-version-check install 'scd[yaml]~=1.2' \
   && echo "base=$(scd -s git_pep440 -p)" > /etc/decapod-release \
   && scd -s git_pep440 -v \

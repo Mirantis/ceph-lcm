@@ -50,9 +50,9 @@ COPY .git            /project/.git
 RUN set -x \
   && apt-get update \
   && apt-get install -y --no-install-recommends curl wget xz-utils git \
-  && wget https://github.com/jwilder/dockerize/releases/download/v0.3.0/dockerize-linux-amd64-v0.3.0.tar.gz \
-  && tar -C /usr/local/bin -xzf dockerize-linux-amd64-v0.3.0.tar.gz \
-  && rm dockerize-linux-amd64-v0.3.0.tar.gz \
+  && wget https://github.com/jwilder/dockerize/releases/download/v0.4.0/dockerize-linux-amd64-v0.4.0.tar.gz \
+  && tar -C /usr/local/bin -xzf dockerize-linux-amd64-v0.4.0.tar.gz \
+  && rm dockerize-linux-amd64-v0.4.0.tar.gz \
   && wget https://nodejs.org/dist/v6.9.4/node-v6.9.4-linux-x64.tar.xz \
   && tar xf node-v6.9.4-linux-x64.tar.xz \
   && mkdir -p /static /ssl /etc/nginx \
