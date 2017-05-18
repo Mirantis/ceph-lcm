@@ -27,7 +27,12 @@ REQUIREMENTS = (
     "python-keystoneclient>=3.9,<4",
     "click>=6,<7",
     "cryptography>=1.4,<2",
-    "asyncssh[libnacl,bcrypt]>=1.8,<2"
+    "asyncssh[libnacl,bcrypt]>=1.8,<2",
+    # 3.15.1 brings Babel!=2.4.0 line which is controversal
+    # to requirements in Keystone. Therefore installation is broken.
+    # next version will eliminate runtime dependency to Babel
+    # completely (first commit after tag 3.15.1)
+    "oslo.i18n!=3.15.1"
 )
 
 
