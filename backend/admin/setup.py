@@ -32,7 +32,7 @@ REQUIREMENTS = (
     # to requirements in Keystone. Therefore installation is broken.
     # next version will eliminate runtime dependency to Babel
     # completely (first commit after tag 3.15.1)
-    "oslo.i18n!=3.15.1"
+    "oslo.i18n<3.15.1"
 )
 
 
