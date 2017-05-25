@@ -4,3 +4,4 @@ LANG=C.UTF-8
 
 */10 * * * * flock -xn /usr/local/bin/decapod-collect-data timeout --foreground -k 3m 2m /usr/local/bin/decapod-collect-data > /var/log/cron.log 2>&1
 */10 * * * * flock -xn /usr/local/bin/decapod-admin /usr/local/bin/decapod-admin keystone sync > /var/log/cron.log 2>&1
+*/5 * * * * flock -xn /usr/local/bin/decapod-admin /usr/local/bin/decapod-admin periodic-checks run > /var/log/cron.log 2>&1

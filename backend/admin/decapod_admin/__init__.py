@@ -35,5 +35,6 @@ from decapod_admin import locked_servers  # NOQA
 from decapod_admin import migration  # NOQA
 from decapod_admin import password_reset  # NOQA
 from decapod_admin import pdsh  # NOQA
+from decapod_admin import periodic_checks  # NOQA
 from decapod_admin import restore  # NOQA
 from decapod_admin import ssh  # NOQA
