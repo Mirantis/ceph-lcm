@@ -19,7 +19,6 @@
 import asyncio
 import collections
 import os
-import threading
 
 import asyncssh
 
@@ -33,13 +32,15 @@ LOG = log.getLogger(__name__)
 ExecuteTaskResult = collections.namedtuple(
     "ExecuteTaskResult", ["ok", "errors", "cancelled"])
 
+GRACEFUL_CLOSE_TIMOUT = 5  # seconds
+
 
 class Connections:
 
     def __init__(self, private_key, event_loop):
         self.connections = {}
         self.private_key = private_key
-        self.lock = threading.RLock()
+        self.lock = asyncio.Lock(loop=event_loop)
         self.event_loop = event_loop
 
     async def get(self, srv):
@@ -48,7 +49,7 @@ class Connections:
         if key in self.connections:
             return self.connections[key]
 
-        with self.lock:
+        async with self.lock:
             if key not in self.connections:
                 self.connections[key] = await self.make_connection(srv)
 
@@ -68,10 +69,13 @@ class Connections:
 
         for value in self.connections.values():
             value.close()
-            coros.append(value.wait_closed())
+            coros.append(make_future(value, value.wait_closed()))
 
         if coros:
-            await asyncio.wait(coros)
+            await asyncio.wait(coros, timeout=GRACEFUL_CLOSE_TIMOUT)
+            for coro in coros:
+                if not coro.done():
+                    coro.initiator.abort()
 
     def close(self):
         self.event_loop.run_until_complete(self.async_close())
@@ -89,6 +93,9 @@ class Task:
 
     async def get_connection(self):
         return await self.connections.get(self.srv)
+
+    def make_future(self):
+        return make_future(self, self.run())
 
     @property
     def name(self):
@@ -192,21 +199,18 @@ class Check:
         pass
 
     async def execute_tasks(self, *tasks):
-        to_run = [
-            (tsk, asyncio.ensure_future(tsk.run()))
-            for tsk in tasks
-        ]
-        await asyncio.wait([future for _, future in to_run])
+        to_run = [tsk.make_future() for tsk in tasks]
+        await asyncio.wait(to_run)
 
         ok, errors, cancelled = [], [], []
-        for tsk, future in to_run:
+        for future in to_run:
             if future.cancelled():
-                cancelled.append(tsk)
+                cancelled.append(future.initiator)
             elif future.exception():
-                tsk.exception = future.exception()
-                errors.append(tsk)
+                future.initiator.exception = future.exception()
+                errors.append(future.initiator)
             else:
-                ok.append(tsk)
+                ok.append(future.initiator)
 
         return ExecuteTaskResult(ok, errors, cancelled)
 
@@ -214,10 +218,11 @@ class Check:
         if not servers:
             return []
 
-        tasks = [CommandTask(self.connections, srv, cmd) for srv in servers]
         cmd = cmd.strip()
         if not cmd.startswith("sudo"):
             cmd = "sudo -EHn -- {0}".format(cmd)
+
+        tasks = [CommandTask(self.connections, srv, cmd) for srv in servers]
 
         return await self.execute_tasks(*tasks)
 
@@ -231,3 +236,10 @@ class Check:
         while all_servers:
             yield all_servers[:batch_size]
             all_servers = all_servers[batch_size:]
+
+
+def make_future(tsk, coro):
+    coroutine = asyncio.ensure_future(coro)
+    coroutine.initiator = tsk
+
+    return coroutine
