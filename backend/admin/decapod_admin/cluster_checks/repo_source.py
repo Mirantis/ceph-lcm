@@ -32,27 +32,28 @@ class Check(base.Check):
         policy_result = await self.execute_cmd(
             "apt-cache policy ceph-common", *self.cluster.server_list)
 
-        if policy_result.errors:
-            for error in policy_result.errors:
-                LOG.error(
-                    "Cannot execute apt-cache policy command on %s (%s): %s",
-                    error.srv.ip,
-                    error.srv.model_id,
-                    error.exception
-                )
+        self.manage_errors(
+            "Cannot execute apt-cache policy command on %s (%s): %s",
+            "Not all hosts have working ceph command",
+            policy_result.errors
+        )
 
-            raise ValueError("No all hosts have working ceph command")
-
-        repo_lines = list(get_repo_lines(policy_result.ok))
-        if len({line for _, line in repo_lines}) >= 2:
-            for srv, line in repo_lines:
-                LOG.error("Server %s has ceph-common installed from %s",
-                          srv.ip, line)
+        results = list(get_policy_results(policy_result.ok))
+        policies = {line for _, line in results}
+        if len(policies) >= 2:
+            majority = self.get_majority(policies)
+            for srv, line in results:
+                if line != majority:
+                    LOG.error(
+                        "Server %s (%s) has ceph-common version %s, "
+                        "majority is %s",
+                        srv.ip, srv.model_id, line, majority
+                    )
 
             raise ValueError("Inconsistency in repo sources")
 
 
-def get_repo_lines(results):
+def get_policy_results(results):
     for res in results:
         yield from get_repo_line(res)
 

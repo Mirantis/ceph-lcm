@@ -27,31 +27,32 @@ LOG = log.getLogger(__name__)
 class Check(base.Check):
 
     async def run(self):
-        policy_result = await self.execute_cmd(
+        query_result = await self.execute_cmd(
             "dpkg-query --showformat='${Version}' --show ceph-common",
             *self.cluster.server_list)
 
-        if policy_result.errors:
-            for error in policy_result.errors:
-                LOG.error(
-                    "Cannot execute dpkg-query policy command on %s (%s): %s",
-                    error.srv.ip,
-                    error.srv.model_id,
-                    error.exception
-                )
+        self.manage_errors(
+            "Cannot execute dpkg-query command on %s (%s): %s",
+            "Not all hosts have installed ceph-common",
+            query_result.errors
+        )
 
-            raise ValueError("No all hosts have installed ceph")
+        results = get_query_results(query_result.ok)
+        query_lines = {line for _, line in results}
+        if len(query_lines) >= 2:
+            majority = self.get_majority(query_lines)
+            for srv, line in results:
+                if line != majority:
+                    LOG.error(
+                        (
+                            "Server %s (%s) has ceph-common installed "
+                            "with %s, majority is %s"
+                        ),
+                        srv.ip, srv.model_id, line, majority
+                    )
 
-        repo_lines = get_repo_lines(policy_result.ok)
-        if len({line for _, line in repo_lines}) < 2:
-            return
-
-        for srv, line in repo_lines:
-            LOG.error("Server %s has ceph-common installed with %s",
-                      srv.ip, line)
-
-        raise ValueError("Inconsistency in repo sources")
+            raise ValueError("Inconsistency in repo sources")
 
 
-def get_repo_lines(results):
+def get_query_results(results):
     return [(res.srv, res.stdout_text.strip()) for res in results]

@@ -20,11 +20,15 @@ import collections
 
 from decapod_admin.cluster_checks.base import Connections  # NOQA
 from decapod_admin.cluster_checks import ceph_command
+from decapod_admin.cluster_checks import health
 from decapod_admin.cluster_checks import installed_package_version
 from decapod_admin.cluster_checks import repo_source
+from decapod_admin.cluster_checks import running_version
 
 
 CHECKS = collections.OrderedDict()
 CHECKS["ceph"] = ceph_command.Check
 CHECKS["same_repo"] = repo_source.Check
 CHECKS["installed_version"] = installed_package_version.Check
+CHECKS["running_version"] = running_version.Check
+CHECKS["health"] = health.Check

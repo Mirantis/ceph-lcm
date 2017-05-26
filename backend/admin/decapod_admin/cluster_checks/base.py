@@ -180,6 +180,24 @@ class CommandTask(Task):
 
 class Check:
 
+    @staticmethod
+    def manage_errors(log_message, exception_message, errors):
+        if errors:
+            for error in errors:
+                LOG.error(log_message,
+                          error.srv.ip, error.srv.model_id, error.exception)
+
+            raise ValueError(exception_message)
+
+    @staticmethod
+    def get_majority(items):
+        counter = collections.Counter()
+        for item in items:
+            counter[item] += 1
+
+        winner, _ = counter.most_common(1)
+        return winner
+
     def __init__(self, connections, cluster, batch_size, event_loop):
         self.cluster = cluster
         self.connections = connections

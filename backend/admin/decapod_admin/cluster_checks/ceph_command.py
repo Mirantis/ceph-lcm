@@ -30,13 +30,8 @@ class Check(base.Check):
         which_ceph_result = await self.execute_cmd(
             "which ceph", *self.cluster.server_list)
 
-        if which_ceph_result.errors:
-            for error in which_ceph_result.errors:
-                LOG.error(
-                    "Cannot execute ceph command on %s (%s): %s",
-                    error.srv.ip,
-                    error.srv.model_id,
-                    error.exception
-                )
-
-            raise ValueError("No all hosts have working ceph command")
+        self.manage_errors(
+            "Cannot execute ceph command on %s (%s): %s",
+            "Not all hosts have working ceph command",
+            which_ceph_result.errors
+        )
