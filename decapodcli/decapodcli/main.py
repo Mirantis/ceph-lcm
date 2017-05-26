@@ -29,7 +29,7 @@ from decapodcli import utils
 import decapodlib
 
 
-CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 """Context settings for the Click."""
 
 
