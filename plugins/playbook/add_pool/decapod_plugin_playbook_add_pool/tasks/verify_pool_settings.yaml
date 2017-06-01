@@ -1,0 +1,100 @@
+---
+# Copyright (c) 2017 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- name: get pg num from the pool
+  command: >
+    ceph --cluster {{ cluster | quote }} osd pool get {{ pool_name | quote }}
+    pg_num --format json
+  register: pg_num_output
+
+- name: set pg num
+  command: >
+    ceph --cluster {{ cluster | quote }} osd pool set {{ pool_name | quote }}
+    pg_num {{ c_pg_num }}
+  when: (pg_num_output.stdout | from_json).pg_num != (c_pg_num | int)
+
+- name: get pgp num from the pool
+  command: >
+    ceph --cluster {{ cluster | quote }} osd pool get {{ pool_name | quote }}
+    pgp_num --format json
+  register: pgp_num_output
+
+- name: set pgp num
+  command: >
+    ceph --cluster {{ cluster | quote }} osd pool set {{ pool_name | quote }}
+    pgp_num {{ c_pgp_num }}
+  when: (pgp_num_output.stdout | from_json).pgp_num != (c_pgp_num | int)
+
+- name: get crush ruleset from the pool
+  command: >
+    ceph --cluster {{ cluster | quote }} osd pool get {{ pool_name | quote }}
+    crush_ruleset
+  register: crn_output_pool
+
+- name: get crush ruleset id
+  command: >
+    ceph --cluster {{ cluster | quote }} osd crush rule dump
+    {{ crush_ruleset_name | quote }} --format json
+  register: crn_output_name
+
+- name: set crush ruleset
+  command: >
+    ceph --cluster {{ cluster | quote }} osd pool set {{ pool_name | quote }}
+    crush_ruleset {{ (crn_output_name.stdout | from_json).ruleset }}
+  when: (crn_output_pool.stdout | int) != (crn_output_name.stdout | from_json).ruleset
+
+- name: get size
+  command: >
+    ceph --cluster {{ cluster | quote }} osd pool get {{ pool_name | quote }}
+    size --format json
+  register: size_output
+
+- name: set size
+  command: >
+    ceph --cluster {{ cluster | quote }} osd pool set {{ pool_name | quote }}
+    size {{ replica_size }}
+  when: (replica_size | int) != (size_output.stdout | from_json).size
+
+- name: get min_size
+  command: >
+    ceph --cluster {{ cluster | quote }} osd pool get {{ pool_name | quote }}
+    min_size --format json
+  register: min_size_output
+
+- name: set min_size
+  command: >
+    ceph --cluster {{ cluster | quote }} osd pool set {{ pool_name | quote }}
+    min_size {{ replica_min_size }}
+  when: (replica_min_size | int) != (min_size_output.stdout | from_json).min_size
+
+- name: get quota
+  command: >
+    ceph --cluster {{ cluster | quote }} osd pool get-quota
+    {{ pool_name | quote }} --format json
+  register: quota_output
+
+- name: set bytes quota
+  command: >
+    ceph --cluster {{ cluster | quote }} osd pool set-quota
+    {{ pool_name | quote }} max_bytes {{ quota_max_bytes }}
+  when: (quota_output.stdout | from_json).quota_max_bytes != (quota_max_bytes | int)
+
+- name: set objects quota
+  command: >
+    ceph --cluster {{ cluster | quote }} osd pool set-quota
+    {{ pool_name | quote }} max_objects {{ quota_max_objects }}
+  when: (quota_output.stdout | from_json).quota_max_objects != (quota_max_objects | int)

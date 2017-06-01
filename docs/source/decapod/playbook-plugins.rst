@@ -17,6 +17,7 @@ these plugins support.
    playbook-plugins/plugin-add-mon.rst
    playbook-plugins/plugin-add-nfs.rst
    playbook-plugins/plugin-add-osd.rst
+   playbook-plugins/plugin-add-pool.rst
    playbook-plugins/plugin-add-rbdmirror.rst
    playbook-plugins/plugin-add-restapi.rst
    playbook-plugins/plugin-add-rgw.rst
