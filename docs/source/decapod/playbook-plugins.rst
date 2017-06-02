@@ -30,6 +30,7 @@ these plugins support.
    playbook-plugins/plugin-remove-mon.rst
    playbook-plugins/plugin-remove-nfs.rst
    playbook-plugins/plugin-remove-osd.rst
+   playbook-plugins/plugin-remove-pool.rst
    playbook-plugins/plugin-remove-rbdmirror.rst
    playbook-plugins/plugin-remove-restapi.rst
    playbook-plugins/plugin-remove-rgw.rst
