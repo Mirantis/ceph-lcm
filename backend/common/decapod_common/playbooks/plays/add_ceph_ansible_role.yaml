@@ -15,8 +15,8 @@
 # limitations under the License.
 
 
-- include: "{{ decapod_common_playbooks }}/plays/init.yaml"
-- include: "{{ decapod_common_playbooks }}/plays/ceph_version.yaml"
+- include: ./init.yaml
+- include: ./ceph_version.yaml
 
 - hosts: mons
   become: true

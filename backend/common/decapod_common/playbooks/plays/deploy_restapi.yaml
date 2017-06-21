@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-- include: "{{ decapod_common_playbooks }}/plays/add_ceph_ansible_role.yaml"
+- include: ./add_ceph_ansible_role.yaml
 
 - hosts: mons
   gather_facts: false
@@ -54,7 +54,7 @@
 
   - name: Upload service file
     template:
-      src: "{{ decapod_path_templates }}/ceph-rest-api.service.j2"
+      src: ../templates/ceph-rest-api.service.j2
       dest: /lib/systemd/system/ceph-rest-api.service
 
   - name: Add rest-api to ceph-target.wants
@@ -69,4 +69,4 @@
       enabled: yes
       name: ceph-rest-api.service
 
-  - include: "{{ decapod_common_playbooks }}/tasks/restart_rest_api.yaml"
+  - include: ../tasks/restart_rest_api.yaml

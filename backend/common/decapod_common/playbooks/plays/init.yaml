@@ -19,16 +19,16 @@
   become: true
   gather_facts: false
   tasks:
-  - include: "{{ decapod_common_playbooks }}/init.yaml"
+  - include: ../init.yaml
     when: decapod_vars is not defined
 
-  - include: "{{ decapod_common_playbooks }}/tasks/install_facts.yaml"
+  - include: ../tasks/install_facts.yaml
     when: decapod_install_facts | default(decapod_vars.install_facts) | bool
 
   - name: Run setup after facts were installed
     setup: {}
 
-  - include: "{{ decapod_common_playbooks }}/tasks/add_gpg_repo_key.yaml"
+  - include: ../tasks/add_gpg_repo_key.yaml
     when:
     - decapod_add_gpg_repo_key | default(decapod_vars.add_gpg_repo_key) | bool
     - ceph_stable_repo_key is defined

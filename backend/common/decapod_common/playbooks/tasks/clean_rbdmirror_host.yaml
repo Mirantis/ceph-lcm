@@ -15,11 +15,11 @@
 # limitations under the License.
 
 
-- include: "{{ decapod_common_playbooks }}/init.yaml"
+- include: ../init.yaml
   when: decapod_initialized | default(false) | bool
 
 - name: clean out pool
-  include: "{{ decapod_common_playbooks }}/tasks/clean_rbdmirror_pool.yaml"
+  include: ../clean_rbdmirror_pool.yaml
   with_items: "{{ rbd_mirrors | unique }}"
   loop_control:
     loop_var: poolname

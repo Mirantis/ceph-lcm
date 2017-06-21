@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-- include: "{{ decapod_common_playbooks }}/init.yaml"
+- include: ../init.yaml
   when: decapod_initialized | default(false) | bool
 
 - name: Ensure ansible local facts directory is created
@@ -26,7 +26,7 @@
 
 - name: Create local facts to gather ceph clusters
   template:
-    src: "{{ decapod_path_facts }}/ceph_facts_module.py.j2"
+    src: ../facts/ceph_facts_module.py.j2
     dest: "/etc/ansible/facts.d/ceph_{{ cluster }}.fact"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"

@@ -15,10 +15,10 @@
 # limitations under the License.
 
 
-- include: "{{ decapod_common_playbooks }}/init.yaml"
+- include: ../init.yaml
   when: decapod_initialized | default(false) | bool
 
-- include: "{{ decapod_common_playbooks }}/tasks/set_ceph_facts.yaml"
+- include: ./set_ceph_facts.yaml
 
 - set_fact:
     osd_retry_attempts: "{{ (osd | default(decapod_vars.osd)).retry_attempts }}"

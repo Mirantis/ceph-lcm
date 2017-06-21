@@ -61,6 +61,7 @@ tasks as described in the following topics.
    admin-service/restore-entities.rst
    admin-service/locked-servers.rst
    admin-service/password-reset.rst
+   admin-service/external-execution.rst
 
 .. seealso::
 

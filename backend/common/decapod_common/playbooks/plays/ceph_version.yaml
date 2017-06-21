@@ -15,5 +15,5 @@
 # limitations under the License.
 
 
-- include: "{{ decapod_common_playbooks }}/plays/ceph_version_do.yaml"
+- include: ./ceph_version_do.yaml
   when: ceph_version_verify | default(false) | bool

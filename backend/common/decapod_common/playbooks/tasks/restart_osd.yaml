@@ -15,10 +15,10 @@
 # limitations under the License.
 
 
-- include: "{{ decapod_common_playbooks }}/init.yaml"
+- include: ../init.yaml
   when: decapod_initialized | default(false) | bool
 
-- include: "{{ decapod_common_playbooks }}/tasks/set_ceph_facts.yaml"
+- include: ./set_ceph_facts.yaml
 
 - name: Disable data rebalancing and scrubbing
   command: ceph --cluster "{{ cluster }}" osd set "{{ item }}"
@@ -28,7 +28,7 @@
     - nodeep-scrub
 
 - name: Restart OSDs
-  include: "{{ decapod_common_playbooks }}/tasks/restart_single_osd.yaml"
+  include: ./restart_single_osd.yaml
   with_items: "{{ osd_numbers }}"
   loop_control:
     loop_var: osd_number

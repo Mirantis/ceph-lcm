@@ -18,11 +18,11 @@
 - hosts: already_deployed
   become: true
   tasks:
-  - include: "{{ decapod_common_playbooks }}/init.yaml"
+  - include: ../init.yaml
     when: decapod_vars is not defined
 
   - block:
-    - include: "{{ decapod_common_playbooks }}/tasks/ceph_version_collect.yaml"
+      - include: ../tasks/ceph_version_collect.yaml
     always:
       - name: Remove created version files
         file:

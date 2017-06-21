@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include: "{{ decapod_common_playbooks }}/plays/add_ceph_ansible_role.yaml"
+- include: ./add_ceph_ansible_role.yaml
 
 - hosts: rgws
   become: true
