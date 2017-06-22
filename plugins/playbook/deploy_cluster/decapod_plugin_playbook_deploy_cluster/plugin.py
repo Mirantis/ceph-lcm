@@ -137,8 +137,10 @@ class DeployCluster(playbook_plugin.CephAnsiblePlaybook):
             configuration["global_vars"]["fsid"]
         )
         if not secret:
-            raise exceptions.SecretWasNotFound(
-                configuration["global_vars"]["fsid"])
+            secret = monitor_secret.MonitorSecret.upsert(
+                self.playbook_config.cluster_id,
+                monitor_secret.generate_monitor_secret()
+            )
 
         all_hosts = set()
         for name, group_vars in inventory.items():
