@@ -1,2 +1,3 @@
 include decapod_plugin_playbook_add_pool/config.yaml
 include decapod_plugin_playbook_add_pool/playbook.yaml
+graft decapod_plugin_playbook_add_pool/tasks

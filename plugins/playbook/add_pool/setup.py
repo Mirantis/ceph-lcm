@@ -39,6 +39,7 @@ setuptools.setup(
         "decapod_plugin_playbook_add_pool": [
             "config.yaml",
             "playbook.yaml"
+            "tasks/*"
         ]
     },
     install_requires=[
