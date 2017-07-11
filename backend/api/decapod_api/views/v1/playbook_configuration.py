@@ -206,6 +206,10 @@ class PlaybookConfigurationView(generic.VersionedCRUDView):
         except base_exceptions.CannotUpdateDeletedModel as exc:
             LOG.warning("Cannot delete deleted role %s", item_id)
             raise http_exceptions.CannotUpdateDeletedModel() from exc
+        except base_exceptions.CannotDeleteLockedPlaybookConfiguration as exc:
+            LOG.warning("Cannot delete locked configuration %s", item.model_id)
+            raise http_exceptions.CannotDeleteLockedPlaybookConfiguration(
+                item.model_id) from exc
 
         LOG.info("Playbook configuration %s was deleted by %s",
                  item_id, self.initiator_id)

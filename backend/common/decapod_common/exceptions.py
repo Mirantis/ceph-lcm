@@ -107,3 +107,11 @@ class MongoLockCannotRelease(DecapodError):
 
 class ClusterMustBeDeployedError(DecapodError):
     """Exception raised if cluster has to be deployed."""
+
+
+class CannotDeleteLockedPlaybookConfiguration(DecapodError):
+
+    def __init__(self, pcmodel):
+        super().__init__(
+            "Playbook configuration {0.model_id} is locked. "
+            "Cannot delete".format(pcmodel))

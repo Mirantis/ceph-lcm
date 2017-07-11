@@ -506,6 +506,7 @@ class PlaybookPluginTask(Task):
         super().start()
         exmodel = self.get_execution()
         self.set_execution_state(exmodel, execution.ExecutionState.started)
+        self.mark_playbook_configuration_locked(True)
 
     def cancel(self):
         from decapod_common.models import execution
@@ -514,6 +515,7 @@ class PlaybookPluginTask(Task):
         exmodel = self.get_execution()
         self.set_execution_state(exmodel, execution.ExecutionState.canceled)
         self.unlock_servers(exmodel)
+        self.mark_playbook_configuration_locked(True)
 
     def complete(self):
         from decapod_common.models import execution
@@ -522,6 +524,7 @@ class PlaybookPluginTask(Task):
         exmodel = self.get_execution()
         self.set_execution_state(exmodel, execution.ExecutionState.completed)
         self.unlock_servers(exmodel)
+        self.mark_playbook_configuration_locked(False)
 
     def fail(self, error_message="Internal error"):
         from decapod_common.models import execution
@@ -530,6 +533,31 @@ class PlaybookPluginTask(Task):
         exmodel = self.get_execution()
         self.set_execution_state(exmodel, execution.ExecutionState.failed)
         self.unlock_servers(exmodel)
+        self.mark_playbook_configuration_locked(True)
+
+    def mark_playbook_configuration_locked(self, state):
+        from decapod_common.models import playbook_configuration
+
+        pc_id = self.data["playbook_configuration_id"]
+        if not pc_id:
+            return
+
+        collection = playbook_configuration.PlaybookConfigurationModel
+        collection = collection.collection()
+        if state:
+            collection.update_one(
+                {"_id": pc_id},
+                {"$set": {"locked": True}}
+            )
+        else:
+            doc = collection.find_one({"_id": pc_id}, {"model_id": 1})
+            if not doc:
+                return
+
+            collection.update_many(
+                {"model_id": doc["model_id"]},
+                {"$unset": {"locked": ""}}
+            )
 
 
 class CancelPlaybookPluginTask(Task):

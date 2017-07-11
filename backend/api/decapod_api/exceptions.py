@@ -204,3 +204,10 @@ class CannotExecuteOnDeletedCluster(BadRequest):
 
     def __init__(self, model_id):
         super().__init__(self.description.format(model_id))
+
+
+class CannotDeleteLockedPlaybookConfiguration(BadRequest):
+    description = "Cannot delete locked playbook configuration {0}"
+
+    def __init__(self, model_id):
+        super().__init__(self.description.format(model_id))

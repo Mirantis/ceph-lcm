@@ -26,6 +26,7 @@ is no need in explicit enumeration).
 
 import copy
 
+from decapod_common import exceptions
 from decapod_common import plugins
 from decapod_common.models import generic
 from decapod_common.models import properties
@@ -119,3 +120,18 @@ class PlaybookConfigurationModel(generic.Model):
             "cluster_id": self.cluster_id,
             "configuration": self.configuration
         }
+
+    def delete(self):
+        if not self.possible_to_delete():
+            raise exceptions.CannotDeleteLockedPlaybookConfiguration(self)
+
+        return super().delete()
+
+    def possible_to_delete(self):
+        document = self.collection().find_one(
+            {
+                "model_id": self.model_id,
+                "locked": True
+            }
+        )
+        return not bool(document)
